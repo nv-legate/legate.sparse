@@ -47,14 +47,14 @@ def cdist(XA, XB, metric='euclidean', *, out=None, **kwargs):
 
     task = ctx.create_manual_task(SparseOpCode.EUCLIDEAN_CDIST, launch_domain=Rect(hi=grid))
     # First, we partition the output into tiles.
-    task.add_output(output.partition(Tiling(runtime.legate_runtime, Shape((x_tiling, y_tiling)), grid)))
+    task.add_output(output.partition(Tiling(Shape((x_tiling, y_tiling)), grid)))
     # For each output tile, we need the corresponding set of rows in XA. We'll do this
     # creating a disjoint partition over just the grid[0] color space, and adding a
     # projection functor on the launch space to pick corresponding piece within the rows.
-    task.add_input(XA_store.partition(Tiling(runtime.legate_runtime, Shape((x_tiling, XA.shape[1])), Shape((grid[0], 1)))), proj=lambda p: (p[0], 0))
+    task.add_input(XA_store.partition(Tiling(Shape((x_tiling, XA.shape[1])), Shape((grid[0], 1)))), proj=lambda p: (p[0], 0))
     # We do a similar thing for XB, but this time we'll take the projection of the columns
     # of the processor grid.
-    task.add_input(XB_store.partition(Tiling(runtime.legate_runtime, Shape((y_tiling, XB_store.shape[1])), Shape((grid[1], 1)))), proj=lambda p: (p[1], 0))
+    task.add_input(XB_store.partition(Tiling(Shape((y_tiling, XB_store.shape[1])), Shape((grid[1], 1)))), proj=lambda p: (p[1], 0))
     task.execute()
     return store_to_cunumeric_array(output)
 

@@ -237,7 +237,7 @@ def test_csr_rmatmul_balanced():
     res = l.__rmatmul__(x)
     # We expect to find the cunumeric zero task and the SpMM task.
     assert len(rt._outstanding_ops) == 2
-    partitioner = Partitioner(rt, [rt._outstanding_ops[1]], must_be_single=False)
+    partitioner = Partitioner([rt._outstanding_ops[1]], must_be_single=False)
     strat = partitioner.partition_stores()
     assert "by_domain" in str(strat)
     rt._window_size = 1
@@ -266,7 +266,7 @@ def test_csr_sddmm_balanced():
     rt.flush_scheduling_window()
     res = l.sddmm(C, D)
     assert len(rt._outstanding_ops) == 1
-    partitioner = Partitioner(rt, [rt._outstanding_ops[0]], must_be_single=False)
+    partitioner = Partitioner([rt._outstanding_ops[0]], must_be_single=False)
     strat = partitioner.partition_stores()
     assert "by_domain" in str(strat)
     rt._window_size = 1

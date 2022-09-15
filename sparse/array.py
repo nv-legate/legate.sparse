@@ -291,10 +291,9 @@ class DenseSparseBase:
         # First, partition the non-zero coordinates into equal pieces.
         crd_tiling = (self.crd.shape[0] + num_procs - 1) // num_procs
         crd_reg = self.crd.storage.region
-        crd_part = Tiling(runtime.legate_runtime, Shape(crd_tiling), Shape(num_procs))
+        crd_part = Tiling(Shape(crd_tiling), Shape(num_procs))
         # Next, construct a preimage of the coordinates into the rows.
         preimage_legate = PreimagePartition(
-            runtime.legate_runtime,
             self.pos,
             self.crd,
             crd_part,
@@ -355,7 +354,6 @@ class DenseSparseBase:
             balanced_row_bounds[Point(num_procs - 1)] = Rect(lo=rect.lo, hi=(self.pos.shape[0] - 1,), exclusive=False)
         # Use our adjusted bounds to construct the resulting partition.
         balanced_legate_part = DomainPartition(
-            runtime.legate_runtime,
             self.pos.shape,
             Shape(num_procs),
             balanced_row_bounds
@@ -380,14 +378,20 @@ class DenseSparseBase:
 
 
 class CompressedBase:
-    def nnz_to_pos(self, q_nnz: Store):
-        # Perform a scan over the query result.
-        cs = cunumeric.array(cunumeric.cumsum(store_to_cunumeric_array(q_nnz)))
+    @classmethod
+    def nnz_to_pos_cls(cls, q_nnz: Store):
+        # Perform a scan over the query result. This branch is a workaround
+        # for https://github.com/nv-legate/cunumeric/issues/584.
+        if q_nnz.shape[0] <= 1:
+            import numpy
+            cs = cunumeric.array(numpy.cumsum(numpy.array(store_to_cunumeric_array(q_nnz))))
+        else:
+            cs = cunumeric.array(cunumeric.cumsum(store_to_cunumeric_array(q_nnz)))
         cs_store = get_store_from_cunumeric_array(cs)
         cs_shifted = cunumeric.append(cunumeric.array([0], nnz_ty), cs[:-1])
         cs_shifted_store = get_store_from_cunumeric_array(cs_shifted)
         # Zip the scan result into a rect1 region for the pos.
-        pos = ctx.create_store(rect1, shape=(q_nnz.shape[0]))
+        pos = ctx.create_store(rect1, shape=(q_nnz.shape[0]), optimize_scalar=False)
         task = ctx.create_task(SparseOpCode.ZIP_TO_RECT1)
         task.add_output(pos)
         task.add_input(cs_shifted_store)
@@ -397,6 +401,8 @@ class CompressedBase:
         task.execute()
         return pos, int(cs[-1])
 
+    def nnz_to_pos(self, q_nnz: Store):
+        return CompressedBase.nnz_to_pos_cls(q_nnz)
 
     def asformat(self, format, copy=False):
         if format is None or format == self.format:
@@ -583,6 +589,16 @@ class csr_array(CompressedBase, DenseSparseBase):
 
     data = property(fget=get_data, fset=set_data)
 
+    @classmethod
+    def make_empty(cls, shape, dtype):
+        M, N = shape
+        # Make an empty pos array.
+        q = cunumeric.zeros((M,), dtype=coord_ty)
+        pos, _ = CompressedBase.nnz_to_pos_cls(get_store_from_cunumeric_array(q))
+        crd = ctx.create_store(coord_ty, (0, ), optimize_scalar=False)
+        vals = ctx.create_store(dtype, (0, ), optimize_scalar=False)
+        return cls((vals, crd, pos), shape=shape, dtype=dtype)
+
     @property
     def nnz(self):
         return self.vals.shape[0]
@@ -745,18 +761,18 @@ class csr_array(CompressedBase, DenseSparseBase):
             # particular, we want to broadcast the colorings over the i dimension across the j
             # dimension of the grid, which the promotion does for us.
             my_promoted_pos = self.pos.promote(1)
-            my_pos_tiling = Tiling(runtime.legate_runtime, Shape(((self.pos.shape[0] + grid[0] - 1) // grid[0], 1)), grid)
+            my_pos_tiling = Tiling(Shape(((self.pos.shape[0] + grid[0] - 1) // grid[0], 1)), grid)
             my_pos_partition = my_promoted_pos.partition(my_pos_tiling)
             other_promoted_pos = other.pos.promote(0)
             other_pos_tiling = (other.pos.shape[0] + grid[1] - 1) // grid[1]
-            other_pos_partition = other_promoted_pos.partition(Tiling(runtime.legate_runtime, Shape((1, other_pos_tiling)), grid))
+            other_pos_partition = other_promoted_pos.partition(Tiling(Shape((1, other_pos_tiling)), grid))
 
             # TODO (rohany): There's a really weird interaction here that needs help from wonchan.
             #  If I'm deriving a partition from another, I need the partition pos all of the transformations
             #  that are applied to it. However, the normal partition.partition is the partition before
             #  any transformations. I'm not sure what's the best way to untangle this.
-            my_pos_image = ImagePartition(runtime.legate_runtime, self.pos, my_pos_partition._storage_partition._partition, ctx.mapper_id, range=True)
-            other_pos_image = ImagePartition(runtime.legate_runtime, other.pos, other_pos_partition._storage_partition._partition, ctx.mapper_id, range=True)
+            my_pos_image = ImagePartition(self.pos, my_pos_partition._storage_partition._partition, ctx.mapper_id, range=True)
+            other_pos_image = ImagePartition(other.pos, other_pos_partition._storage_partition._partition, ctx.mapper_id, range=True)
 
             # First, we launch a task that tiles the output matrix and creates a local
             # csr matrix result for each tile.
@@ -821,7 +837,7 @@ class csr_array(CompressedBase, DenseSparseBase):
                 for j in range(grid[1]):
                     rect = Rect(lo=(i, j, 0), hi=(i, j, grid[1] - 1), dim=3, exclusive=False)
                     partitioner_store_coloring[Point((i, j))] = rect
-            partitioner_store_partition = partitioner_store.partition(DomainPartition(runtime.legate_runtime, partitioner_store.shape, grid, partitioner_store_coloring))
+            partitioner_store_partition = partitioner_store.partition(DomainPartition(partitioner_store.shape, grid, partitioner_store_coloring))
             task = ctx.create_manual_task(SparseOpCode.SPGEMM_CSR_CSR_CSC_COMM_COMPUTE, launch_domain=Rect(hi=(num_procs,)))
             promote_1d_to_2d = ctx.get_projection_id(SparseProjectionFunctor.PROMOTE_1D_TO_2D)
             task.add_output(partitioner_store_partition, proj=promote_1d_to_2d)
@@ -840,11 +856,11 @@ class csr_array(CompressedBase, DenseSparseBase):
                 for j in range(grid[1]):
                     rect = Rect(lo=(i, 0, j), hi=(i, grid[1] - 1, j), dim=3, exclusive=False)
                     transposed_partitioner_store_coloring[Point((i, j))] = rect
-            transposed_partition = partitioner_store.partition(DomainPartition(runtime.legate_runtime, partitioner_store.shape, grid, transposed_partitioner_store_coloring))
+            transposed_partition = partitioner_store.partition(DomainPartition(partitioner_store.shape, grid, transposed_partitioner_store_coloring))
             # Cascade images down to the global pos, crd and vals regions.
-            global_pos_partition = pos.partition(ImagePartition(runtime.legate_runtime, partitioner_store, transposed_partition.partition, ctx.mapper_id, range=True))
-            global_crd_partition = crd.partition(ImagePartition(runtime.legate_runtime, pos, global_pos_partition.partition, ctx.mapper_id, range=True))
-            global_vals_partition = vals.partition(ImagePartition(runtime.legate_runtime, pos, global_pos_partition.partition, ctx.mapper_id, range=True))
+            global_pos_partition = pos.partition(ImagePartition(partitioner_store, transposed_partition.partition, ctx.mapper_id, range=True))
+            global_crd_partition = crd.partition(ImagePartition(pos, global_pos_partition.partition, ctx.mapper_id, range=True))
+            global_vals_partition = vals.partition(ImagePartition(pos, global_pos_partition.partition, ctx.mapper_id, range=True))
             # This next task utilizes the pieces computed by the transposed partition
             # and gathers them into contiguous pieces to form the result csr matrix.
             task = ctx.create_manual_task(SparseOpCode.SPGEMM_CSR_CSR_CSC_SHUFFLE, launch_domain=Rect(hi=(num_procs,)))
@@ -880,7 +896,7 @@ class csr_array(CompressedBase, DenseSparseBase):
                 vals = ctx.create_store(float64, ndim=1)
                 num_procs = runtime.num_procs
                 tile_shape = (self.shape[0] + num_procs - 1) // num_procs
-                tiling = Tiling(runtime.legate_runtime, Shape(tile_shape), Shape(num_procs))
+                tiling = Tiling(Shape(tile_shape), Shape(num_procs))
                 task = ctx.create_manual_task(SparseOpCode.SPGEMM_CSR_CSR_CSR_GPU, launch_domain=Rect(hi=(num_procs,)))
                 pos_part = pos.partition(tiling)
                 task.add_output(pos_part)
@@ -888,7 +904,7 @@ class csr_array(CompressedBase, DenseSparseBase):
                 task.add_output(vals)
                 my_pos_part = self.pos.partition(tiling)
                 task.add_input(my_pos_part)
-                image = CompressedImagePartition(runtime.legate_runtime, self.pos, my_pos_part.partition, ctx.mapper_id, range=True)
+                image = CompressedImagePartition(self.pos, my_pos_part.partition, ctx.mapper_id, range=True)
                 crd_part = self.crd.partition(image)
                 task.add_input(self.crd.partition(image))
                 task.add_input(self.vals.partition(image))
@@ -896,10 +912,10 @@ class csr_array(CompressedBase, DenseSparseBase):
                 # we can make the world a little better for us by gathering only the
                 # rows of C that are referenced by each partition using Image operations.
                 task.add_input(other.pos)
-                crd_image = MinMaxImagePartition(runtime.legate_runtime, self.crd, crd_part.partition, ctx.mapper_id, range=False)
+                crd_image = MinMaxImagePartition(self.crd, crd_part.partition, ctx.mapper_id, range=False)
                 other_pos_part = other.pos.partition(crd_image)
-                task.add_input(other.crd.partition(ImagePartition(runtime.legate_runtime, other.pos, other_pos_part.partition, ctx.mapper_id, range=True)))
-                task.add_input(other.vals.partition(ImagePartition(runtime.legate_runtime, other.pos, other_pos_part.partition, ctx.mapper_id, range=True)))
+                task.add_input(other.crd.partition(ImagePartition(other.pos, other_pos_part.partition, ctx.mapper_id, range=True)))
+                task.add_input(other.vals.partition(ImagePartition(other.pos, other_pos_part.partition, ctx.mapper_id, range=True)))
                 task.add_scalar_arg(other.shape[1], types.uint64)
                 task.execute()
                 # Build the global CSR array by performing a scan across the individual CSR results. Due
@@ -1398,6 +1414,16 @@ class csc_array(CompressedBase, DenseSparseBase):
             return self.crd.comm_volume() + self.vals.comm_volume() + self.pos.extents.volume()
         self.pos._storage.volume = compute_volume
 
+    @classmethod
+    def make_empty(cls, shape, dtype):
+        M, N = shape
+        # Make an empty pos array.
+        q = cunumeric.zeros((N,), dtype=coord_ty)
+        pos, _ = CompressedBase.nnz_to_pos_cls(get_store_from_cunumeric_array(q))
+        crd = ctx.create_store(coord_ty, (0, ), optimize_scalar=False)
+        vals = ctx.create_store(dtype, (0, ), optimize_scalar=False)
+        return cls((vals, crd, pos), shape=shape, dtype=dtype)
+
     def tocsr(self, copy=False):
         if copy:
             raise NotImplementedError
@@ -1658,7 +1684,7 @@ class coo_array(CompressedBase):
         #  operations on very small numbers of processors.
         if self._i.shape[0] >= runtime.num_procs:
             tile_size = (self._i.shape[0] + runtime.num_procs - 1) // runtime.num_procs
-            i_part = Tiling(runtime.legate_runtime, Shape(tile_size), Shape(runtime.num_procs))
+            i_part = Tiling(Shape(tile_size), Shape(runtime.num_procs))
             self._i.set_key_partition(i_part)
 
     # TODO (rohany): Maybe use the individual setters and getters to handle
@@ -1767,7 +1793,7 @@ class coo_array(CompressedBase):
         if rows_store.shape[0] <= num_procs:
             num_procs = 1
         row_tiling = (rows_store.shape[0] + num_procs - 1) // num_procs
-        rows_part = rows_store.partition(Tiling(runtime.legate_runtime, Shape(row_tiling), Shape(num_procs)))
+        rows_part = rows_store.partition(Tiling(Shape(row_tiling), Shape(num_procs)))
         # In order to bypass legate.core's current inability to handle representing
         # stores as FutureMaps, we drop below the ManualTask API to launch as task
         # ourselves and use the returned future map directly instead of letting the
@@ -1786,7 +1812,7 @@ class coo_array(CompressedBase):
         q_nnz = get_store_from_cunumeric_array(cunumeric.zeros((self.shape[0],), dtype=nnz_ty))
         task = ctx.create_manual_task(SparseOpCode.SORTED_COORDS_TO_COUNTS, launch_domain=Rect(hi=(num_procs,)))
         task.add_input(rows_part)
-        task.add_reduction(q_nnz.partition(DomainPartition(runtime.legate_runtime, q_nnz.shape, Shape(num_procs), result)), ReductionOp.ADD)
+        task.add_reduction(q_nnz.partition(DomainPartition(q_nnz.shape, Shape(num_procs), result)), ReductionOp.ADD)
         task.add_scalar_arg(self.shape[0], types.int64)
         task.execute()
         # TODO (rohany): On small inputs, it appears that I get a non-deterministic failure, which appears either
@@ -1835,8 +1861,14 @@ class coo_array(CompressedBase):
         # of non-zeros per row. We'll then partition up the non-zeros array according
         # to the per-partition ranges given by the min and max of each partition.
         num_procs = runtime.num_procs
+        # TODO (rohany): If I try to partition this on really small inputs (like size 0 or 1 stores)
+        #  across multiple processors, I see some sparse non-deterministic failures. I haven't root
+        #  caused these, and I'm running out of time to figure them out. It seems just not partitioning
+        #  the input on these really small matrices side-steps the underlying issue.
+        if cols_store.shape[0] <= num_procs:
+            num_procs = 1
         col_tiling = (cols_store.shape[0] + num_procs - 1) // num_procs
-        cols_part = cols_store.partition(Tiling(runtime.legate_runtime, Shape(col_tiling), Shape(num_procs)))
+        cols_part = cols_store.partition(Tiling(Shape(col_tiling), Shape(num_procs)))
         # In order to bypass legate.core's current inability to handle representing
         # stores as FutureMaps, we drop below the ManualTask API to launch as task
         # ourselves and use the returned future map directly instead of letting the
@@ -1855,7 +1887,7 @@ class coo_array(CompressedBase):
         q_nnz = get_store_from_cunumeric_array(cunumeric.zeros((self.shape[1],), dtype=nnz_ty))
         task = ctx.create_manual_task(SparseOpCode.SORTED_COORDS_TO_COUNTS, launch_domain=Rect(hi=(num_procs,)))
         task.add_input(cols_part)
-        task.add_reduction(q_nnz.partition(DomainPartition(runtime.legate_runtime, q_nnz.shape, Shape(num_procs), result)), ReductionOp.ADD)
+        task.add_reduction(q_nnz.partition(DomainPartition(q_nnz.shape, Shape(num_procs), result)), ReductionOp.ADD)
         task.add_scalar_arg(self.shape[1], types.int64)
         task.execute()
 
@@ -1930,6 +1962,18 @@ class dia_array(CompressedBase):
         offsets = cunumeric.array(self.offsets)
         return dia_array((data, offsets), shape=self.shape, dtype=self.dtype)
 
+    # This implementation of nnz on DIA matrices is lifted from scipy.sparse.
+    @property
+    def nnz(self):
+        M,N = self.shape
+        nnz = 0
+        for k in self.offsets:
+            if k > 0:
+                nnz += min(M,N-k)
+            else:
+                nnz += min(M+k,N)
+        return int(nnz)
+
     # This implementation of diagonal() on DIA matrices is lifted from scipy.sparse.
     def diagonal(self, k=0):
         rows, cols = self.shape
@@ -2002,9 +2046,8 @@ class dia_array(CompressedBase):
     def tocsc(self, copy=False):
         if copy:
             raise AssertionError
-        # TODO (rohany): Do I need to handle this case explicitly?
-        # if self.nnz == 0:
-        #     return self._csc_container(self.shape, dtype=self.dtype)
+        if self.nnz == 0:
+            return csc_array.make_empty(self.shape, self.dtype)
 
         num_rows, num_cols = self.shape
         num_offsets, offset_len = self.data.shape

@@ -148,7 +148,7 @@ def test_csc_sddmm_balanced():
     rt.flush_scheduling_window()
     res = l.sddmm(C, D)
     assert len(rt._outstanding_ops) == 1
-    partitioner = Partitioner(rt, [rt._outstanding_ops[0]], must_be_single=False)
+    partitioner = Partitioner([rt._outstanding_ops[0]], must_be_single=False)
     strat = partitioner.partition_stores()
     assert "by_domain" in str(strat)
     rt._window_size = 1

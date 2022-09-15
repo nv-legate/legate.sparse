@@ -13,11 +13,12 @@
 # limitations under the License.
 
 from .config import SparseOpCode, domain_ty
-from .runtime import ctx, runtime
+from .runtime import ctx
 
 from legate.core import Partition as LegionPartition, Rect, Region, Transform, Point
 from legate.core.launcher import TaskLauncher
 from legate.core.partition import Broadcast, DomainPartition, ImagePartition, AffineProjection
+from legate.core.runtime import runtime
 from legate.core.shape import Shape
 
 from typing import Optional
@@ -57,7 +58,7 @@ class CompressedImagePartition(ImagePartition):
             #  that they expect.
             # return super().construct(region, complete)
 
-        index_partition = self._runtime.find_partition(region.index_space, self)
+        index_partition = runtime.find_partition(region.index_space, self)
         if index_partition is None:
             source_part = self._store.partition(self._part)
             launch_shape = self._part.color_shape
@@ -77,8 +78,8 @@ class CompressedImagePartition(ImagePartition):
             launcher.add_output(bounds_store, Broadcast(None, 0), tag=0)
             domains = launcher.execute(Rect(hi=launch_shape))
             # We'll return a partition by domain using the resulting FutureMap.
-            result = DomainPartition(self.runtime, Shape(ispace=region.index_space), self.color_shape, domains).construct(region)
-            self._runtime.record_partition(region.index_space, self, result.index_partition)
+            result = DomainPartition(Shape(ispace=region.index_space), self.color_shape, domains).construct(region)
+            runtime.record_partition(region.index_space, self, result.index_partition)
             return result
         else:
             return region.get_child(index_partition)
@@ -108,7 +109,7 @@ class MinMaxImagePartition(ImagePartition):
             color_transform: Optional[Transform] = None,
     ) -> Optional[LegionPartition]:
         assert len(self._store.shape) == 1 and not self._range
-        index_partition = self._runtime.find_partition(region.index_space, self)
+        index_partition = runtime.find_partition(region.index_space, self)
         if index_partition is None:
             source_part = self._store.partition(self._part)
             launch_shape = self._part.color_shape
@@ -125,13 +126,13 @@ class MinMaxImagePartition(ImagePartition):
             launcher.add_output(bounds_store, Broadcast(None, 0), tag=0)
             domains = launcher.execute(Rect(hi=launch_shape))
             # We'll return a partition by domain using the resulting FutureMap.
-            part = DomainPartition(self.runtime, Shape(ispace=region.index_space), self.color_shape, domains)
+            part = DomainPartition(Shape(ispace=region.index_space), self.color_shape, domains)
             if self._proj_dims is not None:
                 projection = AffineProjection(self._proj_dims)
                 # TODO (rohany): Might need to also do a projection on the point.
                 part = projection.project_partition(part, Rect(hi=Shape(ispace=region.index_space)))
             result = part.construct(region)
-            self._runtime.record_partition(region.index_space, self, result.index_partition)
+            runtime.record_partition(region.index_space, self, result.index_partition)
             return result
         else:
             return region.get_child(index_partition)
