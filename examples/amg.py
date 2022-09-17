@@ -400,9 +400,7 @@ def cycle(levels, lvl, x, b):
     coarse_x = levels[lvl].coarse_x_alloc
 
     if lvl == len(levels) - 2:
-        # TODO (rohany): When cunumeric implements this, set out= for
-        #  allocation saving.
-        coarse_x = np.linalg.solve(levels[-1].dense_A, coarse_b)
+        np.linalg.solve(levels[-1].dense_A, coarse_b, out=coarse_x)
     else:
         cycle(levels, lvl + 1, coarse_x, coarse_b)
 
