@@ -380,13 +380,7 @@ class DenseSparseBase:
 class CompressedBase:
     @classmethod
     def nnz_to_pos_cls(cls, q_nnz: Store):
-        # Perform a scan over the query result. This branch is a workaround
-        # for https://github.com/nv-legate/cunumeric/issues/584.
-        if q_nnz.shape[0] <= 1:
-            import numpy
-            cs = cunumeric.array(numpy.cumsum(numpy.array(store_to_cunumeric_array(q_nnz))))
-        else:
-            cs = cunumeric.array(cunumeric.cumsum(store_to_cunumeric_array(q_nnz)))
+        cs = cunumeric.array(cunumeric.cumsum(store_to_cunumeric_array(q_nnz)))
         cs_store = get_store_from_cunumeric_array(cs)
         cs_shifted = cunumeric.append(cunumeric.array([0], nnz_ty), cs[:-1])
         cs_shifted_store = get_store_from_cunumeric_array(cs_shifted)
