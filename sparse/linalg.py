@@ -1323,3 +1323,150 @@ def lsqr(A, b, damp=0.0, atol=1e-6, btol=1e-6, conlim=1e8,
         print(' ')
 
     return x, istop, itn, r1norm, r2norm, anorm, acond, arnorm, xnorm, var
+
+
+def _lanczos_asis(a, V, u, alpha, beta, i_start, i_end):
+    for i in range(i_start, i_end):
+        u[...] = a @ V[i]
+        alpha[i] = V[i].conj() @ u
+        u -= u.T @ V[:i+1].conj().T @ V[:i+1]
+        beta[i] = np.linalg.norm(u)
+        if i >= i_end - 1:
+            break
+        V[i+1] = u / beta[i]
+
+
+def _eigsh_solve_ritz(alpha, beta, beta_k, k, which):
+    alpha = alpha
+    beta = beta
+    t = np.diag(alpha)
+    t = t + np.diag(beta[:-1], k=1)
+    t = t + np.diag(beta[:-1], k=-1)
+    if beta_k is not None:
+        t[k, :k] = beta_k
+        t[:k, k] = beta_k
+    w, s = np.linalg.eigh(t)
+    w, s = np.array(w), np.array(s)
+
+    # Pick-up k ritz-values and ritz-vectors
+    if which == 'LA':
+        idx = np.argsort(w)
+    elif which == 'LM':
+        idx = np.argsort(np.absolute(w))
+    wk = w[idx[-k:]]
+    sk = s[:, idx[-k:]]
+    return wk, sk
+
+
+# This eigsh implementation is lifted from CuPy.
+def eigsh(a, k=6, *, which='LM', ncv=None, maxiter=None, tol=0,
+          return_eigenvectors=True):
+    """
+    Find ``k`` eigenvalues and eigenvectors of the real symmetric square
+    matrix or complex Hermitian matrix ``A``.
+    Solves ``Ax = wx``, the standard eigenvalue problem for ``w`` eigenvalues
+    with corresponding eigenvectors ``x``.
+    Args:
+        a (ndarray, spmatrix or LinearOperator): A symmetric square matrix with
+            dimension ``(n, n)``. ``a`` must :class:`cupy.ndarray`,
+            :class:`cupyx.scipy.sparse.spmatrix` or
+            :class:`cupyx.scipy.sparse.linalg.LinearOperator`.
+        k (int): The number of eigenvalues and eigenvectors to compute. Must be
+            ``1 <= k < n``.
+        which (str): 'LM' or 'LA'. 'LM': finds ``k`` largest (in magnitude)
+            eigenvalues. 'LA': finds ``k`` largest (algebraic) eigenvalues.
+        ncv (int): The number of Lanczos vectors generated. Must be
+            ``k + 1 < ncv < n``. If ``None``, default value is used.
+        maxiter (int): Maximum number of Lanczos update iterations.
+            If ``None``, default value is used.
+        tol (float): Tolerance for residuals ``||Ax - wx||``. If ``0``, machine
+            precision is used.
+        return_eigenvectors (bool): If ``True``, returns eigenvectors in
+            addition to eigenvalues.
+    Returns:
+        tuple:
+            If ``return_eigenvectors is True``, it returns ``w`` and ``x``
+            where ``w`` is eigenvalues and ``x`` is eigenvectors. Otherwise,
+            it returns only ``w``.
+    .. seealso:: :func:`scipy.sparse.linalg.eigsh`
+    .. note::
+        This function uses the thick-restart Lanczos methods
+        (https://sdm.lbl.gov/~kewu/ps/trlan.html).
+    """
+    n = a.shape[0]
+    if a.ndim != 2 or a.shape[0] != a.shape[1]:
+        raise ValueError('expected square matrix (shape: {})'.format(a.shape))
+    if a.dtype.char not in 'fdFD':
+        raise TypeError('unsupprted dtype (actual: {})'.format(a.dtype))
+    if k <= 0:
+        raise ValueError('k must be greater than 0 (actual: {})'.format(k))
+    if k >= n:
+        raise ValueError('k must be smaller than n (actual: {})'.format(k))
+    if which not in ('LM', 'LA'):
+        raise ValueError('which must be \'LM\' or \'LA\' (actual: {})'
+                         ''.format(which))
+    if ncv is None:
+        ncv = min(max(2 * k, k + 32), n - 1)
+    else:
+        ncv = min(max(ncv, k + 2), n - 1)
+    if maxiter is None:
+        maxiter = 10 * n
+    if tol == 0:
+        tol = np.finfo(a.dtype).eps
+
+    alpha = np.zeros((ncv,), dtype=a.dtype)
+    beta = np.zeros((ncv,), dtype=a.dtype)
+    V = np.empty((ncv, n), dtype=a.dtype)
+
+    # Set initial vector.
+    u = np.random.random((n,)).astype(a.dtype)
+    V[0] = u / np.linalg.norm(u)
+
+    # TODO (rohany): Make this implementation work...
+    # TODO (rohany): We can use the lanczos_fast implementation within
+    #  CuPy if this is too slow or something.
+    lanczos = _lanczos_asis
+
+    # Lanczos iteration.
+    lanczos(a, V, u, alpha, beta, 0, ncv)
+
+    iter = ncv
+    w, s = _eigsh_solve_ritz(alpha, beta, None, k, which)
+    x = V.T @ s
+
+    # Compute residual.
+    beta_k = beta[-1] * s[-1, :]
+    res = np.linalg.norm(beta_k)
+
+    while res > tol and iter < maxiter:
+        # Setup for thick-restart
+        beta[:k] = 0
+        alpha[:k] = w
+        V[:k] = x.T
+
+        u -= u.T @ V[:k].conj().T @ V[:k]
+        V[k] = u / np.linalg.norm(u)
+
+        u[...] = a @ V[k]
+        alpha[k] = V[k].conj() @ u
+        u -= alpha[k] * V[k]
+        u -= V[:k].T @ beta_k
+        beta[k] = np.linalg.norm(u)
+        V[k+1] = u / beta[k]
+
+        # Lanczos iteration
+        lanczos(a, V, u, alpha, beta, k + 1, ncv)
+
+        iter += ncv - k
+        w, s = _eigsh_solve_ritz(alpha, beta, beta_k, k, which)
+        x = V.T @ s
+
+        # Compute residual
+        beta_k = beta[-1] * s[-1, :]
+        res = np.linalg.norm(beta_k)
+
+    if return_eigenvectors:
+        idx = np.argsort(w)
+        return w[idx], x[:, idx]
+    else:
+        return np.sort(w)

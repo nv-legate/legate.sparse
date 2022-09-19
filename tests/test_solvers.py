@@ -177,6 +177,19 @@ def test_gmres_solve():
     assert np.allclose(x_pred_sci, x_pred_legate, atol=1e-4)
 
 
+def test_eigsh():
+    N = 100
+    seed = 471014
+    # Make A symmetric.
+    A = sample(N, N, 0.1, seed).todense()
+    A = 0.5 * (A + A.T)
+    A = csr_array(A)
+    vals_legate, vecs_legate = linalg.eigsh(A)
+    # Check that all of the vectors are indeed equal to the eigenvalue.
+    for i, lamb in enumerate(vals_legate):
+        assert np.allclose(A @ vecs_legate[:, i], lamb * vecs_legate[:, i])
+
+
 if __name__ == "__main__":
     import sys
     sys.exit(pytest.main(sys.argv))
