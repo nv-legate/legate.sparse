@@ -536,22 +536,31 @@ class csr_array(CompressedBase, DenseSparseBase):
             self.pos = pack_to_rect1_store(get_store_from_cunumeric_array(los), get_store_from_cunumeric_array(his))
             self.shape = arg.shape
         elif isinstance(arg, tuple):
-            # TODO (rohany): I need to cast these from arrays if they are numpy or cunumeric arrays.
-            #  But they should just be stores. Actually, to make the API drop-in, we'll need to handle
-            #  manually converting from scipy-like pos arrays into the Rect<1> stores.
-            (data, indices, indptr) = arg
-            if isinstance(indptr, cunumeric.ndarray):
-                assert indptr.shape[0] == shape[0] + 1
-                los = indptr[:-1]
-                his = indptr[1:]
-                self.pos = pack_to_rect1_store(get_store_from_cunumeric_array(los), get_store_from_cunumeric_array(his))
+            if len(arg) == 2:
+                # If the tuple has two arguments, then it must be of the form
+                # (data, (row, col)), so just pass it to the COO constructor
+                # and transform it into a CSR matrix.
+                data, (row, col) = arg
+                result = coo_array((data, (row, col)), shape=shape, dtype=dtype).tocsr()
+                self.pos = result.pos
+                self.crd = result.crd
+                self.vals = result.vals
+            elif len(arg) == 3:
+                (data, indices, indptr) = arg
+                if isinstance(indptr, cunumeric.ndarray):
+                    assert indptr.shape[0] == shape[0] + 1
+                    los = indptr[:-1]
+                    his = indptr[1:]
+                    self.pos = pack_to_rect1_store(get_store_from_cunumeric_array(los), get_store_from_cunumeric_array(his))
+                else:
+                    assert(isinstance(indptr, Store))
+                    self.pos = indptr
+                # TODO (rohany): We need to ensure that the input types here are correct (i.e.
+                #  the crd array is indeed an int64).
+                self.crd = cast_to_store(indices)
+                self.vals = cast_to_store(data)
             else:
-                assert(isinstance(indptr, Store))
-                self.pos = indptr
-            # TODO (rohany): We need to ensure that the input types here are correct (i.e.
-            #  the crd array is indeed an int64).
-            self.crd = cast_to_store(indices)
-            self.vals = cast_to_store(data)
+                raise AssertionError
             assert shape is not None
             self.shape = shape
         else:

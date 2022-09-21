@@ -39,6 +39,13 @@ def test_csr_to_coo(filename):
     assert np.array_equal(l.todense(), l.tocoo().todense())
 
 
+def test_csr_coo_constructor():
+    f = test_mtx_files[0]
+    coo = legate_io.mmread(f).tocoo()
+    csr = csr_array((coo.data, (coo.row, coo.col)), dtype=coo.dtype, shape=coo.shape)
+    assert np.array_equal(coo.todense(), csr.todense())
+
+
 @pytest.mark.parametrize("filename", test_mtx_files)
 def test_csr_from_scipy_csr(filename):
     s = scpy.csr_array(sci_io.mmread(filename).todense())
