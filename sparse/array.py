@@ -1217,6 +1217,9 @@ class csr_array(CompressedBase, DenseSparseBase):
         else:
             raise NotImplementedError
 
+    def __rmul__(self, other):
+        return self * other
+
     def __sub__(self, other):
         # A not-too-optimized implementation of subtract: multiply by -1 then add.
         return self + (other * -1.0)
