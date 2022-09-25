@@ -60,7 +60,6 @@ class LegateHamiltonianDriver:
             # If there is no frontier to explore, then we're done.
             if np.sum(sets_to_sizes(nbrs)) == 0:
                 break
-            print("Looping...", k)
 
         self.nstates = np.sum(self.ip)
         # TODO (rohany): Back-offset the values.
