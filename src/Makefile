@@ -45,7 +45,7 @@ ifeq ($(strip $(CHECK_BOUNDS)),1)
 CC_FLAGS += -DBOUNDS_CHECKS
 endif
 
-GEN_CPU_SRC = tasks.cc mapper.cc projections.cc
+GEN_CPU_SRC = tasks.cc mapper.cc projections.cc quantum.cc
 GEN_GPU_SRC = tasks.cu cudalibs.cu sort.cu
 
 ifeq ($(strip $(USE_OPENMP)),1)
