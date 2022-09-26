@@ -6,6 +6,7 @@
 
 import cunumeric as np
 import networkx as nx
+import pyarrow as pa
 
 from .array import get_store_from_cunumeric_array, store_to_cunumeric_array, coord_ty, csr_array
 from .config import SparseOpCode, types
@@ -22,7 +23,7 @@ class LegateHamiltonianDriver:
         self.ip = [1]
         rows_group, cols_group = [], []
         sets, nbrs = None, None
-        # TODO (rohany): Comment this...
+        # Maintain ID offsets for the previous and current sets.
         prev_offset, offset = 0, 1
         for k in range(1, graph.number_of_nodes()):
             # Find independence sets of size k.
@@ -35,8 +36,8 @@ class LegateHamiltonianDriver:
             rows = ctx.create_store(coord_ty, ndim=1)
             cols = ctx.create_store(coord_ty, ndim=1)
             task = ctx.create_task(SparseOpCode.CREATE_HAMILTONIANS)
-            task.add_scalar_arg(k, types.int32)
             task.add_scalar_arg(graph.number_of_nodes(), types.int32)
+            task.add_scalar_arg(k, types.int32)
             task.add_scalar_arg(offset, types.uint64)
             task.add_input(sets)
             task.add_output(rows)
@@ -51,6 +52,8 @@ class LegateHamiltonianDriver:
             prev_offset = offset
             offset += int(sets.shape[0])
 
+            # As with enumerate_independent_sets, we don't want Legate
+            # to be using the resulting Weighted partition for anything.
             reset_output_store_partition(rows)
             reset_output_store_partition(cols)
 
@@ -58,15 +61,13 @@ class LegateHamiltonianDriver:
             cols_group.append(store_to_cunumeric_array(cols))
 
             # If there is no frontier to explore, then we're done.
-            if np.sum(sets_to_sizes(nbrs)) == 0:
+            if np.sum(sets_to_sizes(nbrs, graph)) == 0:
                 break
 
         self.nstates = np.sum(self.ip)
-        # TODO (rohany): Back-offset the values.
+        # Back-offset the values.
         rows = (self.nstates - 1) - np.concatenate(rows_group)
         cols = (self.nstates - 1) - np.concatenate(cols_group)
-        # reset_output_store_partition(get_store_from_cunumeric_array(rows))
-        # reset_output_store_partition(get_store_from_cunumeric_array(cols))
         vals = np.ones(rows.shape[0], dtype=dtype)
         self._hamiltonian = csr_array((vals, (rows, cols)), shape=(self.nstates, self.nstates))
 
@@ -174,25 +175,31 @@ def reset_output_store_partition(store):
         store.set_key_partition(part)
 
 
-set_ty_np = np.uint64
-set_ty = types.uint64
+registered_set_types = {}
+set_bit_ty = types.uint8
+set_type_id = 1000
 
-def print_set(store):
-    task = ctx.create_task(SparseOpCode.EXPAND_SET)
-    task.add_input(store)
-    task.add_broadcast(store)
-    task.execute()
+def get_set_ty(n):
+    if n in registered_set_types:
+        return registered_set_types[n]
+    bits = set_bit_ty.bit_width
+    num_elems = (n + bits - 1) // bits
+    fields = [(f"f{i}", set_bit_ty) for i in range(num_elems)]
+    ty = pa.struct(fields)
+    ctx.type_system.add_type(ty, num_elems * set_bit_ty.bit_width // 8, set_type_id + len(registered_set_types))
+    registered_set_types[n] = ty
+    return ty
 
 
-def sets_to_sizes(sets):
+def sets_to_sizes(sets, graph):
     result = ctx.create_store(types.uint64, shape=sets.shape)
     task = ctx.create_task(SparseOpCode.SETS_TO_SIZES)
     task.add_input(sets)
     task.add_output(result)
     task.add_alignment(sets, result)
+    task.add_scalar_arg(graph.number_of_nodes(), types.int32)
     task.execute()
     return store_to_cunumeric_array(result)
-
 
 
 def independence_polynomial(graph: nx.Graph):
@@ -201,25 +208,19 @@ def independence_polynomial(graph: nx.Graph):
     for k in range(1, graph.number_of_nodes()):
         sets, nbrs = enumerate_independent_sets(graph, k, prevk_sets=sets, prevk_queues=nbrs)
         ip.append(sets.shape[0])
-        if np.all(sets_to_sizes(nbrs) == 0):
+        if np.all(sets_to_sizes(nbrs, graph) == 0):
             break
     return ip
 
 
-# TODO (rohany): Make the previous inputs a store.
 def enumerate_independent_sets(graph: nx.Graph, k: int, prevk_sets=None, prevk_queues=None):
-    # TODO (rohany): Shouldn't care too much about this case.
-    if k == 0:
-        return []
-    # TODO (rohany): We'll start now with just int64, can go to the
-    #  variable length int after I can get this to work.
-    assert graph.number_of_nodes() <= 64
-
+    assert k > 0
+    n = graph.number_of_nodes()
     comp = nx.complement(graph)
     comp_adj_mat = np.array(nx.to_numpy_array(comp))
     comp_adj_mat_store = get_store_from_cunumeric_array(comp_adj_mat)
-    output_sets = ctx.create_store(set_ty, ndim=1)
-    output_nbrs = ctx.create_store(set_ty, ndim=1)
+    output_sets = ctx.create_store(get_set_ty(n), ndim=1)
+    output_nbrs = ctx.create_store(get_set_ty(n), ndim=1)
 
     if k == 1:
         # If k == 1, we don't need a prior level.
@@ -228,6 +229,7 @@ def enumerate_independent_sets(graph: nx.Graph, k: int, prevk_sets=None, prevk_q
         task.add_output(output_sets)
         task.add_output(output_nbrs)
         task.add_broadcast(comp_adj_mat_store)
+        task.add_scalar_arg(graph.number_of_nodes(), types.int32)
         task.add_scalar_arg(k, types.int32)
         task.execute()
     else:
@@ -239,19 +241,13 @@ def enumerate_independent_sets(graph: nx.Graph, k: int, prevk_sets=None, prevk_q
         task.add_output(output_nbrs)
         task.add_broadcast(comp_adj_mat_store)
         task.add_alignment(prevk_sets, prevk_queues)
+        task.add_scalar_arg(graph.number_of_nodes(), types.int32)
         task.add_scalar_arg(k, types.int32)
         task.execute()
 
-    # So that prints make sense...
-    # print("SETS:")
-    # print_set(output_sets)
-    # print("NEIGHBORS:")
-    # print_set(output_nbrs)
-
-    # TODO (rohany): Comment this... The basic idea here is that
-    #  we don't want to use the weighted partition we get here
-    #  to perform future ops on, we want to reset it to be an
-    #  equal partition.
+    # We don't want to rely on the Weighted partition that we get
+    # back on each store to run future operations. Reset it
+    # so that the the solver will use an equal partition instead.
     reset_output_store_partition(output_sets)
     reset_output_store_partition(output_nbrs)
 

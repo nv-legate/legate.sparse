@@ -26,24 +26,27 @@ class EnumerateIndependentSets : public SparseTask<EnumerateIndependentSets> {
 public:
   static const int TASK_ID = LEGATE_QUANTUM_ENUMERATE_INDEP_SETS;
   static void cpu_variant(legate::TaskContext& ctx);
+private:
+  template<int N, typename T>
+  static void cpu_variant_impl(legate::TaskContext& ctx);
 };
 
 class CreateHamiltonians : public SparseTask<CreateHamiltonians> {
 public:
   static const int TASK_ID = LEGATE_QUANTUM_CREATE_HAMILTONIANS;
   static void cpu_variant(legate::TaskContext& ctx);
-};
-
-class ExpandSet : public SparseTask<ExpandSet> {
-public:
-  static const int TASK_ID = LEGATE_QUANTUM_EXPAND_SET;
-  static void cpu_variant(legate::TaskContext& ctx);
+private:
+  template<int N, typename T>
+  static void cpu_variant_impl(legate::TaskContext& ctx);
 };
 
 class SetsToSizes : public SparseTask<SetsToSizes> {
 public:
   static const int TASK_ID = LEGATE_QUANTUM_SETS_TO_SIZES;
   static void cpu_variant(legate::TaskContext& ctx);
+private:
+  template<int N, typename T>
+  static void cpu_variant_impl(legate::TaskContext& ctx);
 };
 
 }

@@ -22,32 +22,61 @@ using namespace Legion;
 
 namespace sparse {
 
-typedef uint64_t set_ty;
-
-inline set_ty set_index(set_ty set, int64_t idx) {
-  uint64_t bit = 1;
-  return set | (bit << idx);
-}
-
-inline set_ty unset_index(set_ty set, int64_t idx) {
-  uint64_t bit = 1;
-  return set & ~(bit << idx);
-}
-
-inline bool is_index_set(set_ty set, int64_t idx) {
-  uint64_t bit = 1;
-  return (set & (bit << idx)) > 0;
-}
-
-inline int64_t get_set_bits(set_ty set) {
-  int count = 0;
-  for (int i = 0; i < 64; i++) {
-    count += int(is_index_set(set, i));
+template<int N, typename T>
+struct IntSet {
+public:
+  IntSet() {
+    for (int i = 0; i < N; i++) {
+      bits[i] = T(0);
+    }
   }
-  return count;
-}
 
-void EnumerateIndependentSets::cpu_variant(legate::TaskContext& ctx) {
+  IntSet<N, T> set_index(int idx) const {
+    IntSet<N, T> result = *this;
+    auto arr_idx = idx / (sizeof(T) * 8);
+    auto in_arr_idx = idx % (sizeof(T) * 8);
+    T bit = T(1) << in_arr_idx;
+    result.bits[arr_idx] |= bit;
+    return result;
+  }
+
+  IntSet<N, T> unset_index(int idx) const {
+    IntSet<N, T> result = *this;
+    auto arr_idx = idx / (sizeof(T) * 8);
+    auto in_arr_idx = idx % (sizeof(T) * 8);
+    T bit = T(1) << in_arr_idx;
+    result.bits[arr_idx] &= ~bit;
+    return result;
+  }
+
+  bool is_index_set(int idx) const {
+    auto arr_idx = idx / (sizeof(T) * 8);
+    auto in_arr_idx = idx % (sizeof(T) * 8);
+    T bit = T(1) << in_arr_idx;
+    return (this->bits[arr_idx] & bit) > T(0);
+  }
+
+  int get_set_bits() const {
+    int count = 0;
+    for (int i = 0; i < (N * sizeof(T) * 8); i++) {
+      count += int(this->is_index_set(i));
+    }
+    return count;
+  }
+
+  friend bool operator< (const IntSet<N, T>& a, const IntSet<N, T>& b) {
+    return a.bits < b.bits;
+  }
+
+  std::array<T, N> bits;
+};
+
+template<int N, typename T>
+void EnumerateIndependentSets::cpu_variant_impl(legate::TaskContext& ctx) {
+  // At this point, we assume that we've been dispatched to the right
+  // N and T for the IntSet.
+  using set_ty = IntSet<N, T>;
+
   auto& graph = ctx.inputs()[0];
   auto graph_acc = graph.read_accessor<int64_t, 2>();
   int64_t nodes = graph.domain().hi()[0] - graph.domain().lo()[0] + 1;
@@ -71,17 +100,18 @@ void EnumerateIndependentSets::cpu_variant(legate::TaskContext& ctx) {
   auto& output_sets = ctx.outputs()[0];
   auto& output_nbrs = ctx.outputs()[1];
 
-  int32_t k = ctx.scalars()[0].value<int32_t>();
+  int32_t k = ctx.scalars()[1].value<int32_t>();
   if (k == 1) {
     assert(ctx.is_single_task());
     // If k == 1, then the resulting output sets are just the nodes.
     auto output_sets_acc = output_sets.create_output_buffer<set_ty, 1>(nodes, true /* return_buffer */);
     auto output_nbrs_acc = output_nbrs.create_output_buffer<set_ty, 1>(nodes, true /* return_buffer */);
     for (int64_t node = 0; node < nodes; node++) {
-      output_sets_acc[node] = set_index(0, node);
-      set_ty node_nbrs = 0;
+      set_ty singleton;
+      output_sets_acc[node] = singleton.set_index(node);
+      set_ty node_nbrs;
       for (auto nbr : nbrs[node]) {
-        node_nbrs = set_index(node_nbrs, nbr);
+        node_nbrs = node_nbrs.set_index(nbr);
       }
       output_nbrs_acc[node] = node_nbrs;
     }
@@ -96,7 +126,7 @@ void EnumerateIndependentSets::cpu_variant(legate::TaskContext& ctx) {
     for (PointInDomainIterator<1> itr(prev_sets.domain()); itr(); itr++) {
       // We will generate an entry for each of the neighbors in the sets
       // that exist at the current iteration.
-      count += get_set_bits(prev_nbrs_acc[*itr]);
+      count += prev_nbrs_acc[*itr].get_set_bits();
     }
     auto output_sets_acc = output_sets.create_output_buffer<set_ty, 1>(count, true /* return_buffer */);
     auto output_nbrs_acc = output_nbrs.create_output_buffer<set_ty, 1>(count, true /* return_buffer */);
@@ -105,17 +135,15 @@ void EnumerateIndependentSets::cpu_variant(legate::TaskContext& ctx) {
       auto prev_set = prev_sets_acc[*itr];
       auto prev_nbrs = prev_nbrs_acc[*itr];
 
-      // TODO (rohany): See if there is a better primitive to loop over
-      //  all of the set bits.
       for (int u = 0; u < nodes; u++) {
-        if (is_index_set(prev_nbrs, u)) {
-          set_ty new_nbrs = 0;
-          output_sets_acc[idx] = set_index(prev_set, u);
+        if (prev_nbrs.is_index_set(u)) {
+          output_sets_acc[idx] = prev_set.set_index(u);
           // The new neighbors is the intersection of all remaining
           // neighbors and i's neighbors.
+          set_ty new_nbrs;
           for (int v = u + 1; v < nodes; v++) {
-            if (is_index_set(prev_nbrs, v) && graph_acc[{u, v}]) {
-              new_nbrs = set_index(new_nbrs, v);
+            if (prev_nbrs.is_index_set(v) && graph_acc[{u, v}]) {
+              new_nbrs = new_nbrs.set_index(v);
             }
           }
           output_nbrs_acc[idx] = new_nbrs;
@@ -126,9 +154,70 @@ void EnumerateIndependentSets::cpu_variant(legate::TaskContext& ctx) {
   }
 }
 
-void CreateHamiltonians::cpu_variant(legate::TaskContext& ctx) {
-  int32_t k = ctx.scalars()[0].value<int32_t>();
-  int32_t nodes = ctx.scalars()[1].value<int32_t>();
+// bit_ty defines what size the individual words within the IntSet should
+// be. The larger the bit_ty type, the fewer template instantiations we
+// need, but also the larger the jump in memory usage is when we increase
+// the number of words needed in the bitset. I'm starting with uint8_t for
+// now since binary size isn't really a problem for us.
+using bit_ty = uint8_t;
+
+// A macro to perform the dispatch to the right template instantiation of IntSet.
+#define INTSET_DISPATCH(x, n) \
+  switch ((n + (sizeof(bit_ty) * 8) - 1) / (sizeof(bit_ty) * 8)) { \
+    case 1: \
+      x<1, bit_ty>(ctx); \
+      break; \
+    case 2: \
+      x<2, bit_ty>(ctx); \
+      break; \
+    case 3: \
+      x<3, bit_ty>(ctx); \
+      break; \
+    case 4: \
+      x<4, bit_ty>(ctx); \
+      break; \
+    case 5: \
+      x<5, bit_ty>(ctx); \
+      break; \
+    case 6: \
+      x<6, bit_ty>(ctx); \
+      break; \
+    case 7: \
+      x<7, bit_ty>(ctx); \
+      break; \
+    case 8: \
+      x<8, bit_ty>(ctx); \
+      break; \
+    case 9: \
+      x<9, bit_ty>(ctx); \
+      break; \
+    case 10: \
+      x<10, bit_ty>(ctx); \
+      break; \
+    case 11: \
+      x<11, bit_ty>(ctx); \
+      break; \
+    case 12: \
+      x<12, bit_ty>(ctx); \
+      break; \
+    default: \
+      assert(false); \
+  }
+
+
+void EnumerateIndependentSets::cpu_variant(legate::TaskContext& ctx) {
+  int32_t n = ctx.scalars()[0].value<int32_t>();
+  INTSET_DISPATCH(EnumerateIndependentSets::cpu_variant_impl, n)
+}
+
+template<int N, typename T>
+void CreateHamiltonians::cpu_variant_impl(legate::TaskContext& ctx) {
+  // At this point, we assume that we've been dispatched to the right
+  // N and T for the IntSet.
+  using set_ty = IntSet<N, T>;
+
+  int32_t nodes = ctx.scalars()[0].value<int32_t>();
+  int32_t k = ctx.scalars()[1].value<int32_t>();
   uint64_t set_idx_offset = ctx.scalars()[2].value<uint64_t>();
   auto& rows = ctx.outputs()[0];
   auto& cols = ctx.outputs()[1];
@@ -168,9 +257,9 @@ void CreateHamiltonians::cpu_variant(legate::TaskContext& ctx) {
     for (PointInDomainIterator<1> itr(sets.domain()); itr(); itr++) {
       auto set = sets_acc[*itr];
       for (int32_t node = 0; node < nodes; node++) {
-        if (is_index_set(set, node)) {
+        if (set.is_index_set(node)) {
           // Try to find the set without this node in the predecessors.
-          auto removed = unset_index(set, node);
+          auto removed = set.unset_index(node);
           if (index.find(removed) != index.end()) {
             count++;
           }
@@ -185,9 +274,9 @@ void CreateHamiltonians::cpu_variant(legate::TaskContext& ctx) {
     for (PointInDomainIterator<1> itr(sets.domain()); itr(); itr++) {
       auto set = sets_acc[*itr];
       for (int32_t node = 0; node < nodes; node++) {
-        if (is_index_set(set, node)) {
+        if (set.is_index_set(node)) {
           // Try to find the set without this node in the predecessors.
-          auto removed = unset_index(set, node);
+          auto removed = set.unset_index(node);
           auto query = index.find(removed);
           if (query != index.end()) {
             auto pred_idx = query->second;
@@ -204,34 +293,26 @@ void CreateHamiltonians::cpu_variant(legate::TaskContext& ctx) {
   }
 }
 
-void ExpandSet::cpu_variant(legate::TaskContext &ctx) {
-  auto& input = ctx.inputs()[0];
-  auto input_acc = input.read_accessor<set_ty, 1>();
-  auto dom = input.domain();
-  // TODO (rohany): For now we'll just print it...
-  for (PointInDomainIterator<1> itr(dom); itr(); itr++) {
-    set_ty val = input_acc[*itr];
-    // TODO (rohany): This will have to change when the number of nodes is >= 64.
-    std::stringstream output;
-    output << "[";
-    for (int i = 0; i < 64; i++) {
-      if (is_index_set(val, i)) {
-        output << i << ", ";
-      }
-    }
-    output << "]";
-    std::cout << (*itr) << " -> " << output.str() << std::endl;
-  }
+void CreateHamiltonians::cpu_variant(legate::TaskContext& ctx) {
+  int32_t n = ctx.scalars()[0].value<int32_t>();
+  INTSET_DISPATCH(CreateHamiltonians::cpu_variant_impl, n)
 }
 
-void SetsToSizes::cpu_variant(legate::TaskContext &ctx) {
+template<int N, typename T>
+void SetsToSizes::cpu_variant_impl(legate::TaskContext& ctx) {
+  using set_ty = IntSet<N, T>;
   auto& input = ctx.inputs()[0];
   auto& output = ctx.outputs()[0];
   auto input_acc = input.read_accessor<set_ty, 1>();
   auto output_acc = output.write_accessor<uint64_t, 1>();
   for (PointInDomainIterator<1> itr(input.domain()); itr(); itr++) {
-    output_acc[*itr] = get_set_bits(input_acc[*itr]);
+    output_acc[*itr] = input_acc[*itr].get_set_bits();
   }
+}
+
+void SetsToSizes::cpu_variant(legate::TaskContext &ctx) {
+  int32_t n = ctx.scalars()[0].value<int32_t>();
+  INTSET_DISPATCH(SetsToSizes::cpu_variant_impl, n)
 }
 
 }
@@ -239,7 +320,6 @@ void SetsToSizes::cpu_variant(legate::TaskContext &ctx) {
 namespace { // anonymous
 static void __attribute__((constructor)) register_tasks(void) {
   sparse::EnumerateIndependentSets::register_variants();
-  sparse::ExpandSet::register_variants();
   sparse::SetsToSizes::register_variants();
   sparse::CreateHamiltonians::register_variants();
 }

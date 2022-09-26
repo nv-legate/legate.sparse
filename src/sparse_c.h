@@ -109,7 +109,6 @@ enum LegateSparseOpCode {
 
   // Extra tasks that should go into quantum land.
   LEGATE_QUANTUM_ENUMERATE_INDEP_SETS,
-  LEGATE_QUANTUM_EXPAND_SET,
   LEGATE_QUANTUM_SETS_TO_SIZES,
   LEGATE_QUANTUM_CREATE_HAMILTONIANS,
 
