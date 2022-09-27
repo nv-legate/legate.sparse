@@ -32,7 +32,7 @@ class LegateSparseLib(Library):
     def get_shared_library(self):
         from sparse.install_info import libpath
         return os.path.join(
-            libpath, "liblegatesparse" + self.get_library_extension()
+            libpath, "liblegate_sparse" + self.get_library_extension()
         )
 
     def get_c_header(self):

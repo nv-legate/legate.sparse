@@ -19,10 +19,11 @@
 #include "sparse.h"
 #include "sort.h"
 
-#include <thrust/iterator/zip_iterator.h>
-#include <thrust/tuple.h>
-#include <thrust/sort.h>
 #include <core/comm/coll.h>
+#include <thrust/binary_search.h>
+#include <thrust/iterator/zip_iterator.h>
+#include <thrust/sort.h>
+#include <thrust/tuple.h>
 
 namespace sparse {
 

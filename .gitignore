@@ -12,3 +12,4 @@ sparse/install_info.py
 sparse.egg-info/*
 build/*
 .idea
+*.egg-info
