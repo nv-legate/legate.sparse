@@ -50,7 +50,7 @@ from .config import rect1, domain_ty, SparseOpCode, SparseProjectionFunctor, _sp
 from .partition import CompressedImagePartition, MinMaxImagePartition
 
 import cunumeric
-from cunumeric import eager
+from cunumeric import eager, deferred
 
 from cffi import FFI
 ffi = FFI()
@@ -109,18 +109,29 @@ def get_projection_functor_id():
 
 
 def get_store_from_cunumeric_array(arr: cunumeric.ndarray, allow_future = False) -> Store:
-    data = arr.__legate_data_interface__["data"]
-    (_, array) = list(data.items())[0]
-    target = array.stores()[1]
     # TODO (rohany): It's unclear how to actually get stores from the __legate_data_interface__
     #  for cunumeric arrays. It seems to depend on whether they are eager/deferred etc. Have to
     #  ask Mike and Wonchan about this.
-    if isinstance(target, Store):
-        store = target
-    else:
-        if isinstance(target, cunumeric.eager.EagerArray):
-            target = target.to_deferred_array()
-        store = target.base
+    # data = arr.__legate_data_interface__["data"]
+    # (_, array) = list(data.items())[0]
+    # target = array.stores()[1]
+    # if isinstance(target, Store):
+    #     store = target
+    # else:
+    #     if isinstance(target, cunumeric.eager.EagerArray):
+    #         target = target.to_deferred_array()
+    #     store = target.base
+    # Because of https://github.com/nv-legate/cunumeric/issues/595, we can't access
+    # stores of cunumeric arrays through the `__legate_data_interface__` if the stores
+    # happen to have a complex type. So, we'll do something hackier and just reach
+    # into the array's thunk and extract the store.
+    target = arr._thunk
+    if isinstance(target, cunumeric.eager.EagerArray):
+        target = target.to_deferred_array()
+    assert(isinstance(target, cunumeric.deferred.DeferredArray))
+    store = target.base
+    assert(isinstance(store, Store))
+
     # Our implementation can't handle future backed stores when we use this, as we
     # expect to be able to partition things up. If we have a future backed store,
     # create a normal store and issue a copy from the backed store to the new store.
