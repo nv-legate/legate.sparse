@@ -17,9 +17,8 @@
 #ifndef __SPARSE_C_H
 #define __SPARSE_C_H
 
-#include "legate_preamble.h"
-
 #ifndef LEGATE_USE_PYTHON_CFFI
+#include "legate_preamble.h"
 #include "core/legate_c.h"
 #endif
 

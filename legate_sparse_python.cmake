@@ -46,7 +46,6 @@ endif()
 execute_process(
   COMMAND ${CMAKE_C_COMPILER}
     -E -DLEGATE_USE_PYTHON_CFFI
-    -I "${legate_core_ROOT}/include/legate/"
     -P "${CMAKE_CURRENT_SOURCE_DIR}/src/sparse_c.h"
   ECHO_ERROR_VARIABLE
   OUTPUT_VARIABLE header
