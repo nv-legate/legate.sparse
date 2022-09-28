@@ -47,6 +47,7 @@
 
 from .runtime import ctx, runtime
 from .config import rect1, domain_ty, SparseOpCode, SparseProjectionFunctor, _sparse
+from .coverage import clone_scipy_arr_kind
 from .partition import CompressedImagePartition, MinMaxImagePartition
 
 import cunumeric
@@ -65,7 +66,6 @@ from legate.core.types import ReductionOp
 import pyarrow
 import numpy
 import math
-
 import scipy.sparse
 
 # TODO (rohany): Notes and TODOs...
@@ -488,6 +488,7 @@ class CompressedBase:
         return ret.sum(axis=axis, dtype=dtype, out=out)
 
 
+@clone_scipy_arr_kind(scipy.sparse.csr_array)
 class csr_array(CompressedBase, DenseSparseBase):
     def __init__(self, arg, shape=None, dtype=None, copy=False):
         if copy:
@@ -1354,6 +1355,7 @@ class csr_array(CompressedBase, DenseSparseBase):
                 task.add_output(self.vals)
 
 
+@clone_scipy_arr_kind(scipy.sparse.csc_array)
 class csc_array(CompressedBase, DenseSparseBase):
     def __init__(self, arg, shape=None, dtype=None, copy=False):
         if copy:
@@ -1640,6 +1642,8 @@ class csc_array(CompressedBase, DenseSparseBase):
     def _unpack_pos(self):
         return unpack_rect1_store(self.pos)
 
+
+@clone_scipy_arr_kind(scipy.sparse.coo_array)
 class coo_array(CompressedBase):
     # TODO (rohany): For simplicity, we'll assume duplicate free COO.
     #  These should probably be arguments provided by the user, as computing
@@ -1945,6 +1949,7 @@ class coo_array(CompressedBase):
         return f"{store_to_cunumeric_array(self._i)}, {store_to_cunumeric_array(self._j)}, {store_to_cunumeric_array(self._vals)}"
 
 
+@clone_scipy_arr_kind(scipy.sparse.dia_array)
 class dia_array(CompressedBase):
     def __init__(self, arg, shape=None, dtype=None, copy=False):
         if copy:

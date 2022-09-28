@@ -74,9 +74,9 @@ import warnings
 import inspect
 
 from .array import get_store_from_cunumeric_array, store_to_cunumeric_array
-from .runtime import ctx
+from .runtime import ctx, runtime
 from .config import SparseOpCode
-from legate.core import Store, types
+from legate.core import track_provenance
 
 # TODO (rohany): This only works for positive semi-definite matrices,
 #  while least squares should work for any matrix. Perhaps I should make
@@ -454,6 +454,7 @@ def make_linear_operator(A):
 #   lhs += beta * rhs
 # in one shot. This is important for performance, so we implement
 # our own instead of utilizing cunumeric.
+@track_provenance(runtime.legate_context, nested=True)
 def vec_mult_add(lhs, rhs, beta, left=False):
     lhs_store = get_store_from_cunumeric_array(lhs)
     rhs_store = get_store_from_cunumeric_array(rhs)

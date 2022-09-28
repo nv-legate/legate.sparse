@@ -19,13 +19,14 @@ from .config import SparseOpCode
 import cunumeric
 import numpy
 
-from legate.core import Rect
+from legate.core import Rect, track_provenance
 from legate.core.shape import Shape
 from legate.core.partition import Tiling
 
 
 # TODO (rohany): This function is not technically part of scipy.sparse, but I need it
 #  for another application...
+@track_provenance(runtime.legate_context, nested=True)
 def cdist(XA, XB, metric='euclidean', *, out=None, **kwargs):
     if metric != 'euclidean':
         raise NotImplementedError

@@ -14,13 +14,13 @@
 
 from .array import coo_array, coord_ty, float64, int64, uint64
 from .config import SparseOpCode
-from .runtime import ctx
+from .runtime import ctx, runtime
 
-from legate.core import Future, types
+from legate.core import Future, types, track_provenance
 from legate.core.shape import Shape
 
-import cunumeric as np
 
+@track_provenance(runtime.legate_context)
 def mmread(source):
     # TODO (rohany): We'll assume for now that all of the nodes in the system can
     #  access the file passed in, so we don't need to worry about where this task

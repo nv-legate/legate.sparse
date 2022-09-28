@@ -29,3 +29,11 @@ from .array import (
     dia_matrix,
 )
 from .module import *
+from .coverage import clone_module
+
+import scipy.sparse as _sp
+
+clone_module(_sp, globals())
+
+del clone_module
+del _sp
