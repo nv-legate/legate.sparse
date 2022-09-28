@@ -56,7 +56,7 @@ from cunumeric import eager, deferred
 from cffi import FFI
 ffi = FFI()
 
-from legate.core import Rect, Store, Array, Point, FutureMap, Future, types
+from legate.core import Rect, Store, Array, Point, FutureMap, Future, types, track_provenance
 from legate.core.launcher import Broadcast, TaskLauncher
 from legate.core.partition import ImagePartition, Tiling, DomainPartition, PreimagePartition
 from legate.core.shape import Shape
@@ -638,6 +638,7 @@ class csr_array(CompressedBase, DenseSparseBase):
             raise NotImplementedError
         return self
 
+    @track_provenance(runtime.legate_context, nested=True)
     def tropical_spmv(self, other, out=None):
         if not isinstance(other, cunumeric.ndarray):
             other = cunumeric.array(other)
@@ -1107,6 +1108,7 @@ class csr_array(CompressedBase, DenseSparseBase):
     # dense matrix multiplication of the C and D operands. This function
     # is _not_ part of the scipy.sparse package but is prudent to add as
     # a kernel in many emerging workloads.
+    @track_provenance(runtime.legate_context, nested=True)
     def sddmm(self, C, D):
         # We'll start out with a row-based distribution of the CSR matrix.
         # In the future, we can look into doing a non-zero based distribution
