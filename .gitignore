@@ -13,3 +13,4 @@ sparse.egg-info/*
 build/*
 .idea
 *.egg-info
+_skbuild*

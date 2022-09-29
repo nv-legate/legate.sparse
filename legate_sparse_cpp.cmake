@@ -112,6 +112,7 @@ list(APPEND legate_sparse_SOURCES
 
 if(Legion_USE_OpenMP)
   list(APPEND legate_sparse_SOURCES
+    src/quantum_omp.cc
     src/tasks_omp.cc
   )
 endif()
