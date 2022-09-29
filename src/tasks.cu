@@ -1505,7 +1505,9 @@ void BoundsFromPartitionedCoordinates::gpu_variant(legate::TaskContext& ctx) {
   auto output_acc = output.write_accessor<Domain, 1>();
   auto dom = input.domain();
   if (dom.empty()) {
-    output_acc[0] = {0, -1};
+    auto result = Domain(Rect<1>::make_empty());
+    auto ptr = output_acc.ptr(0);
+    cudaMemcpy(ptr, &result, sizeof(Domain), cudaMemcpyHostToDevice);
   } else {
     ThrustAllocator alloc(Memory::GPU_FB_MEM);
     auto policy = thrust::cuda::par(alloc).on(stream);
@@ -1514,7 +1516,9 @@ void BoundsFromPartitionedCoordinates::gpu_variant(legate::TaskContext& ctx) {
     coord_ty lo, hi;
     cudaMemcpy(&lo, result.first, sizeof(coord_ty), cudaMemcpyDeviceToHost);
     cudaMemcpy(&hi, result.second, sizeof(coord_ty), cudaMemcpyDeviceToHost);
-    output_acc[0] = {lo, hi};
+    Domain output({lo, hi});
+    auto output_ptr = output_acc.ptr(0);
+    cudaMemcpy(output_ptr, &output, sizeof(Domain), cudaMemcpyHostToDevice);
   }
   CHECK_CUDA_STREAM(stream);
 }
@@ -2659,12 +2663,16 @@ void FastImageRange::gpu_variant(legate::TaskContext& ctx) {
   auto dom = input.domain();
   auto stream = get_cached_stream();
   if (dom.empty()) {
-    out[0] = Rect<1>::make_empty();
+    Domain result{Rect<1>::make_empty()};
+    auto ptr = out.ptr(0);
+    cudaMemcpy(ptr, &result, sizeof(Domain), cudaMemcpyHostToDevice);
   } else {
     Rect<1> lo, hi;
     cudaMemcpy(&lo, in.ptr(dom.lo()), sizeof(Rect<1>), cudaMemcpyDeviceToHost);
     cudaMemcpy(&hi, in.ptr(dom.hi()), sizeof(Rect<1>), cudaMemcpyDeviceToHost);
-    out[0] = Rect<1>{lo.lo, hi.hi};
+    Domain result{Rect<1>{lo.lo, hi.hi}};
+    auto ptr = out.ptr(0);
+    cudaMemcpy(ptr, &result, sizeof(Domain), cudaMemcpyHostToDevice);
   }
   CHECK_CUDA_STREAM(stream);
 }
