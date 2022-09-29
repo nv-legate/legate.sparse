@@ -34,7 +34,7 @@ private:
   static void cpu_variant_impl(legate::TaskContext& ctx);
 #ifdef LEGATE_USE_OPENMP
   template<int N, typename T>
-  static void cpu_variant_impl(legate::TaskContext& ctx);
+  static void omp_variant_impl(legate::TaskContext& ctx);
 #endif
 };
 
@@ -115,6 +115,10 @@ public:
 
   friend bool operator< (const IntSet<N, T>& a, const IntSet<N, T>& b) {
     return a.bits < b.bits;
+  }
+
+  friend bool operator== (const IntSet<N, T>& a, const IntSet<N, T>& b) {
+    return a.bits == b.bits;
   }
 
   std::array<T, N> bits;

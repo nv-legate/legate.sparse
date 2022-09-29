@@ -50,8 +50,7 @@ void registration_callback(Machine machine, Runtime* runtime, const std::set<Pro
   Sparse::get_registrar().register_all_tasks(runtime, ctx);
 
   Sparse::mapper_id = ctx.get_mapper_id(0);
-  auto mapper = new LegateSparseMapper(runtime, machine, ctx);
-  runtime->add_mapper(Sparse::mapper_id, mapper);
+  ctx.register_mapper(new LegateSparseMapper(runtime, machine, ctx), 0);
 
   auto proj_id = ctx.get_projection_id(LEGATE_SPARSE_PROJ_FN_1D_TO_2D);
   auto functor = new Promote1Dto2DFunctor(runtime);

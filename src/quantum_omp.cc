@@ -19,12 +19,16 @@
 #include "sparse.h"
 #include "tasks.h"
 
+#include <thrust/binary_search.h>
+#include <thrust/execution_policy.h>
+#include <thrust/sort.h>
+
 using namespace Legion;
 
 namespace sparse {
 
 template<int N, typename T>
-void EnumerateIndependentSets::cpu_variant_impl(legate::TaskContext& ctx) {
+void EnumerateIndependentSets::omp_variant_impl(legate::TaskContext& ctx) {
   // At this point, we assume that we've been dispatched to the right
   // N and T for the IntSet.
   using set_ty = IntSet<N, T>;
@@ -80,9 +84,6 @@ void EnumerateIndependentSets::cpu_variant_impl(legate::TaskContext& ctx) {
     auto prev_sets_dom = prev_sets.domain();
     #pragma omp parallel for schedule(static)
     for (auto i = prev_sets_dom.lo()[0]; i < prev_sets_dom.hi()[0] + 1; i++) {
-      // TODO (rohany): See if there is some overhead with calling this within
-      //  the loop, as opposed to doing it before the loop with an explicit
-      //  parallel section.
       auto tid = omp_get_thread_num();
       // We will generate an entry for each of the neighbors in the sets
       // that exist at the current iteration.
@@ -100,8 +101,8 @@ void EnumerateIndependentSets::cpu_variant_impl(legate::TaskContext& ctx) {
     #pragma omp parallel for schedule(static)
     for (auto i = prev_sets_dom.lo()[0]; i < prev_sets_dom.hi()[0] + 1; i++) {
       auto tid = omp_get_thread_num();
-      auto prev_set = prev_sets_acc[*itr];
-      auto prev_nbrs = prev_nbrs_acc[*itr];
+      auto prev_set = prev_sets_acc[i];
+      auto prev_nbrs = prev_nbrs_acc[i];
 
       for (int u = 0; u < nodes; u++) {
         if (prev_nbrs.is_index_set(u)) {
@@ -159,22 +160,38 @@ void CreateHamiltonians::omp_variant_impl(legate::TaskContext& ctx) {
     auto& preds = ctx.inputs()[1];
     auto preds_acc = preds.read_accessor<set_ty, 1>();
     uint64_t preds_idx_offset = ctx.scalars()[3].value<uint64_t>();
+    auto preds_domain = preds.domain();
 
-    // TODO (rohany): We'll start with this just to get things to compile,
-    //  and then switch to sort + search after that.
-    // Put all the predecessors into a map with their index so
-    // that we can look up into it quickly.
-    // TODO (rohany): We'll have to go with sort + binary searching
-    //  for OpenMP and GPU processors.
-    std::map<set_ty, uint64_t> index;
-    for (PointInDomainIterator<1> itr(preds.domain()); itr(); itr++) {
-      index[preds_acc[*itr]] = preds_idx_offset + (*itr);
+    // Create a buffer of indices.
+    auto kind = Sparse::has_numamem ? Memory::SOCKET_MEM : Memory::SYSTEM_MEM;
+    DeferredBuffer<coord_ty, 1> indices(kind, preds_domain);
+    #pragma omp parallel for schedule(static)
+    for (auto i = preds_domain.lo()[0]; i < preds_domain.hi()[0] + 1; i++) {
+      indices[i] = preds_idx_offset + i;
     }
+
+    // Create an extra buffer of predecessors to sort.
+    DeferredBuffer<set_ty, 1> preds_copy(kind, preds_domain);
+    #pragma omp parallel for schedule(static)
+    for (auto i = preds_domain.lo()[0]; i < preds_domain.hi()[0] + 1; i++) {
+      preds_copy[i] = preds_acc[i];
+    }
+
+    auto preds_size = preds_domain.get_volume();
+    auto preds_lo = preds_copy.ptr(preds_domain.lo());
+    auto preds_hi = preds_copy.ptr(preds_domain.lo()) + preds_size;
+    thrust::sort_by_key(
+      thrust::omp::par,
+      preds_lo,
+      preds_hi,
+      indices.ptr(preds_domain.lo())
+    );
 
     const auto max_threads = omp_get_max_threads();
     // Find out the number coordinates each set will output.
     ThreadLocalStorage<uint64_t> counts(max_threads);
     auto domain = sets.domain();
+    #pragma omp parallel for schedule(static)
     for (auto i = domain.lo()[0]; i < domain.hi()[0] + 1; i++) {
       auto tid = omp_get_thread_num();
       auto set = sets_acc[i];
@@ -182,8 +199,10 @@ void CreateHamiltonians::omp_variant_impl(legate::TaskContext& ctx) {
         if (set.is_index_set(node)) {
           // Try to find the set without this node in the predecessors.
           auto removed = set.unset_index(node);
-          if (index.find(removed) != index.end()) {
-            counts[tid]++;
+          auto idx = thrust::lower_bound(thrust::host, preds_lo, preds_hi, removed);
+          if (idx != preds_hi && (*idx) == removed) {
+            // Each coordinate actually counts for 2, since this is a bi-directional graph.
+            counts[tid] += 2;
           }
         }
       }
@@ -195,10 +214,11 @@ void CreateHamiltonians::omp_variant_impl(legate::TaskContext& ctx) {
       counts[tid] = count;
       count += val;
     }
-    // Each coordinate actually counts for 2, since this is a bi-directional graph.
-    auto rows_acc = rows.create_output_buffer<coord_ty, 1>(2 * count, true /* return_buffer */);
-    auto cols_acc = cols.create_output_buffer<coord_ty, 1>(2 * count, true /* return_buffer */);
+    auto rows_acc = rows.create_output_buffer<coord_ty, 1>(count, true /* return_buffer */);
+    auto cols_acc = cols.create_output_buffer<coord_ty, 1>(count, true /* return_buffer */);
+
     // Calculate the coordinates.
+    #pragma omp parallel for schedule(static)
     for (auto i = domain.lo()[0]; i < domain.hi()[0] + 1; i++) {
       auto tid = omp_get_thread_num();
       auto set = sets_acc[i];
@@ -206,11 +226,11 @@ void CreateHamiltonians::omp_variant_impl(legate::TaskContext& ctx) {
         if (set.is_index_set(node)) {
           // Try to find the set without this node in the predecessors.
           auto removed = set.unset_index(node);
-          auto query = index.find(removed);
-          if (query != index.end()) {
+          auto idx = thrust::lower_bound(thrust::host, preds_lo, preds_hi, removed);
+          if (idx != preds_hi && (*idx) == removed) {
             auto slot = counts[tid];
-            auto pred_idx = query->second;
-            auto set_idx = set_idx_offset + (*itr);
+            auto pred_idx = indices[preds_domain.lo()[0] + idx - preds_lo];
+            auto set_idx = set_idx_offset + i;
             rows_acc[slot] = set_idx;
             cols_acc[slot] = pred_idx;
             rows_acc[slot + 1] = pred_idx;
