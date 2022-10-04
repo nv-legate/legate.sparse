@@ -289,26 +289,16 @@ class OdeSolver:
         self.t_bound = t_bound
         self.vectorized = vectorized
 
+        # The reference implementation created some closures inside this
+        # function to set self.fun, self.fun_single, and self.fun_vectorized.
+        # However, this creates some reference cycles that don't let attached
+        # stores get collected due to capturing self in a closure and then
+        # assigning that back to self. Instead, we define the functions
+        # separately, and then overwrite them here.
         if vectorized:
-            def fun_single(t, y):
-                return self._fun(t, y[:, None]).ravel()
-            fun_vectorized = self._fun
+            self.fun_vectorized = self._fun
         else:
-            fun_single = self._fun
-
-            def fun_vectorized(t, y):
-                f = np.empty_like(y)
-                for i, yi in enumerate(y.T):
-                    f[:, i] = self._fun(t, yi)
-                return f
-
-        def fun(t, y):
-            self.nfev += 1
-            return self.fun_single(t, y)
-
-        self.fun = fun
-        self.fun_single = fun_single
-        self.fun_vectorized = fun_vectorized
+            self.fun_single = self._fun
 
         self.direction = np.sign(t_bound - t0) if t_bound != t0 else 1
         self.n = self.y.size
@@ -317,6 +307,21 @@ class OdeSolver:
         self.nfev = 0
         self.njev = 0
         self.nlu = 0
+
+    # Explicit definitions of fun, fun_single and fun_vectorized instead of
+    # as closures within __init__.
+    def fun(self, t, y):
+        self.nfev += 1
+        return self.fun_single(t, y)
+
+    def fun_single(self, t, y):
+        return self._fun(t, y[:, None]).ravel()
+
+    def fun_vectorized(self, t, y):
+        f = np.empty_like(y)
+        for i, yi in enumerate(y.T):
+            f[:, i] = self._fun(t, yi)
+        return f
 
     @property
     def step_size(self):

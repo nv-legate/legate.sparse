@@ -587,9 +587,13 @@ class csr_array(CompressedBase, DenseSparseBase):
         self.pos.set_key_partition(pos_part.partition)
         # Override the volume calculation on pos regions, since repartitioning
         # the pos region will most definitely cause moving around the crd and
-        # vals arrays.
+        # vals arrays. Importantly, we need to compute the volume here and then
+        # return it in the closure. If we compute it inside the closure, we end
+        # up creating a reference cycle between self.pos._storage and self,
+        # leading us to never collect self, leaking futures stored here.
+        volume = self.crd.comm_volume() + self.vals.comm_volume() + self.pos.extents.volume()
         def compute_volume():
-            return self.crd.comm_volume() + self.vals.comm_volume() + self.pos.extents.volume()
+            return volume
         self.pos._storage.volume = compute_volume
 
     # Enable direct operation on the values array.
