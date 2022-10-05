@@ -1580,7 +1580,6 @@ def solve_ivp(fun, t_span, y0, method='RK45', t_eval=None, dense_output=False,
         t_events = None
         y_events = None
 
-    count = 0
     status = None
     while status is None:
         message = solver.step()
@@ -1646,11 +1645,6 @@ def solve_ivp(fun, t_span, y0, method='RK45', t_eval=None, dense_output=False,
 
         if t_eval is not None and dense_output:
             ti.append(t)
-
-        count += 1
-        if count == 5:
-            status = 0
-            break
 
     message = MESSAGES.get(status, message)
 
