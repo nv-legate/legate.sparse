@@ -1194,7 +1194,7 @@ def find_active_events(g, g_new, direction):
 
 # This method is lifted from scipy.integrate...
 def solve_ivp(fun, t_span, y0, method='RK45', t_eval=None, dense_output=False,
-              events=None, vectorized=False, args=None, **options):
+              events=None, vectorized=False, args=None, iteration_limit=None, **options):
     """Solve an initial value problem for a system of ODEs.
     This function numerically integrates a system of ordinary differential
     equations given an initial value::
@@ -1592,6 +1592,7 @@ def solve_ivp(fun, t_span, y0, method='RK45', t_eval=None, dense_output=False,
         t_events = None
         y_events = None
 
+    iter_count = 0
     status = None
     while status is None:
         message = solver.step()
@@ -1657,6 +1658,12 @@ def solve_ivp(fun, t_span, y0, method='RK45', t_eval=None, dense_output=False,
 
         if t_eval is not None and dense_output:
             ti.append(t)
+
+        # Break out if we were requested to run with an iteration limit.
+        iter_count += 1
+        if iteration_limit is not None and iter_count == iteration_limit:
+            status = 0
+            break
 
     message = MESSAGES.get(status, message)
 
