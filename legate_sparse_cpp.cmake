@@ -107,12 +107,14 @@ list(APPEND legate_sparse_SOURCES
   src/mapper.cc
   src/projections.cc
   src/quantum.cc
+  src/runge_kutta.cc
   src/tasks.cc
 )
 
 if(Legion_USE_OpenMP)
   list(APPEND legate_sparse_SOURCES
     src/quantum_omp.cc
+    src/runge_kutta_omp.cc
     src/tasks_omp.cc
   )
 endif()

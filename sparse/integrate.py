@@ -56,6 +56,10 @@ from . import dop853_coefficients
 
 import cunumeric as np
 
+from .array import get_store_from_cunumeric_array, store_to_cunumeric_array
+from .config import SparseOpCode, types
+from .runtime import ctx
+
 
 # Define the RK solver family.
 
@@ -454,6 +458,28 @@ SAFETY = 0.9
 MIN_FACTOR = 0.2  # Minimum allowed decrease in a step size.
 MAX_FACTOR = 10  # Maximum allowed increase in a step size.
 
+
+# direct_rk_step is a hand-implemented kernel for the RK step
+# that avoids unnecessary data movement.
+def direct_rk_step(K, a, s, h):
+    K_store = get_store_from_cunumeric_array(K)
+    a_store = get_store_from_cunumeric_array(a)
+    dy_arr = np.empty((K_store.shape[1],), dtype=K.dtype)
+    dy_store = get_store_from_cunumeric_array(dy_arr)
+    dy_promoted = dy_store.promote(0, K_store.shape[0])
+    task = ctx.create_task(SparseOpCode.RK_CALC_DY)
+    task.add_input(K_store)
+    task.add_input(a_store)
+    task.add_output(dy_promoted)
+    task.add_scalar_arg(s, types.int32)
+    task.add_scalar_arg(h, types.float64)
+    task.add_alignment(dy_promoted, K_store)
+    task.add_broadcast(K_store, 1)
+    task.add_broadcast(a_store)
+    task.execute()
+    return dy_arr
+
+
 # The following RK code is lifted from the scipy implementation.
 def rk_step(fun, t, y, f, h, A, B, C, K):
     """Perform a single Runge-Kutta step.
@@ -497,12 +523,21 @@ def rk_step(fun, t, y, f, h, A, B, C, K):
     .. [1] E. Hairer, S. P. Norsett G. Wanner, "Solving Ordinary Differential
            Equations I: Nonstiff Problems", Sec. II.4.
     """
+
+    assert(K.dtype == np.complex128)
+    assert(A.dtype == np.float64)
+
     K[0] = f
     for s in range(1, A.shape[0]):
         a, c = A[s], C[s]
-        dy = np.dot(K[:s].T, a[:s]) * h
+        dy = direct_rk_step(K, a, s, h)
+        # Uncomment the following two lines to debug the
+        # implementation of direct_rk_step.
+        # dy2 = np.dot(K[:s].T, a[:s]) * h
+        # assert(np.allclose(dy, dy2))
         K[s] = fun(t + c * h, y + dy)
 
+    # TODO (rohany): Use direct_rk_step to evaluate this...
     y_new = y + h * np.dot(K[:-1].T, B)
     f_new = fun(t + h, y_new)
 
@@ -590,7 +625,7 @@ class RungeKutta(OdeSolver):
                 self.error_estimator_order, self.rtol, self.atol)
         else:
             self.h_abs = validate_first_step(first_step, t0, t_bound)
-        self.K = np.empty((self.n_stages + 1, self.n), dtype=self.y.dtype)
+        self.K = np.zeros((self.n_stages + 1, self.n), dtype=self.y.dtype)
         self.error_exponent = -1 / (self.error_estimator_order + 1)
         self.h_previous = None
 
@@ -966,7 +1001,7 @@ class DOP853(RungeKutta):
                  first_step=None, **extraneous):
         super().__init__(fun, t0, y0, t_bound, max_step, rtol, atol,
                          vectorized, first_step, **extraneous)
-        self.K_extended = np.empty((dop853_coefficients.N_STAGES_EXTENDED,
+        self.K_extended = np.zeros((dop853_coefficients.N_STAGES_EXTENDED,
                                     self.n), dtype=self.y.dtype)
         self.K = self.K_extended[:self.n_stages + 1]
 
@@ -1545,6 +1580,7 @@ def solve_ivp(fun, t_span, y0, method='RK45', t_eval=None, dense_output=False,
         t_events = None
         y_events = None
 
+    count = 0
     status = None
     while status is None:
         message = solver.step()
@@ -1610,6 +1646,11 @@ def solve_ivp(fun, t_span, y0, method='RK45', t_eval=None, dense_output=False,
 
         if t_eval is not None and dense_output:
             ti.append(t)
+
+        count += 1
+        if count == 5:
+            status = 0
+            break
 
     message = MESSAGES.get(status, message)
 
