@@ -537,8 +537,12 @@ def rk_step(fun, t, y, f, h, A, B, C, K):
         # assert(np.allclose(dy, dy2))
         K[s] = fun(t + c * h, y + dy)
 
-    # TODO (rohany): Use direct_rk_step to evaluate this...
-    y_new = y + h * np.dot(K[:-1].T, B)
+    dy = direct_rk_step(K, B, B.shape[0], h)
+    y_new = y + dy
+    # Uncomment the following two lines to debug the
+    # implementation of direct_rk_step.
+    # y_new_2 = y + h * np.dot(K[:-1].T, B)
+    # assert(np.allclose(y_new, y_new_2))
     f_new = fun(t + h, y_new)
 
     K[-1] = f_new
