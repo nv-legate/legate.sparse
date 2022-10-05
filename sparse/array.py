@@ -49,6 +49,7 @@ from .runtime import ctx, runtime
 from .config import rect1, domain_ty, SparseOpCode, SparseProjectionFunctor, _sparse
 from .coverage import clone_scipy_arr_kind
 from .partition import CompressedImagePartition, MinMaxImagePartition
+from .utils import find_last_user_stacklevel
 
 import cunumeric
 from cunumeric import eager, deferred
@@ -67,6 +68,7 @@ import pyarrow
 import numpy
 import math
 import scipy.sparse
+import warnings
 
 # TODO (rohany): Notes and TODOs...
 #  1) We'll have to implement our own copy routines, as we can't directly use cunumeric's
@@ -743,6 +745,14 @@ class csr_array(CompressedBase, DenseSparseBase):
             # reorganization to get the coordinates correct) when the input store has
             # been transformed, so we'll just avoid this case for now.
             if other_store.transformed:
+                # So we don't get blind-sided by this again, issue a warning
+                level = find_last_user_stacklevel()
+                warnings.warn(
+                    "SpMV not using image optimization due to reshaped x in y=Ax."
+                    "This will cause performance and memory usage to suffer as you scale.",
+                    category=RuntimeWarning,
+                    stacklevel=level
+                )
                 task.add_broadcast(other_store)
             else:
                 # The image of the selected coordinates into other vector is not
