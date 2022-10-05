@@ -54,11 +54,12 @@ from scipy.integrate import OdeSolution
 
 from . import dop853_coefficients
 
+from legate.core import track_provenance
 import cunumeric as np
 
 from .array import get_store_from_cunumeric_array, store_to_cunumeric_array
 from .config import SparseOpCode, types
-from .runtime import ctx
+from .runtime import ctx, runtime
 
 
 # Define the RK solver family.
@@ -461,6 +462,7 @@ MAX_FACTOR = 10  # Maximum allowed increase in a step size.
 
 # direct_rk_step is a hand-implemented kernel for the RK step
 # that avoids unnecessary data movement.
+@track_provenance(runtime.legate_context, nested=True)
 def direct_rk_step(K, a, s, h):
     K_store = get_store_from_cunumeric_array(K)
     a_store = get_store_from_cunumeric_array(a)
@@ -474,7 +476,7 @@ def direct_rk_step(K, a, s, h):
     task.add_scalar_arg(s, types.int32)
     task.add_scalar_arg(h, types.float64)
     task.add_alignment(dy_promoted, K_store)
-    task.add_broadcast(K_store, 1)
+    task.add_broadcast(K_store, 0)
     task.add_broadcast(a_store)
     task.execute()
     return dy_arr
@@ -1031,10 +1033,16 @@ class DOP853(RungeKutta):
     def _dense_output_impl(self):
         K = self.K_extended
         h = self.h_previous
+        assert(K.dtype == np.complex128)
+        assert(self.A_EXTRA.dtype == np.float64)
         for i in range(self.A_EXTRA.shape[0]):
             a, c = self.A_EXTRA[i], self.C_EXTRA[i]
             s = i + self.n_stages + 1
-            dy = np.dot(K[:s].T, a[:s]) * h
+            dy = direct_rk_step(K, a, s, h)
+            # Uncomment the following two lines to debug the
+            # implementation of direct_rk_step.
+            # dy_2 = np.dot(K[:s].T, a[:s]) * h
+            # assert(np.allclose(dy, dy_2))
             K[s] = self.fun(self.t_old + c * h, self.y_old + dy)
 
         F = np.empty((dop853_coefficients.INTERPOLATOR_POWER, self.n),
