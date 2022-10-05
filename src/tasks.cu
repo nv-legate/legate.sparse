@@ -140,6 +140,9 @@ cusparseSpMatDescr_t makeCuSparseCSC(Store& pos, Store& crd, Store& vals, size_t
   auto blocks = get_num_blocks_1d(cols);
   convertGlobalPosToLocalIndPtr<<<blocks, THREADS_PER_BLOCK, 0, stream>>>(cols, pos_acc.ptr(pos_domain.lo()), indptr.ptr(0));
 
+#if (CUSPARSE_VER_MAJOR < 11 || CUSPARSE_VER_MINOR < 2)
+  assert(false && "cuSPARSE version too old! Try later than 11.1.");
+#else
   CHECK_CUSPARSE(cusparseCreateCsc(
       &matDescr,
       rows,
@@ -153,7 +156,7 @@ cusparseSpMatDescr_t makeCuSparseCSC(Store& pos, Store& crd, Store& vals, size_t
       index_base,
       cuda_val_ty
   ));
-
+#endif
   return matDescr;
 }
 
@@ -274,7 +277,11 @@ void CSRSpMVRowSplit::gpu_variant(legate::TaskContext& ctx) {
     &beta,
     cusparse_y,
     cuda_val_ty,
+#if (CUSPARSE_VER_MAJOR < 11 || CUSPARSE_VER_MINOR < 2)
+    CUSPARSE_MV_ALG_DEFAULT,
+#else
     CUSPARSE_SPMV_ALG_DEFAULT,
+#endif
     &bufSize
   ));
   // Allocate a buffer if we need to.
@@ -293,7 +300,11 @@ void CSRSpMVRowSplit::gpu_variant(legate::TaskContext& ctx) {
     &beta,
     cusparse_y,
     cuda_val_ty,
+#if (CUSPARSE_VER_MAJOR < 11 || CUSPARSE_VER_MINOR < 2)
+    CUSPARSE_MV_ALG_DEFAULT,
+#else
     CUSPARSE_SPMV_ALG_DEFAULT,
+#endif
     workspacePtr
   ));
   // Destroy the created objects.
@@ -405,7 +416,11 @@ void CSCSpMVColSplit::gpu_variant(legate::TaskContext& ctx) {
       &beta,
       cusparse_y,
       cuda_val_ty,
+#if (CUSPARSE_VER_MAJOR < 11 || CUSPARSE_VER_MINOR < 2)
+      CUSPARSE_MV_ALG_DEFAULT,
+#else
       CUSPARSE_SPMV_ALG_DEFAULT,
+#endif
       &bufSize
   ));
   // Allocate a buffer if we need to.
@@ -424,7 +439,11 @@ void CSCSpMVColSplit::gpu_variant(legate::TaskContext& ctx) {
       &beta,
       cusparse_y,
       cuda_val_ty,
+#if (CUSPARSE_VER_MAJOR < 11 || CUSPARSE_VER_MINOR < 2)
+      CUSPARSE_MV_ALG_DEFAULT,
+#else
       CUSPARSE_SPMV_ALG_DEFAULT,
+#endif
       workspacePtr
   ));
   // Destroy the created objects.
@@ -2116,6 +2135,23 @@ void ElemwiseMultCSRDense::gpu_variant(legate::TaskContext& ctx) {
   CHECK_CUDA_STREAM(stream);
 }
 
+__global__
+void CSRtoDenseKernel(
+  size_t rows,
+  Rect<1> bounds,
+  AccessorRW<val_ty, 2> A_vals_acc,
+  AccessorRO<Rect<1>, 1> B_pos_acc,
+  AccessorRO<coord_ty, 1> B_crd_acc,
+  AccessorRO<val_ty, 1> B_vals_acc) {
+  const auto idx = global_tid_1d();
+  if (idx >= rows) return;
+  coord_ty i = idx + bounds.lo[0];
+  for (coord_ty j_pos = B_pos_acc[i].lo; j_pos < B_pos_acc[i].hi + 1; j_pos++) {
+    auto j = B_crd_acc[j_pos];
+    A_vals_acc[{i, j}] = B_vals_acc[j_pos];
+  }
+}
+
 void CSRToDense::gpu_variant(legate::TaskContext& ctx) {
   auto& A_vals = ctx.outputs()[0];
   auto& B_pos = ctx.inputs()[0];
@@ -2133,9 +2169,26 @@ void CSRToDense::gpu_variant(legate::TaskContext& ctx) {
     return;
   }
 
+  auto stream = get_cached_stream();
+
+  // If we are running on an old cuSPARSE version, then we don't
+  // have access to many cuSPARSE functions. In that case, use
+  // a hand-written version.
+#if (CUSPARSE_VER_MAJOR < 11 || CUSPARSE_VER_MINOR < 2)
+  auto B_domain = B_pos.domain();
+  auto rows = B_domain.hi()[0] - B_domain.lo()[0] + 1;
+  auto blocks = get_num_blocks_1d(rows);
+  CSRtoDenseKernel<<<blocks, THREADS_PER_BLOCK, 0, stream>>>(
+    rows,
+    Rect<1>(B_domain.lo(), B_domain.hi()),
+    A_vals.read_write_accessor<val_ty, 2>(),
+    B_pos.read_accessor<Rect<1>, 1>(),
+    B_crd.read_accessor<coord_ty, 1>(),
+    B_vals.read_accessor<val_ty, 1>()
+  );
+#else
   // Get context sensitive objects.
   auto handle = get_cusparse();
-  auto stream = get_cached_stream();
   CHECK_CUSPARSE(cusparseSetStream(handle, stream));
 
   // Construct our cuSPARSE matrices.
@@ -2169,7 +2222,26 @@ void CSRToDense::gpu_variant(legate::TaskContext& ctx) {
   // Destroy the created objects.
   CHECK_CUSPARSE(cusparseDestroyDnMat(cusparse_A));
   CHECK_CUSPARSE(cusparseDestroySpMat(cusparse_B));
+#endif
+
   CHECK_CUDA_STREAM(stream);
+}
+
+__global__
+void CSCtoDenseKernel(
+  size_t cols,
+  Rect<1> bounds,
+  AccessorRW<val_ty, 2> A_vals_acc,
+  AccessorRO<Rect<1>, 1> B_pos_acc,
+  AccessorRO<coord_ty, 1> B_crd_acc,
+  AccessorRO<val_ty, 1> B_vals_acc) {
+  const auto idx = global_tid_1d();
+  if (idx >= cols) return;
+  coord_ty j = idx + bounds.lo[0];
+  for (coord_ty i_pos = B_pos_acc[j].lo; i_pos < B_pos_acc[j].hi + 1; i_pos++) {
+    auto i = B_crd_acc[i_pos];
+    A_vals_acc[{i, j}] = B_vals_acc[i_pos];
+  }
 }
 
 void CSCToDense::gpu_variant(legate::TaskContext& ctx) {
@@ -2189,9 +2261,26 @@ void CSCToDense::gpu_variant(legate::TaskContext& ctx) {
     return;
   }
 
+  auto stream = get_cached_stream();
+
+  // If we are running on an old cuSPARSE version, then we don't
+  // have access to many cuSPARSE functions. In that case, use
+  // a hand-written version.
+#if (CUSPARSE_VER_MAJOR < 11 || CUSPARSE_VER_MINOR < 2)
+  auto B_domain = B_pos.domain();
+  auto cols = B_domain.hi()[0] - B_domain.lo()[0] + 1;
+  auto blocks = get_num_blocks_1d(cols);
+  CSCtoDenseKernel<<<blocks, THREADS_PER_BLOCK, 0, stream>>>(
+    cols,
+    Rect<1>(B_domain.lo(), B_domain.hi()),
+    A_vals.read_write_accessor<val_ty, 2>(),
+    B_pos.read_accessor<Rect<1>, 1>(),
+    B_crd.read_accessor<coord_ty, 1>(),
+    B_vals.read_accessor<val_ty, 1>()
+  );
+#else
   // Get context sensitive objects.
   auto handle = get_cusparse();
-  auto stream = get_cached_stream();
   CHECK_CUSPARSE(cusparseSetStream(handle, stream));
 
   // Construct our cuSPARSE matrices.
@@ -2225,7 +2314,26 @@ void CSCToDense::gpu_variant(legate::TaskContext& ctx) {
   // Destroy the created objects.
   CHECK_CUSPARSE(cusparseDestroyDnMat(cusparse_A));
   CHECK_CUSPARSE(cusparseDestroySpMat(cusparse_B));
+#endif
   CHECK_CUDA_STREAM(stream);
+}
+
+__global__
+void denseToCSRNNZKernel(
+  size_t rows,
+  Rect<2> bounds,
+  AccessorWO<nnz_ty, 1> A_nnz_acc,
+  AccessorRO<val_ty, 2> B_vals_acc) {
+  const auto idx = global_tid_1d();
+  if (idx >= rows) return;
+  coord_ty i = idx + bounds.lo[0];
+  nnz_ty nnz_count = 0;
+  for (coord_ty j = bounds.lo[1]; j < bounds.hi[1] + 1; j++) {
+    if (B_vals_acc[{i, j}] != 0.0) {
+      nnz_count++;
+    }
+  }
+  A_nnz_acc[i] = nnz_count;
 }
 
 void DenseToCSRNNZ::gpu_variant(legate::TaskContext& ctx) {
@@ -2243,9 +2351,22 @@ void DenseToCSRNNZ::gpu_variant(legate::TaskContext& ctx) {
     return;
   }
 
+  auto stream = get_cached_stream();
+
+#if (CUSPARSE_VER_MAJOR < 11 || CUSPARSE_VER_MINOR < 2)
+  auto B_domain = B_vals.domain();
+  auto rows = B_domain.hi()[0] - B_domain.lo()[0] + 1;
+  auto blocks = get_num_blocks_1d(rows);
+  denseToCSRNNZKernel<<<blocks, THREADS_PER_BLOCK, 0, stream>>>(
+    rows,
+    Rect<2>(B_domain.lo(), B_domain.hi()),
+    nnz.write_accessor<nnz_ty, 1>(),
+    B_vals.read_accessor<val_ty, 2>()
+  );
+  CHECK_CUDA_STREAM(stream);
+#else
   // Get context sensitive objects.
   auto handle = get_cusparse();
-  auto stream = get_cached_stream();
   CHECK_CUSPARSE(cusparseSetStream(handle, stream));
 
   auto B_domain = B_vals.domain();
@@ -2307,6 +2428,8 @@ void DenseToCSRNNZ::gpu_variant(legate::TaskContext& ctx) {
         A_indptr.ptr(0)
     );
   }
+#endif
+
   CHECK_CUDA_STREAM(stream);
 }
 
@@ -2402,6 +2525,24 @@ void DenseToCSR::gpu_variant(legate::TaskContext& ctx) {
   // CHECK_CUSPARSE(cusparseDestroyDnMat(cusparse_B));
 }
 
+__global__
+void denseToCSCNNZKernel(
+  size_t cols,
+  Rect<2> bounds,
+  AccessorWO<nnz_ty, 1> A_nnz_acc,
+  AccessorRO<val_ty, 2> B_vals_acc) {
+  const auto idx = global_tid_1d();
+  if (idx >= cols) return;
+  coord_ty j = idx + bounds.lo[1];
+  nnz_ty nnz_count = 0;
+  for (coord_ty i = bounds.lo[0]; i < bounds.hi[0] + 1; i++) {
+    if (B_vals_acc[{i, j}] != 0.0) {
+      nnz_count++;
+    }
+  }
+  A_nnz_acc[j] = nnz_count;
+}
+
 void DenseToCSCNNZ::gpu_variant(legate::TaskContext& ctx) {
   auto& nnz = ctx.outputs()[0];
   auto& B_vals = ctx.inputs()[0];
@@ -2417,9 +2558,21 @@ void DenseToCSCNNZ::gpu_variant(legate::TaskContext& ctx) {
     return;
   }
 
+  auto stream = get_cached_stream();
+
+#if (CUSPARSE_VER_MAJOR < 11 || CUSPARSE_VER_MINOR < 2)
+  auto B_domain = B_vals.domain();
+  auto cols = B_domain.hi()[1] - B_domain.lo()[1] + 1;
+  auto blocks = get_num_blocks_1d(cols);
+  denseToCSCNNZKernel<<<blocks, THREADS_PER_BLOCK, 0, stream>>>(
+    cols,
+    Rect<2>(B_domain.lo(), B_domain.hi()),
+    nnz.write_accessor<nnz_ty, 1>(),
+    B_vals.read_accessor<val_ty, 2>()
+  );
+#else
   // Get context sensitive objects.
   auto handle = get_cusparse();
-  auto stream = get_cached_stream();
   CHECK_CUSPARSE(cusparseSetStream(handle, stream));
 
   auto B_domain = B_vals.domain();
@@ -2481,6 +2634,8 @@ void DenseToCSCNNZ::gpu_variant(legate::TaskContext& ctx) {
         A_indptr.ptr(0)
     );
   }
+#endif
+
   CHECK_CUDA_STREAM(stream);
 }
 
