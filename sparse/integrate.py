@@ -1021,8 +1021,13 @@ class DOP853(RungeKutta):
         return h * err5 * correction_factor
 
     def _estimate_error_norm(self, K, h, scale):
-        err5 = np.dot(K.T, self.E5) / scale
-        err3 = np.dot(K.T, self.E3) / scale
+        # For reasons I don't understand yet, using np.dot results
+        # in unnecessary copies being done here. Use of direct_rk_step
+        # avoids those copies.
+        err5 = direct_rk_step(K, self.E5, K.shape[0], 1.0) / scale
+        err3 = direct_rk_step(K, self.E3, K.shape[0], 1.0) / scale
+        # err5 = np.dot(K.T, self.E5) / scale
+        # err3 = np.dot(K.T, self.E3) / scale
         err5_norm_2 = np.linalg.norm(err5)**2
         err3_norm_2 = np.linalg.norm(err3)**2
         if err5_norm_2 == 0 and err3_norm_2 == 0:
