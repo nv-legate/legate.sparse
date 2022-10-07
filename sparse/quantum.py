@@ -107,19 +107,21 @@ class LegateHamiltonianDriver:
 
             # Next, sort each chunk of coordinates for the upper and lower halves.
             # We reset the partitions in between each call so that we evenly
-            # distirbute future operations across all memories.
+            # distribute future operations across all memories. See the comment
+            # below about why np.flip is applied. We do it here to avoid accumulating
+            # too much extra space.
 
             rows_lower, cols_lower = sort_by_key(rows_lower, cols_lower)
             reset_output_store_partition(rows_lower)
             reset_output_store_partition(cols_lower)
-            rows_lower_group.append(store_to_cunumeric_array(rows_lower))
-            cols_lower_group.append(store_to_cunumeric_array(cols_lower))
+            rows_lower_group.append(np.flip(store_to_cunumeric_array(rows_lower)))
+            cols_lower_group.append(np.flip(store_to_cunumeric_array(cols_lower)))
 
             rows_upper, cols_upper = sort_by_key(rows_upper, cols_upper)
             reset_output_store_partition(rows_upper)
             reset_output_store_partition(cols_upper)
-            rows_upper_group.append(store_to_cunumeric_array(rows_upper))
-            cols_upper_group.append(store_to_cunumeric_array(cols_upper))
+            rows_upper_group.append(np.flip(store_to_cunumeric_array(rows_upper)))
+            cols_upper_group.append(np.flip(store_to_cunumeric_array(cols_upper)))
 
             # If there is no frontier to explore, then we're done.
             if np.sum(sets_to_sizes(nbrs, graph)) == 0:
@@ -134,12 +136,12 @@ class LegateHamiltonianDriver:
         # operation by concatenating each group of coordinates in reverse, and
         # reversing each array of coordinates.
 
-        rows_upper = (self.nstates - 1) - np.concatenate(list(map(np.flip, reversed(rows_upper_group))))
-        cols_upper = (self.nstates - 1) - np.concatenate(list(map(np.flip, reversed(cols_upper_group))))
+        rows_upper = (self.nstates - 1) - np.concatenate(list(reversed(rows_upper_group)))
+        cols_upper = (self.nstates - 1) - np.concatenate(list(reversed(cols_upper_group)))
         vals_upper = np.ones(rows_upper.shape[0], dtype=np.float64)
 
-        rows_lower = (self.nstates - 1) - np.concatenate(list(map(np.flip, reversed(rows_lower_group))))
-        cols_lower = (self.nstates - 1) - np.concatenate(list(map(np.flip, reversed(cols_lower_group))))
+        rows_lower = (self.nstates - 1) - np.concatenate(list(reversed(rows_lower_group)))
+        cols_lower = (self.nstates - 1) - np.concatenate(list(reversed(cols_lower_group)))
         vals_lower = np.ones(rows_lower.shape[0], dtype=np.float64)
 
         # Next, directly create CSR matrices, instead of going through the constructor
