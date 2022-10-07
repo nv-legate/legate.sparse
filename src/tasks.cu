@@ -1526,7 +1526,11 @@ void BoundsFromPartitionedCoordinates::gpu_variant(legate::TaskContext& ctx) {
   if (dom.empty()) {
     auto result = Domain(Rect<1>::make_empty());
     auto ptr = output_acc.ptr(0);
+#ifdef LEGATE_NO_FUTURES_ON_FB
+    *ptr = result
+#else
     cudaMemcpy(ptr, &result, sizeof(Domain), cudaMemcpyHostToDevice);
+#endif
   } else {
     ThrustAllocator alloc(Memory::GPU_FB_MEM);
     auto policy = thrust::cuda::par(alloc).on(stream);
@@ -1537,7 +1541,11 @@ void BoundsFromPartitionedCoordinates::gpu_variant(legate::TaskContext& ctx) {
     cudaMemcpy(&hi, result.second, sizeof(coord_ty), cudaMemcpyDeviceToHost);
     Domain output({lo, hi});
     auto output_ptr = output_acc.ptr(0);
+#ifdef LEGATE_NO_FUTURES_ON_FB
+    *output_ptr = output;
+#else
     cudaMemcpy(output_ptr, &output, sizeof(Domain), cudaMemcpyHostToDevice);
+#endif
   }
   CHECK_CUDA_STREAM(stream);
 }
@@ -2820,14 +2828,22 @@ void FastImageRange::gpu_variant(legate::TaskContext& ctx) {
   if (dom.empty()) {
     Domain result{Rect<1>::make_empty()};
     auto ptr = out.ptr(0);
+#ifdef LEGATE_NO_FUTURES_ON_FB
+    *ptr = result;
+#else
     cudaMemcpy(ptr, &result, sizeof(Domain), cudaMemcpyHostToDevice);
+#endif
   } else {
     Rect<1> lo, hi;
     cudaMemcpy(&lo, in.ptr(dom.lo()), sizeof(Rect<1>), cudaMemcpyDeviceToHost);
     cudaMemcpy(&hi, in.ptr(dom.hi()), sizeof(Rect<1>), cudaMemcpyDeviceToHost);
     Domain result{Rect<1>{lo.lo, hi.hi}};
     auto ptr = out.ptr(0);
+#ifdef LEGATE_NO_FUTURES_ON_FB
+    *ptr = result;
+#else
     cudaMemcpy(ptr, &result, sizeof(Domain), cudaMemcpyHostToDevice);
+#endif
   }
   CHECK_CUDA_STREAM(stream);
 }
