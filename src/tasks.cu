@@ -1527,7 +1527,7 @@ void BoundsFromPartitionedCoordinates::gpu_variant(legate::TaskContext& ctx) {
     auto result = Domain(Rect<1>::make_empty());
     auto ptr = output_acc.ptr(0);
 #ifdef LEGATE_NO_FUTURES_ON_FB
-    *ptr = result
+    *ptr = result;
 #else
     cudaMemcpy(ptr, &result, sizeof(Domain), cudaMemcpyHostToDevice);
 #endif
