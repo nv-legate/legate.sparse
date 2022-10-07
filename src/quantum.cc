@@ -119,6 +119,7 @@ void CreateHamiltonians::cpu_variant_impl(legate::TaskContext& ctx) {
   int32_t nodes = ctx.scalars()[0].value<int32_t>();
   int32_t k = ctx.scalars()[1].value<int32_t>();
   uint64_t set_idx_offset = ctx.scalars()[2].value<uint64_t>();
+  bool lower = ctx.scalars()[3].value<bool>();
   auto& rows = ctx.outputs()[0];
   auto& cols = ctx.outputs()[1];
   auto& sets = ctx.inputs()[0];
@@ -128,20 +129,23 @@ void CreateHamiltonians::cpu_variant_impl(legate::TaskContext& ctx) {
     // If k == 1, then we don't have any predecessor states to look
     // at and can just add on the terminal state to each entry.
     auto volume = sets.domain().get_volume();
-    auto rows_acc = rows.create_output_buffer<coord_ty, 1>(2 * volume, true /* return_buffer */);
-    auto cols_acc = cols.create_output_buffer<coord_ty, 1>(2 * volume, true /* return_buffer */);
+    auto rows_acc = rows.create_output_buffer<coord_ty, 1>(volume, true /* return_buffer */);
+    auto cols_acc = cols.create_output_buffer<coord_ty, 1>(volume, true /* return_buffer */);
     for (coord_ty i = 0; i < volume; i++) {
       auto set_idx = set_idx_offset + sets.domain().lo()[0] + i;
       // The predecessors of size 1 index sets are the null state 0.
-      rows_acc[2 * i] = set_idx;
-      cols_acc[2 * i] = 0;
-      rows_acc[2 * i + 1] = 0;
-      cols_acc[2 * i + 1] = set_idx;
+      if (lower) {
+        rows_acc[i] = 0;
+        cols_acc[i] = set_idx;
+      } else {
+        rows_acc[i] = set_idx;
+        cols_acc[i] = 0;
+      }
     }
   } else {
     auto& preds = ctx.inputs()[1];
     auto preds_acc = preds.read_accessor<set_ty, 1>();
-    uint64_t preds_idx_offset = ctx.scalars()[3].value<uint64_t>();
+    uint64_t preds_idx_offset = ctx.scalars()[4].value<uint64_t>();
 
     // Put all the predecessors into a map with their index so
     // that we can look up into it quickly.
@@ -166,9 +170,8 @@ void CreateHamiltonians::cpu_variant_impl(legate::TaskContext& ctx) {
         }
       }
     }
-    // Each coordinate actually counts for 2, since this is a bi-directional graph.
-    auto rows_acc = rows.create_output_buffer<coord_ty, 1>(2 * count, true /* return_buffer */);
-    auto cols_acc = cols.create_output_buffer<coord_ty, 1>(2 * count, true /* return_buffer */);
+    auto rows_acc = rows.create_output_buffer<coord_ty, 1>(count, true /* return_buffer */);
+    auto cols_acc = cols.create_output_buffer<coord_ty, 1>(count, true /* return_buffer */);
     // Calculate the coordinates.
     uint64_t slot = 0;
     for (PointInDomainIterator<1> itr(sets.domain()); itr(); itr++) {
@@ -181,11 +184,14 @@ void CreateHamiltonians::cpu_variant_impl(legate::TaskContext& ctx) {
           if (query != index.end()) {
             auto pred_idx = query->second;
             auto set_idx = set_idx_offset + (*itr);
-            rows_acc[slot] = set_idx;
-            cols_acc[slot] = pred_idx;
-            rows_acc[slot + 1] = pred_idx;
-            cols_acc[slot + 1] = set_idx;
-            slot += 2;
+            if (lower) {
+              rows_acc[slot] = pred_idx;
+              cols_acc[slot] = set_idx;
+            } else {
+              rows_acc[slot] = set_idx;
+              cols_acc[slot] = pred_idx;
+            }
+            slot++;
           }
         }
       }

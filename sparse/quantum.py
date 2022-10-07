@@ -8,9 +8,14 @@ import cunumeric as np
 import networkx as nx
 import pyarrow as pa
 
-from .array import get_store_from_cunumeric_array, store_to_cunumeric_array, coord_ty, csr_array
-from .config import SparseOpCode, types
+from .array import get_store_from_cunumeric_array, store_to_cunumeric_array, coord_ty, csr_array, nnz_ty, CompressedBase
+from .config import SparseOpCode, types, domain_ty
 from .runtime import ctx, runtime
+
+from legate.core import Rect, ReductionOp
+from legate.core.launcher import Broadcast, TaskLauncher
+from legate.core.shape import Shape
+from legate.core.partition import Tiling, DomainPartition
 
 
 class LegateHamiltonianDriver:
@@ -20,8 +25,27 @@ class LegateHamiltonianDriver:
         """
         self.energies = energies
 
+        # This method creates a sparse matrix representing interactions between
+        # different hamiltonian groups. For each possible excitation state, it adds
+        # an edge in the graph between the state and all states that are 1 excitation
+        # behind that state. The original version of this code directly constructed
+        # the sparse matrix as a COO matrix and converted it to CSR. The problem
+        # we ran into was the deferred memory usage, especially around the sort.
+        # To alleviate this problem, we take advantage of several properties:
+        # * The matrix is symmetric.
+        # * Each excitation size adds coordinates that are logically "in a different
+        #   zone" than the previous excitation size.
+        # Thus, we only need to sort each group of coordinates for a particular
+        # excitation size, rather than all of them at once. To make this possible,
+        # we rely on the symmetricity -- the symmetricity allows us to consider
+        # the lower and upper halves of the matrix independently, and then add
+        # them together to get the final matrix. Without symmetricity, we would
+        # not be able to apply the group-wise sorting approach.
+
         self.ip = [1]
-        rows_group, cols_group = [], []
+        # Maintain the upper and lower halves of the matrix.
+        rows_lower_group, cols_lower_group = [], []
+        rows_upper_group, cols_upper_group = [], []
         sets, nbrs = None, None
         # Maintain ID offsets for the previous and current sets.
         prev_offset, offset = 0, 1
@@ -32,16 +56,38 @@ class LegateHamiltonianDriver:
             # Remember the number of independence sets that we found.
             self.ip.append(sets.shape[0])
             # Use the independence sets of size k and k - 1
-            # to build the hamiltonian coordinates.
-            rows = ctx.create_store(coord_ty, ndim=1)
-            cols = ctx.create_store(coord_ty, ndim=1)
+            # to build the hamiltonian coordinates. Create unbound
+            # stores for the upper and lower halves of the matrix.
+            rows_lower = ctx.create_store(coord_ty, ndim=1)
+            cols_lower = ctx.create_store(coord_ty, ndim=1)
+            rows_upper = ctx.create_store(coord_ty, ndim=1)
+            cols_upper = ctx.create_store(coord_ty, ndim=1)
+
+            # Compute the lower.
             task = ctx.create_task(SparseOpCode.CREATE_HAMILTONIANS)
             task.add_scalar_arg(graph.number_of_nodes(), types.int32)
             task.add_scalar_arg(k, types.int32)
             task.add_scalar_arg(offset, types.uint64)
+            task.add_scalar_arg(True, bool) # Lower.
             task.add_input(sets)
-            task.add_output(rows)
-            task.add_output(cols)
+            task.add_output(rows_lower)
+            task.add_output(cols_lower)
+            if k > 1:
+                # TODO (rohany): See if we can get around broadcasting this.
+                task.add_input(prev_sets)
+                task.add_broadcast(prev_sets)
+                task.add_scalar_arg(prev_offset, types.uint64)
+            task.execute()
+
+            # Compute the upper.
+            task = ctx.create_task(SparseOpCode.CREATE_HAMILTONIANS)
+            task.add_scalar_arg(graph.number_of_nodes(), types.int32)
+            task.add_scalar_arg(k, types.int32)
+            task.add_scalar_arg(offset, types.uint64)
+            task.add_scalar_arg(False, bool) # Upper.
+            task.add_input(sets)
+            task.add_output(rows_upper)
+            task.add_output(cols_upper)
             if k > 1:
                 # TODO (rohany): See if we can get around broadcasting this.
                 task.add_input(prev_sets)
@@ -54,22 +100,55 @@ class LegateHamiltonianDriver:
 
             # As with enumerate_independent_sets, we don't want Legate
             # to be using the resulting Weighted partition for anything.
-            reset_output_store_partition(rows)
-            reset_output_store_partition(cols)
+            reset_output_store_partition(rows_lower)
+            reset_output_store_partition(cols_lower)
+            reset_output_store_partition(rows_upper)
+            reset_output_store_partition(cols_upper)
 
-            rows_group.append(store_to_cunumeric_array(rows))
-            cols_group.append(store_to_cunumeric_array(cols))
+            # Next, sort each chunk of coordinates for the upper and lower halves.
+            # We reset the partitions in between each call so that we evenly
+            # distirbute future operations across all memories.
+
+            rows_lower, cols_lower = sort_by_key(rows_lower, cols_lower)
+            reset_output_store_partition(rows_lower)
+            reset_output_store_partition(cols_lower)
+            rows_lower_group.append(store_to_cunumeric_array(rows_lower))
+            cols_lower_group.append(store_to_cunumeric_array(cols_lower))
+
+            rows_upper, cols_upper = sort_by_key(rows_upper, cols_upper)
+            reset_output_store_partition(rows_upper)
+            reset_output_store_partition(cols_upper)
+            rows_upper_group.append(store_to_cunumeric_array(rows_upper))
+            cols_upper_group.append(store_to_cunumeric_array(cols_upper))
 
             # If there is no frontier to explore, then we're done.
             if np.sum(sets_to_sizes(nbrs, graph)) == 0:
                 break
 
-        self.nstates = np.sum(self.ip)
-        # Back-offset the values.
-        rows = (self.nstates - 1) - np.concatenate(rows_group)
-        cols = (self.nstates - 1) - np.concatenate(cols_group)
-        vals = np.ones(rows.shape[0], dtype=dtype)
-        self._hamiltonian = csr_array((vals, (rows, cols)), shape=(self.nstates, self.nstates))
+        self.nstates = int(np.sum(self.ip))
+
+        # After we've constructed all of the coordinates, we back-offset them
+        # by coord' = (self.nstates - 1) - coord. As a result, everything is
+        # backwards, since we started with low coordinates at the front of
+        # each coordinate group, and sorted each in ascending order. We undo this
+        # operation by concatenating each group of coordinates in reverse, and
+        # reversing each array of coordinates.
+
+        rows_upper = (self.nstates - 1) - np.concatenate(list(map(np.flip, reversed(rows_upper_group))))
+        cols_upper = (self.nstates - 1) - np.concatenate(list(map(np.flip, reversed(cols_upper_group))))
+        vals_upper = np.ones(rows_upper.shape[0], dtype=np.float64)
+
+        rows_lower = (self.nstates - 1) - np.concatenate(list(map(np.flip, reversed(rows_lower_group))))
+        cols_lower = (self.nstates - 1) - np.concatenate(list(map(np.flip, reversed(cols_lower_group))))
+        vals_lower = np.ones(rows_lower.shape[0], dtype=np.float64)
+
+        # Next, directly create CSR matrices, instead of going through the constructor
+        # that implicitly performs a global sort.
+        upper = raw_create_csr(rows_upper, cols_upper, vals_upper, (self.nstates, self.nstates))
+        lower = raw_create_csr(rows_lower, cols_lower, vals_lower, (self.nstates, self.nstates))
+
+        # Finally, the resulting matrix is the sum of the upper and lower halves.
+        self._hamiltonian = upper + lower
 
     @property
     def hamiltonian(self):
@@ -211,6 +290,86 @@ def independence_polynomial(graph: nx.Graph):
         if np.all(sets_to_sizes(nbrs, graph) == 0):
             break
     return ip
+
+
+# sort_by_key is a method extracted from array.py that does the COO sort by
+# key operation for the input sets of rows and columns.
+def sort_by_key(rows, cols):
+    vals_arr = np.ones((rows.shape[0]), dtype=np.float64)
+    vals = get_store_from_cunumeric_array(vals_arr)
+
+    rows_res = ctx.create_store(rows.type, ndim=1)
+    cols_res = ctx.create_store(cols.type, ndim=1)
+    vals_res = ctx.create_store(vals.type, ndim=1)
+    task = ctx.create_task(SparseOpCode.SORT_BY_KEY)
+    # Add all of the unbounded outputs.
+    task.add_output(rows_res)
+    task.add_output(cols_res)
+    task.add_output(vals_res)
+    # Add all of the inputs.
+    task.add_input(rows)
+    task.add_input(cols)
+    task.add_input(vals)
+    # The inputs need to be aligned.
+    task.add_alignment(rows, cols)
+    task.add_alignment(cols, vals)
+    task.add_cpu_communicator()
+    task.execute()
+    return rows_res, cols_res
+
+
+# This code is extracted from array.py and is the final step of CSR
+# matrix construction after coordinates have been sorted.
+def raw_create_csr(rows, cols, vals, shape):
+    rows_store = get_store_from_cunumeric_array(rows)
+    cols_store = get_store_from_cunumeric_array(cols)
+    vals_store = get_store_from_cunumeric_array(vals)
+    # Explicitly partition the rows into equal components to get the number
+    # of non-zeros per row. We'll then partition up the non-zeros array according
+    # to the per-partition ranges given by the min and max of each partition.
+    num_procs = runtime.num_procs
+    # TODO (rohany): If I try to partition this on really small inputs (like size 0 or 1 stores)
+    #  across multiple processors, I see some sparse non-deterministic failures. I haven't root
+    #  caused these, and I'm running out of time to figure them out. It seems just not partitioning
+    #  the input on these really small matrices side-steps the underlying issue.
+    if rows_store.shape[0] <= num_procs:
+        num_procs = 1
+    row_tiling = (rows_store.shape[0] + num_procs - 1) // num_procs
+    rows_part = rows_store.partition(Tiling(Shape(row_tiling), Shape(num_procs)))
+    # In order to bypass legate.core's current inability to handle representing
+    # stores as FutureMaps, we drop below the ManualTask API to launch as task
+    # ourselves and use the returned future map directly instead of letting the
+    # core try and extract data from it.
+    launcher = TaskLauncher(
+        ctx,
+        SparseOpCode.BOUNDS_FROM_PARTITIONED_COORDINATES,
+        error_on_interference=False,
+        tag=ctx.core_library.LEGATE_CORE_MANUAL_PARALLEL_LAUNCH_TAG,
+    )
+    launcher.add_input(rows_store, rows_part.get_requirement(1, 0), tag=0)
+    bounds_store = ctx.create_store(domain_ty, shape=(1,), optimize_scalar=True)
+    launcher.add_output(bounds_store, Broadcast(None, 0), tag=0)
+    result = launcher.execute(Rect(hi=(num_procs,)))
+
+    q_nnz = get_store_from_cunumeric_array(np.zeros((shape[0],), dtype=nnz_ty))
+    task = ctx.create_manual_task(SparseOpCode.SORTED_COORDS_TO_COUNTS, launch_domain=Rect(hi=(num_procs,)))
+    task.add_input(rows_part)
+    task.add_reduction(q_nnz.partition(DomainPartition(q_nnz.shape, Shape(num_procs), result)), ReductionOp.ADD)
+    task.add_scalar_arg(shape[0], types.int64)
+    task.execute()
+    # TODO (rohany): On small inputs, it appears that I get a non-deterministic failure, which appears either
+    #  as a segfault or an incorrect output. This appears to show up only an OpenMP processors, and appears
+    #  when running the full test suite with 4 opemps and 2 openmp threads. My notes from debugging this are
+    #  as follows:
+    #  * The result of the sort appears to be correct.
+    #  * We start with a valid COO matrix.
+    #  * Adding print statements make the bug much harder to reproduce.
+    #  * In particular, the bug is harder to reproduce when q_nnz is printed
+    #    out before the `self.nnz_to_pos(q_nnz)` line here.
+    #  * If q_nnz is printed out after the `self.nnz_to_pos(q_nnz)` line, then
+    #    the computation looks correct but an incorrect pos array is generated.
+    pos, _ = CompressedBase.nnz_to_pos_cls(q_nnz)
+    return csr_array((vals_store, cols_store, pos), shape=shape, dtype=np.float64)
 
 
 def enumerate_independent_sets(graph: nx.Graph, k: int, prevk_sets=None, prevk_queues=None):
