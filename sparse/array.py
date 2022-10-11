@@ -1840,6 +1840,7 @@ class coo_array(CompressedBase):
             SparseOpCode.BOUNDS_FROM_PARTITIONED_COORDINATES,
             error_on_interference=False,
             tag=ctx.core_library.LEGATE_CORE_MANUAL_PARALLEL_LAUNCH_TAG,
+            provenance=runtime.legate_context.provenance,
         )
         launcher.add_input(rows_store, rows_part.get_requirement(1, 0), tag=0)
         bounds_store = ctx.create_store(domain_ty, shape=(1,), optimize_scalar=True)
@@ -1915,6 +1916,7 @@ class coo_array(CompressedBase):
             SparseOpCode.BOUNDS_FROM_PARTITIONED_COORDINATES,
             error_on_interference=False,
             tag=ctx.core_library.LEGATE_CORE_MANUAL_PARALLEL_LAUNCH_TAG,
+            provenance=runtime.legate_context.provenance,
         )
         launcher.add_input(cols_store, cols_part.get_requirement(1, 0), tag=0)
         bounds_store = ctx.create_store(domain_ty, shape=(1,), optimize_scalar=True)

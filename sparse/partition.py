@@ -13,9 +13,9 @@
 # limitations under the License.
 
 from .config import SparseOpCode, domain_ty
-from .runtime import ctx
+from .runtime import ctx, runtime as sparse_runtime
 
-from legate.core import Partition as LegionPartition, Rect, Region, Transform, Point
+from legate.core import Partition as LegionPartition, Rect, Region, Transform, Point, track_provenance
 from legate.core.launcher import TaskLauncher
 from legate.core.partition import Broadcast, DomainPartition, ImagePartition, AffineProjection
 from legate.core.runtime import runtime
@@ -72,6 +72,7 @@ class CompressedImagePartition(ImagePartition):
                 SparseOpCode.FAST_IMAGE_RANGE,
                 error_on_interference=False,
                 tag=ctx.core_library.LEGATE_CORE_MANUAL_PARALLEL_LAUNCH_TAG,
+                provenance=sparse_runtime.legate_context.provenance,
             )
             launcher.add_input(self._store, source_part.get_requirement(launch_shape.ndim, None), tag=0)
             bounds_store = ctx.create_store(domain_ty, shape=(1,), optimize_scalar=True)
@@ -120,6 +121,7 @@ class MinMaxImagePartition(ImagePartition):
                 SparseOpCode.BOUNDS_FROM_PARTITIONED_COORDINATES,
                 error_on_interference=False,
                 tag=ctx.core_library.LEGATE_CORE_MANUAL_PARALLEL_LAUNCH_TAG,
+                provenance=sparse_runtime.legate_context.provenance,
             )
             launcher.add_input(self._store, source_part.get_requirement(launch_shape.ndim, None), tag=0)
             bounds_store = ctx.create_store(domain_ty, shape=(1,), optimize_scalar=True)

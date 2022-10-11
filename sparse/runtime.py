@@ -17,6 +17,7 @@ from legate.core import get_legate_runtime, types, Rect, LEGATE_MAX_DIM
 import os
 import numpy as np
 
+
 class Runtime:
     def __init__(self, legate_context):
         self.legate_context = legate_context
