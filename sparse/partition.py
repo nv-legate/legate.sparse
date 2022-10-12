@@ -74,7 +74,7 @@ class CompressedImagePartition(ImagePartition):
                 tag=ctx.core_library.LEGATE_CORE_MANUAL_PARALLEL_LAUNCH_TAG,
                 provenance=sparse_runtime.legate_context.provenance,
             )
-            launcher.add_input(self._store, source_part.get_requirement(launch_shape.ndim, None), tag=0)
+            launcher.add_input(self._store, source_part.get_requirement(launch_shape.ndim, None), tag=1) # LEGATE_CORE_KEY_STORE_TAG
             bounds_store = ctx.create_store(domain_ty, shape=(1,), optimize_scalar=True)
             launcher.add_output(bounds_store, Broadcast(None, 0), tag=0)
             domains = launcher.execute(Rect(hi=launch_shape))
@@ -123,7 +123,7 @@ class MinMaxImagePartition(ImagePartition):
                 tag=ctx.core_library.LEGATE_CORE_MANUAL_PARALLEL_LAUNCH_TAG,
                 provenance=sparse_runtime.legate_context.provenance,
             )
-            launcher.add_input(self._store, source_part.get_requirement(launch_shape.ndim, None), tag=0)
+            launcher.add_input(self._store, source_part.get_requirement(launch_shape.ndim, None), tag=1) # LEGATE_CORE_KEY_STORE_TAG
             bounds_store = ctx.create_store(domain_ty, shape=(1,), optimize_scalar=True)
             launcher.add_output(bounds_store, Broadcast(None, 0), tag=0)
             domains = launcher.execute(Rect(hi=launch_shape))

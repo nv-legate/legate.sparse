@@ -1842,7 +1842,7 @@ class coo_array(CompressedBase):
             tag=ctx.core_library.LEGATE_CORE_MANUAL_PARALLEL_LAUNCH_TAG,
             provenance=runtime.legate_context.provenance,
         )
-        launcher.add_input(rows_store, rows_part.get_requirement(1, 0), tag=0)
+        launcher.add_input(rows_store, rows_part.get_requirement(1, 0), tag=1) # LEGATE_CORE_KEY_STORE_TAG
         bounds_store = ctx.create_store(domain_ty, shape=(1,), optimize_scalar=True)
         launcher.add_output(bounds_store, Broadcast(None, 0), tag=0)
         result = launcher.execute(Rect(hi=(num_procs,)))
@@ -1918,7 +1918,7 @@ class coo_array(CompressedBase):
             tag=ctx.core_library.LEGATE_CORE_MANUAL_PARALLEL_LAUNCH_TAG,
             provenance=runtime.legate_context.provenance,
         )
-        launcher.add_input(cols_store, cols_part.get_requirement(1, 0), tag=0)
+        launcher.add_input(cols_store, cols_part.get_requirement(1, 0), tag=1) # LEGATE_CORE_KEY_STORE_TAG
         bounds_store = ctx.create_store(domain_ty, shape=(1,), optimize_scalar=True)
         launcher.add_output(bounds_store, Broadcast(None, 0), tag=0)
         result = launcher.execute(Rect(hi=(num_procs,)))
