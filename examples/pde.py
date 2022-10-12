@@ -16,7 +16,6 @@
 # https://aquaulb.github.io/book_solving_pde_mooc/solving_pde_mooc/notebooks/05_IterativeMethods/05_01_Iteration_and_2D.html.
 
 import argparse
-import matplotlib.pyplot as plt
 import sys
 
 parser = argparse.ArgumentParser()
@@ -209,6 +208,7 @@ p_e = p_exact_2d(X, Y)
 print(f"Iterative method error: {np.sqrt(np.sum((p - p_e) ** 2))}")
 
 if args.plot:
+    import matplotlib.pyplot as plt
     assert(args.plot_filename is not None)
     plt.switch_backend("Agg")
     fig, (ax_1, ax_2, ax_3) = plt.subplots(1, 3, figsize=(16,5))
