@@ -180,7 +180,7 @@ A = d2_mat_dirichlet_2d(nx, ny, dx, dy)
 # Warm up the runtime and legate by performing an SpMV on A
 # before timing. This makes sure that any deppart operations
 # using A are completed before timing.
-_ = A.dot(np.random.random((A.shape[1],)))
+_ = A.dot(np.zeros((A.shape[1],)))
 start = time()
 # If we're testing throughput, run only the prescribed number of iterations.
 if args.throughput:
