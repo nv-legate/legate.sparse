@@ -109,19 +109,30 @@ class LegateHamiltonianDriver:
             # We reset the partitions in between each call so that we evenly
             # distribute future operations across all memories. See the comment
             # below about why np.flip is applied. We do it here to avoid accumulating
-            # too much extra space.
+            # too much extra space. Unfortunately, np.flip is not implemented with
+            # distributed support, so we can't use it. We get around this by just making
+            # all of the coordinates negative before sorting, then un-doing the operation
+            # after the sort to get the reverse order.
 
+            rows_lower = get_store_from_cunumeric_array(-1 * store_to_cunumeric_array(rows_lower))
+            cols_lower = get_store_from_cunumeric_array(-1 * store_to_cunumeric_array(cols_lower))
             rows_lower, cols_lower = sort_by_key(rows_lower, cols_lower)
             reset_output_store_partition(rows_lower)
             reset_output_store_partition(cols_lower)
-            rows_lower_group.append(np.flip(store_to_cunumeric_array(rows_lower)))
-            cols_lower_group.append(np.flip(store_to_cunumeric_array(cols_lower)))
+            rows_lower = get_store_from_cunumeric_array(-1 * store_to_cunumeric_array(rows_lower))
+            cols_lower = get_store_from_cunumeric_array(-1 * store_to_cunumeric_array(cols_lower))
+            rows_lower_group.append(store_to_cunumeric_array(rows_lower))
+            cols_lower_group.append(store_to_cunumeric_array(cols_lower))
 
+            rows_upper = get_store_from_cunumeric_array(-1 * store_to_cunumeric_array(rows_upper))
+            cols_upper = get_store_from_cunumeric_array(-1 * store_to_cunumeric_array(cols_upper))
             rows_upper, cols_upper = sort_by_key(rows_upper, cols_upper)
             reset_output_store_partition(rows_upper)
             reset_output_store_partition(cols_upper)
-            rows_upper_group.append(np.flip(store_to_cunumeric_array(rows_upper)))
-            cols_upper_group.append(np.flip(store_to_cunumeric_array(cols_upper)))
+            rows_upper = get_store_from_cunumeric_array(-1 * store_to_cunumeric_array(rows_upper))
+            cols_upper = get_store_from_cunumeric_array(-1 * store_to_cunumeric_array(cols_upper))
+            rows_upper_group.append(store_to_cunumeric_array(rows_upper))
+            cols_upper_group.append(store_to_cunumeric_array(cols_upper))
 
             # If there is no frontier to explore, then we're done.
             if np.sum(sets_to_sizes(nbrs, graph)) == 0:
