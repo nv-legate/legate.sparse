@@ -16,6 +16,7 @@ from .array import (
     CompressedBase,
     coord_ty,
     csr_array,
+    factor_int,
     get_store_from_cunumeric_array,
     nnz_ty,
     store_to_cunumeric_array,
@@ -78,35 +79,111 @@ class LegateHamiltonianDriver:
             rows_upper = ctx.create_store(coord_ty, ndim=1)
             cols_upper = ctx.create_store(coord_ty, ndim=1)
 
+            # Here we have to play some tricks with partitioning to make
+            # sure that we don't blow out the memory of the machine by
+            # requiring any region to be fully materialized in one particular
+            # memory. Since the dependency pattern of the hamiltonian creation
+            # is that the entire previous set of hamiltonians is needed to
+            # compute the next piece, we do a 2-D replication strategy, similar
+            # to the 3-D matrix-multiply algorithms, where data is somewhat
+            # replicated but still partitioned across one dimension of the
+            # processor grid. In particular, we create a grid where the x
+            # dimension partitions the current sets and the y-dimension
+            # partitions the prior sets, and then we launch over the full
+            # grid, where each processor takes the corresponding pieces
+            # of its x and y dimensions. Notably, we don't do this replication
+            # algorithm for k = 1, and let the auto-parallelizer kick in for
+            # that simple case.
+            num_procs = runtime.num_procs
+            xdim, ydim = factor_int(num_procs)
+            # Always try to make the x-dimension of the grid larger than the y.
+            xdim, ydim = (xdim, ydim) if xdim > ydim else (ydim, xdim)
+            grid = Shape((xdim, ydim))
+            sets_tiling = Shape(((sets.shape[0] + grid[0] - 1) // grid[0], 1))
+            prev_sets_tiling = None
+            if prev_sets is not None:
+                prev_sets_tiling = Shape(
+                    ((prev_sets.shape[0] + grid[1] - 1) // grid[1], 1)
+                )
+
+            rows_proj_fn = runtime.get_1d_to_2d_functor_id(
+                grid[0], grid[1], True
+            )  # True is for the rows.
+            cols_proj_fn = runtime.get_1d_to_2d_functor_id(
+                grid[0], grid[1], False
+            )  # False is for the cols.
+            flattened_grid = Shape((num_procs,))
+
             # Compute the lower.
-            task = ctx.create_task(SparseOpCode.CREATE_HAMILTONIANS)
-            task.add_scalar_arg(graph.number_of_nodes(), types.int32)
-            task.add_scalar_arg(k, types.int32)
-            task.add_scalar_arg(offset, types.uint64)
-            task.add_scalar_arg(True, bool)  # Lower.
-            task.add_input(sets)
-            task.add_output(rows_lower)
-            task.add_output(cols_lower)
-            if k > 1:
-                # TODO (rohany): See if we can get around broadcasting this.
-                task.add_input(prev_sets)
-                task.add_broadcast(prev_sets)
+            if k == 1:
+                task = ctx.create_task(SparseOpCode.CREATE_HAMILTONIANS)
+                task.add_scalar_arg(graph.number_of_nodes(), types.int32)
+                task.add_scalar_arg(k, types.int32)
+                task.add_scalar_arg(offset, types.uint64)
+                task.add_scalar_arg(True, bool)  # Lower.
+                task.add_input(sets)
+                task.add_output(rows_lower)
+                task.add_output(cols_lower)
+            else:
+                # Since we're using output regions, we need to launch
+                # over a 1 dimensional grid and use a projection functor
+                # to reconstruct the grid.
+                task = ctx.create_manual_task(
+                    SparseOpCode.CREATE_HAMILTONIANS,
+                    launch_domain=Rect(hi=flattened_grid),
+                )
+                task.add_scalar_arg(graph.number_of_nodes(), types.int32)
+                task.add_scalar_arg(k, types.int32)
+                task.add_scalar_arg(offset, types.uint64)
+                task.add_scalar_arg(True, bool)  # Lower.
+                # To partition a 1-D object along 2 dimensions, we need
+                # to promote it into a two dimensional object as well.
+                task.add_input(
+                    sets.promote(1).partition(Tiling(sets_tiling, grid)),
+                    proj=rows_proj_fn,
+                )
+                task.add_output(rows_lower)
+                task.add_output(cols_lower)
+                task.add_input(
+                    prev_sets.promote(1).partition(
+                        Tiling(prev_sets_tiling, grid)
+                    ),
+                    proj=cols_proj_fn,
+                )
                 task.add_scalar_arg(prev_offset, types.uint64)
             task.execute()
 
             # Compute the upper.
-            task = ctx.create_task(SparseOpCode.CREATE_HAMILTONIANS)
-            task.add_scalar_arg(graph.number_of_nodes(), types.int32)
-            task.add_scalar_arg(k, types.int32)
-            task.add_scalar_arg(offset, types.uint64)
-            task.add_scalar_arg(False, bool)  # Upper.
-            task.add_input(sets)
-            task.add_output(rows_upper)
-            task.add_output(cols_upper)
-            if k > 1:
-                # TODO (rohany): See if we can get around broadcasting this.
-                task.add_input(prev_sets)
-                task.add_broadcast(prev_sets)
+            if k == 1:
+                task = ctx.create_task(SparseOpCode.CREATE_HAMILTONIANS)
+                task.add_scalar_arg(graph.number_of_nodes(), types.int32)
+                task.add_scalar_arg(k, types.int32)
+                task.add_scalar_arg(offset, types.uint64)
+                task.add_scalar_arg(False, bool)  # Upper.
+                task.add_input(sets)
+                task.add_output(rows_upper)
+                task.add_output(cols_upper)
+            else:
+                task = ctx.create_manual_task(
+                    SparseOpCode.CREATE_HAMILTONIANS,
+                    launch_domain=Rect(hi=flattened_grid),
+                )
+                task.add_scalar_arg(graph.number_of_nodes(), types.int32)
+                task.add_scalar_arg(k, types.int32)
+                task.add_scalar_arg(offset, types.uint64)
+                task.add_scalar_arg(False, bool)  # Upper.
+                task.add_input(
+                    sets.promote(1).partition(Tiling(sets_tiling, grid)),
+                    proj=rows_proj_fn,
+                )
+                task.add_output(rows_upper)
+                task.add_output(cols_upper)
+                task.add_input(
+                    prev_sets.promote(1).partition(
+                        Tiling(prev_sets_tiling, grid)
+                    ),
+                    proj=cols_proj_fn,
+                )
                 task.add_scalar_arg(prev_offset, types.uint64)
             task.execute()
 

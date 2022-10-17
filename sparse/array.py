@@ -74,13 +74,7 @@ from legate.core.shape import Shape
 from legate.core.store import StorePartition
 from legate.core.types import ReductionOp
 
-from .config import (
-    SparseOpCode,
-    SparseProjectionFunctor,
-    _sparse,
-    domain_ty,
-    rect1,
-)
+from .config import SparseOpCode, SparseProjectionFunctor, domain_ty, rect1
 from .coverage import clone_scipy_arr_kind
 from .partition import CompressedImagePartition, MinMaxImagePartition
 from .runtime import ctx, runtime
@@ -122,16 +116,6 @@ ffi = FFI()
 # TODO (rohany): It makes sense (for simplicities sake) to allow for lifting
 # from raw scipy sparse matrices into legate types. I can utilize cunumeric to
 # dispatch and handle internal details of getting the stores etc.
-
-# TODO (rohany): Move this into an encapsulated runtime.
-dynamic_projection_functor_id = 1
-
-
-def get_projection_functor_id():
-    global dynamic_projection_functor_id
-    retval = dynamic_projection_functor_id
-    dynamic_projection_functor_id += 1
-    return retval + SparseProjectionFunctor.LAST_STATIC_PROJ_FN
 
 
 def get_store_from_cunumeric_array(
@@ -926,14 +910,11 @@ class csr_array(CompressedBase, DenseSparseBase):
             num_procs = runtime.num_procs
             grid = Shape(factor_int(num_procs))
 
-            rows_proj_fn = ctx.get_projection_id(get_projection_functor_id())
-            cols_proj_fn = ctx.get_projection_id(get_projection_functor_id())
-            # TODO (rohany): Cache these in a sparse runtime.
-            _sparse.register_legate_sparse_1d_to_2d_functor(
-                rows_proj_fn, grid[0], grid[1], True
+            rows_proj_fn = runtime.get_1d_to_2d_functor_id(
+                grid[0], grid[1], True
             )  # True is for the rows.
-            _sparse.register_legate_sparse_1d_to_2d_functor(
-                cols_proj_fn, grid[0], grid[1], False
+            cols_proj_fn = runtime.get_1d_to_2d_functor_id(
+                grid[0], grid[1], False
             )  # False is for the cols.
 
             # To create a tiling on a 2-D color space of a 1-D region, we first

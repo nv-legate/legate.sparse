@@ -17,7 +17,14 @@ import os
 import numpy as np
 from legate.core import Rect, get_legate_runtime, types
 
-from .config import SparseOpCode, SparseTunable, _supported_dtypes, sparse_ctx
+from .config import (
+    SparseOpCode,
+    SparseProjectionFunctor,
+    SparseTunable,
+    _sparse,
+    _supported_dtypes,
+    sparse_ctx,
+)
 
 
 class Runtime:
@@ -41,6 +48,8 @@ class Runtime:
                 types.int32,
             )
         )
+        self.proj_fn_1d_to_2d_cache = {}
+        self.dynamic_projection_functor_id = 1
 
         # Register type aliases for all of the common numpy types.
         for np_type, core_type in _supported_dtypes.items():
@@ -65,6 +74,24 @@ class Runtime:
             self.legate_runtime.get_nccl_communicator().initialize(
                 self.num_gpus
             )
+
+    def get_1d_to_2d_functor_id(self, xdim: int, ydim: int, rows: bool) -> int:
+        key = (xdim, ydim, rows)
+        if key in self.proj_fn_1d_to_2d_cache:
+            return self.proj_fn_1d_to_2d_cache[key]
+        result = self.get_projection_functor_id()
+        _sparse.register_legate_sparse_1d_to_2d_functor(
+            result, xdim, ydim, rows
+        )
+        self.proj_fn_1d_to_2d_cache[key] = result
+        return result
+
+    def get_projection_functor_id(self) -> int:
+        result = self.dynamic_projection_functor_id
+        self.dynamic_projection_functor_id += 1
+        return sparse_ctx.get_projection_id(
+            result + SparseProjectionFunctor.LAST_STATIC_PROJ_FN
+        )
 
 
 ctx = sparse_ctx
