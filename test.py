@@ -18,14 +18,20 @@ from __future__ import annotations
 
 import sys
 
-from tests._utils.config import Config
-from tests._utils.system import System
-from tests._utils.test_plan import TestPlan
+from legate.tester.config import Config
+from legate.tester.test_plan import TestPlan
+from legate.tester.test_system import TestSystem
+
+from legate.tester import SKIPPED_EXAMPLES
+
+# Add some other tests that we shouldn't run.
+SKIPPED_EXAMPLES.add("examples/pyamg_legate_test.py")
+SKIPPED_EXAMPLES.add("examples/reference_amg.py")
 
 if __name__ == "__main__":
     config = Config(sys.argv)
 
-    system = System(dry_run=config.dry_run, debug=config.debug)
+    system = TestSystem(dry_run=config.dry_run)
 
     plan = TestPlan(config, system)
 

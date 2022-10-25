@@ -11,26 +11,23 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
-"""Provide TestStage subclasses for running configured test files using
-specific features.
 
-"""
-from __future__ import annotations
+import cunumeric as np
+import pytest
 
-from typing import Dict, Type
+import sparse.io as legate_io
+import scipy.io as sci_io
 
-from .. import FeatureType
-from .cpu import CPU
-from .gpu import GPU
-from .eager import Eager
-from .omp import OMP
-from .test_stage import TestStage
+from utils.common import test_mtx_files
 
-#: All the available test stages that can be selected
-STAGES: Dict[FeatureType, Type[TestStage]] = {
-    "cpus": CPU,
-    "cuda": GPU,
-    "openmp": OMP,
-    "eager": Eager,
-}
+
+@pytest.mark.parametrize("filename", test_mtx_files)
+def test_mmread(filename):
+    l = legate_io.mmread(filename)
+    s = sci_io.mmread(filename)
+    assert np.array_equal(l.todense(), s.todense())
+
+
+if __name__ == "__main__":
+    import sys
+    sys.exit(pytest.main(sys.argv))
