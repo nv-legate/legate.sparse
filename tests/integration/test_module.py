@@ -23,7 +23,7 @@ import sparse.io as legate_io
 import scipy.io as sci_io
 import numpy
 
-from common import test_mtx_files
+from utils.common import test_mtx_files
 
 
 @pytest.mark.parametrize("filename", test_mtx_files)
