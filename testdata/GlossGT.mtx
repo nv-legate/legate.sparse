@@ -1,0 +1,149 @@
+%%MatrixMarket matrix coordinate pattern general
+%-------------------------------------------------------------------------------
+% UF Sparse Matrix Collection, Tim Davis
+% http://www.cise.ufl.edu/research/sparse/matrices/Pajek/GlossGT
+% name: Pajek/GlossGT
+% [Pajek network: graph and digraph glossary]
+% id: 1501
+% date: 2001
+% author: W. Cherowitzo
+% ed: V. Batagelj
+% fields: name title A id kind notes aux date author ed
+% aux: nodename coord
+% kind: directed graph
+%-------------------------------------------------------------------------------
+% notes:
+% ------------------------------------------------------------------------------
+% Pajek network converted to sparse adjacency matrix for inclusion in UF sparse 
+% matrix collection, Tim Davis.  For Pajek datasets, See V. Batagelj & A. Mrvar,
+% http://vlado.fmf.uni-lj.si/pub/networks/data/.                                
+% ------------------------------------------------------------------------------
+%  Bill Cherowitzo: Graph and Digraph Glossary                                  
+%  http://www-math.cudenver.edu/~wcherowi/courses/m4408/glossary.html           
+%  Pajek's network: Barbara Zemlji"c, 2. nov 2003                               
+% The original problem had 3D xyz coordinates, but all values of z were equal   
+% to 0, and have been removed.  This graph has 2D coordinates.                  
+%-------------------------------------------------------------------------------
+72 72 122
+3 4
+15 4
+16 4
+2 6
+7 6
+26 6
+28 6
+37 6
+41 6
+46 6
+66 6
+53 9
+48 12
+14 16
+19 17
+29 17
+11 19
+17 19
+69 19
+1 20
+29 20
+31 20
+69 20
+15 22
+39 22
+52 22
+57 22
+7 26
+41 26
+49 26
+64 26
+66 26
+67 26
+25 27
+2 28
+4 28
+6 28
+8 28
+18 28
+33 28
+38 28
+41 28
+55 28
+56 28
+61 28
+1 30
+8 30
+13 30
+18 30
+26 30
+28 30
+29 30
+33 30
+36 30
+37 30
+41 30
+56 30
+62 30
+63 30
+69 30
+71 30
+15 31
+40 32
+13 37
+21 38
+36 38
+66 38
+52 39
+46 40
+18 41
+10 42
+21 42
+54 43
+59 43
+36 44
+71 45
+10 46
+42 46
+60 50
+20 51
+31 51
+32 51
+35 52
+39 52
+32 58
+40 58
+42 58
+46 58
+48 58
+63 62
+14 65
+17 65
+62 65
+51 68
+8 69
+29 69
+58 69
+63 69
+4 71
+7 71
+8 71
+18 71
+22 71
+25 71
+26 71
+37 71
+38 71
+39 71
+41 71
+44 71
+45 71
+47 71
+52 71
+57 71
+62 71
+19 72
+25 72
+27 72
+31 72
+33 72
+64 72
+68 72

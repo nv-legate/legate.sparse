@@ -1,0 +1,14 @@
+*/.idea/*
+*/*.cc.o
+*/*.cu.o
+*/*.d
+*/*.so
+*/*.dylib
+*__pycache__*
+.legate.core.json
+.thrust.json
+*.swp
+sparse/install_info.py
+sparse.egg-info/*
+build/*
+.idea
