@@ -12,31 +12,35 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# This spectral norm calculation was derived from https://github.com/pericycle/normest/.
+# This spectral norm calculation was derived from
+# https://github.com/pericycle/normest/.
 
 import cunumeric as np
+
 from sparse import csr_array
+
 
 # Return an approximation of the 2 norm of a matrix.
 def normest(M, tol=1e-4):
-    # M is a symmetric positive semi-definite numpy array or a scipy sparse matrix
-    # up to a tolerance of tol using the power method
+    # M is a symmetric positive semi-definite numpy array or a scipy sparse
+    # matrix up to a tolerance of tol using the power method
     max_it = 10
     res = 1
     it_count = 0
     x = np.random.rand(M.shape[1], 1)
     y = M.dot(x)
-    pnorm = np.sqrt(np.sum(y ** 2))
+    pnorm = np.sqrt(np.sum(y**2))
     x = y / pnorm
     while (res > tol) and (it_count < max_it):
         y = M.dot(x)
-        ynorm = np.sqrt(np.sum(y ** 2))
+        ynorm = np.sqrt(np.sum(y**2))
         res = abs(pnorm - ynorm)
         pnorm = np.copy(ynorm)
         x = y / ynorm
         it_count += 1
     v = M.dot(x)
-    return np.sqrt(np.sum(v ** 2))
+    return np.sqrt(np.sum(v**2))
+
 
 np.random.seed(15210)
 M = np.random.random((100, 100))

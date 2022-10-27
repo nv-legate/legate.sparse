@@ -14,20 +14,20 @@
 
 import cunumeric as np
 import pytest
+import scipy.io as sci_io
+from utils.common import test_mtx_files
 
 import sparse.io as legate_io
-import scipy.io as sci_io
-
-from utils.common import test_mtx_files
 
 
 @pytest.mark.parametrize("filename", test_mtx_files)
 def test_mmread(filename):
-    l = legate_io.mmread(filename)
+    arr = legate_io.mmread(filename)
     s = sci_io.mmread(filename)
-    assert np.array_equal(l.todense(), s.todense())
+    assert np.array_equal(arr.todense(), s.todense())
 
 
 if __name__ == "__main__":
     import sys
+
     sys.exit(pytest.main(sys.argv))

@@ -15,49 +15,52 @@
 # This test file contains an assortment of tests for functions in the overall
 # scipy.sparse module and arent tied to a particular format.
 import cunumeric as np
-import pytest
-import sparse
-import scipy.sparse as scpy
-
-import sparse.io as legate_io
-import scipy.io as sci_io
 import numpy
-
+import pytest
+import scipy.io as sci_io
+import scipy.sparse as scpy
 from utils.common import test_mtx_files
+
+import sparse
+import sparse.io as legate_io
 
 
 @pytest.mark.parametrize("filename", test_mtx_files)
 @pytest.mark.parametrize("format", ["csr", "csc", "coo"])
 def test_kron(filename, format):
-    l = legate_io.mmread(filename).asformat(format)
+    arr = legate_io.mmread(filename).asformat(format)
     s = sci_io.mmread(filename).asformat(format)
-    res_legate = sparse.kron(l, sparse.coo_array(np.roll(l.todense(), 1)), format=format)
+    res_legate = sparse.kron(
+        arr, sparse.coo_array(np.roll(arr.todense(), 1)), format=format
+    )
     res_sci = scpy.kron(s, np.roll(s.toarray(), 1), format=format)
-    assert np.array_equal(res_legate.todense(), numpy.ascontiguousarray(res_sci.todense()))
+    assert np.array_equal(
+        res_legate.todense(), numpy.ascontiguousarray(res_sci.todense())
+    )
 
 
 @pytest.mark.parametrize("filename", test_mtx_files)
 @pytest.mark.parametrize("k", [-2, -1, 0, 1, 2])
 @pytest.mark.parametrize("format", ["coo", "csr", "csc"])
 def test_diagonal(filename, k, format):
-    l = legate_io.mmread(filename).asformat(format)
+    arr = legate_io.mmread(filename).asformat(format)
     s = sci_io.mmread(filename).asformat(format)
     # TODO (rohany): Convert this back.
     # if format != "coo" and k != 0:
     if k != 0:
         with pytest.raises(NotImplementedError):
-            assert np.array_equal(l.diagonal(k), s.diagonal(k))
+            assert np.array_equal(arr.diagonal(k), s.diagonal(k))
     else:
-        assert np.array_equal(l.diagonal(k), s.diagonal(k))
+        assert np.array_equal(arr.diagonal(k), s.diagonal(k))
 
 
 @pytest.mark.parametrize("filename", test_mtx_files)
 @pytest.mark.parametrize("format", ["csr"])
 @pytest.mark.parametrize("axis", [None, 0, 1])
 def test_sum(filename, format, axis):
-    l = legate_io.mmread(filename).asformat(format)
+    arr = legate_io.mmread(filename).asformat(format)
     s = sci_io.mmread(filename).asformat(format)
-    res_legate = l.sum(axis=axis)
+    res_legate = arr.sum(axis=axis)
     res_sci = s.sum(axis=axis)
     if axis is None:
         assert np.allclose(res_legate, res_sci)
@@ -70,4 +73,5 @@ def test_sum(filename, format, axis):
 
 if __name__ == "__main__":
     import sys
+
     sys.exit(pytest.main(sys.argv))

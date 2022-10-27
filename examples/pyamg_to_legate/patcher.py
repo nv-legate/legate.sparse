@@ -12,14 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# https://stackoverflow.com/questions/37297265/python-mock-patch-a-module-wherever-it-is-imported-from
-from typing import Any, Optional
-import unittest.mock as mock
 import sys
+import unittest.mock as mock
+from typing import Any, Optional
+
+# https://stackoverflow.com/questions/37297265/python-mock-patch-a-module-wherever-it-is-imported-from # noqa: E501
+
 
 def patch_all_symbol_imports(
-        target_symbol: Any, match_prefix: Optional[str] = None,
-        skip_substring: Optional[str] = None
+    target_symbol: Any,
+    match_prefix: Optional[str] = None,
+    skip_substring: Optional[str] = None,
 ):
     """
     Iterate through every visible module (in sys.modules) that starts with
@@ -59,9 +62,8 @@ def patch_all_symbol_imports(
     # Iterate through all currently imported modules
     # Make a copy in case it changes
     for module in list(sys.modules.values()):
-        name_matches = (
-                match_prefix is None
-                or module.__name__.startswith(match_prefix)
+        name_matches = match_prefix is None or module.__name__.startswith(
+            match_prefix
         )
         should_skip = (
             skip_substring is not None and skip_substring in module.__name__
@@ -74,8 +76,10 @@ def patch_all_symbol_imports(
         for local_name, local in list(module.__dict__.items()):
             if local is target_symbol:
                 # Patch this symbol local to the module
-                patchers.append(mock.patch(
-                    f'{module.__name__}.{local_name}', autospec=True
-                ))
+                patchers.append(
+                    mock.patch(
+                        f"{module.__name__}.{local_name}", autospec=True
+                    )
+                )
 
     return patchers

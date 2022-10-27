@@ -67,27 +67,30 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-import cunumeric as np
+import inspect
+import warnings
 from math import sqrt
 
-import warnings
-import inspect
-
-from .array import get_store_from_cunumeric_array, store_to_cunumeric_array
-from .runtime import ctx, runtime
-from .config import SparseOpCode
+import cunumeric as np
 from legate.core import track_provenance
+
+from .array import get_store_from_cunumeric_array
+from .config import SparseOpCode
+from .runtime import ctx, runtime
+
 
 # TODO (rohany): This only works for positive semi-definite matrices,
 #  while least squares should work for any matrix. Perhaps I should make
 #  that the default implementation.
-# TODO (rohany): There is an explicit cg method in scipy.sparse.linalg, so I could
-#  just move that one over there. It enables taking in a preconditioner as well.
+# TODO (rohany): There is an explicit cg method in scipy.sparse.linalg, so I
+# could just move that one over there. It enables taking in a preconditioner as
+# well.
 def spsolve(A, b, permc_spec=None, use_umfpack=False):
     assert len(b.shape) == 1 or (len(b.shape) == 2 and b.shape[1] == 1)
-    assert(len(A.shape) == 2 and A.shape[0] == A.shape[1])
+    assert len(A.shape) == 2 and A.shape[0] == A.shape[1]
 
-    # For our solver, we'll implement a simple CG solver without preconditioning.
+    # For our solver, we'll implement a simple CG solver without
+    # preconditioning.
     conv_iters = 25
     conv_threshold = 1e-10
 
@@ -107,7 +110,7 @@ def spsolve(A, b, permc_spec=None, use_umfpack=False):
         # We only do the convergence test every conv_iters or on the last
         # iteration
         if (i % conv_iters == 0 or i == (max_iters - 1)) and np.sqrt(
-                rsnew
+            rsnew
         ) < conv_threshold:
             converged = i
             break
@@ -218,11 +221,16 @@ class LinearOperator:
         else:
             obj = super(LinearOperator, cls).__new__(cls)
 
-            if (type(obj)._matvec == LinearOperator._matvec
-                    and type(obj)._matmat == LinearOperator._matmat):
-                warnings.warn("LinearOperator subclass should implement"
-                              " at least one of _matvec and _matmat.",
-                              category=RuntimeWarning, stacklevel=2)
+            if (
+                type(obj)._matvec == LinearOperator._matvec
+                and type(obj)._matmat == LinearOperator._matmat
+            ):
+                warnings.warn(
+                    "LinearOperator subclass should implement"
+                    " at least one of _matvec and _matmat.",
+                    category=RuntimeWarning,
+                    stacklevel=2,
+                )
 
             return obj
 
@@ -240,8 +248,7 @@ class LinearOperator:
         self.shape = shape
 
     def _init_dtype(self):
-        """Called from subclasses at the end of the __init__ routine.
-        """
+        """Called from subclasses at the end of the __init__ routine."""
         if self.dtype is None:
             v = np.zeros(self.shape[-1])
             self.dtype = np.asarray(self.matvec(v)).dtype
@@ -281,20 +288,21 @@ class LinearOperator:
         _matvec method to ensure that y has the correct shape and type.
 
         """
-        M,N = self.shape
+        M, N = self.shape
 
-        if x.shape != (N,) and x.shape != (N,1):
-            raise ValueError('dimension mismatch')
+        if x.shape != (N,) and x.shape != (N, 1):
+            raise ValueError("dimension mismatch")
 
         y = np.asarray(self._matvec(x, out=out))
 
         if x.ndim == 1:
-            # TODO (hme): This is a cuNumeric bug, reshape should accept an integer.
+            # TODO (hme): This is a cuNumeric bug, reshape should accept an
+            # integer.
             y = y.reshape((M,))
         elif x.ndim == 2:
-            y = y.reshape(M,1)
+            y = y.reshape(M, 1)
         else:
-            raise ValueError('invalid shape returned by user-defined matvec()')
+            raise ValueError("invalid shape returned by user-defined matvec()")
 
         return y
 
@@ -325,30 +333,39 @@ class LinearOperator:
         _rmatvec method to ensure that y has the correct shape and type.
 
         """
-        M,N = self.shape
+        M, N = self.shape
 
-        if x.shape != (M,) and x.shape != (M,1):
-            raise ValueError('dimension mismatch')
+        if x.shape != (M,) and x.shape != (M, 1):
+            raise ValueError("dimension mismatch")
 
         y = np.asarray(self._rmatvec(x, out=out))
 
         if x.ndim == 1:
             y = y.reshape(N)
         elif x.ndim == 2:
-            y = y.reshape(N,1)
+            y = y.reshape(N, 1)
         else:
-            raise ValueError('invalid shape returned by user-defined rmatvec()')
+            raise ValueError(
+                "invalid shape returned by user-defined rmatvec()"
+            )
 
         return y
 
 
-# _CustomLinearOperator is a LinearOperator defined by user-specified operations.
-# It is lifted from scipy.sparse.
+# _CustomLinearOperator is a LinearOperator defined by user-specified
+# operations. It is lifted from scipy.sparse.
 class _CustomLinearOperator(LinearOperator):
     """Linear operator defined in terms of user-specified operations."""
 
-    def __init__(self, shape, matvec, rmatvec=None, matmat=None,
-                 dtype=None, rmatmat=None):
+    def __init__(
+        self,
+        shape,
+        matvec,
+        rmatvec=None,
+        matmat=None,
+        dtype=None,
+        rmatmat=None,
+    ):
         super().__init__(dtype, shape)
 
         self.args = ()
@@ -356,7 +373,8 @@ class _CustomLinearOperator(LinearOperator):
         self.__matvec_impl = matvec
         self.__rmatvec_impl = rmatvec
 
-        # Check if the implementations of matvec and rmatvec have the out= parameter.
+        # Check if the implementations of matvec and rmatvec have the out=
+        # parameter.
         self._matvec_has_out = self._has_out(self.__matvec_impl)
         self._rmatvec_has_out = self._has_out(self.__rmatvec_impl)
 
@@ -391,7 +409,7 @@ class _CustomLinearOperator(LinearOperator):
             return False
         sig = inspect.signature(o)
         for key, param in sig.parameters.items():
-            if key == 'out':
+            if key == "out":
                 return True
         return False
 
@@ -414,7 +432,8 @@ class _SparseMatrixLinearOperator(LinearOperator):
         return self.AH.dot(x, out=out)
 
 
-# IdentityOperator is a no-op linear operator, and is  lifted from scipy.sparse.
+# IdentityOperator is a no-op linear operator, and is lifted from
+# scipy.sparse.
 class IdentityOperator(LinearOperator):
     def __init__(self, shape, dtype=None):
         super().__init__(dtype, shape)
@@ -472,19 +491,33 @@ def vec_mult_add(lhs, rhs, beta, left=False):
     return lhs
 
 
-def cg(A, b, x0=None, tol=1e-08, maxiter=None, M=None, callback=None, atol=None, conv_test_iters=25):
+def cg(
+    A,
+    b,
+    x0=None,
+    tol=1e-08,
+    maxiter=None,
+    M=None,
+    callback=None,
+    atol=None,
+    conv_test_iters=25,
+):
     # We keep semantics as close as possible to scipy.cg.
     # https://github.com/scipy/scipy/blob/v1.9.0/scipy/sparse/linalg/_isolve/iterative.py#L298-L385
     assert len(b.shape) == 1 or (len(b.shape) == 2 and b.shape[1] == 1)
-    assert(len(A.shape) == 2 and A.shape[0] == A.shape[1])
+    assert len(A.shape) == 2 and A.shape[0] == A.shape[1]
     assert atol is None, "atol is not supported."
 
     n = b.shape[0]
     if maxiter is None:
-        maxiter = n*10
+        maxiter = n * 10
 
     A = make_linear_operator(A)
-    M = IdentityOperator(A.shape, dtype=A.dtype) if M is None else make_linear_operator(M)
+    M = (
+        IdentityOperator(A.shape, dtype=A.dtype)
+        if M is None
+        else make_linear_operator(M)
+    )
     x = np.zeros(n) if x0 is None else x0.copy()
 
     p = np.zeros(n)
@@ -499,15 +532,16 @@ def cg(A, b, x0=None, tol=1e-08, maxiter=None, M=None, callback=None, atol=None,
             callback(x)
         z = M.matvec(r, out=z)
         if i == 0:
-            # Make sure not to take an alias to z here, since we modify p in place.
+            # Make sure not to take an alias to z here, since we modify p in
+            # place.
             p[:] = z
             rz = r.dot(z)
         else:
             oldrtz = rz
             rz = r.dot(z)
             beta = rz / oldrtz
-            # Utilize a fused vector addition with scalar multiplication kernel.
-            # Computes p = p * beta + z.
+            # Utilize a fused vector addition with scalar multiplication
+            # kernel. Computes p = p * beta + z.
             vec_mult_add(p, z, beta, left=True)
         A.matvec(p, out=Ap)
         # Update pAp in place.
@@ -519,7 +553,9 @@ def cg(A, b, x0=None, tol=1e-08, maxiter=None, M=None, callback=None, atol=None,
         vec_mult_add(x, p, alpha, left=False)
         # Computes r -= alpha * Ap.
         vec_mult_add(r, Ap, -alpha, left=False)
-        if (i % conv_test_iters == 0 or i == (maxiter - 1)) and np.linalg.norm(r) < tol:
+        if (i % conv_test_iters == 0 or i == (maxiter - 1)) and np.linalg.norm(
+            r
+        ) < tol:
             # Test convergence every conv_test_iters iterations.
             break
 
@@ -529,11 +565,19 @@ def cg(A, b, x0=None, tol=1e-08, maxiter=None, M=None, callback=None, atol=None,
     return x, info
 
 
-# Implmentation taken from https://utminers.utep.edu/xzeng/2017spring_math5330/MATH_5330_Computational_Methods_of_Linear_Algebra_files/ln07.pdf.
-def cgs(A, b, x0=None, tol=1e-5, maxiter=None, M=None, callback=None, atol=None):
-    assert(len(A.shape) == 2 and A.shape[0] == A.shape[1] and len(b.shape) == 1 and b.shape[0] == A.shape[0])
+# Implmentation taken from
+# https://utminers.utep.edu/xzeng/2017spring_math5330/MATH_5330_Computational_Methods_of_Linear_Algebra_files/ln07.pdf.  # noqa: E501
+def cgs(
+    A, b, x0=None, tol=1e-5, maxiter=None, M=None, callback=None, atol=None
+):
+    assert (
+        len(A.shape) == 2
+        and A.shape[0] == A.shape[1]
+        and len(b.shape) == 1
+        and b.shape[0] == A.shape[0]
+    )
     # TODO (rohany): Handle preconditioning later.
-    assert(M is None)
+    assert M is None
     A = _SparseMatrixLinearOperator(A)
 
     if callback is not None:
@@ -571,11 +615,19 @@ def cgs(A, b, x0=None, tol=1e-5, maxiter=None, M=None, callback=None, atol=None)
     return x
 
 
-# This implementation of bicg is adapated from https://en.wikipedia.org/wiki/Biconjugate_gradient_method.
-def bicg(A, b, x0=None, tol=1e-5, maxiter=None, M=None, callback=None, atol=None):
-    assert(len(A.shape) == 2 and A.shape[0] == A.shape[1] and len(b.shape) == 1 and b.shape[0] == A.shape[0])
+# This implementation of bicg is adapated from
+# https://en.wikipedia.org/wiki/Biconjugate_gradient_method.
+def bicg(
+    A, b, x0=None, tol=1e-5, maxiter=None, M=None, callback=None, atol=None
+):
+    assert (
+        len(A.shape) == 2
+        and A.shape[0] == A.shape[1]
+        and len(b.shape) == 1
+        and b.shape[0] == A.shape[0]
+    )
     # TODO (rohany): Handle preconditioning later.
-    assert(M is None)
+    assert M is None
     A = _SparseMatrixLinearOperator(A)
 
     if callback is not None:
@@ -615,8 +667,19 @@ def bicg(A, b, x0=None, tol=1e-5, maxiter=None, M=None, callback=None, atol=None
 
 # This implementation of GMRES is lifted from the cupy implementation:
 # https://github.com/cupy/cupy/blob/9d2e2381ae7f33a42291d1bf8271484c9d2a55ac/cupyx/scipy/sparse/linalg/_iterative.py#L94.
-def gmres(A, b, x0=None, tol=1e-5, restart=None, maxiter=None, M=None,
-          callback=None, atol=None, callback_type=None, conv_test_iters=25):
+def gmres(
+    A,
+    b,
+    x0=None,
+    tol=1e-5,
+    restart=None,
+    maxiter=None,
+    M=None,
+    callback=None,
+    atol=None,
+    callback_type=None,
+    conv_test_iters=25,
+):
     """Uses Generalized Minimal RESidual iteration to solve ``Ax = b``.
     Args:
         A (ndarray, spmatrix or LinearOperator): The real or complex
@@ -653,10 +716,14 @@ def gmres(A, b, x0=None, tol=1e-5, restart=None, maxiter=None, M=None,
     .. seealso:: :func:`scipy.sparse.linalg.gmres`
     """
     assert len(b.shape) == 1 or (len(b.shape) == 2 and b.shape[1] == 1)
-    assert(len(A.shape) == 2 and A.shape[0] == A.shape[1])
+    assert len(A.shape) == 2 and A.shape[0] == A.shape[1]
     A = make_linear_operator(A)
     n = A.shape[0]
-    M = IdentityOperator(A.shape, dtype=A.dtype) if M is None else make_linear_operator(M)
+    M = (
+        IdentityOperator(A.shape, dtype=A.dtype)
+        if M is None
+        else make_linear_operator(M)
+    )
     x = np.zeros(n) if x0 is None else x0.copy()
 
     b_norm = np.linalg.norm(b)
@@ -672,19 +739,19 @@ def gmres(A, b, x0=None, tol=1e-5, restart=None, maxiter=None, M=None,
         restart = 20
     restart = min(restart, n)
     if callback_type is None:
-        callback_type = 'pr_norm'
-    if callback_type not in ('x', 'pr_norm'):
-        raise ValueError('Unknown callback_type: {}'.format(callback_type))
+        callback_type = "pr_norm"
+    if callback_type not in ("x", "pr_norm"):
+        raise ValueError("Unknown callback_type: {}".format(callback_type))
     if callback is None:
         callback_type = None
 
     V = np.empty((n, restart), dtype=A.dtype)
-    H = np.zeros((restart+1, restart), dtype=A.dtype)
-    e = np.zeros((restart+1,), dtype=A.dtype)
+    H = np.zeros((restart + 1, restart), dtype=A.dtype)
+    e = np.zeros((restart + 1,), dtype=A.dtype)
 
     def compute_hu(u, j):
-        h = V[:, :j+1].conj().T @ u
-        u -= V[:, :j+1] @ h
+        h = V[:, : j + 1].conj().T @ u
+        u -= V[:, : j + 1] @ h
         return h, u
 
     iters = 0
@@ -692,9 +759,9 @@ def gmres(A, b, x0=None, tol=1e-5, restart=None, maxiter=None, M=None,
         mx = M.matvec(x)
         r = b - A.matvec(mx)
         r_norm = np.linalg.norm(r)
-        if callback_type == 'x':
+        if callback_type == "x":
             callback(mx)
-        elif callback_type == 'pr_norm' and iters > 0:
+        elif callback_type == "pr_norm" and iters > 0:
             callback(r_norm / b_norm)
         if r_norm <= atol or iters >= maxiter:
             break
@@ -706,11 +773,11 @@ def gmres(A, b, x0=None, tol=1e-5, restart=None, maxiter=None, M=None,
         for j in range(restart):
             z = M.matvec(v)
             u = A.matvec(z)
-            H[:j+1, j], u = compute_hu(u, j)
-            H[j+1, j] = np.linalg.norm(u)
-            if j+1 < restart:
-                v = u / H[j+1, j]
-                V[:, j+1] = v
+            H[: j + 1, j], u = compute_hu(u, j)
+            H[j + 1, j] = np.linalg.norm(u)
+            if j + 1 < restart:
+                v = u / H[j + 1, j]
+                V[:, j + 1] = v
 
         # Note: The least-square solution to equation Hy = e is computed on CPU
         # because it is faster if tha matrix size is small.
@@ -726,10 +793,12 @@ def gmres(A, b, x0=None, tol=1e-5, restart=None, maxiter=None, M=None,
 
 
 # Doesnt work....
-def bicgstab(A, b, x0=None, tol=1e-5, maxiter=None, M=None, callback=None, atol=None):
-    # assert(len(A.shape) == 2 and A.shape[0] == A.shape[1] and len(b.shape) == 1 and b.shape[0] == A.shape[0])
+def bicgstab(
+    A, b, x0=None, tol=1e-5, maxiter=None, M=None, callback=None, atol=None
+):
+    # assert(len(A.shape) == 2 and A.shape[0] == A.shape[1] and len(b.shape) == # 1 and b.shape[0] == A.shape[0])  # noqa: E501
     # TODO (rohany): Handle preconditioning later.
-    assert(M is None)
+    assert M is None
     A = _SparseMatrixLinearOperator(A)
 
     if callback is not None:
@@ -747,7 +816,8 @@ def bicgstab(A, b, x0=None, tol=1e-5, maxiter=None, M=None, callback=None, atol=
     if np.sqrt(r @ r) < tol:
         return x
 
-    # This version of BiCGSTAB is taken from https://utminers.utep.edu/xzeng/2017spring_math5330/MATH_5330_Computational_Methods_of_Linear_Algebra_files/ln07.pdf.
+    # This version of BiCGSTAB is taken from
+    # https://utminers.utep.edu/xzeng/2017spring_math5330/MATH_5330_Computational_Methods_of_Linear_Algebra_files/ln07.pdf. # noqa: E501
     # Without the restarts, it r @ rhat hits 0, resulting in nans.
     rhat = r
     p = r
@@ -773,7 +843,10 @@ def bicgstab(A, b, x0=None, tol=1e-5, maxiter=None, M=None, callback=None, atol=
         i += 1
     return x
 
-    # This version of BiCGSTAB is taken from https://en.wikipedia.org/wiki/Biconjugate_gradient_stabilized_method, and has the same problem as above.
+    # This version of BiCGSTAB is taken from
+    # https://en.wikipedia.org/wiki/Biconjugate_gradient_stabilized_method, and
+    # has the same problem as above.
+    #
     # rhat = r
     # rho = 1.0
     # alpha = 1.0
@@ -797,7 +870,7 @@ def bicgstab(A, b, x0=None, tol=1e-5, maxiter=None, M=None, callback=None, atol=
     #     h = x + alpha * p
     #     assert(not any(np.isnan(h)))
     #     # TODO (rohany): Could one of these checks be eliminated?
-    #     if (i % conv_iters == 0) and np.linalg.norm(A.matvec(h) - b, 2) < tol:
+    #     if (i % conv_iters == 0) and np.linalg.norm(A.matvec(h) - b, 2) < tol:  # noqa: E501
     #         x = h
     #         break
     #     if i % 100 == 0:
@@ -810,7 +883,7 @@ def bicgstab(A, b, x0=None, tol=1e-5, maxiter=None, M=None, callback=None, atol=
     #     assert(omega != 0)
     #     assert(not np.isnan(omega))
     #     x = h + omega * s
-    #     if (i % conv_iters == 0) and np.linalg.norm(A.matvec(h) - b, 2) < tol:
+    #     if (i % conv_iters == 0) and np.linalg.norm(A.matvec(h) - b, 2) < tol:  # noqa: E501
     #         x = h
     #         break
     #     assert(not any(np.isnan(x)))
@@ -820,12 +893,14 @@ def bicgstab(A, b, x0=None, tol=1e-5, maxiter=None, M=None, callback=None, atol=
     # return x
 
 
-# The next chunk of code implements a least squares linear solver on sparse matrices.
-# This code is taken directly from https://github.com/scipy/scipy/blob/v1.8.1/scipy/sparse/linalg/_isolve/lsqr.py.
-# I unfortunately cannot just call out to that code as it makes its own import of numpy and thus
-# will not utilize cunumeric.
+# The next chunk of code implements a least squares linear solver on sparse
+# matrices.  This code is taken directly from
+# https://github.com/scipy/scipy/blob/v1.8.1/scipy/sparse/linalg/_isolve/lsqr.py.
+# I unfortunately cannot just call out to that code as it makes its own import
+# of numpy and thus will not utilize cunumeric.
 
 eps = np.finfo(np.float64).eps
+
 
 def _sym_ortho(a, b):
     """
@@ -853,14 +928,24 @@ def _sym_ortho(a, b):
         r = b / s
     else:
         tau = b / a
-        c = np.sign(a) / sqrt(1+tau*tau)
+        c = np.sign(a) / sqrt(1 + tau * tau)
         s = c * tau
         r = a / c
     return c, s, r
 
 
-def lsqr(A, b, damp=0.0, atol=1e-6, btol=1e-6, conlim=1e8,
-         iter_lim=None, show=False, calc_var=False, x0=None):
+def lsqr(
+    A,
+    b,
+    damp=0.0,
+    atol=1e-6,
+    btol=1e-6,
+    conlim=1e8,
+    iter_lim=None,
+    show=False,
+    calc_var=False,
+    x0=None,
+):
     """Find the least-squares solution to a large, sparse, linear system
     of equations.
     The function solves ``Ax = b``  or  ``min ||Ax - b||^2`` or
@@ -1068,22 +1153,24 @@ def lsqr(A, b, damp=0.0, atol=1e-6, btol=1e-6, conlim=1e8,
         iter_lim = 2 * n
     var = np.zeros(n)
 
-    msg = ('The exact solution is  x = 0                              ',
-           'Ax - b is small enough, given atol, btol                  ',
-           'The least-squares solution is good enough, given atol     ',
-           'The estimate of cond(Abar) has exceeded conlim            ',
-           'Ax - b is small enough for this machine                   ',
-           'The least-squares solution is good enough for this machine',
-           'Cond(Abar) seems to be too large for this machine         ',
-           'The iteration limit has been reached                      ')
+    msg = (
+        "The exact solution is  x = 0                              ",
+        "Ax - b is small enough, given atol, btol                  ",
+        "The least-squares solution is good enough, given atol     ",
+        "The estimate of cond(Abar) has exceeded conlim            ",
+        "Ax - b is small enough for this machine                   ",
+        "The least-squares solution is good enough for this machine",
+        "Cond(Abar) seems to be too large for this machine         ",
+        "The iteration limit has been reached                      ",
+    )
 
     if show:
-        print(' ')
-        print('LSQR            Least-squares solution of  Ax = b')
-        str1 = f'The matrix A has {m} rows and {n} columns'
-        str2 = 'damp = %20.14e   calc_var = %8g' % (damp, calc_var)
-        str3 = 'atol = %8.2e                 conlim = %8.2e' % (atol, conlim)
-        str4 = 'btol = %8.2e               iter_lim = %8g' % (btol, iter_lim)
+        print(" ")
+        print("LSQR            Least-squares solution of  Ax = b")
+        str1 = f"The matrix A has {m} rows and {n} columns"
+        str2 = "damp = %20.14e   calc_var = %8g" % (damp, calc_var)
+        str3 = "atol = %8.2e                 conlim = %8.2e" % (atol, conlim)
+        str4 = "btol = %8.2e               iter_lim = %8g" % (btol, iter_lim)
         print(str1)
         print(str2)
         print(str3)
@@ -1093,7 +1180,7 @@ def lsqr(A, b, damp=0.0, atol=1e-6, btol=1e-6, conlim=1e8,
     istop = 0
     ctol = 0
     if conlim > 0:
-        ctol = 1/conlim
+        ctol = 1 / conlim
     anorm = 0
     acond = 0
     dampsq = damp**2
@@ -1119,7 +1206,7 @@ def lsqr(A, b, damp=0.0, atol=1e-6, btol=1e-6, conlim=1e8,
         beta = np.linalg.norm(u)
 
     if beta > 0:
-        u = (1/beta) * u
+        u = (1 / beta) * u
         v = A.rmatvec(u)
         alfa = np.linalg.norm(v)
     else:
@@ -1127,7 +1214,7 @@ def lsqr(A, b, damp=0.0, atol=1e-6, btol=1e-6, conlim=1e8,
         alfa = 0
 
     if alfa > 0:
-        v = (1/alfa) * v
+        v = (1 / alfa) * v
     w = v.copy()
 
     rhobar = alfa
@@ -1144,17 +1231,17 @@ def lsqr(A, b, damp=0.0, atol=1e-6, btol=1e-6, conlim=1e8,
             print(msg[0])
         return x, istop, itn, r1norm, r2norm, anorm, acond, arnorm, xnorm, var
 
-    head1 = '   Itn      x[0]       r1norm     r2norm '
-    head2 = ' Compatible    LS      Norm A   Cond A'
+    head1 = "   Itn      x[0]       r1norm     r2norm "
+    head2 = " Compatible    LS      Norm A   Cond A"
 
     if show:
-        print(' ')
+        print(" ")
         print(head1, head2)
         test1 = 1
         test2 = alfa / beta
-        str1 = '%6g %12.5e' % (itn, x[0])
-        str2 = ' %10.3e %10.3e' % (r1norm, r2norm)
-        str3 = '  %8.1e %8.1e' % (test1, test2)
+        str1 = "%6g %12.5e" % (itn, x[0])
+        str2 = " %10.3e %10.3e" % (r1norm, r2norm)
+        str3 = "  %8.1e %8.1e" % (test1, test2)
         print(str1, str2, str3)
 
     # Main iteration loop.
@@ -1168,7 +1255,7 @@ def lsqr(A, b, damp=0.0, atol=1e-6, btol=1e-6, conlim=1e8,
         beta = np.linalg.norm(u)
 
         if beta > 0:
-            u = (1/beta) * u
+            u = (1 / beta) * u
             anorm = sqrt(anorm**2 + alfa**2 + beta**2 + dampsq)
             v = A.rmatvec(u) - beta * v
             alfa = np.linalg.norm(v)
@@ -1186,7 +1273,7 @@ def lsqr(A, b, damp=0.0, atol=1e-6, btol=1e-6, conlim=1e8,
         else:
             # cs1 = 1 and sn1 = 0
             rhobar1 = rhobar
-            psi = 0.
+            psi = 0.0
 
         # Use a plane rotation to eliminate the subdiagonal element (beta)
         # of the lower-bidiagonal matrix, giving an upper-bidiagonal matrix.
@@ -1205,7 +1292,7 @@ def lsqr(A, b, damp=0.0, atol=1e-6, btol=1e-6, conlim=1e8,
 
         x = x + t1 * w
         w = v + t2 * w
-        ddnorm = ddnorm + np.linalg.norm(dk)**2
+        ddnorm = ddnorm + np.linalg.norm(dk) ** 2
 
         if calc_var:
             var = var + dk**2
@@ -1286,23 +1373,23 @@ def lsqr(A, b, damp=0.0, atol=1e-6, btol=1e-6, conlim=1e8,
                 prnt = True
             if itn <= 10:
                 prnt = True
-            if itn >= iter_lim-10:
+            if itn >= iter_lim - 10:
                 prnt = True
             # if itn%10 == 0: prnt = True
-            if test3 <= 2*ctol:
+            if test3 <= 2 * ctol:
                 prnt = True
-            if test2 <= 10*atol:
+            if test2 <= 10 * atol:
                 prnt = True
-            if test1 <= 10*rtol:
+            if test1 <= 10 * rtol:
                 prnt = True
             if istop != 0:
                 prnt = True
 
             if prnt:
-                str1 = '%6g %12.5e' % (itn, x[0])
-                str2 = ' %10.3e %10.3e' % (r1norm, r2norm)
-                str3 = '  %8.1e %8.1e' % (test1, test2)
-                str4 = ' %8.1e %8.1e' % (anorm, acond)
+                str1 = "%6g %12.5e" % (itn, x[0])
+                str2 = " %10.3e %10.3e" % (r1norm, r2norm)
+                str3 = "  %8.1e %8.1e" % (test1, test2)
+                str4 = " %8.1e %8.1e" % (anorm, acond)
                 print(str1, str2, str3, str4)
 
         if istop != 0:
@@ -1311,17 +1398,17 @@ def lsqr(A, b, damp=0.0, atol=1e-6, btol=1e-6, conlim=1e8,
     # End of iteration loop.
     # Print the stopping condition.
     if show:
-        print(' ')
-        print('LSQR finished')
+        print(" ")
+        print("LSQR finished")
         print(msg[istop])
-        print(' ')
-        str1 = 'istop =%8g   r1norm =%8.1e' % (istop, r1norm)
-        str2 = 'anorm =%8.1e   arnorm =%8.1e' % (anorm, arnorm)
-        str3 = 'itn   =%8g   r2norm =%8.1e' % (itn, r2norm)
-        str4 = 'acond =%8.1e   xnorm  =%8.1e' % (acond, xnorm)
-        print(str1 + '   ' + str2)
-        print(str3 + '   ' + str4)
-        print(' ')
+        print(" ")
+        str1 = "istop =%8g   r1norm =%8.1e" % (istop, r1norm)
+        str2 = "anorm =%8.1e   arnorm =%8.1e" % (anorm, arnorm)
+        str3 = "itn   =%8g   r2norm =%8.1e" % (itn, r2norm)
+        str4 = "acond =%8.1e   xnorm  =%8.1e" % (acond, xnorm)
+        print(str1 + "   " + str2)
+        print(str3 + "   " + str4)
+        print(" ")
 
     return x, istop, itn, r1norm, r2norm, anorm, acond, arnorm, xnorm, var
 
@@ -1330,11 +1417,11 @@ def _lanczos_asis(a, V, u, alpha, beta, i_start, i_end):
     for i in range(i_start, i_end):
         u[...] = a @ V[i]
         alpha[i] = V[i].conj() @ u
-        u -= u.T @ V[:i+1].conj().T @ V[:i+1]
+        u -= u.T @ V[: i + 1].conj().T @ V[: i + 1]
         beta[i] = np.linalg.norm(u)
         if i >= i_end - 1:
             break
-        V[i+1] = u / beta[i]
+        V[i + 1] = u / beta[i]
 
 
 def _eigsh_solve_ritz(alpha, beta, beta_k, k, which):
@@ -1350,9 +1437,9 @@ def _eigsh_solve_ritz(alpha, beta, beta_k, k, which):
     w, s = np.array(w), np.array(s)
 
     # Pick-up k ritz-values and ritz-vectors
-    if which == 'LA':
+    if which == "LA":
         idx = np.argsort(w)
-    elif which == 'LM':
+    elif which == "LM":
         idx = np.argsort(np.absolute(w))
     wk = w[idx[-k:]]
     sk = s[:, idx[-k:]]
@@ -1360,8 +1447,16 @@ def _eigsh_solve_ritz(alpha, beta, beta_k, k, which):
 
 
 # This eigsh implementation is lifted from CuPy.
-def eigsh(a, k=6, *, which='LM', ncv=None, maxiter=None, tol=0,
-          return_eigenvectors=True):
+def eigsh(
+    a,
+    k=6,
+    *,
+    which="LM",
+    ncv=None,
+    maxiter=None,
+    tol=0,
+    return_eigenvectors=True,
+):
     """
     Find ``k`` eigenvalues and eigenvectors of the real symmetric square
     matrix or complex Hermitian matrix ``A``.
@@ -1396,16 +1491,17 @@ def eigsh(a, k=6, *, which='LM', ncv=None, maxiter=None, tol=0,
     """
     n = a.shape[0]
     if a.ndim != 2 or a.shape[0] != a.shape[1]:
-        raise ValueError('expected square matrix (shape: {})'.format(a.shape))
-    if a.dtype.char not in 'fdFD':
-        raise TypeError('unsupprted dtype (actual: {})'.format(a.dtype))
+        raise ValueError("expected square matrix (shape: {})".format(a.shape))
+    if a.dtype.char not in "fdFD":
+        raise TypeError("unsupprted dtype (actual: {})".format(a.dtype))
     if k <= 0:
-        raise ValueError('k must be greater than 0 (actual: {})'.format(k))
+        raise ValueError("k must be greater than 0 (actual: {})".format(k))
     if k >= n:
-        raise ValueError('k must be smaller than n (actual: {})'.format(k))
-    if which not in ('LM', 'LA'):
-        raise ValueError('which must be \'LM\' or \'LA\' (actual: {})'
-                         ''.format(which))
+        raise ValueError("k must be smaller than n (actual: {})".format(k))
+    if which not in ("LM", "LA"):
+        raise ValueError(
+            "which must be 'LM' or 'LA' (actual: {})" "".format(which)
+        )
     if ncv is None:
         ncv = min(max(2 * k, k + 32), n - 1)
     else:
@@ -1453,7 +1549,7 @@ def eigsh(a, k=6, *, which='LM', ncv=None, maxiter=None, tol=0,
         u -= alpha[k] * V[k]
         u -= V[:k].T @ beta_k
         beta[k] = np.linalg.norm(u)
-        V[k+1] = u / beta[k]
+        V[k + 1] = u / beta[k]
 
         # Lanczos iteration
         lanczos(a, V, u, alpha, beta, k + 1, ncv)

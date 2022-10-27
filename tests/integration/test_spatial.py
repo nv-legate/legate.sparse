@@ -12,12 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import pytest
-
 import cunumeric as np
+import pytest
+import scipy.spatial.distance as sci_spatial
 
 import sparse.spatial as legate_spatial
-import scipy.spatial.distance as sci_spatial
+
 
 @pytest.mark.parametrize("ma", [20, 30, 40])
 @pytest.mark.parametrize("mb", [20, 30, 40])
@@ -25,11 +25,12 @@ import scipy.spatial.distance as sci_spatial
 def test_euclidean_cdist(ma, mb, n):
     XA = np.random.random((ma, n))
     XB = np.random.random((mb, n))
-    l = legate_spatial.cdist(XA, XB)
+    arr = legate_spatial.cdist(XA, XB)
     s = sci_spatial.cdist(XA, XB)
-    assert np.allclose(l, s)
+    assert np.allclose(arr, s)
 
 
 if __name__ == "__main__":
     import sys
+
     sys.exit(pytest.main(sys.argv))

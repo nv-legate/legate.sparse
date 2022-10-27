@@ -12,150 +12,152 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import cunumeric as np
-import pytest
-from sparse import csr_array, runtime
-import scipy.sparse as scpy
-from legate.core.solver import Partitioner
 import os
 
-import sparse.io as legate_io
-import scipy.io as sci_io
+import cunumeric as np
 import numpy
-
+import pytest
+import scipy.io as sci_io
+import scipy.sparse as scpy
+from legate.core.solver import Partitioner
 from utils.common import test_mtx_files
+
+import sparse.io as legate_io
+from sparse import csr_array, runtime
 
 
 @pytest.mark.parametrize("filename", test_mtx_files)
 def test_csr_from_dense(filename):
-    l = csr_array(legate_io.mmread(filename).todense())
+    arr = csr_array(legate_io.mmread(filename).todense())
     s = scpy.csr_array(sci_io.mmread(filename).todense())
-    assert np.array_equal(l.todense(), s.todense())
+    assert np.array_equal(arr.todense(), s.todense())
 
 
 @pytest.mark.parametrize("filename", test_mtx_files)
 def test_csr_to_coo(filename):
-    l = legate_io.mmread(filename).tocsr()
-    assert np.array_equal(l.todense(), l.tocoo().todense())
+    arr = legate_io.mmread(filename).tocsr()
+    assert np.array_equal(arr.todense(), arr.tocoo().todense())
 
 
 def test_csr_coo_constructor():
     f = test_mtx_files[0]
     coo = legate_io.mmread(f).tocoo()
-    csr = csr_array((coo.data, (coo.row, coo.col)), dtype=coo.dtype, shape=coo.shape)
+    csr = csr_array(
+        (coo.data, (coo.row, coo.col)), dtype=coo.dtype, shape=coo.shape
+    )
     assert np.array_equal(coo.todense(), csr.todense())
 
 
 @pytest.mark.parametrize("filename", test_mtx_files)
 def test_csr_from_scipy_csr(filename):
     s = scpy.csr_array(sci_io.mmread(filename).todense())
-    l = csr_array(s)
-    assert np.array_equal(l.todense(), s.todense())
+    arr = csr_array(s)
+    assert np.array_equal(arr.todense(), s.todense())
 
 
 @pytest.mark.parametrize("filename", test_mtx_files)
 @pytest.mark.parametrize("copy", [False])
 def test_csr_conj(filename, copy):
-    l = legate_io.mmread(filename).tocsr().conj(copy=copy)
+    arr = legate_io.mmread(filename).tocsr().conj(copy=copy)
     s = sci_io.mmread(filename).tocsr().conj(copy=copy)
-    assert np.array_equal(l.todense(), s.todense())
+    assert np.array_equal(arr.todense(), s.todense())
 
 
 @pytest.mark.parametrize("filename", test_mtx_files)
 def test_csr_dot(filename):
     # Test vectors and n-1 matrices.
-    l = legate_io.mmread(filename).tocsr()
+    arr = legate_io.mmread(filename).tocsr()
     s = sci_io.mmread(filename).tocsr()
-    vec = np.random.random((l.shape[0]))
-    assert np.allclose(l @ vec, s @ vec)
-    assert np.allclose(l.dot(vec), s.dot(vec))
-    result_l = np.zeros((l.shape[0]))
-    l.dot(vec, out=result_l)
+    vec = np.random.random((arr.shape[0]))
+    assert np.allclose(arr @ vec, s @ vec)
+    assert np.allclose(arr.dot(vec), s.dot(vec))
+    result_l = np.zeros((arr.shape[0]))
+    arr.dot(vec, out=result_l)
     assert np.allclose(result_l, s.dot(vec))
-    vec = np.random.random((l.shape[0], 1))
-    assert np.allclose(l @ vec, s @ vec)
-    assert np.allclose(l.dot(vec), s.dot(vec))
-    result_l = np.zeros((l.shape[0], 1))
-    l.dot(vec, out=result_l)
+    vec = np.random.random((arr.shape[0], 1))
+    assert np.allclose(arr @ vec, s @ vec)
+    assert np.allclose(arr.dot(vec), s.dot(vec))
+    result_l = np.zeros((arr.shape[0], 1))
+    arr.dot(vec, out=result_l)
     assert np.allclose(result_l, s.dot(vec))
 
 
 @pytest.mark.parametrize("filename", test_mtx_files)
 def test_balance_row_partitions(filename):
     # Test vectors and n-1 matrices.
-    l = legate_io.mmread(filename).tocsr()
-    l.balance()
+    arr = legate_io.mmread(filename).tocsr()
+    arr.balance()
     s = sci_io.mmread(filename).tocsr()
-    vec = np.random.random((l.shape[0]))
-    assert np.allclose(l @ vec, s @ vec)
-    assert np.allclose(l.dot(vec), s.dot(vec))
-    vec = np.random.random((l.shape[0], 1))
-    assert np.allclose(l @ vec, s @ vec)
-    assert np.allclose(l.dot(vec), s.dot(vec))
+    vec = np.random.random((arr.shape[0]))
+    assert np.allclose(arr @ vec, s @ vec)
+    assert np.allclose(arr.dot(vec), s.dot(vec))
+    vec = np.random.random((arr.shape[0], 1))
+    assert np.allclose(arr @ vec, s @ vec)
+    assert np.allclose(arr.dot(vec), s.dot(vec))
 
 
 @pytest.mark.parametrize("filename", test_mtx_files)
 def test_csr_spmm(filename):
-    l = legate_io.mmread(filename)
+    arr = legate_io.mmread(filename)
     s = sci_io.mmread(filename)
-    res_legate = l.tocsr() @ l.todense()
+    res_legate = arr.tocsr() @ arr.todense()
     res_sci = s.tocsr() @ s.todense()
     assert np.allclose(res_legate, res_sci)
-    result = np.zeros(l.shape)
-    l.tocsr().dot(l.todense(), out=result)
+    result = np.zeros(arr.shape)
+    arr.tocsr().dot(arr.todense(), out=result)
     assert np.allclose(res_legate, res_sci)
 
 
 @pytest.mark.parametrize("filename", test_mtx_files)
 @pytest.mark.parametrize("idim", [2, 4, 8, 16])
 def test_csr_spmm_rmatmul(filename, idim):
-    l = legate_io.mmread(filename).tocsr()
-    x = np.ones((idim, l.shape[1]))
+    arr = legate_io.mmread(filename).tocsr()
+    x = np.ones((idim, arr.shape[1]))
     s = sci_io.mmread(filename).tocsr()
     # TODO (rohany): Until we have the dispatch with cunumeric
     #  then we can stop explicitly calling __rmatmul__. We also
     #  can't even do it against the scipy matrix because it doesn't
     #  have the overload either.
-    assert np.allclose(l.__rmatmul__(x), numpy.array(x) @ s)
+    assert np.allclose(arr.__rmatmul__(x), numpy.array(x) @ s)
 
 
 @pytest.mark.parametrize("filename", test_mtx_files)
 def test_csr_csr_csr_spgemm(filename):
-    l = legate_io.mmread(filename)
+    arr = legate_io.mmread(filename)
     s = sci_io.mmread(filename).tocsr()
-    res_legate = l.tocsr() @ l.tocsr()
+    res_legate = arr.tocsr() @ arr.tocsr()
     res_sci = s @ s
     assert np.allclose(res_legate.todense(), res_sci.todense())
 
 
 @pytest.mark.parametrize("filename", test_mtx_files)
 def test_csr_csr_csc_spgemm(filename):
-    l = legate_io.mmread(filename)
+    arr = legate_io.mmread(filename)
     s = sci_io.mmread(filename)
-    res_legate = l.tocsr() @ l.tocsc()
+    res_legate = arr.tocsr() @ arr.tocsc()
     res_sci = s.tocsr() @ s.tocsc()
     assert np.allclose(res_legate.todense(), res_sci.todense())
 
 
 @pytest.mark.parametrize("filename", test_mtx_files)
 def test_csr_transpose(filename):
-    l = legate_io.mmread(filename).tocsr().T
+    arr = legate_io.mmread(filename).tocsr().T
     s = sci_io.mmread(filename).tocsr().T
-    assert np.array_equal(l.todense(), numpy.ascontiguousarray(s.todense()))
+    assert np.array_equal(arr.todense(), numpy.ascontiguousarray(s.todense()))
 
 
 @pytest.mark.parametrize("filename", test_mtx_files)
 def test_csr_todense(filename):
-    l = legate_io.mmread(filename).tocsr()
+    arr = legate_io.mmread(filename).tocsr()
     s = sci_io.mmread(filename).tocsr()
-    assert np.array_equal(l.todense(), s.todense())
+    assert np.array_equal(arr.todense(), s.todense())
 
 
 @pytest.mark.parametrize("filename", test_mtx_files)
 def test_csr_elemwise_mul(filename):
-    l = legate_io.mmread(filename)
+    arr = legate_io.mmread(filename)
     s = sci_io.mmread(filename)
-    res_legate = l.tocsr() * csr_array(np.roll(l.todense(), 1))
+    res_legate = arr.tocsr() * csr_array(np.roll(arr.todense(), 1))
     res_scipy = s.tocsr() * scpy.csr_array(np.roll(np.array(s.todense()), 1))
     assert np.allclose(res_legate.todense(), res_scipy.todense())
 
@@ -163,23 +165,23 @@ def test_csr_elemwise_mul(filename):
 @pytest.mark.parametrize("filename", test_mtx_files)
 @pytest.mark.parametrize("kdim", [2, 4, 8, 16])
 def test_csr_sddmm(filename, kdim):
-    l = legate_io.mmread(filename).tocsr()
+    arr = legate_io.mmread(filename).tocsr()
     s = sci_io.mmread(filename).tocsr()
-    C = np.random.random((l.shape[0], kdim))
-    D = np.random.random((kdim, l.shape[1]))
-    res_legate = l.sddmm(C, D)
-    # This version of scipy still thinks that * is matrix multiplication instead
-    # of element-wise multiplication, so we have to use multiply().
+    C = np.random.random((arr.shape[0], kdim))
+    D = np.random.random((kdim, arr.shape[1]))
+    res_legate = arr.sddmm(C, D)
+    # This version of scipy still thinks that * is matrix multiplication
+    # instead of element-wise multiplication, so we have to use multiply().
     res_scipy = s.multiply(numpy.array(C @ D))
     assert np.allclose(res_legate.todense(), res_scipy.todense())
 
 
 @pytest.mark.parametrize("filename", test_mtx_files)
 def test_csr_dense_elemwise_mul(filename):
-    l = legate_io.mmread(filename)
+    arr = legate_io.mmread(filename)
     s = sci_io.mmread(filename)
-    c = np.random.random(l.shape)
-    res_legate = l.tocsr() * c
+    c = np.random.random(arr.shape)
+    res_legate = arr.tocsr() * c
     # The version of scipy that I have locally still thinks * is matmul.
     res_scipy = s.tocsr().multiply(numpy.array(c))
     assert np.allclose(res_legate.todense(), res_scipy.todense())
@@ -187,34 +189,34 @@ def test_csr_dense_elemwise_mul(filename):
 
 @pytest.mark.parametrize("filename", test_mtx_files)
 def test_csr_elemwise_add(filename):
-    l = legate_io.mmread(filename)
+    arr = legate_io.mmread(filename)
     s = sci_io.mmread(filename)
-    res_legate = l.tocsr() + csr_array(np.roll(l.todense(), 1))
+    res_legate = arr.tocsr() + csr_array(np.roll(arr.todense(), 1))
     res_scipy = s.tocsr() + scpy.csr_array(np.roll(s.toarray(), 1))
     assert np.allclose(res_legate.todense(), res_scipy.todense())
 
 
 @pytest.mark.parametrize("filename", test_mtx_files)
 def test_csr_to_scipy_csr(filename):
-    l = legate_io.mmread(filename).tocsr()
+    arr = legate_io.mmread(filename).tocsr()
     s = sci_io.mmread(filename).tocsr()
-    assert np.array_equal(l.to_scipy_sparse_csr().todense(), s.todense())
+    assert np.array_equal(arr.to_scipy_sparse_csr().todense(), s.todense())
 
 
 @pytest.mark.parametrize("filename", test_mtx_files)
 def test_csr_mul_scalar(filename):
-    l = legate_io.mmread(filename).tocsr()
+    arr = legate_io.mmread(filename).tocsr()
     s = sci_io.mmread(filename).tocsr()
-    res_legate = l * 3.0
+    res_legate = arr * 3.0
     res_sci = s * 3.0
     assert np.allclose(res_legate.todense(), res_sci.todense())
 
 
 @pytest.mark.parametrize("filename", test_mtx_files)
 def test_csr_subtract(filename):
-    l = legate_io.mmread(filename)
+    arr = legate_io.mmread(filename)
     s = sci_io.mmread(filename)
-    res_legate = l.tocsr() - csr_array(np.roll(l.todense(), 1))
+    res_legate = arr.tocsr() - csr_array(np.roll(arr.todense(), 1))
     res_scipy = s.tocsr() - scpy.csr_array(np.roll(s.toarray(), 1))
     assert np.allclose(res_legate.todense(), res_scipy.todense())
 
@@ -232,16 +234,16 @@ def test_csr_rmatmul_balanced():
     if "LEGATE_TEST" not in os.environ:
         pytest.skip("Partitioning must be forced with LEGATE_TEST=1")
     filename = "testdata/test.mtx"
-    l = legate_io.mmread(filename).tocsr()
+    arr = legate_io.mmread(filename).tocsr()
     s = sci_io.mmread(filename).tocsr()
-    l.balance()
+    arr.balance()
     # idim must be small enough so that the solver doesn't think that
     # re-partitioning x or the output will cause more data movement.
     idim = 2
-    x = np.ones((idim, l.shape[1]))
+    x = np.ones((idim, arr.shape[1]))
     rt._window_size = 3
     rt.flush_scheduling_window()
-    res = l.__rmatmul__(x)
+    res = arr.__rmatmul__(x)
     # We expect to find the cunumeric zero task and the SpMM task.
     assert len(rt._outstanding_ops) == 2
     partitioner = Partitioner([rt._outstanding_ops[1]], must_be_single=False)
@@ -261,17 +263,17 @@ def test_csr_sddmm_balanced():
     if "LEGATE_TEST" not in os.environ:
         pytest.skip("Partitioning must be forced with LEGATE_TEST=1")
     filename = "testdata/test.mtx"
-    l = legate_io.mmread(filename).tocsr()
+    arr = legate_io.mmread(filename).tocsr()
     s = sci_io.mmread(filename).tocsr()
-    l.balance()
+    arr.balance()
     # idim must be small enough so that the solver doesn't think that
     # re-partitioning x or the output will cause more data movement.
     kdim = 2
-    C = np.random.random((l.shape[0], kdim))
-    D = np.random.random((kdim, l.shape[1]))
+    C = np.random.random((arr.shape[0], kdim))
+    D = np.random.random((kdim, arr.shape[1]))
     rt._window_size = 2
     rt.flush_scheduling_window()
-    res = l.sddmm(C, D)
+    res = arr.sddmm(C, D)
     assert len(rt._outstanding_ops) == 1
     partitioner = Partitioner([rt._outstanding_ops[0]], must_be_single=False)
     strat = partitioner.partition_stores()
@@ -284,4 +286,5 @@ def test_csr_sddmm_balanced():
 
 if __name__ == "__main__":
     import sys
+
     sys.exit(pytest.main(sys.argv))

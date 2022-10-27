@@ -18,11 +18,10 @@ from __future__ import annotations
 
 import sys
 
+from legate.tester import SKIPPED_EXAMPLES
 from legate.tester.config import Config
 from legate.tester.test_plan import TestPlan
 from legate.tester.test_system import TestSystem
-
-from legate.tester import SKIPPED_EXAMPLES
 
 # Add some other tests that we shouldn't run.
 SKIPPED_EXAMPLES.add("examples/pyamg_legate_test.py")

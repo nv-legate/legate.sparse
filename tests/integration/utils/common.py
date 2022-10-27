@@ -14,14 +14,17 @@
 
 import os
 
-def prepend_path(l):
-    return [os.path.join("testdata", f) for f in l]
 
-test_mtx_files = prepend_path([
-    "test.mtx",
-    "GlossGT.mtx",
-    "Ragusa18.mtx",
-    "cage4.mtx",
-    "karate.mtx",
-])
+def prepend_path(paths):
+    return [os.path.join("testdata", path) for path in paths]
 
+
+test_mtx_files = prepend_path(
+    [
+        "test.mtx",
+        "GlossGT.mtx",
+        "Ragusa18.mtx",
+        "cage4.mtx",
+        "karate.mtx",
+    ]
+)

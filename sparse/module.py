@@ -45,10 +45,16 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from .array import csr_array, pack_to_rect1_store, get_store_from_cunumeric_array, dia_array, coo_array
-
 import cunumeric
 import numpy
+
+from .array import (
+    coo_array,
+    csr_array,
+    dia_array,
+    get_store_from_cunumeric_array,
+    pack_to_rect1_store,
+)
 
 
 def spdiags(data, diags, m, n, format=None):
@@ -176,8 +182,9 @@ def diags(diagonals, offsets=0, shape=None, format=None, dtype=None):
     # Construct data array
     m, n = shape
 
-    M = max([min(m + offset, n - offset) + max(0, offset)
-             for offset in offsets])
+    M = max(
+        [min(m + offset, n - offset) + max(0, offset) for offset in offsets]
+    )
     M = max(0, M)
     data_arr = cunumeric.zeros((len(offsets), M), dtype=dtype)
 
@@ -188,15 +195,18 @@ def diags(diagonals, offsets=0, shape=None, format=None, dtype=None):
         k = max(0, offset)
         length = min(m + offset, n - offset, K)
         if length < 0:
-            raise ValueError("Offset %d (index %d) out of bounds" % (offset, j))
+            raise ValueError(
+                "Offset %d (index %d) out of bounds" % (offset, j)
+            )
         try:
-            data_arr[j, k:k+length] = diagonal[...,:length]
+            data_arr[j, k : k + length] = diagonal[..., :length]
         except ValueError as e:
             if len(diagonal) != length and len(diagonal) != 1:
                 raise ValueError(
                     "Diagonal length (index %d: %d at offset %d) does not "
-                    "agree with matrix size (%d, %d)." % (
-                        j, len(diagonal), offset, m, n)) from e
+                    "agree with matrix size (%d, %d)."
+                    % (j, len(diagonal), offset, m, n)
+                ) from e
             raise
 
     # We importantly don't perform this conversion to cunumeric (involving
@@ -217,11 +227,17 @@ def eye(m, n=None, k=0, dtype=numpy.float64, format="csr"):
     if format == "csr" and k == 0 and m == n:
         row_lo = cunumeric.arange(m, dtype=numpy.uint64)
         row_hi = row_lo + 1
-        # TODO (rohany): Make a version of this function that enables control over whether
-        #  or not rectanges are inclusive or exclusive. That way we can avoid the copy here.
-        pos = pack_to_rect1_store(get_store_from_cunumeric_array(row_lo), get_store_from_cunumeric_array(row_hi))
+        # TODO (rohany): Make a version of this function that enables control
+        # over whether or not rectanges are inclusive or exclusive. That way we
+        # can avoid the copy here.
+        pos = pack_to_rect1_store(
+            get_store_from_cunumeric_array(row_lo),
+            get_store_from_cunumeric_array(row_hi),
+        )
         crd = get_store_from_cunumeric_array(row_lo)
-        vals = get_store_from_cunumeric_array(cunumeric.ones(m, dtype=numpy.float64))
+        vals = get_store_from_cunumeric_array(
+            cunumeric.ones(m, dtype=numpy.float64)
+        )
         return csr_array((vals, crd, pos), dtype=dtype, shape=(m, n))
 
     diags = cunumeric.ones((1, max(0, min(m + k, n))), dtype=dtype)
@@ -264,8 +280,8 @@ def kron(A, B, format=None):
            [ 5, 10,  0,  0],
            [15, 20,  0,  0]])
     """
-    # This implementation was nearly directly lifted from scipy's implementation
-    # of Kroneker products.
+    # This implementation was nearly directly lifted from scipy's
+    # implementation of Kroneker products.
 
     A = A.tocoo()
     B = B.tocoo()
@@ -280,10 +296,13 @@ def kron(A, B, format=None):
     col = cunumeric.repeat(A.col, B.nnz)
     data = cunumeric.repeat(A.data, B.nnz)
 
-    if max(A.shape[0] * B.shape[0], A.shape[1] * B.shape[1]) > numpy.iinfo('int32').max:
-        # TODO (rohany): We have some problems if these shapes get too large in our
-        #  construction of matrices (I was lazy and didn't write sort methods), so have
-        #  some warning signs if we hit here.
+    if (
+        max(A.shape[0] * B.shape[0], A.shape[1] * B.shape[1])
+        > numpy.iinfo("int32").max
+    ):
+        # TODO (rohany): We have some problems if these shapes get too large in
+        # our construction of matrices (I was lazy and didn't write sort
+        # methods), so have some warning signs if we hit here.
         raise NotImplementedError
         # row = row.astype(np.int64)
         # col = col.astype(np.int64)

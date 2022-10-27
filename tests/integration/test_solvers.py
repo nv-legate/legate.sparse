@@ -15,23 +15,31 @@
 import cunumeric as np
 import numpy
 import pytest
-from sparse import csr_array, eye
-import sparse.linalg as linalg
 import scipy
 import scipy.sparse as scpy
 import scipy.stats as stats
 
+import sparse.linalg as linalg
+from sparse import csr_array, eye
+
 
 class Normal(stats.rv_continuous):
-    def _rvs(self, *args,  size=None, random_state=None):
+    def _rvs(self, *args, size=None, random_state=None):
         return random_state.standard_normal(size)
 
 
 def sample(N: int, D: int, density: float, seed: int):
     NormalType = Normal(seed=seed)
     SeededNormal = NormalType()
-    return scpy.random(N, D, density=density, format='csr', dtype=np.float64,
-                         random_state=seed, data_rvs=SeededNormal.rvs)
+    return scpy.random(
+        N,
+        D,
+        density=density,
+        format="csr",
+        dtype=np.float64,
+        random_state=seed,
+        data_rvs=SeededNormal.rvs,
+    )
 
 
 def sample_dense_vector(N: int, density: float, seed: int):
@@ -67,10 +75,12 @@ def test_cg_solve_with_callback():
     y = A @ x
     assert np.allclose((A @ x), y)
     residuals = []
+
     def callback(x):
         # Test that nothing goes wrong if we do some arbitrary computation in
         # the callback on x.
         residuals.append(y - A @ x)
+
     x_pred, iters = linalg.cg(A, y, tol=1e-8, callback=callback)
     assert np.allclose((A @ x_pred), y)
     assert len(residuals) > 0
@@ -104,13 +114,21 @@ def test_cg_solve_with_linear_operator():
     x = sample_dense_vector(D, 0.1, seed)
     y = A @ x
     assert np.allclose((A @ x), y)
+
     def matvec(x):
         return A @ x
-    x_pred, iters = linalg.cg(linalg.LinearOperator(A.shape, matvec=matvec), y, tol=1e-8)
+
+    x_pred, iters = linalg.cg(
+        linalg.LinearOperator(A.shape, matvec=matvec), y, tol=1e-8
+    )
     assert np.allclose((A @ x_pred), y)
+
     def matvec(x, out=None):
         return A.dot(x, out=out)
-    x_pred, iters = linalg.cg(linalg.LinearOperator(A.shape, matvec=matvec), y, tol=1e-8)
+
+    x_pred, iters = linalg.cg(
+        linalg.LinearOperator(A.shape, matvec=matvec), y, tol=1e-8
+    )
     assert np.allclose((A @ x_pred), y)
 
 
@@ -172,7 +190,9 @@ def test_gmres_solve():
     # small, we cap the max iteration count here. However, if both solvers
     # are allowed to run to completion, they match with the default small
     # error tolerance.
-    x_pred_sci = scipy.sparse.linalg.gmres(A, y, atol=1e-5, tol=1e-5, maxiter=200)[0]
+    x_pred_sci = scipy.sparse.linalg.gmres(
+        A, y, atol=1e-5, tol=1e-5, maxiter=200
+    )[0]
     x_pred_legate = linalg.gmres(A, y, atol=1e-5, tol=1e-5, maxiter=200)[0]
     assert np.allclose(x_pred_sci, x_pred_legate, atol=1e-4)
 
@@ -192,4 +212,5 @@ def test_eigsh():
 
 if __name__ == "__main__":
     import sys
+
     sys.exit(pytest.main(sys.argv))

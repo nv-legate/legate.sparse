@@ -107,7 +107,9 @@ def was_previously_built_with_different_build_isolation(
         legate_sparse_build_dir is not None
         and os.path.exists(legate_sparse_build_dir)
         and os.path.exists(
-            cmake_cache := os.path.join(legate_sparse_build_dir, "CMakeCache.txt")
+            cmake_cache := os.path.join(
+                legate_sparse_build_dir, "CMakeCache.txt"
+            )
         )
     ):
         try:
@@ -328,9 +330,13 @@ def install_legate_sparse(
     if legate_dir:
         cmake_flags += ["-Dlegate_core_ROOT=%s" % legate_dir]
     if legate_url:
-        cmake_flags += ["-Dlegate_sparse_LEGATE_CORE_REPOSITORY=%s" % legate_url]
+        cmake_flags += [
+            "-Dlegate_sparse_LEGATE_CORE_REPOSITORY=%s" % legate_url
+        ]
     if legate_branch:
-        cmake_flags += ["-Dlegate_sparse_LEGATE_CORE_BRANCH=%s" % legate_branch]
+        cmake_flags += [
+            "-Dlegate_sparse_LEGATE_CORE_BRANCH=%s" % legate_branch
+        ]
 
     cmake_flags += extra_flags
     cmd_env.update(
@@ -340,7 +346,9 @@ def install_legate_sparse(
         }
     )
 
-    execute_command(pip_install_cmd, verbose, cwd=legate_sparse_dir, env=cmd_env)
+    execute_command(
+        pip_install_cmd, verbose, cwd=legate_sparse_dir, env=cmd_env
+    )
 
 
 def driver():

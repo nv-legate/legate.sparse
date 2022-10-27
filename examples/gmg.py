@@ -18,7 +18,6 @@ import cunumeric as np
 from legate.timing import time
 
 import sparse as sparse
-import sparse.linalg as linalg
 
 
 def stencil_grid(S, grid, dtype=None, format=None):
@@ -65,8 +64,7 @@ def stencil_grid(S, grid, dtype=None, format=None):
     # sum duplicate diagonals
     if len(np.unique(diags)) != len(diags):
         new_diags = np.unique(diags)
-        new_data = np.zeros((len(new_diags), data.shape[1]),
-                            dtype=data.dtype)
+        new_data = np.zeros((len(new_diags), data.shape[1]), dtype=data.dtype)
 
         for dia, dat in zip(diags, data):
             n = np.searchsorted(new_diags, dia)
@@ -94,23 +92,24 @@ def diffusion2D(N, epsilon=1.0, theta=0.0):
 
     C = np.cos(theta)
     S = np.sin(theta)
-    CS = C*S
+    CS = C * S
     CC = C**2
     SS = S**2
 
-    a = (-1*eps - 1)*CC + (-1*eps - 1)*SS + (3*eps - 3)*CS
-    b = (2*eps - 4)*CC + (-4*eps + 2)*SS
-    c = (-1*eps - 1)*CC + (-1*eps - 1)*SS + (-3*eps + 3)*CS
-    d = (-4*eps + 2)*CC + (2*eps - 4)*SS
-    e = (8*eps + 8)*CC + (8*eps + 8)*SS
+    a = (-1 * eps - 1) * CC + (-1 * eps - 1) * SS + (3 * eps - 3) * CS
+    b = (2 * eps - 4) * CC + (-4 * eps + 2) * SS
+    c = (-1 * eps - 1) * CC + (-1 * eps - 1) * SS + (-3 * eps + 3) * CS
+    d = (-4 * eps + 2) * CC + (2 * eps - 4) * SS
+    e = (8 * eps + 8) * CC + (8 * eps + 8) * SS
 
     stencil = np.array([[a, b, c], [d, e, d], [c, b, a]]) / 6.0
     return stencil_grid(stencil, (N, N))
 
 
 def max_eigenvalue(A, iters=15):
-    # Compute eigenvector associated with maximum eigenvalue via power iteration.
-    # This is the same as Steven's imp for estimating spectral radius.
+    # Compute eigenvector associated with maximum eigenvalue via power
+    # iteration.  This is the same as Steven's imp for estimating spectral
+    # radius.
     x1 = np.random.rand(A.shape[1]).reshape(-1, 1)
     for _ in range(iters):
         x1 = A @ x1
@@ -133,7 +132,7 @@ class GMG(object):
     [2] https://github.com/pyamg/pyamg
     [3] http://www.cs.columbia.edu/cg/pdfs/28_GPUSim.pdf
     [4] https://netlib.org/utk/people/JackDongarra/PAPERS/HPCG-benchmark.pdf
-    """
+    """  # noqa: E501
 
     def __init__(self, A, shape, levels, smoother, gridop):
         self.A = A
@@ -142,10 +141,9 @@ class GMG(object):
         self.levels = levels
         self.restriction_op = {
             "injection": injection_operator,
-            "linear": linear_operator
+            "linear": linear_operator,
         }[gridop]
-        self.smoother = {"symgs": SYMGS,
-                         "jacobi": WeightedJacobi}[smoother]()
+        self.smoother = {"symgs": SYMGS, "jacobi": WeightedJacobi}[smoother]()
         self.operators = self.compute_operators(A)
         self.temp = None
 
@@ -188,25 +186,25 @@ class GMG(object):
         return self.restriction_op(fine_dim)
 
     def linear_operator(self):
-        return sparse.linalg.LinearOperator(self.A.shape, dtype=float, matvec=lambda r: self.cycle(r))
+        return sparse.linalg.LinearOperator(
+            self.A.shape, dtype=float, matvec=lambda r: self.cycle(r)
+        )
 
 
 class SYMGS(object):
-
     def init_level_params(self, A, level):
         pass
 
     def __call__(self, A, r, x, level):
         if x is None:
             x = np.zeros_like(r)
-        symgs_c(A.indptr, A.indices, A.data, x, r)
+        symgs_c(A.indptr, A.indices, A.data, x, r)  # noqa: F821
         return x
 
     pre = post = coarse = __call__
 
 
 class WeightedJacobi(object):
-
     def __init__(self, omega=4.0 / 3.0):
         # Basically, similar solution to PyAMG.
         self.level_params = []
@@ -243,6 +241,7 @@ class WeightedJacobi(object):
 
 def injection_operator(fine_dim):
     import numpy
+
     fine_shape = (int(np.sqrt(fine_dim)),) * 2
     coarse_shape = fine_shape[0] // 2, fine_shape[1] // 2
     coarse_dim = np.product(coarse_shape)
@@ -254,25 +253,32 @@ def injection_operator(fine_dim):
         i, j = (ij % coarse_shape[1]), (ij // coarse_shape[1])
         Rj[ij] = 2 * i + 2 * j * coarse_shape[1]
     Rx, Rj, Rp = np.array(Rx), np.array(Rj), np.array(Rp)
-    R = sparse.csr_matrix((Rx, Rj, Rp), shape=(coarse_dim, fine_dim), dtype=np.float64)
+    R = sparse.csr_matrix(
+        (Rx, Rj, Rp), shape=(coarse_dim, fine_dim), dtype=np.float64
+    )
     return R, coarse_dim
 
 
 def linear_operator(fine_dim):
     import numpy
+
     fine_shape = (int(np.sqrt(fine_dim)),) * 2
     coarse_shape = fine_shape[0] // 2, fine_shape[1] // 2
     coarse_dim = np.product(coarse_shape)
     # Construct CSR directly.
     Rp = numpy.empty(coarse_dim + 1, dtype=np.int64)
-    # Get an upper bound on the total number of non-zeroes, and construct Rj and Rx based on this bound.
-    # Computing this value exactly is tedious and the extra allocation can be truncated at the end.
-    # We won't need more than 9*coarse_dim rows.
-    nnz = 9*coarse_dim
+    # Get an upper bound on the total number of non-zeroes, and construct Rj
+    # and Rx based on this bound.  Computing this value exactly is tedious and
+    # the extra allocation can be truncated at the end.  We won't need more
+    # than 9*coarse_dim rows.
+    nnz = 9 * coarse_dim
     Rj = numpy.empty((nnz,), dtype=np.int64)
     Rx = numpy.empty((nnz,), dtype=np.float64)
     p = 0
-    flatten = lambda i, j: i*fine_shape[1] + j
+
+    def flatten(i, j):
+        return i * fine_shape[1] + j
+
     for ij in range(coarse_dim):
         Rp[ij] = p
         # For linear interpolation,
@@ -336,33 +342,26 @@ def linear_operator(fine_dim):
 
 
 def required_driver_memory(N):
-    NN = N*N
+    NN = N * N
     fine_shape = (int(np.sqrt(NN)),) * 2
     coarse_shape = fine_shape[0] // 2, fine_shape[1] // 2
     coarse_dim = np.product(coarse_shape)
-    nnz = 9*coarse_dim
+    nnz = 9 * coarse_dim
     elements = nnz + coarse_dim + 1
-    bytes = elements*8
+    bytes = elements * 8
     mb = bytes / 10**6
     print("Max required driver memory for N=%d is %fMB" % (N, mb))
 
 
-def execute(N,
-            data,
-            smoother,
-            gridop,
-            levels,
-            maxiter,
-            tol,
-            verbose):
+def execute(N, data, smoother, gridop, levels, maxiter, tol, verbose):
 
     start = time()
     if data == "poisson":
         A = poisson2D(N).tocsr()
-        b = np.random.rand(N ** 2)
+        b = np.random.rand(N**2)
     elif data == "diffusion":
         A = diffusion2D(N).tocsr()
-        b = np.random.rand(N ** 2)
+        b = np.random.rand(N**2)
     else:
         raise NotImplementedError(data)
     print(f"Data creation time: {(time() - start)/1000} ms")
@@ -370,25 +369,32 @@ def execute(N,
     assert smoother == "jacobi", "Only Jacobi smoother is currently supported."
 
     if verbose:
-        callback = lambda x: print(f"Residual: {np.linalg.norm(b-A.matvec(x))}")
+
+        def callback(x):
+            print(f"Residual: {np.linalg.norm(b-A.matvec(x))}")
+
     else:
         callback = None
 
     required_driver_memory(N)
     start = time()
-    mg_solver = GMG(A=A, shape=(N, N), levels=levels, smoother=smoother, gridop=gridop)
+    mg_solver = GMG(
+        A=A, shape=(N, N), levels=levels, smoother=smoother, gridop=gridop
+    )
     M = mg_solver.linear_operator()
     print(f"GMG init time: {(time() - start)/1000} ms")
 
     solve_start = time()
-    x, iters = sparse.linalg.cg(A, b, tol=tol, maxiter=maxiter, M=M, callback=callback)
+    x, iters = sparse.linalg.cg(
+        A, b, tol=tol, maxiter=maxiter, M=M, callback=callback
+    )
     if tol <= np.linalg.norm(x):
         print("Converged in %d iterations" % iters)
     else:
         print("Failed to converge in %d iterations" % iters)
     print(f"Solve Time: {(time() - solve_start)/1000} ms")
     stop = time()
-    total = (stop - start)
+    total = stop - start
     print(f"Elapsed Time: {total/1000} ms")
 
 

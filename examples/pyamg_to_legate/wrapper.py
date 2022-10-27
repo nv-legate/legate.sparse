@@ -16,12 +16,14 @@ import cunumeric as np
 import scipy as sp
 
 import sparse as sparse
+
 sparse.csr_array.asfptype = lambda x: x
-sparse.csr_array.format = 'csr'
+sparse.csr_array.format = "csr"
 
 sp.sparse._arrays.csr_array = sparse.csr_array
 sp.sparse.dia_matrix = sparse.dia_matrix
 sp.sparse.isspmatrix = lambda x: True
+
 
 def symmetric_strength_of_connection(A, theta=0.0):
     if theta == 0:
@@ -36,6 +38,7 @@ def symmetric_strength_of_connection(A, theta=0.0):
     B.data /= max_val[B.col]
     return B
 
+
 def fit_candidates(A, B):
     Q = A.copy().tocoo()
     Q.data = B.ravel() ** 2
@@ -44,6 +47,7 @@ def fit_candidates(A, B):
 
     Q.data /= R.ravel()[Q.col]
     return Q, R
+
 
 def estimate_spectral_radius(A, maxiter=15):
     x = np.random.rand(A.shape[0])
@@ -55,7 +59,8 @@ def estimate_spectral_radius(A, maxiter=15):
 
     return np.dot(x, y) / np.linalg.norm(y)
 
-def jacobi_prolongation_smoother(S, T, C, B, omega=4.0/3.0, degree=1):
+
+def jacobi_prolongation_smoother(S, T, C, B, omega=4.0 / 3.0, degree=1):
     D_inv = 1.0 / S.diagonal()
     S_coo = S.tocoo()
     D_inv_S = S.copy()
@@ -71,8 +76,9 @@ def jacobi_prolongation_smoother(S, T, C, B, omega=4.0/3.0, degree=1):
 
     return P
 
+
 def maximal_independent_set(C, k=1, invalid=None):
-    assert(C.shape[0] == C.shape[1])
+    assert C.shape[0] == C.shape[1]
     N = C.shape[0]
 
     random_values = np.random.randint(0, np.iinfo(np.int64).max, size=N)
@@ -100,13 +106,14 @@ def maximal_independent_set(C, k=1, invalid=None):
         non_mis_node = np.where((x[:, 0] == 1) & (z[:, 0] == 2))[0]
         x[non_mis_node, 0] = 0
 
-        active_nodes -= (len(mis_node) + len(non_mis_node))
+        active_nodes -= len(mis_node) + len(non_mis_node)
         if active_nodes == 0:
             break
 
-        assert((active_nodes > 0) and (active_nodes < N))
+        assert (active_nodes > 0) and (active_nodes < N)
 
     return np.where(x[:, 0] == 2)[0]
+
 
 def PMIS(C):
     C = C.tocsr()
@@ -131,15 +138,17 @@ def PMIS(C):
 
     return sparse.coo_matrix((data, (row, col)), shape=(N_fine, N_coarse)), mis
 
+
 def jacobi(A, x, b, iterations=1, omega=1.0):
     D = A.diagonal()
     rho_DinvA = A.rho_D_inv
     y = A @ x
     x += (omega / rho_DinvA) * (b - y) / D
 
+
 def stencil_grid(S, grid, dtype=None, format=None):
     N_v = int(np.prod(grid))  # number of vertices in the mesh
-    N_s = int((S != 0).sum())    # number of nonzero stencil entries
+    N_s = int((S != 0).sum())  # number of nonzero stencil entries
 
     # diagonal offsets
     diags = np.zeros(N_s, dtype=int)
@@ -167,7 +176,7 @@ def stencil_grid(S, grid, dtype=None, format=None):
                 s = tuple(s)
                 diag[s] = 0
             elif i < 0:
-                s = [slice(None)]*len(grid)
+                s = [slice(None)] * len(grid)
                 s[n] = slice(i, None)
                 s = tuple(s)
                 diag[s] = 0
@@ -181,8 +190,7 @@ def stencil_grid(S, grid, dtype=None, format=None):
     # sum duplicate diagonals
     if len(np.unique(diags)) != len(diags):
         new_diags = np.unique(diags)
-        new_data = np.zeros((len(new_diags), data.shape[1]),
-                            dtype=data.dtype)
+        new_data = np.zeros((len(new_diags), data.shape[1]), dtype=data.dtype)
 
         for dia, dat in zip(diags, data):
             n = np.searchsorted(new_diags, dia)
@@ -193,35 +201,48 @@ def stencil_grid(S, grid, dtype=None, format=None):
 
     return sparse.dia_matrix((data, diags), shape=(N_v, N_v)).asformat(format)
 
+
 def patch(pyamg):
     from .patcher import patch_all_symbol_imports
 
-    patchers = patch_all_symbol_imports(pyamg.strength.symmetric_strength_of_connection, skip_substring='test')
+    patchers = patch_all_symbol_imports(
+        pyamg.strength.symmetric_strength_of_connection, skip_substring="test"
+    )
     for patcher in patchers:
         mock_request = patcher.start()
         mock_request.side_effect = symmetric_strength_of_connection
 
-    patchers = patch_all_symbol_imports(pyamg.aggregation.standard_aggregation, skip_substring='test')
+    patchers = patch_all_symbol_imports(
+        pyamg.aggregation.standard_aggregation, skip_substring="test"
+    )
     for patcher in patchers:
         mock_request = patcher.start()
         mock_request.side_effect = PMIS
 
-    patchers = patch_all_symbol_imports(pyamg.aggregation.fit_candidates, skip_substring='test')
+    patchers = patch_all_symbol_imports(
+        pyamg.aggregation.fit_candidates, skip_substring="test"
+    )
     for patcher in patchers:
         mock_request = patcher.start()
         mock_request.side_effect = fit_candidates
 
-    patchers = patch_all_symbol_imports(pyamg.aggregation.jacobi_prolongation_smoother, skip_substring='test')
+    patchers = patch_all_symbol_imports(
+        pyamg.aggregation.jacobi_prolongation_smoother, skip_substring="test"
+    )
     for patcher in patchers:
         mock_request = patcher.start()
         mock_request.side_effect = jacobi_prolongation_smoother
 
-    patchers = patch_all_symbol_imports(pyamg.relaxation.relaxation.jacobi, skip_substring='test')
+    patchers = patch_all_symbol_imports(
+        pyamg.relaxation.relaxation.jacobi, skip_substring="test"
+    )
     for patcher in patchers:
         mock_request = patcher.start()
         mock_request.side_effect = jacobi
 
-    patchers = patch_all_symbol_imports(pyamg.gallery.stencil_grid, skip_substring='test')
+    patchers = patch_all_symbol_imports(
+        pyamg.gallery.stencil_grid, skip_substring="test"
+    )
     for patcher in patchers:
         mock_request = patcher.start()
         mock_request.side_effect = stencil_grid

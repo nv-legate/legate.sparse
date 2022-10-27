@@ -17,20 +17,20 @@ from __future__ import annotations
 from functools import wraps
 from types import FunctionType, MethodDescriptorType, MethodType, ModuleType
 from typing import Any, Container, Mapping, Optional, cast
-from typing_extensions import Protocol
 
 from legate.core import track_provenance
-from .runtime import runtime
+from typing_extensions import Protocol
 
+from .runtime import runtime
 
 MOD_INTERNAL = {"__dir__", "__getattr__"}
 
 
 def filter_namespace(
-        ns: Mapping[str, Any],
-        *,
-        omit_names: Optional[Container[str]] = None,
-        omit_types: tuple[type, ...] = (),
+    ns: Mapping[str, Any],
+    *,
+    omit_names: Optional[Container[str]] = None,
+    omit_types: tuple[type, ...] = (),
 ) -> dict[str, Any]:
     omit_names = omit_names or set()
     return {
@@ -50,7 +50,6 @@ class AnyCallable(Protocol):
 
 
 def wrap(func: AnyCallable) -> Any:
-
     @wraps(func)
     @track_provenance(runtime.legate_context, nested=True)
     def wrapper(*args: Any, **kwargs: Any) -> Any:
@@ -59,7 +58,9 @@ def wrap(func: AnyCallable) -> Any:
     return wrapper
 
 
-def clone_module(origin_module: ModuleType, new_globals: dict[str, Any]) -> None:
+def clone_module(
+    origin_module: ModuleType, new_globals: dict[str, Any]
+) -> None:
     """Copy attributes from one module to another, excluding submodules
 
     Function types are wrapped with a decorator to report API calls. All
@@ -94,9 +95,11 @@ def clone_scipy_arr_kind(origin_class: type) -> Any:
     other values are copied as-is.
 
     """
+
     def body(cls: type):
         for attr, value in cls.__dict__.items():
-            # Only need to wrap things that are in the origin class to begin with
+            # Only need to wrap things that are in the origin class to begin
+            # with
             if not hasattr(origin_class, attr):
                 continue
             if should_wrap(value):
@@ -104,4 +107,5 @@ def clone_scipy_arr_kind(origin_class: type) -> Any:
                 setattr(cls, attr, wrapped)
 
         return cls
+
     return body

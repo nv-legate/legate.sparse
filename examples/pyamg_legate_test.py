@@ -14,57 +14,75 @@
 
 try:
     import cunumeric as np
-    from pyamg_to_legate.wrapper import patch
     import pyamg
+    from pyamg_to_legate.wrapper import patch
+
     patch(pyamg)
     from legate.timing import time
 except (RuntimeError, ImportError):
+    from time import perf_counter_ns
+
     import numpy as np
     import pyamg
-    from time import perf_counter_ns
 
     def time():
         return perf_counter_ns() / 1000.0
 
+
 from scipy.sparse.linalg import cg
 
-if __name__=='__main__':
+if __name__ == "__main__":
     import argparse
+
     parser = argparse.ArgumentParser()
-    parser.add_argument('-n', '--num-nodes', type=int, default=64)
+    parser.add_argument("-n", "--num-nodes", type=int, default=64)
     args, _ = parser.parse_known_args()
 
-    sten = pyamg.gallery.diffusion_stencil_2d(epsilon=0.1, type='FD')
-    A = pyamg.gallery.stencil_grid(sten, (args.num_nodes, args.num_nodes)).tocsr()
+    sten = pyamg.gallery.diffusion_stencil_2d(epsilon=0.1, type="FD")
+    A = pyamg.gallery.stencil_grid(
+        sten, (args.num_nodes, args.num_nodes)
+    ).tocsr()
 
-    smoother = ('jacobi', {'omega': 4.0/3.0, 'iterations': 1})
+    smoother = ("jacobi", {"omega": 4.0 / 3.0, "iterations": 1})
     B = np.ones((A.shape[0], 1))
 
     class coarse_solver(object):
         def __call__(self, A, b):
             return np.linalg.solve(A.todense(), b)
+
         def __repr__(self):
-            return 'numpy.linalg.solve'
+            return "numpy.linalg.solve"
 
     start_build = time()
-    ml = pyamg.aggregation.smoothed_aggregation_solver(A, B=B, improve_candidates=None,
-                                                       presmoother=smoother, postsmoother=smoother,
-                                                       symmetry='symmetric', coarse_solver=coarse_solver())
+    ml = pyamg.aggregation.smoothed_aggregation_solver(
+        A,
+        B=B,
+        improve_candidates=None,
+        presmoother=smoother,
+        postsmoother=smoother,
+        symmetry="symmetric",
+        coarse_solver=coarse_solver(),
+    )
     end_build = time()
     build_time = (end_build - start_build) / 1000.0
     print(ml)
 
-    b = np.ones((A.shape[0])) 
-    M = ml.aspreconditioner(cycle='V')
+    b = np.ones((A.shape[0]))
+    M = ml.aspreconditioner(cycle="V")
     iters = 0
+
     def callback(_):
         global iters
         iters += 1
+
     start_amg_solve = time()
-    x,info = cg(A, b, tol=1e-8, maxiter=30, M=M, callback=callback)
+    x, info = cg(A, b, tol=1e-8, maxiter=30, M=M, callback=callback)
     stop_amg_solve = time()
     solve_time = (stop_amg_solve - start_amg_solve) / 1000.0
     print(f"AMG build time             : {build_time:.3f} ms.")
     print(f"Preconditioned solve time  : {solve_time:.3f} ms.")
-    print(f"Solver Throughput          : {float(iters) / (solve_time / 1000.0)} iters/sec.")
+    print(
+        f"Solver Throughput          : {float(iters) / (solve_time / 1000.0)}"
+        f" iters/sec."
+    )
     print(f"AMG+CG total time          : {build_time + solve_time:.3f} ms.")

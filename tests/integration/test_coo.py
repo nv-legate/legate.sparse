@@ -13,66 +13,70 @@
 # limitations under the License.
 
 import cunumeric as np
+import numpy
 import pytest
-from sparse import coo_array
+import scipy.io as sci_io
 import scipy.sparse as scpy
+from utils.common import test_mtx_files
 
 import sparse.io as legate_io
-import scipy.io as sci_io
-import numpy
-
-from utils.common import test_mtx_files
+from sparse import coo_array
 
 
 @pytest.mark.parametrize("filename", test_mtx_files)
 def test_coo_from_scipy(filename):
     s = scpy.coo_array(sci_io.mmread(filename).todense())
-    l = coo_array(s)
-    assert np.array_equal(l.todense(), s.todense())
+    arr = coo_array(s)
+    assert np.array_equal(arr.todense(), s.todense())
 
 
 @pytest.mark.parametrize("filename", test_mtx_files)
 def test_coo_from_arrays(filename):
     s = scpy.coo_array(sci_io.mmread(filename).todense())
-    data, row, col = np.array(s.data, np.float64), np.array(s.row, np.int64), np.array(s.col, np.int64)
-    l = coo_array((data, (row, col)), shape=s.shape)
-    assert np.array_equal(l.todense(), s.todense())
+    data, row, col = (
+        np.array(s.data, np.float64),
+        np.array(s.row, np.int64),
+        np.array(s.col, np.int64),
+    )
+    arr = coo_array((data, (row, col)), shape=s.shape)
+    assert np.array_equal(arr.todense(), s.todense())
 
 
 @pytest.mark.parametrize("filename", test_mtx_files)
 def test_coo_transpose(filename):
-    l = legate_io.mmread(filename).tocoo()
+    arr = legate_io.mmread(filename).tocoo()
     s = sci_io.mmread(filename).tocoo()
-    assert np.array_equal(l.T.todense(), s.T.todense())
+    assert np.array_equal(arr.T.todense(), s.T.todense())
 
 
 @pytest.mark.parametrize("filename", test_mtx_files)
 def test_coo_matmul(filename):
-    l = legate_io.mmread(filename).tocoo()
+    arr = legate_io.mmread(filename).tocoo()
     s = sci_io.mmread(filename).tocoo()
-    res_legate = l @ l.todense()
+    res_legate = arr @ arr.todense()
     res_sci = s @ s.todense()
     assert np.allclose(res_legate, numpy.ascontiguousarray(res_sci))
 
 
 @pytest.mark.parametrize("filename", test_mtx_files)
 def test_coo_mul(filename):
-    l = legate_io.mmread(filename).tocoo()
+    arr = legate_io.mmread(filename).tocoo()
     s = sci_io.mmread(filename).tocoo()
-    res_legate = l * 3.0
+    res_legate = arr * 3.0
     res_sci = s * 3.0
     assert np.allclose(res_legate.todense(), res_sci.todense())
 
 
 @pytest.mark.parametrize("filename", test_mtx_files)
 def test_coo_dot(filename):
-    l = legate_io.mmread(filename).tocoo()
+    arr = legate_io.mmread(filename).tocoo()
     s = sci_io.mmread(filename).tocoo()
-    res_legate = l.dot(l.todense())
+    res_legate = arr.dot(arr.todense())
     res_sci = s.dot(s.todense())
     assert np.allclose(res_legate, numpy.ascontiguousarray(res_sci))
 
 
 if __name__ == "__main__":
     import sys
+
     sys.exit(pytest.main(sys.argv))

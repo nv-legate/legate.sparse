@@ -12,42 +12,51 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import math
+
 import matplotlib.pyplot as plt
-import matplotlib.colors as mcolors
+import numpy as np
+
 
 def trimesh(vertices, indices, labels=False):
     from matplotlib import collections
 
     vertices, indices = np.asarray(vertices), np.asarray(indices)
 
-    triangles = vertices[indices.ravel(),:].reshape((indices.shape[0], indices.shape[1], 2))
-    col = collections.PolyCollection(triangles, lw=1, edgecolor='black', facecolor='gray', alpha=0.5)
+    triangles = vertices[indices.ravel(), :].reshape(
+        (indices.shape[0], indices.shape[1], 2)
+    )
+    col = collections.PolyCollection(
+        triangles, lw=1, edgecolor="black", facecolor="gray", alpha=0.5
+    )
 
     sub = plt.gca()
-    sub.add_collection(col,autolim=True)
-    plt.axis('off')
+    sub.add_collection(col, autolim=True)
+    plt.axis("off")
     sub.autoscale_view()
+
 
 def draw_graph(mesh, P):
     N = int(math.sqrt(mesh.shape[0]))
-    grid = np.meshgrid(range(N),range(N))
+    grid = np.meshgrid(range(N), range(N))
     V = np.vstack(list(map(np.ravel, grid))).T
     E = np.vstack((mesh.row, mesh.col)).T
 
-    c = ['red' if p == 0 else 'green' for p in P]
+    c = ["red" if p == 0 else "green" for p in P]
 
     plt.figure()
     sub = plt.gca()
     trimesh(V, E, False)
-    sub.scatter(V[:, 0], V[:, 1], marker='o', s=400, c=c)
+    sub.scatter(V[:, 0], V[:, 1], marker="o", s=400, c=c)
 
     for i in range(V.shape[0]):
-        sub.annotate(str(i), (V[i, 0], V[i, 1]), ha='center', va='center')
+        sub.annotate(str(i), (V[i, 0], V[i, 1]), ha="center", va="center")
 
     plt.show()
 
+
 def plot_mis(A):
-    mis = maximal_independent_set(A)
+    mis = maximal_independent_set(A)  # noqa: F821
     P = np.zeros(A.shape[0])
     P[mis] = 1
     draw_graph(A.tocoo(), P)

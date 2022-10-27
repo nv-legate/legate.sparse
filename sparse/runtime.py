@@ -12,10 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .config import sparse_ctx, SparseOpCode, SparseTunable, _supported_dtypes, SparseTypeCode
-from legate.core import get_legate_runtime, types, Rect, LEGATE_MAX_DIM
 import os
+
 import numpy as np
+from legate.core import Rect, get_legate_runtime, types
+
+from .config import SparseOpCode, SparseTunable, _supported_dtypes, sparse_ctx
 
 
 class Runtime:
@@ -42,7 +44,9 @@ class Runtime:
 
         # Register type aliases for all of the common numpy types.
         for np_type, core_type in _supported_dtypes.items():
-            self.legate_context.type_system.make_alias(np.dtype(np_type), core_type)
+            self.legate_context.type_system.make_alias(
+                np.dtype(np_type), core_type
+            )
 
         # Load all the necessary CUDA libraries if we have GPUs.
         if self.num_gpus > 0:
@@ -58,7 +62,9 @@ class Runtime:
         # Also initialize NCCL eagerly since we will most likely use it when
         # converting objects from COO.
         if self.num_gpus > 1:
-            self.legate_runtime.get_nccl_communicator().initialize(self.num_gpus)
+            self.legate_runtime.get_nccl_communicator().initialize(
+                self.num_gpus
+            )
 
 
 ctx = sparse_ctx

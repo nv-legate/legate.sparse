@@ -12,27 +12,27 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from legate.core import Future, track_provenance, types
+from legate.core.shape import Shape
+
 from .array import coo_array, coord_ty, float64, int64, uint64
 from .config import SparseOpCode
 from .runtime import ctx, runtime
 
-from legate.core import Future, types, track_provenance
-from legate.core.shape import Shape
-
 
 @track_provenance(runtime.legate_context)
 def mmread(source):
-    # TODO (rohany): We'll assume for now that all of the nodes in the system can
-    #  access the file passed in, so we don't need to worry about where this task
-    #  gets mapped to.
+    # TODO (rohany): We'll assume for now that all of the nodes in the system
+    # can access the file passed in, so we don't need to worry about where this
+    # task gets mapped to.
     rows = ctx.create_store(coord_ty, ndim=1)
     cols = ctx.create_store(coord_ty, ndim=1)
     vals = ctx.create_store(float64, ndim=1)
     m = ctx.create_store(int64, optimize_scalar=True, shape=Shape(1))
     n = ctx.create_store(int64, optimize_scalar=True, shape=Shape(1))
     nnz = ctx.create_store(uint64, optimize_scalar=True, shape=Shape(1))
-    assert(m.kind == Future)
-    assert(n.kind == Future)
+    assert m.kind == Future
+    assert n.kind == Future
     task = ctx.create_task(SparseOpCode.READ_MTX_TO_COO)
     task.add_output(rows)
     task.add_output(cols)

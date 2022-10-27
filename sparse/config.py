@@ -13,12 +13,12 @@
 # limitations under the License.
 
 import os
-import pyarrow as pa
 from enum import IntEnum, unique
-import subprocess
 
-from legate.core import Library, ResourceConfig, get_legate_runtime, types, ffi
 import numpy as np
+import pyarrow as pa
+from legate.core import Library, ResourceConfig, ffi, get_legate_runtime, types
+
 
 class LegateSparseLib(Library):
     def __init__(self, name):
@@ -31,12 +31,14 @@ class LegateSparseLib(Library):
 
     def get_shared_library(self):
         from sparse.install_info import libpath
+
         return os.path.join(
             libpath, "liblegate_sparse" + self.get_library_extension()
         )
 
     def get_c_header(self):
         from sparse.install_info import header
+
         return header
 
     def get_registration_callback(self):
@@ -55,7 +57,8 @@ class LegateSparseLib(Library):
         assert self.shared_object is not None
         # TODO (rohany): Make these line up with the configuration in the
         #  registration callback.
-        # TODO (rohany): How can I make these match up with the enums in sparse_c.h??
+        # TODO (rohany): How can I make these match up with the enums in
+        # sparse_c.h??
         config = ResourceConfig()
         config.max_tasks = 100
         config.max_mappers = 1
@@ -86,21 +89,31 @@ class SparseOpCode(IntEnum):
     DENSE_TO_CSC = _sparse.LEGATE_SPARSE_DENSE_TO_CSC
     DIA_TO_CSR_NNZ = _sparse.LEGATE_SPARSE_DIA_TO_CSR_NNZ
     DIA_TO_CSR = _sparse.LEGATE_SPARSE_DIA_TO_CSR
-    BOUNDS_FROM_PARTITIONED_COORDINATES = _sparse.LEGATE_SPARSE_BOUNDS_FROM_PARTITIONED_COORDINATES
+    BOUNDS_FROM_PARTITIONED_COORDINATES = (
+        _sparse.LEGATE_SPARSE_BOUNDS_FROM_PARTITIONED_COORDINATES
+    )
     SORTED_COORDS_TO_COUNTS = _sparse.LEGATE_SPARSE_SORTED_COORDS_TO_COUNTS
     EXPAND_POS_TO_COORDINATES = _sparse.LEGATE_SPARSE_EXPAND_POS_TO_COORDINATES
 
     CSR_SPMV_ROW_SPLIT = _sparse.LEGATE_SPARSE_CSR_SPMV_ROW_SPLIT
-    CSR_SPMV_ROW_SPLIT_TROPICAL_SEMIRING = _sparse.LEGATE_SPARSE_CSR_SPMV_ROW_SPLIT_TROPICAL_SEMIRING
+    CSR_SPMV_ROW_SPLIT_TROPICAL_SEMIRING = (
+        _sparse.LEGATE_SPARSE_CSR_SPMV_ROW_SPLIT_TROPICAL_SEMIRING
+    )
     CSC_SPMV_COL_SPLIT = _sparse.LEGATE_SPARSE_CSC_SPMV_COL_SPLIT
 
     SPGEMM_CSR_CSR_CSR_NNZ = _sparse.LEGATE_SPARSE_SPGEMM_CSR_CSR_CSR_NNZ
     SPGEMM_CSR_CSR_CSR = _sparse.LEGATE_SPARSE_SPGEMM_CSR_CSR_CSR
     SPGEMM_CSR_CSR_CSR_GPU = _sparse.LEGATE_SPARSE_SPGEMM_CSR_CSR_CSR_GPU
 
-    SPGEMM_CSR_CSR_CSC_LOCAL_TILES = _sparse.LEGATE_SPARSE_SPGEMM_CSR_CSR_CSC_LOCAL_TILES
-    SPGEMM_CSR_CSR_CSC_COMM_COMPUTE = _sparse.LEGATE_SPARSE_SPGEMM_CSR_CSR_CSC_COMM_COMPUTE
-    SPGEMM_CSR_CSR_CSC_SHUFFLE = _sparse.LEGATE_SPARSE_SPGEMM_CSR_CSR_CSC_SHUFFLE
+    SPGEMM_CSR_CSR_CSC_LOCAL_TILES = (
+        _sparse.LEGATE_SPARSE_SPGEMM_CSR_CSR_CSC_LOCAL_TILES
+    )
+    SPGEMM_CSR_CSR_CSC_COMM_COMPUTE = (
+        _sparse.LEGATE_SPARSE_SPGEMM_CSR_CSR_CSC_COMM_COMPUTE
+    )
+    SPGEMM_CSR_CSR_CSC_SHUFFLE = (
+        _sparse.LEGATE_SPARSE_SPGEMM_CSR_CSR_CSC_SHUFFLE
+    )
 
     SPMM_CSR_DENSE = _sparse.LEGATE_SPARSE_SPMM_CSR_DENSE
     SPMM_DENSE_CSR = _sparse.LEGATE_SPARSE_SPMM_DENSE_CSR
@@ -137,16 +150,19 @@ class SparseOpCode(IntEnum):
     SETS_TO_SIZES = _sparse.LEGATE_QUANTUM_SETS_TO_SIZES
     CREATE_HAMILTONIANS = _sparse.LEGATE_QUANTUM_CREATE_HAMILTONIANS
 
+
 @unique
 class SparseProjectionFunctor(IntEnum):
     PROMOTE_1D_TO_2D = _sparse.LEGATE_SPARSE_PROJ_FN_1D_TO_2D
     LAST_STATIC_PROJ_FN = _sparse.LEGATE_SPARSE_LAST_PROJ_FN
+
 
 @unique
 class SparseTunable(IntEnum):
     NUM_PROCS = _sparse.LEGATE_SPARSE_TUNABLE_NUM_PROCS
     HAS_NUMAMEM = _sparse.LEGATE_SPARSE_TUNABLE_HAS_NUMAMEM
     NUM_GPUS = _sparse.LEGATE_SPARSE_TUNABLE_NUM_GPUS
+
 
 @unique
 class SparseTypeCode(IntEnum):
@@ -155,10 +171,12 @@ class SparseTypeCode(IntEnum):
 
 
 # Register some types for us to use.
-rect1 = pa.struct([('lo', types.int64), ('hi', types.int64)])
+rect1 = pa.struct([("lo", types.int64), ("hi", types.int64)])
 sparse_ctx.type_system.add_type(rect1, 16, SparseTypeCode.SPARSE_TYPE_RECT1)
 domain_ty = "legion_domain_t"
-sparse_ctx.type_system.add_type(domain_ty, ffi.sizeof(domain_ty), SparseTypeCode.SPARSE_TYPE_DOMAIN)
+sparse_ctx.type_system.add_type(
+    domain_ty, ffi.sizeof(domain_ty), SparseTypeCode.SPARSE_TYPE_DOMAIN
+)
 # Similarly to cunumeric, we'll register aliases for all of the
 # numpy types into our type system so that we don't need to worry
 # about implicitly converting types between numpy types and legate

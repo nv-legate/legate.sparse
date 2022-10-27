@@ -49,18 +49,15 @@
 import inspect
 from warnings import warn
 
-from scipy.optimize import OptimizeResult
+import cunumeric as np
+from legate.core import track_provenance
 from scipy.integrate import OdeSolution
+from scipy.optimize import OptimizeResult
 
 from . import dop853_coefficients
-
-from legate.core import track_provenance
-import cunumeric as np
-
-from .array import get_store_from_cunumeric_array, store_to_cunumeric_array
+from .array import get_store_from_cunumeric_array
 from .config import SparseOpCode, types
 from .runtime import ctx, runtime
-
 
 # Define the RK solver family.
 
@@ -94,16 +91,22 @@ def warn_extraneous(extraneous):
         Extraneous keyword arguments
     """
     if extraneous:
-        warn("The following arguments have no effect for a chosen solver: {}."
-             .format(", ".join("`{}`".format(x) for x in extraneous)))
+        warn(
+            "The following arguments have no effect for "
+            "a chosen solver: {}.".format(
+                ", ".join("`{}`".format(x) for x in extraneous)
+            )
+        )
 
 
 def validate_tol(rtol, atol, n):
     """Validate tolerance values."""
 
     if np.any(rtol < 100 * EPS):
-        warn("At least one element of `rtol` is too small. "
-             f"Setting `rtol = np.maximum(rtol, {100 * EPS})`.")
+        warn(
+            "At least one element of `rtol` is too small. "
+            f"Setting `rtol = np.maximum(rtol, {100 * EPS})`."
+        )
         rtol = np.maximum(rtol, 100 * EPS)
 
     atol = np.asarray(atol)
@@ -118,7 +121,7 @@ def validate_tol(rtol, atol, n):
 
 def norm(x):
     """Compute RMS norm."""
-    return np.linalg.norm(x) / x.size ** 0.5
+    return np.linalg.norm(x) / x.size**0.5
 
 
 def select_initial_step(fun, t0, y0, f0, direction, order, rtol, atol):
@@ -180,8 +183,10 @@ def check_arguments(fun, y0, support_complex):
     y0 = np.asarray(y0)
     if np.issubdtype(y0.dtype, np.complexfloating):
         if not support_complex:
-            raise ValueError("`y0` is complex, but the chosen solver does "
-                             "not support integration in a complex domain.")
+            raise ValueError(
+                "`y0` is complex, but the chosen solver does "
+                "not support integration in a complex domain."
+            )
         dtype = complex
     else:
         dtype = float
@@ -284,10 +289,12 @@ class OdeSolver:
     nlu : int
         Number of LU decompositions.
     """
+
     TOO_SMALL_STEP = "Required step size is less than spacing between numbers."
 
-    def __init__(self, fun, t0, y0, t_bound, vectorized,
-                 support_complex=False):
+    def __init__(
+        self, fun, t0, y0, t_bound, vectorized, support_complex=False
+    ):
         self.t_old = None
         self.t = t0
         self._fun, self.y = check_arguments(fun, y0, support_complex)
@@ -307,7 +314,7 @@ class OdeSolver:
 
         self.direction = np.sign(t_bound - t0) if t_bound != t0 else 1
         self.n = self.y.size
-        self.status = 'running'
+        self.status = "running"
 
         self.nfev = 0
         self.njev = 0
@@ -345,26 +352,27 @@ class OdeSolver:
             `self.status` is 'failed' after the step was taken or None
             otherwise.
         """
-        if self.status != 'running':
-            raise RuntimeError("Attempt to step on a failed or finished "
-                               "solver.")
+        if self.status != "running":
+            raise RuntimeError(
+                "Attempt to step on a failed or finished " "solver."
+            )
 
         if self.n == 0 or self.t == self.t_bound:
             # Handle corner cases of empty solver or no integration.
             self.t_old = self.t
             self.t = self.t_bound
             message = None
-            self.status = 'finished'
+            self.status = "finished"
         else:
             t = self.t
             success, message = self._step_impl()
 
             if not success:
-                self.status = 'failed'
+                self.status = "failed"
             else:
                 self.t_old = t
                 if self.direction * (self.t - self.t_bound) >= 0:
-                    self.status = 'finished'
+                    self.status = "finished"
 
         return message
 
@@ -377,8 +385,10 @@ class OdeSolver:
             Local interpolant over the last successful step.
         """
         if self.t_old is None:
-            raise RuntimeError("Dense output is available after a successful "
-                               "step was made.")
+            raise RuntimeError(
+                "Dense output is available after a successful "
+                "step was made."
+            )
 
         if self.n == 0 or self.t == self.t_old:
             # Handle corner cases of empty solver and no integration.
@@ -405,6 +415,7 @@ class DenseOutput:
     t_min, t_max : float
         Time range of the interpolation.
     """
+
     def __init__(self, t_old, t):
         self.t_old = t_old
         self.t = t
@@ -440,6 +451,7 @@ class ConstantDenseOutput(DenseOutput):
     This class used for degenerate integration cases: equal integration limits
     or a system with 0 equations.
     """
+
     def __init__(self, t_old, t, value):
         super().__init__(t_old, t)
         self.value = value
@@ -526,8 +538,8 @@ def rk_step(fun, t, y, f, h, A, B, C, K):
            Equations I: Nonstiff Problems", Sec. II.4.
     """
 
-    assert(K.dtype == np.complex128)
-    assert(A.dtype == np.float64)
+    assert K.dtype == np.complex128
+    assert A.dtype == np.float64
 
     K[0] = f
     for s in range(1, A.shape[0]):
@@ -606,6 +618,7 @@ class Dop853DenseOutput(DenseOutput):
 
 class RungeKutta(OdeSolver):
     """Base class for explicit Runge-Kutta methods."""
+
     C: np.ndarray = NotImplemented
     A: np.ndarray = NotImplemented
     B: np.ndarray = NotImplemented
@@ -615,20 +628,38 @@ class RungeKutta(OdeSolver):
     error_estimator_order: int = NotImplemented
     n_stages: int = NotImplemented
 
-    def __init__(self, fun, t0, y0, t_bound, max_step=np.inf,
-                 rtol=1e-3, atol=1e-6, vectorized=False,
-                 first_step=None, **extraneous):
+    def __init__(
+        self,
+        fun,
+        t0,
+        y0,
+        t_bound,
+        max_step=np.inf,
+        rtol=1e-3,
+        atol=1e-6,
+        vectorized=False,
+        first_step=None,
+        **extraneous,
+    ):
         warn_extraneous(extraneous)
-        super().__init__(fun, t0, y0, t_bound, vectorized,
-                         support_complex=True)
+        super().__init__(
+            fun, t0, y0, t_bound, vectorized, support_complex=True
+        )
         self.y_old = None
         self.max_step = validate_max_step(max_step)
         self.rtol, self.atol = validate_tol(rtol, atol, self.n)
         self.f = self.fun(self.t, self.y)
         if first_step is None:
             self.h_abs = select_initial_step(
-                self.fun, self.t, self.y, self.f, self.direction,
-                self.error_estimator_order, self.rtol, self.atol)
+                self.fun,
+                self.t,
+                self.y,
+                self.f,
+                self.direction,
+                self.error_estimator_order,
+                self.rtol,
+                self.atol,
+            )
         else:
             self.h_abs = validate_first_step(first_step, t0, t_bound)
         self.K = np.zeros((self.n_stages + 1, self.n), dtype=self.y.dtype)
@@ -674,8 +705,9 @@ class RungeKutta(OdeSolver):
             h = t_new - t
             h_abs = np.abs(h)
 
-            y_new, f_new = rk_step(self.fun, t, y, self.f, h, self.A,
-                                   self.B, self.C, self.K)
+            y_new, f_new = rk_step(
+                self.fun, t, y, self.f, h, self.A, self.B, self.C, self.K
+            )
             scale = atol + np.maximum(np.abs(y), np.abs(y_new)) * rtol
             error_norm = self._estimate_error_norm(self.K, h, scale)
 
@@ -683,8 +715,9 @@ class RungeKutta(OdeSolver):
                 if error_norm == 0:
                     factor = MAX_FACTOR
                 else:
-                    factor = min(MAX_FACTOR,
-                                 SAFETY * error_norm ** self.error_exponent)
+                    factor = min(
+                        MAX_FACTOR, SAFETY * error_norm**self.error_exponent
+                    )
 
                 if step_rejected:
                     factor = min(1, factor)
@@ -693,8 +726,9 @@ class RungeKutta(OdeSolver):
 
                 step_accepted = True
             else:
-                h_abs *= max(MIN_FACTOR,
-                             SAFETY * error_norm ** self.error_exponent)
+                h_abs *= max(
+                    MIN_FACTOR, SAFETY * error_norm**self.error_exponent
+                )
                 step_rejected = True
 
         self.h_previous = h
@@ -711,6 +745,7 @@ class RungeKutta(OdeSolver):
     def _dense_output_impl(self):
         Q = self.K.T.dot(self.P)
         return RkDenseOutput(self.t_old, self.t, self.y_old, Q)
+
 
 class RK23(RungeKutta):
     """Explicit Runge-Kutta method of order 3(2).
@@ -786,22 +821,18 @@ class RK23(RungeKutta):
     ----------
     .. [1] P. Bogacki, L.F. Shampine, "A 3(2) Pair of Runge-Kutta Formulas",
            Appl. Math. Lett. Vol. 2, No. 4. pp. 321-325, 1989.
-    """
+    """  # noqa: E501
+
     order = 3
     error_estimator_order = 2
     n_stages = 3
-    C = np.array([0, 1/2, 3/4])
-    A = np.array([
-        [0, 0, 0],
-        [1/2, 0, 0],
-        [0, 3/4, 0]
-    ])
-    B = np.array([2/9, 1/3, 4/9])
-    E = np.array([5/72, -1/12, -1/9, 1/8])
-    P = np.array([[1, -4 / 3, 5 / 9],
-                  [0, 1, -2/3],
-                  [0, 4/3, -8/9],
-                  [0, -1, 1]])
+    C = np.array([0, 1 / 2, 3 / 4])
+    A = np.array([[0, 0, 0], [1 / 2, 0, 0], [0, 3 / 4, 0]])
+    B = np.array([2 / 9, 1 / 3, 4 / 9])
+    E = np.array([5 / 72, -1 / 12, -1 / 9, 1 / 8])
+    P = np.array(
+        [[1, -4 / 3, 5 / 9], [0, 1, -2 / 3], [0, 4 / 3, -8 / 9], [0, -1, 1]]
+    )
 
 
 class RK45(RungeKutta):
@@ -881,35 +912,76 @@ class RK45(RungeKutta):
            No. 1, pp. 19-26, 1980.
     .. [2] L. W. Shampine, "Some Practical Runge-Kutta Formulas", Mathematics
            of Computation,, Vol. 46, No. 173, pp. 135-150, 1986.
-    """
+    """  # noqa: E501
+
     order = 5
     error_estimator_order = 4
     n_stages = 6
-    C = np.array([0, 1/5, 3/10, 4/5, 8/9, 1])
-    A = np.array([
-        [0, 0, 0, 0, 0],
-        [1/5, 0, 0, 0, 0],
-        [3/40, 9/40, 0, 0, 0],
-        [44/45, -56/15, 32/9, 0, 0],
-        [19372/6561, -25360/2187, 64448/6561, -212/729, 0],
-        [9017/3168, -355/33, 46732/5247, 49/176, -5103/18656]
-    ])
-    B = np.array([35/384, 0, 500/1113, 125/192, -2187/6784, 11/84])
-    E = np.array([-71/57600, 0, 71/16695, -71/1920, 17253/339200, -22/525,
-                  1/40])
+    C = np.array([0, 1 / 5, 3 / 10, 4 / 5, 8 / 9, 1])
+    A = np.array(
+        [
+            [0, 0, 0, 0, 0],
+            [1 / 5, 0, 0, 0, 0],
+            [3 / 40, 9 / 40, 0, 0, 0],
+            [44 / 45, -56 / 15, 32 / 9, 0, 0],
+            [19372 / 6561, -25360 / 2187, 64448 / 6561, -212 / 729, 0],
+            [9017 / 3168, -355 / 33, 46732 / 5247, 49 / 176, -5103 / 18656],
+        ]
+    )
+    B = np.array([35 / 384, 0, 500 / 1113, 125 / 192, -2187 / 6784, 11 / 84])
+    E = np.array(
+        [
+            -71 / 57600,
+            0,
+            71 / 16695,
+            -71 / 1920,
+            17253 / 339200,
+            -22 / 525,
+            1 / 40,
+        ]
+    )
     # Corresponds to the optimum value of c_6 from [2]_.
-    P = np.array([
-        [1, -8048581381/2820520608, 8663915743/2820520608,
-         -12715105075/11282082432],
-        [0, 0, 0, 0],
-        [0, 131558114200/32700410799, -68118460800/10900136933,
-         87487479700/32700410799],
-        [0, -1754552775/470086768, 14199869525/1410260304,
-         -10690763975/1880347072],
-        [0, 127303824393/49829197408, -318862633887/49829197408,
-         701980252875 / 199316789632],
-        [0, -282668133/205662961, 2019193451/616988883, -1453857185/822651844],
-        [0, 40617522/29380423, -110615467/29380423, 69997945/29380423]])
+    P = np.array(
+        [
+            [
+                1,
+                -8048581381 / 2820520608,
+                8663915743 / 2820520608,
+                -12715105075 / 11282082432,
+            ],
+            [0, 0, 0, 0],
+            [
+                0,
+                131558114200 / 32700410799,
+                -68118460800 / 10900136933,
+                87487479700 / 32700410799,
+            ],
+            [
+                0,
+                -1754552775 / 470086768,
+                14199869525 / 1410260304,
+                -10690763975 / 1880347072,
+            ],
+            [
+                0,
+                127303824393 / 49829197408,
+                -318862633887 / 49829197408,
+                701980252875 / 199316789632,
+            ],
+            [
+                0,
+                -282668133 / 205662961,
+                2019193451 / 616988883,
+                -1453857185 / 822651844,
+            ],
+            [
+                0,
+                40617522 / 29380423,
+                -110615467 / 29380423,
+                69997945 / 29380423,
+            ],
+        ]
+    )
 
 
 class DOP853(RungeKutta):
@@ -988,7 +1060,8 @@ class DOP853(RungeKutta):
            Equations I: Nonstiff Problems", Sec. II.
     .. [2] `Page with original Fortran code of DOP853
             <http://www.unige.ch/~hairer/software.html>`_.
-    """
+    """  # noqa: E501
+
     n_stages = dop853_coefficients.N_STAGES
     order = 8
     error_estimator_order = 7
@@ -999,17 +1072,38 @@ class DOP853(RungeKutta):
     E5 = dop853_coefficients.E5
     D = dop853_coefficients.D
 
-    A_EXTRA = dop853_coefficients.A[n_stages + 1:]
-    C_EXTRA = dop853_coefficients.C[n_stages + 1:]
+    A_EXTRA = dop853_coefficients.A[n_stages + 1 :]
+    C_EXTRA = dop853_coefficients.C[n_stages + 1 :]
 
-    def __init__(self, fun, t0, y0, t_bound, max_step=np.inf,
-                 rtol=1e-3, atol=1e-6, vectorized=False,
-                 first_step=None, **extraneous):
-        super().__init__(fun, t0, y0, t_bound, max_step, rtol, atol,
-                         vectorized, first_step, **extraneous)
-        self.K_extended = np.zeros((dop853_coefficients.N_STAGES_EXTENDED,
-                                    self.n), dtype=self.y.dtype)
-        self.K = self.K_extended[:self.n_stages + 1]
+    def __init__(
+        self,
+        fun,
+        t0,
+        y0,
+        t_bound,
+        max_step=np.inf,
+        rtol=1e-3,
+        atol=1e-6,
+        vectorized=False,
+        first_step=None,
+        **extraneous,
+    ):
+        super().__init__(
+            fun,
+            t0,
+            y0,
+            t_bound,
+            max_step,
+            rtol,
+            atol,
+            vectorized,
+            first_step,
+            **extraneous,
+        )
+        self.K_extended = np.zeros(
+            (dop853_coefficients.N_STAGES_EXTENDED, self.n), dtype=self.y.dtype
+        )
+        self.K = self.K_extended[: self.n_stages + 1]
 
     def _estimate_error(self, K, h):  # Left for testing purposes.
         err5 = np.dot(K.T, self.E5)
@@ -1028,8 +1122,8 @@ class DOP853(RungeKutta):
         err3 = direct_rk_step(K, self.E3, K.shape[0], 1.0) / scale
         # err5 = np.dot(K.T, self.E5) / scale
         # err3 = np.dot(K.T, self.E3) / scale
-        err5_norm_2 = np.linalg.norm(err5)**2
-        err3_norm_2 = np.linalg.norm(err3)**2
+        err5_norm_2 = np.linalg.norm(err5) ** 2
+        err3_norm_2 = np.linalg.norm(err3) ** 2
         if err5_norm_2 == 0 and err3_norm_2 == 0:
             return 0.0
         denom = err5_norm_2 + 0.01 * err3_norm_2
@@ -1038,8 +1132,8 @@ class DOP853(RungeKutta):
     def _dense_output_impl(self):
         K = self.K_extended
         h = self.h_previous
-        assert(K.dtype == np.complex128)
-        assert(self.A_EXTRA.dtype == np.float64)
+        assert K.dtype == np.complex128
+        assert self.A_EXTRA.dtype == np.float64
         for i in range(self.A_EXTRA.shape[0]):
             a, c = self.A_EXTRA[i], self.C_EXTRA[i]
             s = i + self.n_stages + 1
@@ -1050,8 +1144,10 @@ class DOP853(RungeKutta):
             # assert(np.allclose(dy, dy_2))
             K[s] = self.fun(self.t_old + c * h, self.y_old + dy)
 
-        F = np.empty((dop853_coefficients.INTERPOLATOR_POWER, self.n),
-                     dtype=self.y_old.dtype)
+        F = np.empty(
+            (dop853_coefficients.INTERPOLATOR_POWER, self.n),
+            dtype=self.y_old.dtype,
+        )
 
         f_old = K[0]
         delta_y = self.y - self.y_old
@@ -1065,13 +1161,13 @@ class DOP853(RungeKutta):
 
 
 # We'll only support RK methods for now.
-METHODS = {'RK23': RK23,
-           'RK45': RK45,
-           'DOP853': DOP853}
+METHODS = {"RK23": RK23, "RK45": RK45, "DOP853": DOP853}
 
 
-MESSAGES = {0: "The solver successfully reached the end of the integration interval.",
-            1: "A termination event occurred."}
+MESSAGES = {
+    0: "The solver successfully reached the end of the integration interval.",
+    1: "A termination event occurred.",
+}
 
 EPS = np.finfo(float).eps
 
@@ -1122,8 +1218,10 @@ def solve_event_equation(event, sol, t_old, t):
         Found solution.
     """
     from scipy.optimize import brentq
-    return brentq(lambda t: event(t, sol(t)), t_old, t,
-                  xtol=4 * EPS, rtol=4 * EPS)
+
+    return brentq(
+        lambda t: event(t, sol(t)), t_old, t, xtol=4 * EPS, rtol=4 * EPS
+    )
 
 
 def handle_events(sol, events, active_events, is_terminal, t_old, t):
@@ -1151,8 +1249,10 @@ def handle_events(sol, events, active_events, is_terminal, t_old, t):
     terminate : bool
         Whether a terminal event occurred.
     """
-    roots = [solve_event_equation(events[event_index], sol, t_old, t)
-             for event_index in active_events]
+    roots = [
+        solve_event_equation(events[event_index], sol, t_old, t)
+        for event_index in active_events
+    ]
 
     roots = np.asarray(roots)
 
@@ -1164,8 +1264,8 @@ def handle_events(sol, events, active_events, is_terminal, t_old, t):
         active_events = active_events[order]
         roots = roots[order]
         t = np.nonzero(is_terminal[active_events])[0][0]
-        active_events = active_events[:t + 1]
-        roots = roots[:t + 1]
+        active_events = active_events[: t + 1]
+        roots = roots[: t + 1]
         terminate = True
     else:
         terminate = False
@@ -1190,16 +1290,29 @@ def find_active_events(g, g_new, direction):
     up = (g <= 0) & (g_new >= 0)
     down = (g >= 0) & (g_new <= 0)
     either = up | down
-    mask = (up & (direction > 0) |
-            down & (direction < 0) |
-            either & (direction == 0))
+    mask = (
+        up & (direction > 0)
+        | down & (direction < 0)
+        | either & (direction == 0)
+    )
 
     return np.nonzero(mask)[0]
 
 
 # This method is lifted from scipy.integrate...
-def solve_ivp(fun, t_span, y0, method='RK45', t_eval=None, dense_output=False,
-              events=None, vectorized=False, args=None, iteration_limit=None, **options):
+def solve_ivp(
+    fun,
+    t_span,
+    y0,
+    method="RK45",
+    t_eval=None,
+    dense_output=False,
+    events=None,
+    vectorized=False,
+    args=None,
+    iteration_limit=None,
+    **options,
+):
     """Solve an initial value problem for a system of ODEs.
     This function numerically integrates a system of ordinary differential
     equations given an initial value::
@@ -1516,11 +1629,13 @@ def solve_ivp(fun, t_span, y0, method='RK45', t_eval=None, dense_output=False,
     >>> plt.legend(['x', 'y'], shadow=True)
     >>> plt.title('Lotka-Volterra System')
     >>> plt.show()
-    """
+    """  # noqa: E501
     if method not in METHODS and not (
-            inspect.isclass(method) and issubclass(method, OdeSolver)):
-        raise ValueError("`method` must be one of {} or OdeSolver class."
-                         .format(METHODS))
+        inspect.isclass(method) and issubclass(method, OdeSolver)
+    ):
+        raise ValueError(
+            "`method` must be one of {} or OdeSolver class.".format(METHODS)
+        )
 
     t0, tf = map(float, t_span)
 
@@ -1537,10 +1652,10 @@ def solve_ivp(fun, t_span, y0, method='RK45', t_eval=None, dense_output=False,
             )
             raise TypeError(suggestion_tuple) from exp
 
-        fun = lambda t, x, fun=fun: fun(t, x, *args)
-        jac = options.get('jac')
+        fun = lambda t, x, fun=fun: fun(t, x, *args)  # noqa: E731
+        jac = options.get("jac")
         if callable(jac):
-            options['jac'] = lambda t, x: jac(t, x, *args)
+            options["jac"] = lambda t, x: jac(t, x, *args)
 
     if t_eval is not None:
         t_eval = np.asarray(t_eval)
@@ -1585,11 +1700,13 @@ def solve_ivp(fun, t_span, y0, method='RK45', t_eval=None, dense_output=False,
     if events is not None:
         if args is not None:
             # Wrap user functions in lambdas to hide the additional parameters.
-            # The original event function is passed as a keyword argument to the
-            # lambda to keep the original function in scope (i.e., avoid the
-            # late binding closure "gotcha").
-            events = [lambda t, x, event=event: event(t, x, *args)
-                      for event in events]
+            # The original event function is passed as a keyword argument to
+            # the lambda to keep the original function in scope (i.e., avoid
+            # the late binding closure "gotcha").
+            events = [
+                lambda t, x, event=event: event(t, x, *args)
+                for event in events
+            ]
         g = [event(t0, y0) for event in events]
         t_events = [[] for _ in range(len(events))]
         y_events = [[] for _ in range(len(events))]
@@ -1602,9 +1719,9 @@ def solve_ivp(fun, t_span, y0, method='RK45', t_eval=None, dense_output=False,
     while status is None:
         message = solver.step()
 
-        if solver.status == 'finished':
+        if solver.status == "finished":
             status = 0
-        elif solver.status == 'failed':
+        elif solver.status == "failed":
             status = -1
             break
 
@@ -1626,7 +1743,8 @@ def solve_ivp(fun, t_span, y0, method='RK45', t_eval=None, dense_output=False,
                     sol = solver.dense_output()
 
                 root_indices, roots, terminate = handle_events(
-                    sol, events, active_events, is_terminal, t_old, t)
+                    sol, events, active_events, is_terminal, t_old, t
+                )
 
                 for e, te in zip(root_indices, roots):
                     t_events[e].append(te)
@@ -1645,10 +1763,10 @@ def solve_ivp(fun, t_span, y0, method='RK45', t_eval=None, dense_output=False,
         else:
             # The value in t_eval equal to t will be included.
             if solver.direction > 0:
-                t_eval_i_new = np.searchsorted(t_eval, t, side='right')
+                t_eval_i_new = np.searchsorted(t_eval, t, side="right")
                 t_eval_step = t_eval[t_eval_i:t_eval_i_new]
             else:
-                t_eval_i_new = np.searchsorted(t_eval, t, side='left')
+                t_eval_i_new = np.searchsorted(t_eval, t, side="left")
                 # It has to be done with two slice operations, because
                 # you can't slice to 0th element inclusive using backward
                 # slicing.
@@ -1691,6 +1809,16 @@ def solve_ivp(fun, t_span, y0, method='RK45', t_eval=None, dense_output=False,
     else:
         sol = None
 
-    return OptimizeResult(t=ts, y=ys, sol=sol, t_events=t_events, y_events=y_events,
-                          nfev=solver.nfev, njev=solver.njev, nlu=solver.nlu,
-                          status=status, message=message, success=status >= 0)
+    return OptimizeResult(
+        t=ts,
+        y=ys,
+        sol=sol,
+        t_events=t_events,
+        y_events=y_events,
+        nfev=solver.nfev,
+        njev=solver.njev,
+        nlu=solver.nlu,
+        status=status,
+        message=message,
+        success=status >= 0,
+    )

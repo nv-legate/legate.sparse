@@ -14,8 +14,9 @@
 
 import cunumeric as np
 import pytest
-from sparse import eye, spdiags
 import scipy.sparse as scpy
+
+from sparse import eye, spdiags
 
 
 def test_dia_to_csr():
@@ -23,40 +24,43 @@ def test_dia_to_csr():
 
 
 def test_spdiags():
-    data = np.array([[1.0, 2.0, 3.0, 4.0], [1.0, 2.0, 3.0, 4.0], [1.0, 2.0, 3.0, 4.0]])
+    data = np.array(
+        [[1.0, 2.0, 3.0, 4.0], [1.0, 2.0, 3.0, 4.0], [1.0, 2.0, 3.0, 4.0]]
+    )
     diag = np.array([0, -1, 2])
-    l = spdiags(data, diag, 4, 4).todense()
+    arr = spdiags(data, diag, 4, 4).todense()
     s = scpy.spdiags(data, diag, 4, 4).todense()
-    assert np.array_equal(l, s)
+    assert np.array_equal(arr, s)
 
 
 @pytest.mark.parametrize("m", [1, 2, 3, 4])
 @pytest.mark.parametrize("n", [1, 2, 3, 4])
 @pytest.mark.parametrize("k", [-1, 0, 1])
 def test_eye(m, n, k):
-    l = eye(m, n=n, k=k, format="csr").todense()
+    arr = eye(m, n=n, k=k, format="csr").todense()
     s = scpy.eye(m, n=n, k=k, format="csr").todense()
-    assert np.array_equal(l, s)
+    assert np.array_equal(arr, s)
 
 
 @pytest.mark.parametrize("m", [1, 2, 3, 4])
 @pytest.mark.parametrize("n", [1, 2, 3, 4])
 @pytest.mark.parametrize("k", [-1, 0, 1])
 def test_dia_diagonal(m, n, k):
-    l = eye(m, n=n, k=k, format="dia")
+    arr = eye(m, n=n, k=k, format="dia")
     s = scpy.eye(m, n=n, k=k, format="dia")
-    assert np.array_equal(l.diagonal(k=k), s.diagonal(k=k))
+    assert np.array_equal(arr.diagonal(k=k), s.diagonal(k=k))
 
 
 @pytest.mark.parametrize("m", [1, 2, 3, 4])
 @pytest.mark.parametrize("n", [1, 2, 3, 4])
 @pytest.mark.parametrize("k", [-1, 0, 1])
 def test_dia_to_coo(m, n, k):
-    l = eye(m, n=n, k=k, format="dia").tocoo().todense()
+    arr = eye(m, n=n, k=k, format="dia").tocoo().todense()
     s = scpy.eye(m, n=n, k=k, format="dia").todense()
-    assert np.array_equal(l, s)
+    assert np.array_equal(arr, s)
 
 
 if __name__ == "__main__":
     import sys
+
     sys.exit(pytest.main(sys.argv))
