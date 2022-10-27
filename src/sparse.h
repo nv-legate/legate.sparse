@@ -21,13 +21,15 @@
 namespace sparse {
 
 struct Sparse {
-public:
+ public:
   template <typename... Args>
-  static void record_variant(Args&&... args) {
+  static void record_variant(Args&&... args)
+  {
     get_registrar().record_variant(std::forward<Args>(args)...);
   }
   static legate::LegateTaskRegistrar& get_registrar();
-public:
+
+ public:
   static bool has_numamem;
   static Legion::MapperID mapper_id;
 };
@@ -37,4 +39,4 @@ struct SparseTask : public legate::LegateTask<T> {
   using Registrar = Sparse;
 };
 
-} // namespace sparse
+}  // namespace sparse

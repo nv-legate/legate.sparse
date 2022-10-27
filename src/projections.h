@@ -23,7 +23,7 @@ namespace sparse {
 
 // LegateSparseProjectionFunctor is a base class for projection functors.
 class LegateSparseProjectionFunctor : public Legion::ProjectionFunctor {
-public:
+ public:
   LegateSparseProjectionFunctor(Legion::Runtime* rt) : Legion::ProjectionFunctor(rt) {}
   bool is_functional(void) const override { return true; }
   bool is_exclusive(void) const override { return true; }
@@ -33,9 +33,10 @@ public:
 // Promote1Dto2DFunctor is a projection functor that up-casts an index
 // into a point in a 2-D color space.
 class Promote1Dto2DFunctor : public LegateSparseProjectionFunctor {
-public:
+ public:
   Promote1Dto2DFunctor(Legion::Runtime* rt) : LegateSparseProjectionFunctor(rt) {}
-public:
+
+ public:
   Legion::LogicalRegion project(Legion::LogicalPartition upper_bound,
                                 const Legion::DomainPoint& point,
                                 const Legion::Domain& launch_domain) override;
@@ -45,14 +46,15 @@ public:
 // but works around legate internal partitioning that internally translates
 // multi-dimensional tiled colorings into tilings over 1-D color spaces.
 class Functor1DToRowsImplicit2D : public LegateSparseProjectionFunctor {
-public:
+ public:
   Functor1DToRowsImplicit2D(Legion::Runtime* rt, int32_t gx, int32_t gy, bool rows);
   Legion::LogicalRegion project(Legion::LogicalPartition upper_bound,
                                 const Legion::DomainPoint& point,
                                 const Legion::Domain& launch_domain) override;
-private:
+
+ private:
   int32_t gx, gy;
   bool rows = true;
 };
 
-} // namespace sparse
+}  // namespace sparse

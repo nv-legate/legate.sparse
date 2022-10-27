@@ -35,7 +35,8 @@ void extract_samples(const INDEX_TY* data1,
                      const size_t num_local_samples,
                      const Sample<INDEX_TY> init_sample,
                      const size_t offset,
-                     const size_t rank) {
+                     const size_t rank)
+{
   for (size_t sample_idx = 0; sample_idx < num_local_samples; sample_idx++) {
     if (num_local_samples < volume) {
       const size_t index                    = (sample_idx + 1) * volume / num_local_samples - 1;
@@ -68,31 +69,33 @@ static void extract_split_positions(const INDEX_TY* data1,
                                     const size_t rank)
 {
   for (size_t splitter_idx = 0; splitter_idx < num_splitters; splitter_idx++) {
-    const size_t index         = (splitter_idx + 1) * num_samples / (num_splitters + 1) - 1;
+    const size_t index              = (splitter_idx + 1) * num_samples / (num_splitters + 1) - 1;
     const Sample<INDEX_TY> splitter = samples[index];
 
     // now perform search on data to receive position *after* last element to be
     // part of the package for rank splitter_idx
     if (rank > splitter.rank) {
       // position of the last position with smaller value than splitter.value + 1
-      split_positions[splitter_idx] = lower_bound(data1, data2, volume, splitter.value1, splitter.value2);
+      split_positions[splitter_idx] =
+        lower_bound(data1, data2, volume, splitter.value1, splitter.value2);
     } else if (rank < splitter.rank) {
       // position of the first position with value larger than splitter.value
-      split_positions[splitter_idx] = upper_bound(data1, data2, volume, splitter.value1, splitter.value2);
+      split_positions[splitter_idx] =
+        upper_bound(data1, data2, volume, splitter.value1, splitter.value2);
     } else {
       split_positions[splitter_idx] = splitter.position + 1;
     }
   }
 }
 
-template<typename INDEX_TY, typename VAL_TY, typename Policy>
-static SortPiece<INDEX_TY, VAL_TY> samplesort(
-    Policy exec,
-    SortPiece<INDEX_TY, VAL_TY> local_sorted,
-    size_t my_rank,
-    size_t num_ranks,
-    Legion::Memory::Kind mem,
-    legate::comm::coll::CollComm *comm) {
+template <typename INDEX_TY, typename VAL_TY, typename Policy>
+static SortPiece<INDEX_TY, VAL_TY> samplesort(Policy exec,
+                                              SortPiece<INDEX_TY, VAL_TY> local_sorted,
+                                              size_t my_rank,
+                                              size_t num_ranks,
+                                              Legion::Memory::Kind mem,
+                                              legate::comm::coll::CollComm* comm)
+{
   size_t volume = local_sorted.size;
 
   // collect local samples - for now we take num_ranks samples for every node
@@ -100,42 +103,36 @@ static SortPiece<INDEX_TY, VAL_TY> samplesort(
   size_t num_local_samples = num_ranks;
 
   size_t num_global_samples = num_local_samples * num_ranks;
-  auto samples = create_buffer<Sample<INDEX_TY>>(num_global_samples, mem);
+  auto samples              = create_buffer<Sample<INDEX_TY>>(num_global_samples, mem);
 
   Sample<INDEX_TY> init_sample;
   {
     init_sample.rank = -1;  // init samples that are not populated
-    size_t offset = num_local_samples * my_rank;
-    extract_samples(
-        local_sorted.indices1.ptr(0),
-        local_sorted.indices2.ptr(0),
-        volume,
-        samples.ptr(0),
-        num_local_samples,
-        init_sample,
-        offset,
-        my_rank
-    );
+    size_t offset    = num_local_samples * my_rank;
+    extract_samples(local_sorted.indices1.ptr(0),
+                    local_sorted.indices2.ptr(0),
+                    volume,
+                    samples.ptr(0),
+                    num_local_samples,
+                    init_sample,
+                    offset,
+                    my_rank);
   }
 
   // TODO (rohany): I think that we can specialize the communicator
   //  implementation choice using templates? Have a wrapper allGather
   //  that understands the type of the communicator.
-  legate::comm::coll::collAllgather(
-      samples.ptr(my_rank * num_ranks),
-      samples.ptr(0),
-      num_ranks * sizeof(Sample<INDEX_TY>),
-      legate::comm::coll::CollDataType::CollInt8,
-      *comm
-  );
+  legate::comm::coll::collAllgather(samples.ptr(my_rank * num_ranks),
+                                    samples.ptr(0),
+                                    num_ranks * sizeof(Sample<INDEX_TY>),
+                                    legate::comm::coll::CollDataType::CollInt8,
+                                    *comm);
 
   // Sort local samples.
-  thrust::stable_sort(exec,
-                      samples.ptr(0),
-                      samples.ptr(0) + num_global_samples,
-                      SampleComparator<INDEX_TY>());
+  thrust::stable_sort(
+    exec, samples.ptr(0), samples.ptr(0) + num_global_samples, SampleComparator<INDEX_TY>());
 
-  auto lower_bound = thrust::lower_bound(exec,
+  auto lower_bound          = thrust::lower_bound(exec,
                                          samples.ptr(0),
                                          samples.ptr(0) + num_global_samples,
                                          init_sample,
@@ -144,18 +141,16 @@ static SortPiece<INDEX_TY, VAL_TY> samplesort(
 
   // select splitters / positions based on samples (on device)
   const size_t num_splitters = num_ranks - 1;
-  auto split_positions = create_buffer<size_t>(num_splitters, mem);
+  auto split_positions       = create_buffer<size_t>(num_splitters, mem);
   {
-    extract_split_positions(
-        local_sorted.indices1.ptr(0),
-        local_sorted.indices2.ptr(0),
-        volume,
-        samples.ptr(0),
-        num_usable_samples,
-        split_positions.ptr(0),
-        num_splitters,
-        my_rank
-    );
+    extract_split_positions(local_sorted.indices1.ptr(0),
+                            local_sorted.indices2.ptr(0),
+                            volume,
+                            samples.ptr(0),
+                            num_usable_samples,
+                            split_positions.ptr(0),
+                            num_splitters,
+                            my_rank);
   }
 
   // collect sizes2send, send to rank i: local_sort_data from positions  split_positions[i-1],
@@ -178,12 +173,7 @@ static SortPiece<INDEX_TY, VAL_TY> samplesort(
   // all2all exchange send/receive sizes
   auto size_recv = create_buffer<uint64_t>(num_ranks, mem);
   legate::comm::coll::collAlltoall(
-    size_send.ptr(0),
-    size_recv.ptr(0),
-    1,
-    legate::comm::coll::CollDataType::CollUint64,
-    *comm
-  );
+    size_send.ptr(0), size_recv.ptr(0), 1, legate::comm::coll::CollDataType::CollUint64, *comm);
 
   // Compute the sdispls and rdispls arrays using scans over the send
   // and recieve arrays.
@@ -191,8 +181,8 @@ static SortPiece<INDEX_TY, VAL_TY> samplesort(
   std::vector<int> sdispls(num_ranks), rdispls(num_ranks);
   uint64_t sval = 0, rval = 0;
   for (size_t r = 0; r < num_ranks; r++) {
-    sdispls[r] = sval;
-    rdispls[r] = rval;
+    sdispls[r]    = sval;
+    rdispls[r]    = rval;
     sendcounts[r] = size_send[r];
     recvcounts[r] = size_recv[r];
     sval += size_send[r];
@@ -201,7 +191,7 @@ static SortPiece<INDEX_TY, VAL_TY> samplesort(
 
   auto coord1_send_buf = local_sorted.indices1;
   auto coord2_send_buf = local_sorted.indices2;
-  auto vals_send_buf = local_sorted.values;
+  auto vals_send_buf   = local_sorted.values;
 
   // allocate target buffers.
   auto coord1_recv_buf = create_buffer<INDEX_TY>(rval, mem);
@@ -212,36 +202,30 @@ static SortPiece<INDEX_TY, VAL_TY> samplesort(
   //  and that VAL_TY is CollDouble.
 
   // All2Allv time for each buffer.
-  legate::comm::coll::collAlltoallv(
-      coord1_send_buf.ptr(0),
-      sendcounts.data(),
-      sdispls.data(),
-      coord1_recv_buf.ptr(0),
-      recvcounts.data(),
-      rdispls.data(),
-      legate::comm::coll::CollDataType::CollInt64,
-      *comm
-  );
-  legate::comm::coll::collAlltoallv(
-      coord2_send_buf.ptr(0),
-      sendcounts.data(),
-      sdispls.data(),
-      coord2_recv_buf.ptr(0),
-      recvcounts.data(),
-      rdispls.data(),
-      legate::comm::coll::CollDataType::CollInt64,
-      *comm
-  );
-  legate::comm::coll::collAlltoallv(
-      vals_send_buf.ptr(0),
-      sendcounts.data(),
-      sdispls.data(),
-      values_recv_buf.ptr(0),
-      recvcounts.data(),
-      rdispls.data(),
-      legate::comm::coll::CollDataType::CollDouble,
-      *comm
-  );
+  legate::comm::coll::collAlltoallv(coord1_send_buf.ptr(0),
+                                    sendcounts.data(),
+                                    sdispls.data(),
+                                    coord1_recv_buf.ptr(0),
+                                    recvcounts.data(),
+                                    rdispls.data(),
+                                    legate::comm::coll::CollDataType::CollInt64,
+                                    *comm);
+  legate::comm::coll::collAlltoallv(coord2_send_buf.ptr(0),
+                                    sendcounts.data(),
+                                    sdispls.data(),
+                                    coord2_recv_buf.ptr(0),
+                                    recvcounts.data(),
+                                    rdispls.data(),
+                                    legate::comm::coll::CollDataType::CollInt64,
+                                    *comm);
+  legate::comm::coll::collAlltoallv(vals_send_buf.ptr(0),
+                                    sendcounts.data(),
+                                    sdispls.data(),
+                                    values_recv_buf.ptr(0),
+                                    recvcounts.data(),
+                                    rdispls.data(),
+                                    legate::comm::coll::CollDataType::CollDouble,
+                                    *comm);
 
   // Clean up remaining buffers.
   size_send.destroy();
@@ -250,16 +234,25 @@ static SortPiece<INDEX_TY, VAL_TY> samplesort(
   // Extract the pieces of the received data into sort pieces.
   std::vector<SortPiece<INDEX_TY, VAL_TY>> merge_buffers(num_ranks);
   for (size_t r = 0; r < num_ranks; r++) {
-    auto size = recvcounts[r];
-    merge_buffers[r].size = size;
+    auto size                 = recvcounts[r];
+    merge_buffers[r].size     = size;
     merge_buffers[r].indices1 = create_buffer<INDEX_TY>(size, mem);
     merge_buffers[r].indices2 = create_buffer<INDEX_TY>(size, mem);
-    merge_buffers[r].values = create_buffer<VAL_TY>(size, mem);
+    merge_buffers[r].values   = create_buffer<VAL_TY>(size, mem);
     // Copy each of the corresponding pieces into the buffers.
     if (rdispls[r] < rval) {
-      thrust::copy(exec, coord1_recv_buf.ptr(rdispls[r]), coord1_recv_buf.ptr(rdispls[r]) + size, merge_buffers[r].indices1.ptr(0));
-      thrust::copy(exec, coord2_recv_buf.ptr(rdispls[r]), coord2_recv_buf.ptr(rdispls[r]) + size, merge_buffers[r].indices2.ptr(0));
-      thrust::copy(exec, values_recv_buf.ptr(rdispls[r]), values_recv_buf.ptr(rdispls[r]) + size, merge_buffers[r].values.ptr(0));
+      thrust::copy(exec,
+                   coord1_recv_buf.ptr(rdispls[r]),
+                   coord1_recv_buf.ptr(rdispls[r]) + size,
+                   merge_buffers[r].indices1.ptr(0));
+      thrust::copy(exec,
+                   coord2_recv_buf.ptr(rdispls[r]),
+                   coord2_recv_buf.ptr(rdispls[r]) + size,
+                   merge_buffers[r].indices2.ptr(0));
+      thrust::copy(exec,
+                   values_recv_buf.ptr(rdispls[r]),
+                   values_recv_buf.ptr(rdispls[r]) + size,
+                   merge_buffers[r].values.ptr(0));
     }
   }
 
@@ -271,37 +264,37 @@ static SortPiece<INDEX_TY, VAL_TY> samplesort(
   // Merge all of the pieces together into the result buffer.
   for (size_t stride = 1; stride < num_ranks; stride *= 2) {
     for (size_t pos = 0; pos + stride < num_ranks; pos += 2 * stride) {
-      auto source1 = merge_buffers[pos];
-      auto source2 = merge_buffers[pos + stride];
-      auto merged_size       = source1.size + source2.size;
-      auto merged_coord1     = create_buffer<coord_ty>(merged_size, mem);
-      auto merged_coord2     = create_buffer<coord_ty>(merged_size, mem);
-      auto merged_values     = create_buffer<val_ty>(merged_size, mem);
+      auto source1       = merge_buffers[pos];
+      auto source2       = merge_buffers[pos + stride];
+      auto merged_size   = source1.size + source2.size;
+      auto merged_coord1 = create_buffer<coord_ty>(merged_size, mem);
+      auto merged_coord2 = create_buffer<coord_ty>(merged_size, mem);
+      auto merged_values = create_buffer<val_ty>(merged_size, mem);
 
-      auto p_left_coord1 = source1.indices1.ptr(0);
-      auto p_left_coord2 = source1.indices2.ptr(0);
-      auto p_left_values = source1.values.ptr(0);
+      auto p_left_coord1  = source1.indices1.ptr(0);
+      auto p_left_coord2  = source1.indices2.ptr(0);
+      auto p_left_values  = source1.values.ptr(0);
       auto p_right_coord1 = source2.indices1.ptr(0);
       auto p_right_coord2 = source2.indices2.ptr(0);
       auto p_right_values = source2.values.ptr(0);
 
       auto left_zipped_begin = thrust::make_tuple(p_left_coord1, p_left_coord2);
-      auto left_zipped_end = thrust::make_tuple(p_left_coord1 + source1.size, p_left_coord2 + source1.size);
+      auto left_zipped_end =
+        thrust::make_tuple(p_left_coord1 + source1.size, p_left_coord2 + source1.size);
       auto right_zipped_begin = thrust::make_tuple(p_right_coord1, p_right_coord2);
-      auto right_zipped_end = thrust::make_tuple(p_right_coord1 + source2.size, p_right_coord2 + source2.size);
+      auto right_zipped_end =
+        thrust::make_tuple(p_right_coord1 + source2.size, p_right_coord2 + source2.size);
       auto merged_zipped_begin = thrust::make_tuple(merged_coord1.ptr(0), merged_coord2.ptr(0));
 
-      thrust::merge_by_key(
-          exec,
-          thrust::make_zip_iterator(left_zipped_begin),
-          thrust::make_zip_iterator(left_zipped_end),
-          thrust::make_zip_iterator(right_zipped_begin),
-          thrust::make_zip_iterator(right_zipped_end),
-          p_left_values,
-          p_right_values,
-          thrust::make_zip_iterator(merged_zipped_begin),
-          merged_values.ptr(0)
-      );
+      thrust::merge_by_key(exec,
+                           thrust::make_zip_iterator(left_zipped_begin),
+                           thrust::make_zip_iterator(left_zipped_end),
+                           thrust::make_zip_iterator(right_zipped_begin),
+                           thrust::make_zip_iterator(right_zipped_end),
+                           p_left_values,
+                           p_right_values,
+                           thrust::make_zip_iterator(merged_zipped_begin),
+                           merged_values.ptr(0));
 
       // Clean up allocations that we don't need anymore.
       source1.indices1.destroy();
@@ -313,32 +306,33 @@ static SortPiece<INDEX_TY, VAL_TY> samplesort(
 
       merge_buffers[pos].indices1 = merged_coord1;
       merge_buffers[pos].indices2 = merged_coord2;
-      merge_buffers[pos].values = merged_values;
-      merge_buffers[pos].size = merged_size;
+      merge_buffers[pos].values   = merged_values;
+      merge_buffers[pos].size     = merged_size;
     }
   }
   return merge_buffers[0];
 }
 
 template <typename INDEX_TY, typename VAL_TY, typename Policy>
-void SortBody(legate::TaskContext& ctx, Legion::Memory::Kind mem, Policy exec) {
-  auto& key1 = ctx.inputs()[0];
-  auto& key2 = ctx.inputs()[1];
-  auto& values = ctx.inputs()[2];
-  auto& key1_out = ctx.outputs()[0];
-  auto& key2_out = ctx.outputs()[1];
+void SortBody(legate::TaskContext& ctx, Legion::Memory::Kind mem, Policy exec)
+{
+  auto& key1       = ctx.inputs()[0];
+  auto& key2       = ctx.inputs()[1];
+  auto& values     = ctx.inputs()[2];
+  auto& key1_out   = ctx.outputs()[0];
+  auto& key2_out   = ctx.outputs()[1];
   auto& values_out = ctx.outputs()[2];
 
-  auto key1_acc = key1.read_accessor<INDEX_TY, 1>();
-  auto key2_acc = key2.read_accessor<INDEX_TY, 1>();
+  auto key1_acc   = key1.read_accessor<INDEX_TY, 1>();
+  auto key2_acc   = key2.read_accessor<INDEX_TY, 1>();
   auto values_acc = values.read_accessor<VAL_TY, 1>();
 
   auto size = key1.domain().get_volume();
   SortPiece<INDEX_TY, VAL_TY> local;
   local.indices1 = create_buffer<INDEX_TY>(size, mem);
   local.indices2 = create_buffer<INDEX_TY>(size, mem);
-  local.values = create_buffer<VAL_TY>(size, mem);
-  local.size = size;
+  local.values   = create_buffer<VAL_TY>(size, mem);
+  local.size     = size;
   assert(key1.domain().get_volume() == key2.domain().get_volume() &&
          key1.domain().get_volume() == values.domain().get_volume());
 
@@ -349,22 +343,27 @@ void SortBody(legate::TaskContext& ctx, Legion::Memory::Kind mem, Policy exec) {
   // receive messages in the explicit communication phase.
   if (!key1.domain().empty()) {
     // Copy the inputs into the output buffers.
-    thrust::copy(exec, key1_acc.ptr(key1.domain().lo()), key1_acc.ptr(key1.domain().lo()) + size, local.indices1.ptr(0));
-    thrust::copy(exec, key2_acc.ptr(key2.domain().lo()), key2_acc.ptr(key2.domain().lo()) + size, local.indices2.ptr(0));
-    thrust::copy(exec, values_acc.ptr(values.domain().lo()), values_acc.ptr(values.domain().lo()) + size, local.values.ptr(0));
+    thrust::copy(exec,
+                 key1_acc.ptr(key1.domain().lo()),
+                 key1_acc.ptr(key1.domain().lo()) + size,
+                 local.indices1.ptr(0));
+    thrust::copy(exec,
+                 key2_acc.ptr(key2.domain().lo()),
+                 key2_acc.ptr(key2.domain().lo()) + size,
+                 local.indices2.ptr(0));
+    thrust::copy(exec,
+                 values_acc.ptr(values.domain().lo()),
+                 values_acc.ptr(values.domain().lo()) + size,
+                 local.values.ptr(0));
 
     // Sort the local chunks of data.
     auto tuple_begin = thrust::make_tuple(local.indices1.ptr(0), local.indices2.ptr(0));
-    auto tuple_end = thrust::make_tuple(
-        local.indices1.ptr(0) + local.size,
-        local.indices2.ptr(0) + local.size
-    );
-    thrust::sort_by_key(
-        exec,
-        thrust::make_zip_iterator(tuple_begin),
-        thrust::make_zip_iterator(tuple_end),
-        local.values.ptr(0)
-    );
+    auto tuple_end =
+      thrust::make_tuple(local.indices1.ptr(0) + local.size, local.indices2.ptr(0) + local.size);
+    thrust::sort_by_key(exec,
+                        thrust::make_zip_iterator(tuple_begin),
+                        thrust::make_zip_iterator(tuple_end),
+                        local.values.ptr(0));
   }
 
   auto is_single = ctx.is_single_task() || (ctx.get_launch_domain().get_volume() == 1);
@@ -378,19 +377,13 @@ void SortBody(legate::TaskContext& ctx, Legion::Memory::Kind mem, Policy exec) {
     values_out.return_data(local.values, {local.size});
   } else {
     // Otherwise, initiate the distributed samplesort.
-    auto comm = ctx.communicators()[0].get<legate::comm::coll::CollComm>();
+    auto comm   = ctx.communicators()[0].get<legate::comm::coll::CollComm>();
     auto result = samplesort(
-        exec,
-        local,
-        ctx.get_task_index()[0],
-        ctx.get_launch_domain().get_volume(),
-        mem,
-        &comm
-    );
+      exec, local, ctx.get_task_index()[0], ctx.get_launch_domain().get_volume(), mem, &comm);
     key1_out.return_data(result.indices1, {result.size});
     key2_out.return_data(result.indices2, {result.size});
     values_out.return_data(result.values, {result.size});
   }
 }
 
-}
+}  // namespace sparse

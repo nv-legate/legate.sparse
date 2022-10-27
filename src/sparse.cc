@@ -25,16 +25,20 @@ using namespace legate;
 
 namespace sparse {
 
-/* static */ bool Sparse::has_numamem = false;
+/* static */ bool Sparse::has_numamem   = false;
 /* static */ MapperID Sparse::mapper_id = -1;
-static const char* const library_name = "legate.sparse";
+static const char* const library_name   = "legate.sparse";
 
-LegateTaskRegistrar& Sparse::get_registrar() {
+LegateTaskRegistrar& Sparse::get_registrar()
+{
   static LegateTaskRegistrar registrar;
   return registrar;
 }
 
-void registration_callback(Machine machine, Runtime* runtime, const std::set<Processor>& local_procs) {
+void registration_callback(Machine machine,
+                           Runtime* runtime,
+                           const std::set<Processor>& local_procs)
+{
   ResourceConfig config;
   config.max_mappers = 1;
   // TODO (rohany): I want to use the enums here, but I'm not sure the best way
@@ -57,17 +61,17 @@ void registration_callback(Machine machine, Runtime* runtime, const std::set<Pro
   runtime->register_projection_functor(proj_id, functor, true /*silence warnings*/);
 }
 
-} // namespace sparse
+}  // namespace sparse
 
 extern "C" {
 
-void perform_registration(void) {
+void perform_registration(void)
+{
   Runtime::perform_registration_callback(sparse::registration_callback, true /* global */);
   Runtime* runtime = Runtime::get_runtime();
   Context ctx      = Runtime::get_context();
   Future fut       = runtime->select_tunable_value(
-      ctx, LEGATE_SPARSE_TUNABLE_HAS_NUMAMEM, sparse::Sparse::mapper_id);
+    ctx, LEGATE_SPARSE_TUNABLE_HAS_NUMAMEM, sparse::Sparse::mapper_id);
   if (fut.get_result<int32_t>() != 0) sparse::Sparse::has_numamem = true;
 }
-
 }

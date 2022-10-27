@@ -38,7 +38,8 @@ struct Sample {
 };
 
 template <typename T>
-Legion::DeferredBuffer<T, 1> create_buffer(size_t count, Legion::Memory::Kind mem) {
+Legion::DeferredBuffer<T, 1> create_buffer(size_t count, Legion::Memory::Kind mem)
+{
   // We have to make sure that we don't return empty buffers, as this results
   // in null pointers getting passed to the communicators, which confuses them
   // greatly.
@@ -52,7 +53,8 @@ struct SampleComparator : public thrust::binary_function<Sample<INDEX_TY>, Sampl
 #if defined(__CUDACC__)
   __host__ __device__
 #endif
-  bool operator()(const Sample<INDEX_TY>& lhs, const Sample<INDEX_TY>& rhs) const
+    bool
+    operator()(const Sample<INDEX_TY>& lhs, const Sample<INDEX_TY>& rhs) const
   {
     // special case for unused samples
     if (lhs.rank < 0 || rhs.rank < 0) { return rhs.rank < 0 && lhs.rank >= 0; }
@@ -72,29 +74,27 @@ struct SampleComparator : public thrust::binary_function<Sample<INDEX_TY>, Sampl
 // We temporarily implement our own versions of the lower_bound and upper_bound
 // functions as the original implementation uses CUB. I copied these implementations
 // from CUB and edited them to handle the 2-element key.
-template<typename INDEX_TY>
+template <typename INDEX_TY>
 #if defined(__CUDACC__)
 __host__ __device__
 #endif
-size_t lower_bound(
-    const INDEX_TY* input1,
-    const INDEX_TY* input2,
-    size_t num_items,
-    const INDEX_TY val1,
-    const INDEX_TY val2) {
+  size_t
+  lower_bound(const INDEX_TY* input1,
+              const INDEX_TY* input2,
+              size_t num_items,
+              const INDEX_TY val1,
+              const INDEX_TY val2)
+{
   size_t retval = 0;
-  while (num_items > 0)
-  {
+  while (num_items > 0) {
     size_t half = num_items >> 1;
-    auto idx = retval + half;
-    auto a = std::make_pair(input1[idx], input2[idx]);
-    auto b = std::make_pair(val1, val2);
+    auto idx    = retval + half;
+    auto a      = std::make_pair(input1[idx], input2[idx]);
+    auto b      = std::make_pair(val1, val2);
     if (a < b) {
-      retval = retval + (half + 1);
+      retval    = retval + (half + 1);
       num_items = num_items - (half + 1);
-    }
-    else
-    {
+    } else {
       num_items = half;
     }
   }
@@ -106,26 +106,23 @@ template <typename INDEX_TY>
 #if defined(__CUDACC__)
 __host__ __device__
 #endif
-size_t upper_bound(
-    const INDEX_TY* input1,
-    const INDEX_TY* input2,
-    size_t num_items,
-    const INDEX_TY val1,
-    const INDEX_TY val2) {
+  size_t
+  upper_bound(const INDEX_TY* input1,
+              const INDEX_TY* input2,
+              size_t num_items,
+              const INDEX_TY val1,
+              const INDEX_TY val2)
+{
   size_t retval = 0;
-  while (num_items > 0)
-  {
+  while (num_items > 0) {
     size_t half = num_items >> 1;
-    auto idx = retval + half;
-    auto a = std::make_pair(input1[idx], input2[idx]);
-    auto b = std::make_pair(val1, val2);
-    if (b < a)
-    {
+    auto idx    = retval + half;
+    auto a      = std::make_pair(input1[idx], input2[idx]);
+    auto b      = std::make_pair(val1, val2);
+    if (b < a) {
       num_items = half;
-    }
-    else
-    {
-      retval = retval + (half + 1);
+    } else {
+      retval    = retval + (half + 1);
       num_items = num_items - (half + 1);
     }
   }
@@ -133,4 +130,4 @@ size_t upper_bound(
   return retval;
 }
 
-}
+}  // namespace sparse

@@ -24,7 +24,7 @@ namespace sparse {
 // We also need to have this instead of std::array so that it works on devices
 template <int DIM, bool C_ORDER = true>
 class Pitches {
-public:
+ public:
   __CUDA_HD__
   inline size_t flatten(const Legion::Rect<DIM + 1>& rect)
   {
@@ -54,13 +54,13 @@ public:
     return point;
   }
 
-private:
+ private:
   size_t pitches[DIM];
 };
 
 template <int DIM>
 class Pitches<DIM, false /*C_ORDER*/> {
-public:
+ public:
   __CUDA_HD__
   inline size_t flatten(const Legion::Rect<DIM + 1>& rect)
   {
@@ -90,14 +90,14 @@ public:
     return point;
   }
 
-private:
+ private:
   size_t pitches[DIM];
 };
 
 // Specialization for the zero-sized case
 template <bool C_ORDER>
 class Pitches<0, C_ORDER> {
-public:
+ public:
   __CUDA_HD__
   inline size_t flatten(const Legion::Rect<1>& rect)
   {
@@ -115,4 +115,4 @@ public:
   }
 };
 
-}  // namespace cunumeric
+}  // namespace sparse

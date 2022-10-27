@@ -21,7 +21,7 @@
 namespace sparse {
 
 class ThrustAllocator : public legate::ScopedAllocator {
-public:
+ public:
   using value_type = char;
 
   ThrustAllocator(Legion::Memory::Kind kind) : legate::ScopedAllocator(kind) {}
@@ -34,4 +34,4 @@ public:
   void deallocate(char* ptr, size_t n) { ScopedAllocator::deallocate(ptr); }
 };
 
-} // namespace sparse
+}  // namespace sparse

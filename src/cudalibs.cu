@@ -41,10 +41,9 @@ void CUDALibraries::finalize_cusparse()
   cusparse_ = nullptr;
 }
 
-cusparseHandle_t CUDALibraries::get_cusparse() {
-  if (this->cusparse_ == nullptr) {
-    CHECK_CUSPARSE(cusparseCreate(&this->cusparse_));
-  }
+cusparseHandle_t CUDALibraries::get_cusparse()
+{
+  if (this->cusparse_ == nullptr) { CHECK_CUSPARSE(cusparseCreate(&this->cusparse_)); }
   return this->cusparse_;
 }
 
@@ -60,21 +59,23 @@ static CUDALibraries& get_cuda_libraries(Processor proc)
   return cuda_libraries[proc_id];
 }
 
-legate::cuda::StreamView get_cached_stream() {
+legate::cuda::StreamView get_cached_stream()
+{
   return legate::cuda::StreamPool::get_stream_pool().get_stream();
 }
 
-cusparseHandle_t get_cusparse() {
+cusparseHandle_t get_cusparse()
+{
   const auto proc = Processor::get_executing_processor();
   auto& lib       = get_cuda_libraries(proc);
   return lib.get_cusparse();
 }
 
 class LoadCUDALibsTask : public SparseTask<LoadCUDALibsTask> {
-public:
+ public:
   static const int TASK_ID = LEGATE_SPARSE_LOAD_CUDALIBS;
 
-public:
+ public:
   static void gpu_variant(legate::TaskContext& context)
   {
     const auto proc = Processor::get_executing_processor();
@@ -84,10 +85,10 @@ public:
 };
 
 class UnloadCUDALibsTask : public SparseTask<UnloadCUDALibsTask> {
-public:
+ public:
   static const int TASK_ID = LEGATE_SPARSE_UNLOAD_CUDALIBS;
 
-public:
+ public:
   static void gpu_variant(legate::TaskContext& context)
   {
     const auto proc = Processor::get_executing_processor();
@@ -102,4 +103,4 @@ static void __attribute__((constructor)) register_tasks(void)
   UnloadCUDALibsTask::register_variants();
 }
 
-}  // namespace cunumeric
+}  // namespace sparse

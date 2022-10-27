@@ -24,10 +24,10 @@
 
 #define THREADS_PER_BLOCK 128
 
-#define CHECK_CUSPARSE(expr)                    \
-  do {                                          \
-    cusparseStatus_t result = (expr);           \
-    checkCuSparse(result, __FILE__, __LINE__);  \
+#define CHECK_CUSPARSE(expr)                   \
+  do {                                         \
+    cusparseStatus_t result = (expr);          \
+    checkCuSparse(result, __FILE__, __LINE__); \
   } while (false)
 
 #define CHECK_NCCL(expr)                    \
@@ -36,7 +36,6 @@
     check_nccl(result, __FILE__, __LINE__); \
   } while (false)
 
-
 namespace sparse {
 
 __device__ inline size_t global_tid_1d()
@@ -44,16 +43,18 @@ __device__ inline size_t global_tid_1d()
   return static_cast<size_t>(blockIdx.x) * blockDim.x + threadIdx.x;
 }
 
-inline size_t get_num_blocks_1d(size_t threads) {
+inline size_t get_num_blocks_1d(size_t threads)
+{
   return (threads + THREADS_PER_BLOCK - 1) / THREADS_PER_BLOCK;
 }
 
-__host__ inline void checkCuSparse(cusparseStatus_t status, const char* file, int line) {
+__host__ inline void checkCuSparse(cusparseStatus_t status, const char* file, int line)
+{
   if (status != CUSPARSE_STATUS_SUCCESS) {
     fprintf(stderr,
             "Internal CUSPARSE failure with error code %d (%s) in file %s at line %d\n",
             status,
-	    cusparseGetErrorString(status),
+            cusparseGetErrorString(status),
             file,
             line);
     assert(false);
@@ -72,10 +73,9 @@ __host__ inline void check_nccl(ncclResult_t error, const char* file, int line)
   }
 }
 
-
 // Return a cached stream for the current GPU.
 legate::cuda::StreamView get_cached_stream();
 // Method to get the CUSPARSE handle associated with the current GPU.
 cusparseHandle_t get_cusparse();
 
-}
+}  // namespace sparse

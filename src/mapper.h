@@ -21,22 +21,22 @@
 namespace sparse {
 
 class LegateSparseMapper : public legate::mapping::BaseMapper {
-public:
+ public:
   LegateSparseMapper(Legion::Runtime* rt,
                      Legion::Machine machine,
                      const legate::LibraryContext& context);
   virtual ~LegateSparseMapper(void) {}
 
-public:
+ public:
   // Virtual mapping functions of BaseMapper that need to be overridden.
   virtual bool is_pure() const override { return true; }
   virtual legate::mapping::TaskTarget task_target(
-      const legate::mapping::Task& task,
-      const std::vector<legate::mapping::TaskTarget>& options) override;
+    const legate::mapping::Task& task,
+    const std::vector<legate::mapping::TaskTarget>& options) override;
   virtual std::vector<legate::mapping::StoreMapping> store_mappings(
-      const legate::mapping::Task& task,
-      const std::vector<legate::mapping::StoreTarget>& options) override;
+    const legate::mapping::Task& task,
+    const std::vector<legate::mapping::StoreTarget>& options) override;
   virtual legate::Scalar tunable_value(legate::TunableID tunable_id) override;
 };
 
-} // namespace sparse
+}  // namespace sparse

@@ -23,13 +23,21 @@ using namespace legate::mapping;
 
 namespace sparse {
 
-LegateSparseMapper::LegateSparseMapper(Legion::Runtime* rt, Legion::Machine m, const LibraryContext& ctx) : BaseMapper(rt, m, ctx) {}
+LegateSparseMapper::LegateSparseMapper(Legion::Runtime* rt,
+                                       Legion::Machine m,
+                                       const LibraryContext& ctx)
+  : BaseMapper(rt, m, ctx)
+{
+}
 
-TaskTarget LegateSparseMapper::task_target(const Task& task, const std::vector<TaskTarget>& options) {
+TaskTarget LegateSparseMapper::task_target(const Task& task, const std::vector<TaskTarget>& options)
+{
   return *options.begin();
 }
 
-std::vector<StoreMapping> LegateSparseMapper::store_mappings(const Task& task, const std::vector<StoreTarget>& options) {
+std::vector<StoreMapping> LegateSparseMapper::store_mappings(
+  const Task& task, const std::vector<StoreTarget>& options)
+{
   // Just do the default thing for now.
   auto& inputs = task.inputs();
   std::vector<StoreMapping> mappings(inputs.size());
@@ -39,7 +47,8 @@ std::vector<StoreMapping> LegateSparseMapper::store_mappings(const Task& task, c
   return mappings;
 }
 
-Scalar LegateSparseMapper::tunable_value(legate::TunableID tunable_id) {
+Scalar LegateSparseMapper::tunable_value(legate::TunableID tunable_id)
+{
   switch (tunable_id) {
     case LEGATE_SPARSE_TUNABLE_NUM_PROCS: {
       int32_t num_procs = 0;
@@ -67,4 +76,4 @@ Scalar LegateSparseMapper::tunable_value(legate::TunableID tunable_id) {
   LEGATE_ABORT;
 }
 
-} // namespace sparse
+}  // namespace sparse

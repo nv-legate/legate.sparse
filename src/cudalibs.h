@@ -21,23 +21,23 @@
 namespace sparse {
 
 struct CUDALibraries {
-public:
+ public:
   CUDALibraries();
   ~CUDALibraries();
 
-private:
+ private:
   // Prevent copying and overwriting.
   CUDALibraries(const CUDALibraries& rhs)            = delete;
   CUDALibraries& operator=(const CUDALibraries& rhs) = delete;
 
-public:
+ public:
   void finalize();
   cusparseHandle_t get_cusparse();
 
-private:
+ private:
   void finalize_cusparse();
 
-private:
+ private:
   bool finalized_;
   cusparseHandle_t cusparse_;
 };

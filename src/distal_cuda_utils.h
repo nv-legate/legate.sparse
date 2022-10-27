@@ -55,50 +55,62 @@ namespace sparse {
 // This atomicAddWarp kernel ensures that the warp level reduction only
 // happens if all threads in the warp are indeed writing to the same
 // output location.
-template<typename T>
-__device__ inline void atomicAddWarp(T *output, size_t index, T val)
+template <typename T>
+__device__ inline void atomicAddWarp(T* output, size_t index, T val)
 {
   size_t leader_index = __shfl_sync(__activemask(), index, 0);
-  int mask = __ballot_sync(__activemask(), leader_index == index);
-  if(mask == __activemask()) {
+  int mask            = __ballot_sync(__activemask(), leader_index == index);
+  if (mask == __activemask()) {
     val += __shfl_down_sync(__activemask(), val, 16);
     val += __shfl_down_sync(__activemask(), val, 8);
     val += __shfl_down_sync(__activemask(), val, 4);
     val += __shfl_down_sync(__activemask(), val, 2);
     val += __shfl_down_sync(__activemask(), val, 1);
-    if(threadIdx.x % 32 == 0) {
-      atomicAdd(output, val);
-    }
+    if (threadIdx.x % 32 == 0) { atomicAdd(output, val); }
   } else {
     atomicAdd(output, val);
   }
 }
 
-template<typename T, int DIM>
-__device__ __inline__
-size_t flattenPoint(T accessor, Legion::Point<DIM> point) {
+template <typename T, int DIM>
+__device__ __inline__ size_t flattenPoint(T accessor, Legion::Point<DIM> point)
+{
   size_t base = 0;
-  for (int i = 0; i < DIM; i++) {
-    base += accessor.accessor.strides[i] * point[i];
-  }
+  for (int i = 0; i < DIM; i++) { base += accessor.accessor.strides[i] * point[i]; }
   return base;
 }
 
-template<typename T, typename R>
-__global__ void taco_binarySearchBeforeBlock(T posArray, R* __restrict__ results, int64_t arrayStart, int64_t arrayEnd, int values_per_block, int num_blocks, int64_t offset) {
+template <typename T, typename R>
+__global__ void taco_binarySearchBeforeBlock(T posArray,
+                                             R* __restrict__ results,
+                                             int64_t arrayStart,
+                                             int64_t arrayEnd,
+                                             int values_per_block,
+                                             int num_blocks,
+                                             int64_t offset)
+{
   int thread = threadIdx.x;
-  int block = blockIdx.x;
-  int idx = block * blockDim.x + thread;
-  if (idx > num_blocks) {
-    return;
-  }
-  results[idx] = taco_binarySearchBefore<T>(posArray, arrayStart, arrayEnd, idx * values_per_block + offset);
+  int block  = blockIdx.x;
+  int idx    = block * blockDim.x + thread;
+  if (idx > num_blocks) { return; }
+  results[idx] =
+    taco_binarySearchBefore<T>(posArray, arrayStart, arrayEnd, idx * values_per_block + offset);
 }
 
-template<typename T>
-__host__ void taco_binarySearchBeforeBlockLaunch(legate::cuda::StreamView& stream, T posArray, int64_t* __restrict__ results, int64_t arrayStart, int64_t arrayEnd, int values_per_block, int block_size, int num_blocks, int64_t offset = 0) {
+template <typename T>
+__host__ void taco_binarySearchBeforeBlockLaunch(legate::cuda::StreamView& stream,
+                                                 T posArray,
+                                                 int64_t* __restrict__ results,
+                                                 int64_t arrayStart,
+                                                 int64_t arrayEnd,
+                                                 int values_per_block,
+                                                 int block_size,
+                                                 int num_blocks,
+                                                 int64_t offset = 0)
+{
   int num_search_blocks = (num_blocks + 1 + block_size - 1) / block_size;
-  taco_binarySearchBeforeBlock<T, int64_t><<<num_search_blocks, block_size, 0, stream>>>(posArray, results, arrayStart, arrayEnd, values_per_block, num_blocks, offset);
+  taco_binarySearchBeforeBlock<T, int64_t><<<num_search_blocks, block_size, 0, stream>>>(
+    posArray, results, arrayStart, arrayEnd, values_per_block, num_blocks, offset);
 }
 
-} // namespace sparse
+}  // namespace sparse

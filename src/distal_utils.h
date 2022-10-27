@@ -48,27 +48,33 @@
 
 // arrayEnd is inclusive (i.e. we must be able to access posArray[arrayEnd] safely.
 // We'll also generate device code for this if we're going to run on GPUs.
-template<typename T>
+template <typename T>
 #if defined(__CUDACC__)
 __host__ __device__
 #endif
-int64_t taco_binarySearchBefore(T posArray, int64_t arrayStart, int64_t arrayEnd, int64_t target) {
-  if (posArray[arrayEnd].hi < target) {
-    return arrayEnd;
-  }
+  int64_t
+  taco_binarySearchBefore(T posArray, int64_t arrayStart, int64_t arrayEnd, int64_t target)
+{
+  if (posArray[arrayEnd].hi < target) { return arrayEnd; }
   // The binary search range must be exclusive.
-  int64_t lowerBound = arrayStart; // always <= target
-  int64_t upperBound = arrayEnd + 1; // always > target
+  int64_t lowerBound = arrayStart;    // always <= target
+  int64_t upperBound = arrayEnd + 1;  // always > target
   while (upperBound - lowerBound > 1) {
     // TOOD (rohany): Does this suffer from overflow?
-    int64_t mid = (upperBound + lowerBound) / 2;
+    int64_t mid  = (upperBound + lowerBound) / 2;
     auto midRect = posArray[mid];
     // Contains checks lo <= target <= hi.
-    if (midRect.contains(target)) { return mid; }
-      // Either lo > target or target > hi.
-    else if (target > midRect.hi) { lowerBound = mid; }
-      // At this point, only lo > target.
-    else { upperBound = mid; }
+    if (midRect.contains(target)) {
+      return mid;
+    }
+    // Either lo > target or target > hi.
+    else if (target > midRect.hi) {
+      lowerBound = mid;
+    }
+    // At this point, only lo > target.
+    else {
+      upperBound = mid;
+    }
   }
   return lowerBound;
 }

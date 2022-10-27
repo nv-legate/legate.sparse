@@ -27,7 +27,7 @@ enum LegateSparseOpCode {
   LEGATE_SPARSE_CSR_SPMV_ROW_SPLIT,
   LEGATE_SPARSE_CSR_SPMV_ROW_SPLIT_TROPICAL_SEMIRING,
   LEGATE_SPARSE_CSC_SPMV_COL_SPLIT,
-  LEGATE_SPARSE_CSR_SPMV_POS_SPLIT, // Unused for now.
+  LEGATE_SPARSE_CSR_SPMV_POS_SPLIT,  // Unused for now.
 
   // GEMMs. Need tasks that compute the NNZ and tasks
   // that actually assemble the output. Need to worry
@@ -114,13 +114,13 @@ enum LegateSparseOpCode {
   LEGATE_QUANTUM_SETS_TO_SIZES,
   LEGATE_QUANTUM_CREATE_HAMILTONIANS,
 
-  LEGATE_SPARSE_LAST_TASK, // must be last
+  LEGATE_SPARSE_LAST_TASK,  // must be last
 };
 
 enum LegateSparseProjectionFunctors {
   _LEGATE_SPARSE_PROJ_FN_BASE = 0,
   LEGATE_SPARSE_PROJ_FN_1D_TO_2D,
-  LEGATE_SPARSE_LAST_PROJ_FN, // must be last
+  LEGATE_SPARSE_LAST_PROJ_FN,  // must be last
 };
 
 enum LegateSparseTunable {
@@ -140,10 +140,13 @@ extern "C" {
 
 void perform_registration();
 
-void register_legate_sparse_1d_to_2d_functor(legion_projection_id_t proj_id, int32_t gx, int32_t gy, bool rows);
+void register_legate_sparse_1d_to_2d_functor(legion_projection_id_t proj_id,
+                                             int32_t gx,
+                                             int32_t gy,
+                                             bool rows);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif // __SPARSE_C_H
+#endif  // __SPARSE_C_H

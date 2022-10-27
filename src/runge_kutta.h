@@ -23,7 +23,7 @@
 namespace sparse {
 
 class RKCalcDy : public SparseTask<RKCalcDy> {
-public:
+ public:
   static const int TASK_ID = LEGATE_SPARSE_RK_CALC_DY;
   static void cpu_variant(legate::TaskContext& ctx);
 #ifdef LEGATE_USE_OPENMP
@@ -31,4 +31,4 @@ public:
 #endif
 };
 
-}
+}  // namespace sparse
