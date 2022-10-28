@@ -2513,41 +2513,6 @@ void EuclideanCDist::gpu_variant(legate::TaskContext& ctx)
   CHECK_CUDA_STREAM(stream);
 }
 
-__global__ void compute_diag_kernel(size_t rows,
-                                    int64_t offset,
-                                    AccessorWO<val_ty, 1> diag,
-                                    AccessorRO<Rect<1>, 1> pos,
-                                    AccessorRO<coord_ty, 1> crd,
-                                    AccessorRO<val_ty, 1> vals)
-{
-  const auto idx = global_tid_1d();
-  if (idx >= rows) return;
-  auto i  = idx + offset;
-  diag[i] = 0.0;
-  for (size_t j_pos = pos[i].lo; j_pos < pos[i].hi + 1; j_pos++) {
-    if (crd[j_pos] == i) { diag[i] = vals[j_pos]; }
-  }
-}
-
-void GetCSRDiagonal::gpu_variant(legate::TaskContext& ctx)
-{
-  auto& diag = ctx.outputs()[0];
-  auto& pos  = ctx.inputs()[0];
-  auto& crd  = ctx.inputs()[1];
-  auto& vals = ctx.inputs()[2];
-  auto dom   = pos.domain();
-  if (dom.empty()) return;
-  auto stream = get_cached_stream();
-  auto blocks = get_num_blocks_1d(dom.get_volume());
-  compute_diag_kernel<<<blocks, THREADS_PER_BLOCK, 0, stream>>>(dom.get_volume(),
-                                                                dom.lo()[0],
-                                                                diag.write_accessor<val_ty, 1>(),
-                                                                pos.read_accessor<Rect<1>, 1>(),
-                                                                crd.read_accessor<coord_ty, 1>(),
-                                                                vals.read_accessor<val_ty, 1>());
-  CHECK_CUDA_STREAM(stream);
-}
-
 template <bool LEFT>
 __global__ void vec_mult_add_kernel(size_t elems,
                                     coord_ty offset,

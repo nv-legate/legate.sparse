@@ -17,7 +17,7 @@
 #pragma once
 
 // Useful for IDEs.
-#include "sparse/array/csr/spmv.h"
+#include "sparse/array/csr/get_diagonal.h"
 #include "sparse/util/dispatch.h"
 
 namespace sparse {
@@ -26,37 +26,35 @@ using namespace Legion;
 using namespace legate;
 
 template <VariantKind KIND, LegateTypeCode INDEX_CODE, LegateTypeCode VAL_CODE>
-struct CSRSpMVRowSplitImplBody;
+struct GetCSRDiagonalImplBody;
 
 template <VariantKind KIND>
-struct CSRSpMVRowSplitImpl {
+struct GetCSRDiagonalImpl {
   template <LegateTypeCode INDEX_CODE, LegateTypeCode VAL_CODE>
-  void operator()(CSRSpMVRowSplitArgs& args) const
+  void operator()(GetCSRDiagonalArgs& args) const
   {
     using INDEX_TY = legate_type_of<INDEX_CODE>;
     using VAL_TY   = legate_type_of<VAL_CODE>;
 
-    auto y      = args.y.write_accessor<VAL_TY, 1>();
-    auto A_pos  = args.A_pos.read_accessor<Rect<1>, 1>();
-    auto A_crd  = args.A_crd.read_accessor<INDEX_TY, 1>();
-    auto A_vals = args.A_vals.read_accessor<VAL_TY, 1>();
-    auto x      = args.x.read_accessor<VAL_TY, 1>();
+    auto diag = args.diag.write_accessor<VAL_TY, 1>();
+    auto pos  = args.pos.read_accessor<Rect<1>, 1>();
+    auto crd  = args.crd.read_accessor<INDEX_TY, 1>();
+    auto vals = args.vals.read_accessor<VAL_TY, 1>();
 
-    assert(args.y.domain().dense());
-    if (args.y.domain().empty()) return;
+    assert(args.diag.domain().dense());
+    if (args.diag.domain().empty()) return;
 
-    CSRSpMVRowSplitImplBody<KIND, INDEX_CODE, VAL_CODE>()(
-      y, A_pos, A_crd, A_vals, x, args.y.shape<1>());
+    GetCSRDiagonalImplBody<KIND, INDEX_CODE, VAL_CODE>()(
+      diag, pos, crd, vals, args.diag.shape<1>());
   }
 };
 
 template <VariantKind KIND>
-static void csr_spmv_row_split_template(TaskContext& context)
+static void get_csr_diagonal_template(TaskContext& context)
 {
   auto& inputs = context.inputs();
-  CSRSpMVRowSplitArgs args{context.outputs()[0], inputs[0], inputs[1], inputs[2], inputs[3]};
+  GetCSRDiagonalArgs args{context.outputs()[0], inputs[0], inputs[1], inputs[2]};
   index_type_value_type_dispatch(
-    args.A_crd.code(), args.y.code(), CSRSpMVRowSplitImpl<KIND>{}, args);
+    args.crd.code(), args.diag.code(), GetCSRDiagonalImpl<KIND>{}, args);
 }
-
 }  // namespace sparse

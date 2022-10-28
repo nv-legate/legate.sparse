@@ -221,6 +221,16 @@ def test_csr_subtract(filename):
     assert np.allclose(res_legate.todense(), res_scipy.todense())
 
 
+@pytest.mark.parametrize("filename", test_mtx_files)
+@pytest.mark.parametrize("k", [0])
+def test_csr_diagonal(filename, k):
+    arr = legate_io.mmread(filename)
+    s = sci_io.mmread(filename)
+    res_legate = arr.tocsr().diagonal(k=k)
+    res_sci = s.tocsr().diagonal(k=k)
+    assert np.array_equal(res_legate, res_sci)
+
+
 # The goal of this test is to ensure that when we balance the rows
 # of CSR matrix, we actually use that partition in operations. We'll
 # do this by by being really hacky. We'll increase the runtime's window

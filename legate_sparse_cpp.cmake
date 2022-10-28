@@ -104,6 +104,7 @@ include(cmake/Modules/set_cpu_arch_flags.cmake)
 set_cpu_arch_flags(legate_sparse_CXX_OPTIONS)
 
 list(APPEND legate_sparse_SOURCES
+  src/sparse/array/csr/get_diagonal.cc
   src/sparse/array/csr/spmv.cc
   src/sparse/mapper/mapper.cc
 
@@ -115,6 +116,7 @@ list(APPEND legate_sparse_SOURCES
 
 if(Legion_USE_OpenMP)
   list(APPEND legate_sparse_SOURCES
+    src/sparse/array/csr/get_diagonal_omp.cc
     src/sparse/array/csr/spmv_omp.cc
 
     src/quantum_omp.cc
@@ -125,6 +127,7 @@ endif()
 
 if(Legion_USE_CUDA)
   list(APPEND legate_sparse_SOURCES
+    src/sparse/array/csr/get_diagonal.cu
     src/sparse/array/csr/spmv.cu
 
     src/cudalibs.cu

@@ -529,21 +529,6 @@ class EuclideanCDist : public SparseTask<EuclideanCDist> {
 #endif
 };
 
-class GetCSRDiagonal : public SparseTask<GetCSRDiagonal> {
- public:
-  static const int TASK_ID = LEGATE_SPARSE_CSR_DIAGONAL;
-  // TODO (rohany): We could rewrite this having each implementation just make
-  //  a call to thrust::transform, but the implementations are simple enough
-  //  anyway.
-  static void cpu_variant(legate::TaskContext& ctx);
-#ifdef LEGATE_USE_OPENMP
-  static void omp_variant(legate::TaskContext& ctx);
-#endif
-#ifdef LEGATE_USE_CUDA
-  static void gpu_variant(legate::TaskContext& context);
-#endif
-};
-
 // SortByKey sorts a set of key regions and a value region.
 // Out of an input `n` regions, the first `n-1` regions are
 // zipped together to be a key to sort the value region `n`.
