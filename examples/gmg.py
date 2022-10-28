@@ -18,6 +18,7 @@ import cunumeric as np
 from legate.timing import time
 
 import sparse as sparse
+import sparse.linalg
 
 
 def stencil_grid(S, grid, dtype=None, format=None):
