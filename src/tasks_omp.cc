@@ -32,44 +32,6 @@ using namespace Legion;
 
 namespace sparse {
 
-// CSRSpMVRowSplit and its corresponding partitioning steps are generated
-// from the DISTAL program:
-// y(i) = A(i, j) * x(j)
-// Schedule:
-// distribute(i, io, ii, pieces)
-// communicate({y, A, x}, io)
-// parallelize(ii, NoRaces)
-void CSRSpMVRowSplit::omp_variant(legate::TaskContext& ctx)
-{
-  // Get the pos, crd and vals regions.
-  auto& y    = ctx.outputs()[0];
-  auto& pos  = ctx.inputs()[0];
-  auto& crd  = ctx.inputs()[1];
-  auto& vals = ctx.inputs()[2];
-  auto& x    = ctx.inputs()[3];
-
-  auto yacc    = y.write_accessor<val_ty, 1>();
-  auto posacc  = pos.read_accessor<Rect<1>, 1>();
-  auto crdacc  = crd.read_accessor<coord_ty, 1>();
-  auto valsacc = vals.read_accessor<val_ty, 1>();
-  auto xacc    = x.read_accessor<val_ty, 1>();
-
-  // TODO (rohany): We can partition the x vector here for an algorithm that
-  //  doesn't replicate x, or even use a 2-D distribution of the CSR matrix.
-  //  However, a 2-D distribution requires a different encoding.
-  auto bounds = y.domain();
-#pragma omp parallel for schedule(monotonic : dynamic, 128)
-  for (coord_ty i = bounds.lo()[0]; i <= bounds.hi()[0]; i++) {
-    // We importantly need to discard whatever data already lives in the instances.
-    val_ty sum = 0.0;
-    for (size_t jpos = posacc[i].lo; jpos <= posacc[i].hi; jpos++) {
-      auto j = crdacc[jpos];
-      sum += valsacc[jpos] * xacc[j];
-    }
-    yacc[i] = sum;
-  }
-}
-
 void CSRSpMVRowSplitTropicalSemiring::omp_variant(legate::TaskContext& ctx)
 {
   auto& y   = ctx.outputs()[0];
