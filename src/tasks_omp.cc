@@ -1255,28 +1255,6 @@ void EuclideanCDist::omp_variant(legate::TaskContext& ctx)
   }
 }
 
-void GetCSRDiagonal::omp_variant(legate::TaskContext& ctx)
-{
-  auto& diag = ctx.outputs()[0];
-  auto& pos  = ctx.inputs()[0];
-  auto& crd  = ctx.inputs()[1];
-  auto& vals = ctx.inputs()[2];
-
-  auto diag_acc = diag.write_accessor<val_ty, 1>();
-  auto pos_acc  = pos.read_accessor<Rect<1>, 1>();
-  auto crd_acc  = crd.read_accessor<coord_ty, 1>();
-  auto vals_acc = vals.read_accessor<val_ty, 1>();
-
-  auto dom = pos.domain();
-#pragma omp parallel for schedule(monotonic : dynamic, 128)
-  for (coord_ty i = dom.lo()[0]; i < dom.hi()[0] + 1; i++) {
-    diag_acc[i] = 0.0;
-    for (size_t j_pos = pos_acc[i].lo; j_pos < pos_acc[i].hi + 1; j_pos++) {
-      if (crd_acc[j_pos] == i) { diag_acc[i] = vals_acc[j_pos]; }
-    }
-  }
-}
-
 void SortByKey::omp_variant(legate::TaskContext& ctx)
 {
   auto kind = Sparse::has_numamem ? Memory::SOCKET_MEM : Memory::SYSTEM_MEM;
