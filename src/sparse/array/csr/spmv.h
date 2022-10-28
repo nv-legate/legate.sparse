@@ -16,33 +16,30 @@
 
 #pragma once
 
+#include "sparse.h"
+#include "sparse_c.h"
 #include "legate.h"
 
 namespace sparse {
 
-enum class VariantKind : int {
-  CPU = 0,
-  OMP = 1,
-  GPU = 2,
+struct CSRSpMVRowSplitArgs {
+  const legate::Store& y;
+  const legate::Store& A_pos;
+  const legate::Store& A_crd;
+  const legate::Store& A_vals;
+  const legate::Store& x;
 };
 
-struct Sparse {
+class CSRSpMVRowSplit : public SparseTask<CSRSpMVRowSplit> {
  public:
-  template <typename... Args>
-  static void record_variant(Args&&... args)
-  {
-    get_registrar().record_variant(std::forward<Args>(args)...);
-  }
-  static legate::LegateTaskRegistrar& get_registrar();
-
- public:
-  static bool has_numamem;
-  static Legion::MapperID mapper_id;
-};
-
-template <typename T>
-struct SparseTask : public legate::LegateTask<T> {
-  using Registrar = Sparse;
+  static const int TASK_ID = LEGATE_SPARSE_CSR_SPMV_ROW_SPLIT;
+  static void cpu_variant(legate::TaskContext& ctx);
+#ifdef LEGATE_USE_OPENMP
+  static void omp_variant(legate::TaskContext& ctx);
+#endif
+#ifdef LEGATE_USE_CUDA
+  static void gpu_variant(legate::TaskContext& context);
+#endif
 };
 
 }  // namespace sparse

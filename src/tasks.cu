@@ -19,6 +19,7 @@
 #include "cuda_help.h"
 #include "pitches.h"
 #include "distal_cuda_utils.h"
+#include "sparse/util/cusparse_utils.h"
 
 #include "thrust_allocator.h"
 #include <thrust/extrema.h>
@@ -30,71 +31,8 @@ namespace sparse {
 using namespace legate;
 using namespace Legion;
 
-const cudaDataType_t cuda_val_ty     = CUDA_R_64F;
-const cusparseIndexBase_t index_base = CUSPARSE_INDEX_BASE_ZERO;
-const cusparseIndexType_t index_ty   = CUSPARSE_INDEX_64I;
-
-template <typename T>
-__global__ void convertGlobalPosToLocalIndPtr(size_t rows, const Rect<1>* pos, T* indptr)
-{
-  const auto idx = global_tid_1d();
-  if (idx >= rows) return;
-  // Offset each entry in pos down to the first element in pos to locally
-  // index this piece of the CSR array.
-  indptr[idx] = T(pos[idx].lo - pos[0].lo);
-  // We also need to fill in the final rows+1 index of indptr to be the
-  // total number of non-zeros. We'll have the first thread do this.
-  if (idx == 0) { indptr[rows] = T(pos[rows - 1].hi + 1 - pos[0].lo); }
-}
-
-template <typename T, int DIM>
-void* getPtrFromStore(Store& store)
-{
-  auto dom = store.domain();
-  if (store.is_writable() && store.is_readable()) {
-    return store.read_write_accessor<T, DIM>().ptr(dom.lo());
-  } else if (store.is_writable() && !store.is_readable()) {
-    return store.write_accessor<T, DIM>().ptr(dom.lo());
-  } else if (!store.is_writable() && store.is_readable()) {
-    return const_cast<T*>(store.read_accessor<T, DIM>().ptr(dom.lo()));
-  } else if (store.is_reducible()) {
-    return store.reduce_accessor<SumReduction<T>, true /* exclusive */, DIM>().ptr(dom.lo());
-  } else {
-    assert(false);
-    return nullptr;
-  }
-}
-
-cusparseSpMatDescr_t makeCuSparseCSR(Store& pos, Store& crd, Store& vals, size_t cols)
-{
-  cusparseSpMatDescr_t matDescr;
-  auto stream = get_cached_stream();
-
-  auto pos_domain = pos.domain();
-  auto crd_domain = crd.domain();
-
-  auto pos_acc = pos.read_accessor<Rect<1>, 1>();
-  size_t rows  = pos_domain.get_volume();
-  DeferredBuffer<int64_t, 1> indptr({0, rows}, Memory::GPU_FB_MEM);
-  auto blocks = get_num_blocks_1d(rows);
-  convertGlobalPosToLocalIndPtr<<<blocks, THREADS_PER_BLOCK, 0, stream>>>(
-    rows, pos_acc.ptr(pos_domain.lo()), indptr.ptr(0));
-
-  CHECK_CUSPARSE(
-    cusparseCreateCsr(&matDescr,
-                      rows,
-                      cols,
-                      crd_domain.get_volume() /* nnz */,
-                      (void*)indptr.ptr(0),
-                      crd_domain.empty() ? nullptr : getPtrFromStore<coord_ty, 1>(crd),
-                      vals.domain().empty() ? nullptr : getPtrFromStore<val_ty, 1>(vals),
-                      index_ty,
-                      index_ty,
-                      index_base,
-                      cuda_val_ty));
-
-  return matDescr;
-}
+const cudaDataType_t cuda_val_ty   = CUDA_R_64F;
+const cusparseIndexType_t index_ty = CUSPARSE_INDEX_64I;
 
 // We also include an overload that does not specify the values.
 cusparseSpMatDescr_t makeCuSparseCSR(Store& pos, Store& crd, size_t cols)
@@ -161,14 +99,6 @@ cusparseSpMatDescr_t makeCuSparseCSC(Store& pos, Store& crd, Store& vals, size_t
   return matDescr;
 }
 
-cusparseDnVecDescr_t makeCuSparseDenseVec(Store& vec)
-{
-  cusparseDnVecDescr_t vecDescr;
-  CHECK_CUSPARSE(cusparseCreateDnVec(
-    &vecDescr, vec.domain().get_volume() /* size */, getPtrFromStore<val_ty, 1>(vec), cuda_val_ty));
-  return vecDescr;
-}
-
 cusparseDnMatDescr_t makeCuSparseDenseMat(Store& mat)
 {
   auto d = mat.domain();
@@ -208,100 +138,6 @@ cusparseDnMatDescr_t makeCuSparseDenseMat(Store& mat)
                                      cuda_val_ty,
                                      CUSPARSE_ORDER_ROW));
   return matDescr;
-}
-
-void CSRSpMVRowSplit::gpu_variant(legate::TaskContext& ctx)
-{
-  auto& y_vals = ctx.outputs()[0];
-  auto& A_pos  = ctx.inputs()[0];
-  auto& A_crd  = ctx.inputs()[1];
-  auto& A_vals = ctx.inputs()[2];
-  auto& x_vals = ctx.inputs()[3];
-
-  // Break out early if the iteration space partition is empty.
-  if (y_vals.domain().empty() || A_crd.domain().empty()) return;
-
-  // Get context sensitive objects.
-  auto handle = get_cusparse();
-  auto stream = get_cached_stream();
-  CHECK_CUSPARSE(cusparseSetStream(handle, stream));
-
-  // Construct the CUSPARSE objects from individual regions.
-  auto cusparse_y = makeCuSparseDenseVec(y_vals);
-  // In order to play nicely with cuSPARSE and weak-scale (on distribution
-  // friendly inputs), we have to do some trickery. The first happens when
-  // we launch our tasks: we take the image of the selected coordinates
-  // onto the x vector, resulting in a sparse partition of x. Next, we map
-  // x densely, so that we get a dense vector fitted to the size of the
-  // coordinates, where communication is done just for the selected pieces.
-  // Now, we need to pass a dense vector of the correct size into cuSPARSE's
-  // SpMV. We can abuse the fact that a proper SpMV implementation should only
-  // read the components of x corresponding to encoded columns in the input matrix.
-  // Note that we don't have to do any of this for the CPU/OMP implementations
-  // since those codes use the accessor types directly. If we switched to calling
-  // an external library we would need to do something similar to this.
-  auto x_vals_domain = x_vals.domain();
-  // We set the number of columns to the upper bound of the domain of x. This
-  // shrinks the number of columns to the largest column index in the selected
-  // partition of the input matrix.
-  auto cols = x_vals_domain.hi()[0] + 1;
-  // Next, we grab a pointer to the start of the x instance. Since x is densely
-  // encoded, we can shift this pointer based on the lower bound of the input
-  // domain to get a "fake" pointer to the start of a densely encoded vector
-  // of length cols. We can bank on cuSPARSE's implementation to not read any
-  // of the memory locations before the lower bound of the x_vals_domain due
-  // to the properties of the resulting image partition.
-  auto x_vals_raw_ptr = x_vals.read_accessor<val_ty, 1>().ptr(x_vals_domain.lo());
-  auto x_vals_ptr     = x_vals_raw_ptr - size_t(x_vals_domain.lo()[0]);
-  cusparseDnVecDescr_t cusparse_x;
-  CHECK_CUSPARSE(
-    cusparseCreateDnVec(&cusparse_x, cols, const_cast<val_ty*>(x_vals_ptr), cuda_val_ty));
-  auto cusparse_A = makeCuSparseCSR(A_pos, A_crd, A_vals, cols);
-
-  // Make the CUSPARSE calls.
-  val_ty alpha   = 1.0;
-  val_ty beta    = 0.0;
-  size_t bufSize = 0;
-  CHECK_CUSPARSE(cusparseSpMV_bufferSize(handle,
-                                         CUSPARSE_OPERATION_NON_TRANSPOSE,
-                                         &alpha,
-                                         cusparse_A,
-                                         cusparse_x,
-                                         &beta,
-                                         cusparse_y,
-                                         cuda_val_ty,
-#if (CUSPARSE_VER_MAJOR < 11 || CUSPARSE_VER_MINOR < 2)
-                                         CUSPARSE_MV_ALG_DEFAULT,
-#else
-                                         CUSPARSE_SPMV_ALG_DEFAULT,
-#endif
-                                         &bufSize));
-  // Allocate a buffer if we need to.
-  void* workspacePtr = nullptr;
-  if (bufSize > 0) {
-    DeferredBuffer<char, 1> buf({0, bufSize - 1}, Memory::GPU_FB_MEM);
-    workspacePtr = buf.ptr(0);
-  }
-  // Finally do the SpMV.
-  CHECK_CUSPARSE(cusparseSpMV(handle,
-                              CUSPARSE_OPERATION_NON_TRANSPOSE,
-                              &alpha,
-                              cusparse_A,
-                              cusparse_x,
-                              &beta,
-                              cusparse_y,
-                              cuda_val_ty,
-#if (CUSPARSE_VER_MAJOR < 11 || CUSPARSE_VER_MINOR < 2)
-                              CUSPARSE_MV_ALG_DEFAULT,
-#else
-                              CUSPARSE_SPMV_ALG_DEFAULT,
-#endif
-                              workspacePtr));
-  // Destroy the created objects.
-  CHECK_CUSPARSE(cusparseDestroyDnVec(cusparse_y));
-  CHECK_CUSPARSE(cusparseDestroyDnVec(cusparse_x));
-  CHECK_CUSPARSE(cusparseDestroySpMat(cusparse_A));
-  CHECK_CUDA_STREAM(stream);
 }
 
 __global__ void tropical_spmv_kernel(size_t rows,

@@ -27,51 +27,6 @@ using namespace Legion;
 
 namespace sparse {
 
-// CSRSpMVRowSplit and its corresponding partitioning steps are generated
-// from the DISTAL program:
-// y(i) = A(i, j) * x(j)
-// Schedule:
-// distribute(i, io, ii, pieces)
-// communicate({y, A, x}, io)
-void CSRSpMVRowSplit::cpu_variant(legate::TaskContext& ctx)
-{
-  // Get the pos, crd and vals regions.
-  auto& y    = ctx.outputs()[0];
-  auto& pos  = ctx.inputs()[0];
-  auto& crd  = ctx.inputs()[1];
-  auto& vals = ctx.inputs()[2];
-  auto& x    = ctx.inputs()[3];
-
-  // std::cout << "SpMV task: " << std::endl;
-  // std::cout << y.domain() << std::endl;
-  // std::cout << pos.domain() << std::endl;
-  // std::cout << crd.domain() << std::endl;
-  // std::cout << vals.domain() << std::endl;
-  // std::cout << x.domain() << std::endl;
-
-  // TODO (rohany): Template this over the value types of the arrays.
-  auto yacc   = y.write_accessor<val_ty, 1>();
-  auto posacc = pos.read_accessor<Rect<1>, 1>();
-  // TODO (rohany): Expose control over 32 or 64 bit indices.
-  auto crdacc  = crd.read_accessor<coord_ty, 1>();
-  auto valsacc = vals.read_accessor<val_ty, 1>();
-  auto xacc    = x.read_accessor<val_ty, 1>();
-
-  // TODO (rohany): We can partition the x vector here for an algorithm that
-  //  doesn't replicate x, or even use a 2-D distribution of the CSR matrix.
-  //  However, a 2-D distribution requires a different encoding.
-  auto bounds = y.domain();
-  for (size_t i = bounds.lo()[0]; i <= bounds.hi()[0]; i++) {
-    // We importantly need to discard whatever data already lives in the instances.
-    val_ty sum = 0.0;
-    for (size_t jpos = posacc[i].lo; jpos <= posacc[i].hi; jpos++) {
-      auto j = crdacc[jpos];
-      sum += valsacc[jpos] * xacc[j];
-    }
-    yacc[i] = sum;
-  }
-}
-
 void CSRSpMVRowSplitTropicalSemiring::cpu_variant(legate::TaskContext& ctx)
 {
   auto& y   = ctx.outputs()[0];
@@ -1592,7 +1547,6 @@ void VecMultAdd::cpu_variant(legate::TaskContext& ctx)
 namespace {  // anonymous
 static void __attribute__((constructor)) register_tasks(void)
 {
-  sparse::CSRSpMVRowSplit::register_variants();
   sparse::CSRSpMVRowSplitTropicalSemiring::register_variants();
   sparse::CSCSpMVColSplit::register_variants();
 
