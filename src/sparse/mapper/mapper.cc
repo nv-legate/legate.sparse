@@ -15,8 +15,8 @@
  */
 
 #include "legate.h"
-#include "mapper.h"
 #include "sparse_c.h"
+#include "sparse/mapper/mapper.h"
 
 using namespace legate;
 using namespace legate::mapping;
