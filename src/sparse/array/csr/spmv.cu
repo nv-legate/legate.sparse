@@ -44,7 +44,7 @@ struct CSRSpMVRowSplitImpl<VariantKind::GPU> {
     CHECK_CUSPARSE(cusparseSetStream(handle, stream));
 
     // Construct the CUSPARSE objects from individual regions.
-    auto cusparse_y = makeCuSparseDenseVec(y);
+    auto cusparse_y = makeCuSparseDenseVec<VAL_TY>(y);
     // In order to play nicely with cuSPARSE and weak-scale (on distribution
     // friendly inputs), we have to do some trickery. The first happens when
     // we launch our tasks: we take the image of the selected coordinates

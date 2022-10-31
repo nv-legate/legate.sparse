@@ -129,6 +129,43 @@ cusparseSpMatDescr_t makeCuSparseCSR(const legate::Store& pos,
   return matDescr;
 }
 
+// makeCuSparseCSC creates a cusparse CSC matrix from input arrays.
+template <typename INDEX_TY = int64_t, typename VAL_TY = double>
+cusparseSpMatDescr_t makeCuSparseCSC(const legate::Store& pos, const legate::Store& crd, const legate::Store& vals, size_t rows)
+{
+  cusparseSpMatDescr_t matDescr;
+  auto stream = get_cached_stream();
+
+  auto pos_domain = pos.domain();
+  auto crd_domain = crd.domain();
+
+  auto pos_acc = pos.read_accessor<Legion::Rect<1>, 1>();
+  size_t cols  = pos_domain.get_volume();
+  Legion::DeferredBuffer<int64_t, 1> indptr({0, cols}, Legion::Memory::GPU_FB_MEM);
+  auto blocks = get_num_blocks_1d(cols);
+  convertGlobalPosToLocalIndPtr<<<blocks, THREADS_PER_BLOCK, 0, stream>>>(
+    cols, pos_acc.ptr(pos_domain.lo()), indptr.ptr(0));
+
+#if (CUSPARSE_VER_MAJOR < 11 || CUSPARSE_VER_MINOR < 2)
+  assert(false && "cuSPARSE version too old! Try later than 11.1.");
+#else
+  CHECK_CUSPARSE(
+    cusparseCreateCsc(&matDescr,
+                      rows,
+                      cols,
+                      crd_domain.get_volume() /* nnz */,
+                      (void*)indptr.ptr(0),
+                      crd_domain.empty() ? nullptr : getPtrFromStore<INDEX_TY, 1>(crd),
+                      vals.domain().empty() ? nullptr : getPtrFromStore<VAL_TY, 1>(vals),
+                      cusparseIndexType<int64_t>(),
+                      cusparseIndexType<INDEX_TY>(),
+                      index_base,
+                      cusparseDataType<VAL_TY>()));
+#endif
+  return matDescr;
+}
+
+
 // makeCuSparseDenseVec creates a cuSparse dense vector from an input store.
 template <typename VAL_TY = double>
 cusparseDnVecDescr_t makeCuSparseDenseVec(const legate::Store& vec)
