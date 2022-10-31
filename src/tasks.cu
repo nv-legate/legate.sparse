@@ -65,40 +65,6 @@ cusparseSpMatDescr_t makeCuSparseCSR(Store& pos, Store& crd, size_t cols)
   return matDescr;
 }
 
-cusparseSpMatDescr_t makeCuSparseCSC(Store& pos, Store& crd, Store& vals, size_t rows)
-{
-  cusparseSpMatDescr_t matDescr;
-  auto stream = get_cached_stream();
-
-  auto pos_domain = pos.domain();
-  auto crd_domain = crd.domain();
-
-  auto pos_acc = pos.read_accessor<Rect<1>, 1>();
-  size_t cols  = pos_domain.get_volume();
-  DeferredBuffer<int64_t, 1> indptr({0, cols}, Memory::GPU_FB_MEM);
-  auto blocks = get_num_blocks_1d(cols);
-  convertGlobalPosToLocalIndPtr<<<blocks, THREADS_PER_BLOCK, 0, stream>>>(
-    cols, pos_acc.ptr(pos_domain.lo()), indptr.ptr(0));
-
-#if (CUSPARSE_VER_MAJOR < 11 || CUSPARSE_VER_MINOR < 2)
-  assert(false && "cuSPARSE version too old! Try later than 11.1.");
-#else
-  CHECK_CUSPARSE(
-    cusparseCreateCsc(&matDescr,
-                      rows,
-                      cols,
-                      crd_domain.get_volume() /* nnz */,
-                      (void*)indptr.ptr(0),
-                      crd_domain.empty() ? nullptr : getPtrFromStore<coord_ty, 1>(crd),
-                      vals.domain().empty() ? nullptr : getPtrFromStore<val_ty, 1>(vals),
-                      index_ty,
-                      index_ty,
-                      index_base,
-                      cuda_val_ty));
-#endif
-  return matDescr;
-}
-
 cusparseDnMatDescr_t makeCuSparseDenseMat(Store& mat)
 {
   auto d = mat.domain();
@@ -198,73 +164,6 @@ void CSRSpMVRowSplitTropicalSemiring::gpu_variant(legate::TaskContext& ctx)
                                                                  pos.read_accessor<Rect<1>, 1>(),
                                                                  crd.read_accessor<coord_ty, 1>(),
                                                                  x.read_accessor<coord_ty, 2>());
-  CHECK_CUDA_STREAM(stream);
-}
-
-void CSCSpMVColSplit::gpu_variant(legate::TaskContext& ctx)
-{
-  auto& y_vals = ctx.reductions()[0];
-  auto& A_pos  = ctx.inputs()[0];
-  auto& A_crd  = ctx.inputs()[1];
-  auto& A_vals = ctx.inputs()[2];
-  auto& x_vals = ctx.inputs()[3];
-
-  // Break out early if the iteration space partition is empty.
-  if (x_vals.domain().empty()) return;
-
-  // Get context sensitive objects.
-  auto handle = get_cusparse();
-  auto stream = get_cached_stream();
-  CHECK_CUSPARSE(cusparseSetStream(handle, stream));
-
-  // Construct the CUSPARSE objects from individual regions.
-  auto cusparse_y = makeCuSparseDenseVec(y_vals);
-  auto cusparse_x = makeCuSparseDenseVec(x_vals);
-  auto cusparse_A = makeCuSparseCSC(A_pos, A_crd, A_vals, y_vals.domain().get_volume() /* rows */);
-
-  // Make the CUSPARSE calls.
-  val_ty alpha   = 1.0;
-  val_ty beta    = 0.0;
-  size_t bufSize = 0;
-  CHECK_CUSPARSE(cusparseSpMV_bufferSize(handle,
-                                         CUSPARSE_OPERATION_NON_TRANSPOSE,
-                                         &alpha,
-                                         cusparse_A,
-                                         cusparse_x,
-                                         &beta,
-                                         cusparse_y,
-                                         cuda_val_ty,
-#if (CUSPARSE_VER_MAJOR < 11 || CUSPARSE_VER_MINOR < 2)
-                                         CUSPARSE_MV_ALG_DEFAULT,
-#else
-                                         CUSPARSE_SPMV_ALG_DEFAULT,
-#endif
-                                         &bufSize));
-  // Allocate a buffer if we need to.
-  void* workspacePtr = nullptr;
-  if (bufSize > 0) {
-    DeferredBuffer<char, 1> buf({0, bufSize - 1}, Memory::GPU_FB_MEM);
-    workspacePtr = buf.ptr(0);
-  }
-  // Finally do the SpMV.
-  CHECK_CUSPARSE(cusparseSpMV(handle,
-                              CUSPARSE_OPERATION_NON_TRANSPOSE,
-                              &alpha,
-                              cusparse_A,
-                              cusparse_x,
-                              &beta,
-                              cusparse_y,
-                              cuda_val_ty,
-#if (CUSPARSE_VER_MAJOR < 11 || CUSPARSE_VER_MINOR < 2)
-                              CUSPARSE_MV_ALG_DEFAULT,
-#else
-                              CUSPARSE_SPMV_ALG_DEFAULT,
-#endif
-                              workspacePtr));
-  // Destroy the created objects.
-  CHECK_CUSPARSE(cusparseDestroyDnVec(cusparse_y));
-  CHECK_CUSPARSE(cusparseDestroyDnVec(cusparse_x));
-  CHECK_CUSPARSE(cusparseDestroySpMat(cusparse_A));
   CHECK_CUDA_STREAM(stream);
 }
 
@@ -1879,7 +1778,7 @@ void CSRToDense::gpu_variant(legate::TaskContext& ctx)
   CHECK_CUSPARSE(cusparseSetStream(handle, stream));
 
   // Construct our cuSPARSE matrices.
-  auto A_domain   = A_vals.domain();
+  auto A_domain = A_vals.domain();
   auto cusparse_A = makeCuSparseDenseMat(A_vals);
   auto cusparse_B =
     makeCuSparseCSR(B_pos, B_crd, B_vals, A_domain.hi()[1] - A_domain.lo()[1] + 1 /* cols */);
@@ -1957,7 +1856,7 @@ void CSCToDense::gpu_variant(legate::TaskContext& ctx)
   CHECK_CUSPARSE(cusparseSetStream(handle, stream));
 
   // Construct our cuSPARSE matrices.
-  auto A_domain   = A_vals.domain();
+  auto A_domain = A_vals.domain();
   auto cusparse_A = makeCuSparseDenseMat(A_vals);
   auto cusparse_B =
     makeCuSparseCSC(B_pos, B_crd, B_vals, A_domain.hi()[0] - A_domain.lo()[0] + 1 /* rows */);
@@ -2027,8 +1926,8 @@ void DenseToCSRNNZ::gpu_variant(legate::TaskContext& ctx)
   CHECK_CUSPARSE(cusparseSetStream(handle, stream));
 
   auto B_domain = B_vals.domain();
-  auto rows     = B_domain.hi()[0] - B_domain.lo()[0] + 1;
-  auto cols     = B_domain.hi()[1] - B_domain.lo()[1] + 1;
+  auto rows = B_domain.hi()[0] - B_domain.lo()[0] + 1;
+  auto cols = B_domain.hi()[1] - B_domain.lo()[1] + 1;
   // Allocate an output buffer for the offsets.
   DeferredBuffer<int64_t, 1> A_indptr({0, rows}, Memory::GPU_FB_MEM);
 
@@ -2206,8 +2105,8 @@ void DenseToCSCNNZ::gpu_variant(legate::TaskContext& ctx)
   CHECK_CUSPARSE(cusparseSetStream(handle, stream));
 
   auto B_domain = B_vals.domain();
-  auto rows     = B_domain.hi()[0] - B_domain.lo()[0] + 1;
-  auto cols     = B_domain.hi()[1] - B_domain.lo()[1] + 1;
+  auto rows = B_domain.hi()[0] - B_domain.lo()[0] + 1;
+  auto cols = B_domain.hi()[1] - B_domain.lo()[1] + 1;
   // Allocate an output buffer for the offsets.
   DeferredBuffer<int64_t, 1> A_indptr({0, cols}, Memory::GPU_FB_MEM);
 

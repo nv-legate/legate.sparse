@@ -50,18 +50,6 @@ class CSRSpMVRowSplitTropicalSemiring : public SparseTask<CSRSpMVRowSplitTropica
 #endif
 };
 
-class CSCSpMVColSplit : public SparseTask<CSCSpMVColSplit> {
- public:
-  static const int TASK_ID = LEGATE_SPARSE_CSC_SPMV_COL_SPLIT;
-  static void cpu_variant(legate::TaskContext& ctx);
-#ifdef LEGATE_USE_OPENMP
-  static void omp_variant(legate::TaskContext& ctx);
-#endif
-#ifdef LEGATE_USE_CUDA
-  static void gpu_variant(legate::TaskContext& context);
-#endif
-};
-
 // SpGEMM kernels.
 class SpGEMMCSRxCSRxCSRNNZ : public SparseTask<SpGEMMCSRxCSRxCSRNNZ> {
  public:

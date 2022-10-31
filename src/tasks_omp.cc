@@ -74,37 +74,6 @@ void CSRSpMVRowSplitTropicalSemiring::omp_variant(legate::TaskContext& ctx)
   }
 }
 
-void CSCSpMVColSplit::omp_variant(legate::TaskContext& ctx)
-{
-  auto& y      = ctx.reductions()[0];
-  auto& A_pos  = ctx.inputs()[0];
-  auto& A_crd  = ctx.inputs()[1];
-  auto& A_vals = ctx.inputs()[2];
-  auto& x      = ctx.inputs()[3];
-
-  // Since we're scattering into the output vector y, we'll have an initial
-  // implementation that just does atomic reductions into the output. I think
-  // that is a better approach than blowing up the output memory by a factor
-  // equal to the number of threads. It's possible that a factor of threads
-  // blowup isn't even _that_ bad, it's what the SpGEMM implementation does
-  // as well. We could even use an index set list to only reduce over the
-  // set entries. However, it might better in the end to just convert matrices
-  // back into CSR up front.
-  auto y_acc      = y.reduce_accessor<SumReduction<val_ty>, false /* exclusive */, 1>();
-  auto A_pos_acc  = A_pos.read_accessor<Rect<1>, 1>();
-  auto A_crd_acc  = A_crd.read_accessor<coord_ty, 1>();
-  auto A_vals_acc = A_vals.read_accessor<val_ty, 1>();
-  auto x_acc      = x.read_accessor<val_ty, 1>();
-  auto bounds     = A_pos.domain();
-#pragma omp parallel for schedule(monotonic : dynamic, 128)
-  for (coord_ty j = bounds.lo()[0]; j < bounds.hi()[0] + 1; j++) {
-    for (size_t iA = A_pos_acc[j].lo; iA < A_pos_acc[j].hi + 1; iA++) {
-      auto i = A_crd_acc[iA];
-      y_acc[i] <<= A_vals_acc[iA] * x_acc[j];
-    }
-  }
-}
-
 // SpGEMM on CSR = CSR x CSR is adapted from DISTAL/TACO generated code.
 // A(i, j) = B(i, k) * C(k, j)
 // Schedule:
