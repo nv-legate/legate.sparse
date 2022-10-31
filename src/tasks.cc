@@ -68,28 +68,6 @@ void CSRSpMVRowSplitTropicalSemiring::cpu_variant(legate::TaskContext& ctx)
   }
 }
 
-void CSCSpMVColSplit::cpu_variant(legate::TaskContext& ctx)
-{
-  auto& y      = ctx.reductions()[0];
-  auto& A_pos  = ctx.inputs()[0];
-  auto& A_crd  = ctx.inputs()[1];
-  auto& A_vals = ctx.inputs()[2];
-  auto& x      = ctx.inputs()[3];
-
-  auto y_acc      = y.reduce_accessor<SumReduction<val_ty>, true /* exclusive */, 1>();
-  auto A_pos_acc  = A_pos.read_accessor<Rect<1>, 1>();
-  auto A_crd_acc  = A_crd.read_accessor<coord_ty, 1>();
-  auto A_vals_acc = A_vals.read_accessor<val_ty, 1>();
-  auto x_acc      = x.read_accessor<val_ty, 1>();
-  auto bounds     = A_pos.domain();
-  for (coord_ty j = bounds.lo()[0]; j < bounds.hi()[0] + 1; j++) {
-    for (size_t iA = A_pos_acc[j].lo; iA < A_pos_acc[j].hi + 1; iA++) {
-      auto i = A_crd_acc[iA];
-      y_acc[i] <<= A_vals_acc[iA] * x_acc[j];
-    }
-  }
-}
-
 // TODO (rohany): In a real implementation, we could template this
 //  implementation to use a different operator or semiring.
 // SpGEMM on CSR = CSR x CSR is adapted from DISTAL/TACO generated code.
@@ -1527,7 +1505,6 @@ namespace {  // anonymous
 static void __attribute__((constructor)) register_tasks(void)
 {
   sparse::CSRSpMVRowSplitTropicalSemiring::register_variants();
-  sparse::CSCSpMVColSplit::register_variants();
 
   sparse::SpGEMMCSRxCSRxCSRNNZ::register_variants();
   sparse::SpGEMMCSRxCSRxCSR::register_variants();
