@@ -131,7 +131,10 @@ cusparseSpMatDescr_t makeCuSparseCSR(const legate::Store& pos,
 
 // makeCuSparseCSC creates a cusparse CSC matrix from input arrays.
 template <typename INDEX_TY = int64_t, typename VAL_TY = double>
-cusparseSpMatDescr_t makeCuSparseCSC(const legate::Store& pos, const legate::Store& crd, const legate::Store& vals, size_t rows)
+cusparseSpMatDescr_t makeCuSparseCSC(const legate::Store& pos,
+                                     const legate::Store& crd,
+                                     const legate::Store& vals,
+                                     size_t rows)
 {
   cusparseSpMatDescr_t matDescr;
   auto stream = get_cached_stream();
@@ -164,7 +167,6 @@ cusparseSpMatDescr_t makeCuSparseCSC(const legate::Store& pos, const legate::Sto
 #endif
   return matDescr;
 }
-
 
 // makeCuSparseDenseVec creates a cuSparse dense vector from an input store.
 template <typename VAL_TY = double>

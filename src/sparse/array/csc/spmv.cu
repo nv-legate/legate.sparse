@@ -23,7 +23,6 @@ namespace sparse {
 
 template <>
 struct CSCSpMVColSplitImpl<VariantKind::GPU> {
-
   template <LegateTypeCode INDEX_CODE, LegateTypeCode VAL_CODE>
   void operator()(CSCSpMVColSplitArgs& args) const
   {
@@ -36,65 +35,65 @@ struct CSCSpMVColSplitImpl<VariantKind::GPU> {
     auto& A_vals = args.A_vals;
     auto& x      = args.x;
 
-  // Break out early if the iteration space partition is empty.
-  if (x.domain().empty()) return;
+    // Break out early if the iteration space partition is empty.
+    if (x.domain().empty()) return;
 
-  // Get context sensitive objects.
-  auto handle = get_cusparse();
-  auto stream = get_cached_stream();
-  CHECK_CUSPARSE(cusparseSetStream(handle, stream));
+    // Get context sensitive objects.
+    auto handle = get_cusparse();
+    auto stream = get_cached_stream();
+    CHECK_CUSPARSE(cusparseSetStream(handle, stream));
 
-  // Construct the CUSPARSE objects from individual regions.
-  auto cusparse_y = makeCuSparseDenseVec<VAL_TY>(y);
-  auto cusparse_x = makeCuSparseDenseVec<VAL_TY>(x);
-  auto cusparse_A = makeCuSparseCSC<INDEX_TY, VAL_TY>(A_pos, A_crd, A_vals, y.domain().get_volume() /* rows */);
+    // Construct the CUSPARSE objects from individual regions.
+    auto cusparse_y = makeCuSparseDenseVec<VAL_TY>(y);
+    auto cusparse_x = makeCuSparseDenseVec<VAL_TY>(x);
+    auto cusparse_A =
+      makeCuSparseCSC<INDEX_TY, VAL_TY>(A_pos, A_crd, A_vals, y.domain().get_volume() /* rows */);
 
-  // Make the CUSPARSE calls.
-  VAL_TY alpha   = 1.0;
-  VAL_TY beta    = 0.0;
-  size_t bufSize = 0;
-  CHECK_CUSPARSE(cusparseSpMV_bufferSize(handle,
-                                         CUSPARSE_OPERATION_NON_TRANSPOSE,
-                                         &alpha,
-                                         cusparse_A,
-                                         cusparse_x,
-                                         &beta,
-                                         cusparse_y,
-                                         cusparseDataType<VAL_TY>(),
+    // Make the CUSPARSE calls.
+    VAL_TY alpha   = 1.0;
+    VAL_TY beta    = 0.0;
+    size_t bufSize = 0;
+    CHECK_CUSPARSE(cusparseSpMV_bufferSize(handle,
+                                           CUSPARSE_OPERATION_NON_TRANSPOSE,
+                                           &alpha,
+                                           cusparse_A,
+                                           cusparse_x,
+                                           &beta,
+                                           cusparse_y,
+                                           cusparseDataType<VAL_TY>(),
 #if (CUSPARSE_VER_MAJOR < 11 || CUSPARSE_VER_MINOR < 2)
-                                         CUSPARSE_MV_ALG_DEFAULT,
+                                           CUSPARSE_MV_ALG_DEFAULT,
 #else
-                                         CUSPARSE_SPMV_ALG_DEFAULT,
+                                           CUSPARSE_SPMV_ALG_DEFAULT,
 #endif
-                                         &bufSize));
-  // Allocate a buffer if we need to.
-  void* workspacePtr = nullptr;
-  if (bufSize > 0) {
-    DeferredBuffer<char, 1> buf({0, bufSize - 1}, Memory::GPU_FB_MEM);
-    workspacePtr = buf.ptr(0);
-  }
-  // Finally do the SpMV.
-  CHECK_CUSPARSE(cusparseSpMV(handle,
-                              CUSPARSE_OPERATION_NON_TRANSPOSE,
-                              &alpha,
-                              cusparse_A,
-                              cusparse_x,
-                              &beta,
-                              cusparse_y,
-                              cusparseDataType<VAL_TY>(),
+                                           &bufSize));
+    // Allocate a buffer if we need to.
+    void* workspacePtr = nullptr;
+    if (bufSize > 0) {
+      DeferredBuffer<char, 1> buf({0, bufSize - 1}, Memory::GPU_FB_MEM);
+      workspacePtr = buf.ptr(0);
+    }
+    // Finally do the SpMV.
+    CHECK_CUSPARSE(cusparseSpMV(handle,
+                                CUSPARSE_OPERATION_NON_TRANSPOSE,
+                                &alpha,
+                                cusparse_A,
+                                cusparse_x,
+                                &beta,
+                                cusparse_y,
+                                cusparseDataType<VAL_TY>(),
 #if (CUSPARSE_VER_MAJOR < 11 || CUSPARSE_VER_MINOR < 2)
-                              CUSPARSE_MV_ALG_DEFAULT,
+                                CUSPARSE_MV_ALG_DEFAULT,
 #else
-                              CUSPARSE_SPMV_ALG_DEFAULT,
+                                CUSPARSE_SPMV_ALG_DEFAULT,
 #endif
-                              workspacePtr));
-  // Destroy the created objects.
-  CHECK_CUSPARSE(cusparseDestroyDnVec(cusparse_y));
-  CHECK_CUSPARSE(cusparseDestroyDnVec(cusparse_x));
-  CHECK_CUSPARSE(cusparseDestroySpMat(cusparse_A));
-  CHECK_CUDA_STREAM(stream);
+                                workspacePtr));
+    // Destroy the created objects.
+    CHECK_CUSPARSE(cusparseDestroyDnVec(cusparse_y));
+    CHECK_CUSPARSE(cusparseDestroyDnVec(cusparse_x));
+    CHECK_CUSPARSE(cusparseDestroySpMat(cusparse_A));
+    CHECK_CUDA_STREAM(stream);
   }
-
 };
 
 /*static*/ void CSCSpMVColSplit::gpu_variant(legate::TaskContext& context)
@@ -102,4 +101,4 @@ struct CSCSpMVColSplitImpl<VariantKind::GPU> {
   csc_spmv_col_split_template<VariantKind::GPU>(context);
 }
 
-}
+}  // namespace sparse

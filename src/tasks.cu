@@ -1778,7 +1778,7 @@ void CSRToDense::gpu_variant(legate::TaskContext& ctx)
   CHECK_CUSPARSE(cusparseSetStream(handle, stream));
 
   // Construct our cuSPARSE matrices.
-  auto A_domain   = A_vals.domain();
+  auto A_domain = A_vals.domain();
   auto cusparse_A = makeCuSparseDenseMat(A_vals);
   auto cusparse_B =
     makeCuSparseCSR(B_pos, B_crd, B_vals, A_domain.hi()[1] - A_domain.lo()[1] + 1 /* cols */);
@@ -1856,7 +1856,7 @@ void CSCToDense::gpu_variant(legate::TaskContext& ctx)
   CHECK_CUSPARSE(cusparseSetStream(handle, stream));
 
   // Construct our cuSPARSE matrices.
-  auto A_domain   = A_vals.domain();
+  auto A_domain = A_vals.domain();
   auto cusparse_A = makeCuSparseDenseMat(A_vals);
   auto cusparse_B =
     makeCuSparseCSC(B_pos, B_crd, B_vals, A_domain.hi()[0] - A_domain.lo()[0] + 1 /* rows */);
@@ -1926,8 +1926,8 @@ void DenseToCSRNNZ::gpu_variant(legate::TaskContext& ctx)
   CHECK_CUSPARSE(cusparseSetStream(handle, stream));
 
   auto B_domain = B_vals.domain();
-  auto rows     = B_domain.hi()[0] - B_domain.lo()[0] + 1;
-  auto cols     = B_domain.hi()[1] - B_domain.lo()[1] + 1;
+  auto rows = B_domain.hi()[0] - B_domain.lo()[0] + 1;
+  auto cols = B_domain.hi()[1] - B_domain.lo()[1] + 1;
   // Allocate an output buffer for the offsets.
   DeferredBuffer<int64_t, 1> A_indptr({0, rows}, Memory::GPU_FB_MEM);
 
@@ -2105,8 +2105,8 @@ void DenseToCSCNNZ::gpu_variant(legate::TaskContext& ctx)
   CHECK_CUSPARSE(cusparseSetStream(handle, stream));
 
   auto B_domain = B_vals.domain();
-  auto rows     = B_domain.hi()[0] - B_domain.lo()[0] + 1;
-  auto cols     = B_domain.hi()[1] - B_domain.lo()[1] + 1;
+  auto rows = B_domain.hi()[0] - B_domain.lo()[0] + 1;
+  auto cols = B_domain.hi()[1] - B_domain.lo()[1] + 1;
   // Allocate an output buffer for the offsets.
   DeferredBuffer<int64_t, 1> A_indptr({0, cols}, Memory::GPU_FB_MEM);
 
