@@ -22,11 +22,12 @@ and the following
 as many necessary changes have not yet made their way into the main branches
 of Legate and cuNumeric.
 
-After these Legate and cuNumeric have been installed, simply running
+After these Legate and cuNumeric have been installed, run
 ```
-./setup.py --with-core </path/to/core/install/>
+./install.py
 ```
-will install Legate Sparse.
+to install Legate Sparse. `install.py --help` will list more installation
+options for Legate Sparse.
 
 To write programs using Legate Sparse, import the `sparse` module, which
 contains methods and types found in `scipy.sparse`.
