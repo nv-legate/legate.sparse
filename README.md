@@ -18,9 +18,9 @@ To use Legate Sparse, you must build
 particular, the following
 [branch](https://github.com/rohany/legate.core/tree/legate-sparse) of Legate
 and the following
-[branch](https://github.com/rohany/cunumeric/tree/legate-sparse) must be used
-as many necessary changes have not yet made their way into the main branches
-of Legate and cuNumeric.
+[branch](https://github.com/rohany/cunumeric/tree/legate-sparse) of cuNumeric
+must be used as many necessary changes have not yet made their way into the
+main branches of Legate and cuNumeric.
 
 After these Legate and cuNumeric have been installed, run
 ```
