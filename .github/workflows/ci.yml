@@ -52,7 +52,7 @@ jobs:
           /data/github-runner/legate-bin/setup.sh
           cd legate-ci/github-ci/legate.sparse
           rm -rf ngc-artifacts || true
-          ./build-conda.sh > ${COMMIT}-build.log 2>&1
+          ./build.sh > ${COMMIT}-build.log 2>&1
       - name: Process Output
         run: |
           cd legate-ci/github-ci/legate.sparse
@@ -79,7 +79,6 @@ jobs:
           - {name: OpenMP test, options: --use openmp --omps 1 --ompthreads 2 --debug, log: omp}
           - {name: 2 OpenMPs test, options: --use openmp --omps 2 --ompthreads 2 --debug, log: omps}
           - {name: Eager execution test, options: --use eager --debug, log: eager}
-          - {name: mypy, options: mypy, log: mypy}
     name: ${{ matrix.name }}
     steps:
       - name: Dump GitHub context
