@@ -225,7 +225,7 @@ def eye(m, n=None, k=0, dtype=numpy.float64, format="csr"):
     if n is None:
         n = m
     if format == "csr" and k == 0 and m == n:
-        row_lo = cunumeric.arange(m, dtype=numpy.uint64)
+        row_lo = cunumeric.arange(m, dtype=numpy.int64)
         row_hi = row_lo + 1
         # TODO (rohany): Make a version of this function that enables control
         # over whether or not rectanges are inclusive or exclusive. That way we
