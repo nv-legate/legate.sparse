@@ -74,6 +74,18 @@ inline cudaDataType cusparseDataType<double>()
   return CUDA_R_64F;
 }
 
+template <>
+inline cudaDataType cusparseDataType<complex<float>>()
+{
+  return CUDA_C_32F;
+}
+
+template <>
+inline cudaDataType cusparseDataType<complex<double>>()
+{
+  return CUDA_C_64F;
+}
+
 // Template dispatch for the index type.
 template <typename INDEX_TY>
 cusparseIndexType_t cusparseIndexType();
