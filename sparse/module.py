@@ -48,13 +48,12 @@
 import cunumeric
 import numpy
 
-from .array import (
-    coo_array,
-    csr_array,
-    dia_array,
-    get_store_from_cunumeric_array,
-    pack_to_rect1_store,
-)
+from .base import pack_to_rect1_store
+from .coo import coo_array
+from .csc import csc_array
+from .csr import csr_array
+from .dia import dia_array
+from .utils import get_store_from_cunumeric_array
 
 
 def spdiags(data, diags, m, n, format=None):
@@ -322,3 +321,16 @@ def kron(A, B, format=None):
     data = data.reshape(-1)
 
     return coo_array((data, (row, col)), shape=output_shape).asformat(format)
+
+
+# is_sparse_matrix returns whether or not an object is a legate
+# sparse created sparse matrix.
+def is_sparse_matrix(o):
+    return any(
+        (
+            isinstance(o, csr_array),
+            isinstance(o, csc_array),
+            isinstance(o, coo_array),
+            isinstance(o, dia_array),
+        )
+    )

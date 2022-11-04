@@ -15,9 +15,10 @@
 from legate.core import Future, track_provenance, types
 from legate.core.shape import Shape
 
-from .array import coo_array, coord_ty, float64, int64, uint64
 from .config import SparseOpCode
+from .coo import coo_array
 from .runtime import ctx, runtime
+from .types import coord_ty, float64, nnz_ty
 
 
 @track_provenance(runtime.legate_context)
@@ -28,9 +29,9 @@ def mmread(source):
     rows = ctx.create_store(coord_ty, ndim=1)
     cols = ctx.create_store(coord_ty, ndim=1)
     vals = ctx.create_store(float64, ndim=1)
-    m = ctx.create_store(int64, optimize_scalar=True, shape=Shape(1))
-    n = ctx.create_store(int64, optimize_scalar=True, shape=Shape(1))
-    nnz = ctx.create_store(uint64, optimize_scalar=True, shape=Shape(1))
+    m = ctx.create_store(coord_ty, optimize_scalar=True, shape=Shape(1))
+    n = ctx.create_store(coord_ty, optimize_scalar=True, shape=Shape(1))
+    nnz = ctx.create_store(nnz_ty, optimize_scalar=True, shape=Shape(1))
     assert m.kind == Future
     assert n.kind == Future
     task = ctx.create_task(SparseOpCode.READ_MTX_TO_COO)
