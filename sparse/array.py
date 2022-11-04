@@ -2786,8 +2786,3 @@ def is_sparse_matrix(o):
             isinstance(o, dia_array),
         )
     )
-
-
-# TODO (rohany): We don't have sparse vectors, so not sure how mike garlands
-# vision of SpMSpV will pan out.  I could hack this up right now though. I also
-# don't know if dot product with a n-by-1 matrix counts.
