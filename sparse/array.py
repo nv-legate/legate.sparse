@@ -547,6 +547,19 @@ class CompressedBase:
         return ret.sum(axis=axis, dtype=dtype, out=out)
 
 
+# require_float64_dtypes is a helper utility to ensure that we only
+# use float64 types for operations without type dispatch until we
+# have type dispatch implemented for all of the operations.
+def require_float64_dtypes(*args):
+    for o in args:
+        if o is None:
+            continue
+        if o.dtype != numpy.float64:
+            raise NotImplementedError(
+                "This operation currently only supports float64 types."
+            )
+
+
 @clone_scipy_arr_kind(scipy.sparse.csr_array)
 class csr_array(CompressedBase, DenseSparseBase):
     def __init__(self, arg, shape=None, dtype=None, copy=False):
@@ -809,6 +822,8 @@ class csr_array(CompressedBase, DenseSparseBase):
         )
 
     def dot(self, other, out=None):
+        require_float64_dtypes(self, other, out)
+
         if out is not None:
             assert isinstance(out, cunumeric.ndarray)
         if isinstance(other, numpy.ndarray):
@@ -1461,6 +1476,7 @@ class csr_array(CompressedBase, DenseSparseBase):
     def todense(self, order=None, out=None):
         if order is not None:
             raise NotImplementedError
+        require_float64_dtypes(self, out)
         if out is not None:
             out = cunumeric.array(out)
             out = get_store_from_cunumeric_array(out)
@@ -1517,6 +1533,7 @@ class csr_array(CompressedBase, DenseSparseBase):
             and self.shape[1] == D.shape[1]
             and C.shape[1] == D.shape[0]
         )
+        require_float64_dtypes(self, C, D)
         C_store = get_store_from_cunumeric_array(C)
         D_store = get_store_from_cunumeric_array(D)
         result_vals = ctx.create_store(self.dtype, shape=self.vals.shape)
@@ -1574,6 +1591,7 @@ class csr_array(CompressedBase, DenseSparseBase):
     # This is an element-wise operation now.
     def __mul__(self, other):
         if isinstance(other, csr_array):
+            require_float64_dtypes(self, other)
             assert self.shape == other.shape
             # TODO (rohany): This common pattern could probably be deduplicated
             # somehow.  Create the assemble query result array.
@@ -1653,6 +1671,7 @@ class csr_array(CompressedBase, DenseSparseBase):
             )
         elif isinstance(other, cunumeric.ndarray):
             assert self.shape == other.shape
+            require_float64_dtypes(self, other)
             # This is an operation that preserves the non-zero structure of
             # the output, so we'll just allocate a new store of values for
             # the output matrix and share the existing pos and crd arrays.
@@ -1716,6 +1735,7 @@ class csr_array(CompressedBase, DenseSparseBase):
         else:
             raise NotImplementedError
         assert self.shape == other.shape
+        require_float64_dtypes(self, other)
         # Create the assemble query result array.
         q_nnz = ctx.create_store(nnz_ty, shape=(self.shape[0]))
         task = ctx.create_task(SparseOpCode.ADD_CSR_CSR_NNZ)
@@ -1769,6 +1789,7 @@ class csr_array(CompressedBase, DenseSparseBase):
     def __rmatmul__(self, other):
         if isinstance(other, numpy.ndarray):
             other = cunumeric.array(other)
+        require_float64_dtypes(self, other)
         # TODO (rohany): We'll just support a dense RHS matrix right now.
         if len(other.shape) == 1:
             raise NotImplementedError
@@ -2065,6 +2086,7 @@ class csc_array(CompressedBase, DenseSparseBase):
         return self
 
     def dot(self, other, out=None):
+        require_float64_dtypes(self, other, out)
         if out is not None:
             assert isinstance(out, cunumeric.ndarray)
         if len(other.shape) == 1 or (
@@ -2120,6 +2142,7 @@ class csc_array(CompressedBase, DenseSparseBase):
         raise NotImplementedError
 
     def todense(self, order=None, out=None):
+        require_float64_dtypes(self, out)
         if order is not None:
             raise NotImplementedError
         if out is not None:
@@ -2177,6 +2200,7 @@ class csc_array(CompressedBase, DenseSparseBase):
             and self.shape[1] == D.shape[1]
             and C.shape[1] == D.shape[0]
         )
+        require_float64_dtypes(self, C, D)
         C_store = get_store_from_cunumeric_array(C)
         D_store = get_store_from_cunumeric_array(D)
         result_vals = ctx.create_store(self.dtype, shape=self.vals.shape)
@@ -2376,6 +2400,7 @@ class coo_array(CompressedBase):
     def tocsr(self, copy=False):
         if copy:
             raise NotImplementedError
+        require_float64_dtypes(self)
 
         # We'll try a different (and parallel) approach here. First, we'll sort
         # the data using key (row, column), and sort the values accordingly.
@@ -2480,6 +2505,7 @@ class coo_array(CompressedBase):
     def tocsc(self, copy=False):
         if copy:
             raise NotImplementedError
+        require_float64_dtypes(self)
         # The strategy for CSC conversion is the same as COO conversion, we'll
         # just sort by the columns and then the rows.
         rows_store = ctx.create_store(self._i.type, ndim=1)
@@ -2564,6 +2590,7 @@ class coo_array(CompressedBase):
         )
 
     def todense(self):
+        require_float64_dtypes(self)
         result = cunumeric.zeros(self.shape, dtype=self.dtype)
         result_store = get_store_from_cunumeric_array(result)
         task = ctx.create_task(SparseOpCode.COO_TO_DENSE)
