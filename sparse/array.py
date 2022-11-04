@@ -88,40 +88,6 @@ from .utils import find_last_user_stacklevel
 
 ffi = FFI()
 
-# TODO (rohany): Notes and TODOs...
-#  1) We'll have to implement our own copy routines, as we can't directly use
-#  cunumeric's copy rountines since they aren't going to accept data like
-#  Rect<1>'s. Since we have to implement our own anyway, we might as well use
-#  it for everything.
-#  2) Can look here for ideas about doing parallel transposes (i.e.) CSR->CSC
-#  https://synergy.cs.vt.edu/pubs/papers/wang-transposition-ics16.pdf.  The
-#  "simple" option is to convert to COO, sort by column coordinate (unclear
-#  exactly how to do this), and then deduplicate (also unclear how to do this).
-#  Actually, we know that there aren't any duplicates because it's already a
-#  valid matrix. So it boils down to calling the COO->CSR transformation
-#  function (which we can hopefully parallelize) efficiently. My initial
-#  thoughts for parallelization of this function is that the data distributions
-#  don't line up -- we can distribute the coordinates evenly for the first
-#  pass, but then once we find the nnz-per-row we have to distribute by the
-#  rows and take an image there to parallelize construction. This could
-#  potentially result in alot of data being shuffled around if the row-wise
-#  distribution does not align well with the non-zero distribution.  Another
-#  distributed transposition algorithm: https://arxiv.org/pdf/2012.06012.pdf.
-#  This paper also suggests an algorithm to perform specifically CSR->CSC
-#  operations with a single task that utilizes a communicator to perform a
-#  transpose by assigning the rows and columns to each task, then having each
-#  task scan over the assigned rows and bucket them per output rank, and then
-#  do an AllToAll communication operation to shuffle the coordinates to the
-#  destination nodes.  I wonder if such an approach can also be used for
-#  COO->CSR etc.
-
-# TODO (rohany): For the class of tensor formats representable by TACO, it
-# makes sense to have a superclass that maintains the indices and values
-# arrays.
-
-# TODO (rohany): It makes sense (for simplicities sake) to allow for lifting
-# from raw scipy sparse matrices into legate types. I can utilize cunumeric to
-# dispatch and handle internal details of getting the stores etc.
 
 # TODO (rohany): Move this into an encapsulated runtime.
 dynamic_projection_functor_id = 1
