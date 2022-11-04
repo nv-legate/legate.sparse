@@ -50,7 +50,7 @@ def test_csr_coo_constructor():
 
 @pytest.mark.parametrize("filename", test_mtx_files)
 def test_csr_from_scipy_csr(filename):
-    s = scpy.csr_array(sci_io.mmread(filename).todense())
+    s = scpy.csr_array(sci_io.mmread(filename).todense()).astype(np.float64)
     arr = csr_array(s)
     assert np.array_equal(arr.todense(), s.todense())
 

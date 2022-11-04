@@ -399,10 +399,12 @@ class DenseSparseBase:
         self._balanced_pos_partition = balanced_legate_part
 
     @classmethod
-    def make_with_same_nnz_structure(cls, mat, arg, shape=None):
+    def make_with_same_nnz_structure(cls, mat, arg, shape=None, dtype=None):
         if shape is None:
             shape = mat.shape
-        result = cls(arg, shape=shape, dtype=mat.dtype)
+        if dtype is None:
+            dtype = mat.dtype
+        result = cls(arg, shape=shape, dtype=dtype)
         # Copy over all cached dats structures that depend on the same non-zero
         # structure.
         result._balanced_pos_partition = mat._balanced_pos_partition
@@ -512,6 +514,32 @@ class CompressedBase:
 
         return ret.sum(axis=axis, dtype=dtype, out=out)
 
+    def copy_pos(self):
+        # Issue a copy from the old pos to the new pos. We can't do this
+        # with cunumeric because cunumeric doesn't support the Rect<1> type.
+        pos = ctx.create_store(rect1, shape=self.pos.shape)
+        copy = ctx.create_copy()
+        copy.add_input(self.pos)
+        copy.add_output(pos)
+        copy.execute()
+        return pos
+
+    def astype(self, dtype, casting="unsafe", copy=True):
+        if copy:
+            pos = self.copy_pos()
+            crd = cunumeric.array(store_to_cunumeric_array(self.crd))
+        else:
+            pos = self.pos
+            crd = self.crd
+        vals = self.data.astype(dtype, casting=casting, copy=copy)
+        return csr_array.make_with_same_nnz_structure(self, (vals, crd, pos))
+
+    def copy(self):
+        pos = self.copy_pos()
+        crd = cunumeric.array(store_to_cunumeric_array(self.crd))
+        vals = cunumeric.array(store_to_cunumeric_array(self.vals))
+        return csr_array.make_with_same_nnz_structure(self, (vals, crd, pos))
+
 
 # require_float64_dtypes is a helper utility to ensure that we only
 # use float64 types for operations without type dispatch until we
@@ -532,12 +560,6 @@ class csr_array(CompressedBase, DenseSparseBase):
         if copy:
             raise NotImplementedError
 
-        if dtype is not None:
-            assert dtype == numpy.float64
-            dtype = numpy.dtype(dtype)
-        else:
-            dtype = float64
-        self.dtype = dtype
         self.ndim = 2
         super().__init__()
 
@@ -545,14 +567,16 @@ class csr_array(CompressedBase, DenseSparseBase):
             arg = cunumeric.array(arg)
         if isinstance(arg, cunumeric.ndarray):
             assert arg.ndim == 2
-            self.shape = arg.shape
+            shape = arg.shape
+            dtype = arg.dtype
+
             # Conversion from dense arrays is pretty easy. We'll do a row-wise
             # distribution and use a two-pass algorithm that first counts the
             # non-zeros per row and then fills them in.
             arg_store = get_store_from_cunumeric_array(arg)
             q_nnz = ctx.create_store(nnz_ty, shape=(arg.shape[0]))
             task = ctx.create_task(SparseOpCode.DENSE_TO_CSR_NNZ)
-            promoted_q_nnz = q_nnz.promote(1, self.shape[1])
+            promoted_q_nnz = q_nnz.promote(1, shape[1])
             task.add_output(promoted_q_nnz)
             task.add_input(arg_store)
             task.add_broadcast(promoted_q_nnz, 1)
@@ -562,9 +586,9 @@ class csr_array(CompressedBase, DenseSparseBase):
             # Assemble the output CSR array using the non-zeros per row.
             self.pos, nnz = self.nnz_to_pos(q_nnz)
             self.crd = ctx.create_store(coord_ty, shape=(nnz))
-            self.vals = ctx.create_store(self.dtype, shape=(nnz))
+            self.vals = ctx.create_store(dtype, shape=(nnz))
             task = ctx.create_task(SparseOpCode.DENSE_TO_CSR)
-            promoted_pos = self.pos.promote(1, self.shape[1])
+            promoted_pos = self.pos.promote(1, shape[1])
             task.add_output(promoted_pos)
             task.add_output(self.crd)
             task.add_output(self.vals)
@@ -584,11 +608,14 @@ class csr_array(CompressedBase, DenseSparseBase):
         elif isinstance(arg, scipy.sparse.csr_array) or isinstance(
             arg, scipy.sparse.csr_matrix
         ):
+            dtype = arg.dtype
+            shape = arg.shape
             self.vals = get_store_from_cunumeric_array(
-                cunumeric.array(arg.data, dtype=cunumeric.float64)
+                cunumeric.array(arg.data)
             )
+            # TODO (rohany): Allow for non int64 typed coordinates.
             self.crd = get_store_from_cunumeric_array(
-                cunumeric.array(arg.indices, dtype=coord_ty)
+                cunumeric.array(arg.indices).astype(coord_ty)
             )
             # Cast the indptr array in the scipy.csr_matrix into our Rect<1>
             # based pos array.
@@ -599,19 +626,21 @@ class csr_array(CompressedBase, DenseSparseBase):
                 get_store_from_cunumeric_array(los),
                 get_store_from_cunumeric_array(his),
             )
-            self.shape = arg.shape
         elif isinstance(arg, tuple):
+            if shape is None:
+                raise AssertionError("Cannot infer shape in this case.")
+
             if len(arg) == 2:
                 # If the tuple has two arguments, then it must be of the form
                 # (data, (row, col)), so just pass it to the COO constructor
                 # and transform it into a CSR matrix.
                 data, (row, col) = arg
-                result = coo_array(
-                    (data, (row, col)), shape=shape, dtype=dtype
-                ).tocsr()
+                result = coo_array((data, (row, col)), shape=shape).tocsr()
                 self.pos = result.pos
                 self.crd = result.crd
                 self.vals = result.vals
+                dtype = result.dtype
+                shape = result.shape
             elif len(arg) == 3:
                 (data, indices, indptr) = arg
                 if isinstance(indptr, cunumeric.ndarray):
@@ -625,16 +654,23 @@ class csr_array(CompressedBase, DenseSparseBase):
                 else:
                     assert isinstance(indptr, Store)
                     self.pos = indptr
-                # TODO (rohany): We need to ensure that the input types here
-                # are correct (i.e.  the crd array is indeed an int64).
-                self.crd = cast_to_store(indices)
+                # TODO (rohany): Allow for different variation of coordinate
+                #  type, i.e. choosing int32 or int64.
+                self.crd = cast_to_store(cast_arr(indices, coord_ty))
+                data = cast_arr(data)
+                dtype = data.dtype
                 self.vals = cast_to_store(data)
             else:
                 raise AssertionError
-            assert shape is not None
-            self.shape = shape
         else:
             raise NotImplementedError
+
+        assert shape is not None
+        self.shape = shape
+        assert dtype is not None
+        if not isinstance(dtype, numpy.dtype):
+            dtype = numpy.dtype(dtype)
+        self.dtype = dtype
 
         # Manually adjust the key partition of the pos array to distribute the
         # sparse matrix by the rows across all processors. This makes the
@@ -689,19 +725,6 @@ class csr_array(CompressedBase, DenseSparseBase):
     @property
     def nnz(self):
         return self.vals.shape[0]
-
-    def copy(self):
-        # copy = ctx.create_copy()
-        pos = ctx.create_store(rect1, shape=self.pos.shape)
-        # Issue a copy from the old pos to the new pos. We can't do this
-        # with cunumeric because cunumeric doesn't support the Rect<1> type.
-        copy = ctx.create_copy()
-        copy.add_input(self.pos)
-        copy.add_output(pos)
-        copy.execute()
-        crd = cunumeric.array(store_to_cunumeric_array(self.crd))
-        vals = cunumeric.array(store_to_cunumeric_array(self.vals))
-        return csr_array.make_with_same_nnz_structure(self, (vals, crd, pos))
 
     def conj(self, copy=True):
         if copy:
@@ -1829,28 +1852,22 @@ class csr_array(CompressedBase, DenseSparseBase):
 
 @clone_scipy_arr_kind(scipy.sparse.csc_array)
 class csc_array(CompressedBase, DenseSparseBase):
-    def __init__(self, arg, shape=None, dtype=None, copy=False):
+    def __init__(self, arg, shape=None, dtype=numpy.float64, copy=False):
         if copy:
             raise NotImplementedError
         super().__init__()
-
-        if dtype is not None:
-            assert dtype == numpy.float64
-            dtype = numpy.dtype(dtype)
-        else:
-            dtype = float64
-        self.dtype = dtype
 
         if isinstance(arg, numpy.ndarray):
             arg = cunumeric.array(arg)
         if isinstance(arg, cunumeric.ndarray):
             assert arg.ndim == 2
-            self.shape = arg.shape
+            shape = arg.shape
+            dtype = arg.dtype
             # Similarly to the CSR from dense case, we'll do a column based
             # distribution.
             arg_store = get_store_from_cunumeric_array(arg)
             q_nnz = ctx.create_store(nnz_ty, shape=(arg.shape[1]))
-            promoted_q_nnz = q_nnz.promote(0, arg.shape[0])
+            promoted_q_nnz = q_nnz.promote(0, shape[0])
             task = ctx.create_task(SparseOpCode.DENSE_TO_CSC_NNZ)
             task.add_output(promoted_q_nnz)
             task.add_input(arg_store)
@@ -1860,8 +1877,8 @@ class csc_array(CompressedBase, DenseSparseBase):
             # Assemble the output CSC array using the non-zeros per column.
             self.pos, nnz = self.nnz_to_pos(q_nnz)
             self.crd = ctx.create_store(coord_ty, shape=(nnz))
-            self.vals = ctx.create_store(self.dtype, shape=(nnz))
-            promoted_pos = self.pos.promote(0, arg.shape[0])
+            self.vals = ctx.create_store(dtype, shape=(nnz))
+            promoted_pos = self.pos.promote(0, shape[0])
             task = ctx.create_task(SparseOpCode.DENSE_TO_CSC)
             task.add_output(promoted_pos)
             task.add_output(self.crd)
@@ -1885,6 +1902,8 @@ class csc_array(CompressedBase, DenseSparseBase):
             )
             task.execute()
         elif isinstance(arg, tuple):
+            if shape is None:
+                raise AssertionError("Unable to infer shape.")
             (data, indices, indptr) = arg
             # Handle when someone passes a CSC indptr array as input.
             if isinstance(indptr, cunumeric.ndarray):
@@ -1898,12 +1917,21 @@ class csc_array(CompressedBase, DenseSparseBase):
             else:
                 assert isinstance(indptr, Store)
                 self.pos = indptr
-            self.crd = cast_to_store(indices)
+
+            # TODO (rohany): Allow for different variation of coordinate
+            #  type, i.e. choosing int32 or int64.
+            self.crd = cast_to_store(cast_arr(indices, coord_ty))
+            data = cast_arr(data)
+            dtype = data.dtype
             self.vals = cast_to_store(data)
-            assert shape is not None
-            self.shape = shape
         else:
             raise NotImplementedError
+
+        assert shape is not None
+        self.shape = shape
+        if not isinstance(dtype, numpy.dtype):
+            dtype = numpy.dtype(dtype)
+        self.dtype = dtype
 
         # Manually adjust the key partition of the pos array to distribute the
         # sparse matrix by the rows across all processors. This makes the
@@ -2236,24 +2264,24 @@ class coo_array(CompressedBase):
             # TODO (rohany): I basically want to do self = result, but I don't
             #  think that this is a valid python thing to do.
             arr = csr_array(arg).tocoo()
-            data = cast_arr(arr._vals, dtype=float64)
+            dtype = arr.dtype
+            shape = arr.shape
+            data = cast_arr(arr._vals, dtype=dtype)
             row = cast_arr(arr._i, dtype=coord_ty)
             col = cast_arr(arr._j, dtype=coord_ty)
-            shape = arr.shape
-            dtype = arr.dtype
         elif isinstance(arg, scipy.sparse.coo_array):
-            # TODO (rohany): Handle the types here...
-            data = cunumeric.array(arg.data, dtype=cunumeric.float64)
+            # TODO (rohany): Not sure yet how to handle duplicates.
+            dtype = arg.dtype
+            shape = arg.shape
+            data = cunumeric.array(arg.data, dtype=dtype)
             row = cunumeric.array(arg.row, dtype=coord_ty)
             col = cunumeric.array(arg.col, dtype=coord_ty)
-            shape = arg.shape
-            dtype = cunumeric.float64
-            # TODO (rohany): Not sure yet how to handle duplicates.
         else:
             (data, (row, col)) = arg
-            data = cast_arr(data, dtype=float64)
+            data = cast_arr(data)
             row = cast_arr(row, dtype=coord_ty)
             col = cast_arr(col, dtype=coord_ty)
+            dtype = data.dtype
 
         if shape is None:
             # TODO (rohany): Perform a max over the rows and cols to estimate
@@ -2261,15 +2289,9 @@ class coo_array(CompressedBase):
             raise NotImplementedError
         self.shape = shape
 
-        # Not handling copies just yet.
-        if copy:
-            raise NotImplementedError
-
-        if dtype is not None:
-            assert dtype == numpy.float64
+        assert dtype is not None
+        if not isinstance(dtype, numpy.dtype):
             dtype = numpy.dtype(dtype)
-        else:
-            dtype = float64
         self.dtype = dtype
 
         # Extract stores from the cunumeric arrays.
@@ -2319,6 +2341,12 @@ class coo_array(CompressedBase):
     @property
     def format(self):
         return "coo"
+
+    def astype(self, dtype, casting="unsafe", copy=True):
+        row = self.row.copy() if copy else self.row
+        col = self.col.copy() if copy else self.col
+        data = self.data.astype(dtype, casting=casting, copy=copy)
+        return coo_array((data, (row, col)), shape=self.shape, dtype=dtype)
 
     def diagonal(self, k=0):
         if k != 0:
@@ -2628,6 +2656,11 @@ class dia_array(CompressedBase):
         data = cunumeric.array(self.data)
         offsets = cunumeric.array(self.offsets)
         return dia_array((data, offsets), shape=self.shape, dtype=self.dtype)
+
+    def astype(self, dtype, casting="unsafe", copy=True):
+        data = self.data.copy() if copy else self.data
+        offsets = self.offsets.astype(dtype, casting=casting, copy=copy)
+        return dia_array((data, offsets), shape=self.shape, dtype=dtype)
 
     # This implementation of nnz on DIA matrices is lifted from scipy.sparse.
     @property

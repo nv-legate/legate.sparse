@@ -25,7 +25,7 @@ from sparse import coo_array
 
 @pytest.mark.parametrize("filename", test_mtx_files)
 def test_coo_from_scipy(filename):
-    s = scpy.coo_array(sci_io.mmread(filename).todense())
+    s = scpy.coo_array(sci_io.mmread(filename).todense()).astype(np.float64)
     arr = coo_array(s)
     assert np.array_equal(arr.todense(), s.todense())
 

@@ -274,9 +274,7 @@ def mis_aggregate(C):
     y[:, 0] += x[:, 0]
     C.tropical_spmv(y, out=z)
 
-    # TODO (rohany): This data is currently _ok_ as a 32-bit integer because
-    #  we cast incoming data to the expected types in the COO constructor.
-    data = np.ones(N_fine, dtype=np.uint32)
+    data = np.ones(N_fine, dtype=np.float64)
     row = np.arange(N_fine)
     col = z[:, 1]
 
