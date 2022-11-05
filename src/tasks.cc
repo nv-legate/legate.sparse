@@ -1547,7 +1547,14 @@ static void __attribute__((constructor)) register_tasks(void)
   sparse::ReadMTXToCOO::register_variants();
 
   sparse::EuclideanCDist::register_variants();
-  sparse::SortByKey::register_variants();
+
+  // Sort variants have to be marked as concurrent.
+  {
+    auto options = legate::VariantOptions{}.with_concurrent(true);
+    sparse::SortByKey::register_variants({{LEGATE_CPU_VARIANT, options},
+                                          {LEGATE_GPU_VARIANT, options},
+                                          {LEGATE_OMP_VARIANT, options}});
+  }
 
   sparse::VecMultAdd::register_variants();
 }

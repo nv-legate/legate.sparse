@@ -436,7 +436,7 @@ def driver():
         "--legate-branch",
         dest="legate_branch",
         required=False,
-        default="branch-22.10",
+        default="legate-sparse",
         help="Legate branch to build cuNumeric with.",
     )
     parser.add_argument(

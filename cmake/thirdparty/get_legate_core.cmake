@@ -60,7 +60,7 @@ function(find_or_configure_legate_core)
 endfunction()
 
 if(NOT DEFINED legate_sparse_LEGATE_CORE_BRANCH)
-  set(legate_sparse_LEGATE_CORE_BRANCH branch-22.10)
+  set(legate_sparse_LEGATE_CORE_BRANCH branch-22.12)
 endif()
 
 if(NOT DEFINED legate_sparse_LEGATE_CORE_REPOSITORY)
