@@ -74,9 +74,9 @@ from math import sqrt
 import cunumeric as np
 from legate.core import track_provenance
 
-from .array import get_store_from_cunumeric_array
 from .config import SparseOpCode
 from .runtime import ctx, runtime
+from .utils import get_store_from_cunumeric_array
 
 
 # TODO (rohany): This only works for positive semi-definite matrices,

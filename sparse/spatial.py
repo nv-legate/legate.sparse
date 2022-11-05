@@ -18,14 +18,14 @@ from legate.core import Rect, track_provenance
 from legate.core.partition import Tiling
 from legate.core.shape import Shape
 
-from .array import (
+from .config import SparseOpCode
+from .runtime import ctx, runtime
+from .types import float64
+from .utils import (
     factor_int,
-    float64,
     get_store_from_cunumeric_array,
     store_to_cunumeric_array,
 )
-from .config import SparseOpCode
-from .runtime import ctx, runtime
 
 
 # TODO (rohany): This function is not technically part of scipy.sparse, but I

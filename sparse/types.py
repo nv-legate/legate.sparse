@@ -12,23 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""
+import numpy
 
-Not sure what is supposed to go in here...
-
-"""
-
-from .module import *
-from .coverage import clone_module
-
-from .csr import csr_array, csr_matrix
-from .csc import csc_array, csc_matrix
-from .coo import coo_array, coo_matrix
-from .dia import dia_array, dia_matrix
-
-import scipy.sparse as _sp
-
-clone_module(_sp, globals())
-
-del clone_module
-del _sp
+# Define some common types. Hopefully as we make more
+# progress in generalizing the compute kernels, we can
+# remove this code.
+coord_ty = numpy.dtype(numpy.int64)
+nnz_ty = numpy.dtype(numpy.uint64)
+float64 = numpy.dtype(numpy.float64)
+int32 = numpy.dtype(numpy.int32)
+int64 = numpy.dtype(numpy.int64)
+uint64 = numpy.dtype(numpy.uint64)
