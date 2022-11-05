@@ -46,10 +46,9 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import cunumeric
-import legate.core.types as types
 import numpy
 import scipy
-from legate.core import Rect
+from legate.core import Rect, types
 from legate.core.launcher import TaskLauncher
 from legate.core.partition import Broadcast, DomainPartition, Tiling
 from legate.core.shape import Shape

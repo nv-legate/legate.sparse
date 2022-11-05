@@ -48,7 +48,6 @@
 import warnings
 
 import cunumeric
-import legate.core.types as types
 import numpy
 import scipy
 from legate.core import (
@@ -59,6 +58,7 @@ from legate.core import (
     Store,
     ffi,
     track_provenance,
+    types,
 )
 from legate.core.partition import DomainPartition, ImagePartition, Tiling
 from legate.core.shape import Shape
