@@ -35,7 +35,14 @@ constexpr decltype(auto) value_type_dispatch_from_index(legate::LegateTypeCode v
       return f.template operator()<INDEX_TY_CODE, legate::LegateTypeCode::DOUBLE_LT>(
         std::forward<Fnargs>(args)...);
     }
-    // TODO (rohany): Add dispatch to complex types here too.
+    case legate::LegateTypeCode::COMPLEX64_LT: {
+      return f.template operator()<INDEX_TY_CODE, legate::LegateTypeCode::COMPLEX64_LT>(
+        std::forward<Fnargs>(args)...);
+    }
+    case legate::LegateTypeCode::COMPLEX128_LT: {
+      return f.template operator()<INDEX_TY_CODE, legate::LegateTypeCode::COMPLEX128_LT>(
+        std::forward<Fnargs>(args)...);
+    }
     default: break;
   }
   assert(false);
