@@ -85,14 +85,12 @@ class coo_array(CompressedBase):
             # TODO (rohany): I basically want to do self = result, but I don't
             #  think that this is a valid python thing to do.
             arr = sparse.csr_array(arg).tocoo()
-            dtype = arr.dtype
             shape = arr.shape
             data = cast_arr(arr._vals, dtype=dtype)
             row = cast_arr(arr._i, dtype=coord_ty)
             col = cast_arr(arr._j, dtype=coord_ty)
         elif isinstance(arg, scipy.sparse.coo_array):
             # TODO (rohany): Not sure yet how to handle duplicates.
-            dtype = arg.dtype
             shape = arg.shape
             data = cunumeric.array(arg.data, dtype=dtype)
             row = cunumeric.array(arg.row, dtype=coord_ty)
@@ -102,7 +100,11 @@ class coo_array(CompressedBase):
             data = cast_arr(data)
             row = cast_arr(row, dtype=coord_ty)
             col = cast_arr(col, dtype=coord_ty)
-            dtype = data.dtype
+
+        # Extract stores from the cunumeric arrays.
+        self._i = get_store_from_cunumeric_array(row)
+        self._j = get_store_from_cunumeric_array(col)
+        self._vals = get_store_from_cunumeric_array(data)
 
         if shape is None:
             # TODO (rohany): Perform a max over the rows and cols to estimate
@@ -110,15 +112,16 @@ class coo_array(CompressedBase):
             raise NotImplementedError
         self.shape = shape
 
+        # Use the user's dtype if requested, otherwise infer it from
+        # the input data.
+        if dtype is None:
+            dtype = self.data.dtype
+        else:
+            self.data = self.data.astype(dtype)
         assert dtype is not None
         if not isinstance(dtype, numpy.dtype):
             dtype = numpy.dtype(dtype)
         self.dtype = dtype
-
-        # Extract stores from the cunumeric arrays.
-        self._i = get_store_from_cunumeric_array(row)
-        self._j = get_store_from_cunumeric_array(col)
-        self._vals = get_store_from_cunumeric_array(data)
 
         # Ensure that we distribute operations on COO arrays across the entire
         # machine.

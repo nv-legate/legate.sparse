@@ -86,7 +86,6 @@ class csc_array(CompressedBase, DenseSparseBase):
         if isinstance(arg, cunumeric.ndarray):
             assert arg.ndim == 2
             shape = arg.shape
-            dtype = arg.dtype
             # Similarly to the CSR from dense case, we'll do a column based
             # distribution.
             arg_store = get_store_from_cunumeric_array(arg)
@@ -101,7 +100,7 @@ class csc_array(CompressedBase, DenseSparseBase):
             # Assemble the output CSC array using the non-zeros per column.
             self.pos, nnz = self.nnz_to_pos(q_nnz)
             self.crd = ctx.create_store(coord_ty, shape=(nnz))
-            self.vals = ctx.create_store(dtype, shape=(nnz))
+            self.vals = ctx.create_store(arg.dtype, shape=(nnz))
             promoted_pos = self.pos.promote(0, shape[0])
             task = ctx.create_task(SparseOpCode.DENSE_TO_CSC)
             task.add_output(promoted_pos)
@@ -146,13 +145,20 @@ class csc_array(CompressedBase, DenseSparseBase):
             #  type, i.e. choosing int32 or int64.
             self.crd = cast_to_store(cast_arr(indices, coord_ty))
             data = cast_arr(data)
-            dtype = data.dtype
             self.vals = cast_to_store(data)
         else:
             raise NotImplementedError
 
         assert shape is not None
         self.shape = shape
+
+        # Use the user's dtype if requested, otherwise infer it from
+        # the input data.
+        if dtype is None:
+            dtype = self.data.dtype
+        else:
+            self.data = self.data.astype(dtype)
+
         if not isinstance(dtype, numpy.dtype):
             dtype = numpy.dtype(dtype)
         self.dtype = dtype
@@ -183,6 +189,18 @@ class csc_array(CompressedBase, DenseSparseBase):
 
         self.pos._storage.volume = compute_volume
 
+    # Enable direct operation on the values array.
+    def get_data(self):
+        return store_to_cunumeric_array(self.vals)
+
+    def set_data(self, data):
+        if isinstance(data, numpy.ndarray):
+            data = cunumeric.array(data)
+        assert isinstance(data, cunumeric.ndarray)
+        self.vals = get_store_from_cunumeric_array(data)
+
+    data = property(fget=get_data, fset=set_data)
+
     @classmethod
     def make_empty(cls, shape, dtype):
         M, N = shape
@@ -203,7 +221,9 @@ class csc_array(CompressedBase, DenseSparseBase):
             else self.crd
         )
         vals = self.data.astype(dtype, casting=casting, copy=copy)
-        return csc_array.make_with_same_nnz_structure(self, (vals, crd, pos))
+        return csc_array.make_with_same_nnz_structure(
+            self, (vals, crd, pos), dtype=dtype
+        )
 
     def copy(self):
         pos = self.copy_pos()

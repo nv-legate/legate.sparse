@@ -80,6 +80,7 @@ from .runtime import ctx, runtime
 from .types import coord_ty, float64, nnz_ty
 from .utils import (
     cast_arr,
+    cast_to_common_type,
     cast_to_store,
     factor_int,
     find_last_user_stacklevel,
@@ -103,7 +104,6 @@ class csr_array(CompressedBase, DenseSparseBase):
         if isinstance(arg, cunumeric.ndarray):
             assert arg.ndim == 2
             shape = arg.shape
-            dtype = arg.dtype
 
             # Conversion from dense arrays is pretty easy. We'll do a row-wise
             # distribution and use a two-pass algorithm that first counts the
@@ -121,7 +121,7 @@ class csr_array(CompressedBase, DenseSparseBase):
             # Assemble the output CSR array using the non-zeros per row.
             self.pos, nnz = self.nnz_to_pos(q_nnz)
             self.crd = ctx.create_store(coord_ty, shape=(nnz))
-            self.vals = ctx.create_store(dtype, shape=(nnz))
+            self.vals = ctx.create_store(arg.dtype, shape=(nnz))
             task = ctx.create_task(SparseOpCode.DENSE_TO_CSR)
             promoted_pos = self.pos.promote(1, shape[1])
             task.add_output(promoted_pos)
@@ -143,7 +143,6 @@ class csr_array(CompressedBase, DenseSparseBase):
         elif isinstance(arg, scipy.sparse.csr_array) or isinstance(
             arg, scipy.sparse.csr_matrix
         ):
-            dtype = arg.dtype
             shape = arg.shape
             self.vals = get_store_from_cunumeric_array(
                 cunumeric.array(arg.data)
@@ -176,7 +175,6 @@ class csr_array(CompressedBase, DenseSparseBase):
                 self.pos = result.pos
                 self.crd = result.crd
                 self.vals = result.vals
-                dtype = result.dtype
                 shape = result.shape
             elif len(arg) == 3:
                 (data, indices, indptr) = arg
@@ -195,7 +193,6 @@ class csr_array(CompressedBase, DenseSparseBase):
                 #  type, i.e. choosing int32 or int64.
                 self.crd = cast_to_store(cast_arr(indices, coord_ty))
                 data = cast_arr(data)
-                dtype = data.dtype
                 self.vals = cast_to_store(data)
             else:
                 raise AssertionError
@@ -204,7 +201,13 @@ class csr_array(CompressedBase, DenseSparseBase):
 
         assert shape is not None
         self.shape = shape
-        assert dtype is not None
+
+        # Use the user's dtype if requested, otherwise infer it from
+        # the input data.
+        if dtype is None:
+            dtype = self.data.dtype
+        else:
+            self.data = self.data.astype(dtype)
         if not isinstance(dtype, numpy.dtype):
             dtype = numpy.dtype(dtype)
         self.dtype = dtype
@@ -271,7 +274,9 @@ class csr_array(CompressedBase, DenseSparseBase):
             else self.crd
         )
         vals = self.data.astype(dtype, casting=casting, copy=copy)
-        return csr_array.make_with_same_nnz_structure(self, (vals, crd, pos))
+        return csr_array.make_with_same_nnz_structure(
+            self, (vals, crd, pos), dtype=dtype
+        )
 
     def copy(self):
         pos = self.copy_pos()
@@ -364,15 +369,11 @@ class csr_array(CompressedBase, DenseSparseBase):
         )
 
     def dot(self, other, out=None):
-        require_float64_dtypes(self, other, out)
-
         if out is not None:
             assert isinstance(out, cunumeric.ndarray)
         if isinstance(other, numpy.ndarray):
             other = cunumeric.array(other)
-        # TODO (rohany): Rewrite this to dispatch to dot, and have dot handle
-        # matmul,spmv as the different cases of GEMM.
-        # We're doing a SpMV (or maybe an SpMSpV)?
+        # We're doing a SpMV or an SpMSpV.
         if len(other.shape) == 1 or (
             len(other.shape) == 2 and other.shape[1] == 1
         ):
@@ -389,74 +390,41 @@ class csr_array(CompressedBase, DenseSparseBase):
             if len(other.shape) == 2 and other.shape[1] == 1:
                 other = other.squeeze(1)
                 other_originally_2d = True
-            # Ensure that we write into the output when possible.
-            if out is not None:
+
+            # Coerce A and x into a common type. Use that coerced type
+            # to find the type of the output.
+            A, x = cast_to_common_type(self, other)
+            if out is None:
+                # Annoyingly, we don't seem to be able to use
+                # cunumeric.empty here (as done below), as we get an
+                # error from Legion about trying to create an accessor
+                # onto an empty future under load. So, just use create_store
+                # directly.
+                # y = cunumeric.empty(self.shape[0], dtype=A.dtype)
+                y = store_to_cunumeric_array(
+                    ctx.create_store(A.dtype, shape=(self.shape[0],))
+                )
+            else:
+                # We can't use the output if it not the correct type,
+                # as then we can't guarantee that we would write into
+                # it. So, error out if the output type doesn't match
+                # the resolved type of A and x.
+                if out.dtype != A.dtype:
+                    raise ValueError(
+                        f"Output type {out.dtype} is not consistent "
+                        f"with resolved dtype {A.dtype}"
+                    )
                 if other_originally_2d:
                     assert out.shape == (self.shape[0], 1)
                     out = out.squeeze(1)
                 else:
                     assert out.shape == (self.shape[0],)
-                output = get_store_from_cunumeric_array(out)
-            else:
-                output = ctx.create_store(self.dtype, shape=self.pos.shape)
-            other_store = get_store_from_cunumeric_array(other)
-            # An auto-parallelized version of the kernel.
-            task = ctx.create_task(SparseOpCode.CSR_SPMV_ROW_SPLIT)
-            task.add_output(output)
-            task.add_input(self.pos)
-            task.add_input(self.crd)
-            task.add_input(self.vals)
-            task.add_input(other_store)
-            task.add_alignment(output, self.pos)
-            task.add_image_constraint(
-                self.pos,
-                self.crd,
-                range=True,
-                functor=CompressedImagePartition,
-            )
-            task.add_alignment(self.crd, self.vals)
-            # TODO (rohany): Both adding an image constraint explicitly and an
-            # alignment constraint between vals and crd works now. Adding the
-            # image is explicit though, while adding the alignment is more in
-            # line with the DISTAL way of doing things.
-            #
-            # task.add_image_constraint(self.pos, self.vals, range=True)
-            #
-            # An important optimization is to use an image operation to request
-            # only the necessary pieces of data from the x vector in y = Ax. We
-            # don't make an attempt to use a sparse instance, so we allocate
-            # the full vector x in each task, but by using the sparse instance
-            # we ensure that only the necessary pieces of data are
-            # communicated. In many common sparse matrix patterns, this can
-            # result in an asymptotic decrease in the amount of communication.
-            # This is a bit of a hassle (requires some data copying and
-            # reorganization to get the coordinates correct) when the input
-            # store has been transformed, so we'll just avoid this case for
-            # now.
-            if other_store.transformed:
-                # So we don't get blind-sided by this again, issue a warning
-                level = find_last_user_stacklevel()
-                warnings.warn(
-                    "SpMV not using image optimization due to reshaped x in "
-                    "y=Ax. This will cause performance and memory usage to "
-                    "suffer as you scale.",
-                    category=RuntimeWarning,
-                    stacklevel=level,
-                )
-                task.add_broadcast(other_store)
-            else:
-                # The image of the selected coordinates into other vector is
-                # not complete or disjoint.
-                task.add_image_constraint(
-                    self.crd,
-                    other_store,
-                    range=False,
-                    disjoint=False,
-                    complete=False,
-                    functor=MinMaxImagePartition,
-                )
-            task.execute()
-            output = store_to_cunumeric_array(output)
+                y = out
+
+            # Invoke the SpMV after the setup.
+            spmv(A, x, y)
+
+            output = y
             if other_originally_2d:
                 output = output.reshape((-1, 1))
             if other_originally_sparse:
@@ -464,6 +432,7 @@ class csr_array(CompressedBase, DenseSparseBase):
                     output, shape=output.shape, dtype=output.dtype
                 )
             return output
+
         # TODO (rohany): Let's just worry about handling CSR output for now. It
         # looks like TACO can do CSC outputs, but let's think about that in the
         # future.
@@ -473,6 +442,7 @@ class csr_array(CompressedBase, DenseSparseBase):
         elif isinstance(other, sparse.csc_array):
             if out is not None:
                 raise ValueError("Cannot specify out for CSRxCSC matmul.")
+            require_float64_dtypes(self, other)
             assert self.shape[1] == other.shape[0]
             # Here, we want to enable partitioning the i and j dimensions of
             # A(i, j) = B(i, k) * C(k, j).  To do this, we'll first logically
@@ -726,6 +696,7 @@ class csr_array(CompressedBase, DenseSparseBase):
             if out is not None:
                 raise ValueError("Cannot provide out for CSRxCSC matmul.")
             assert self.shape[1] == other.shape[0]
+            require_float64_dtypes(self, other)
             # Due to limitations in cuSPARSE, we cannot use a uniform task
             # implementation for CSRxCSRxCSR SpGEMM across CPUs, OMPs and GPUs.
             # The GPU implementation will create a set of local CSR matrices
@@ -884,6 +855,7 @@ class csr_array(CompressedBase, DenseSparseBase):
                 )
         elif isinstance(other, cunumeric.ndarray):
             assert self.shape[1] == other.shape[0]
+            require_float64_dtypes(self, other)
             # We can dispatch to SpMM here. There are different implementations
             # that one can go for, like the 2-D distribution, or the 1-D
             # non-zero balanced distribution.
@@ -1438,6 +1410,68 @@ def scan_local_results_and_scale_pos(
     task.add_output(pos_part)
     task.add_input(pos_part)
     task._scalar_future_maps.append(scanFutureMap)
+    task.execute()
+
+
+def spmv(A: csr_array, x: cunumeric.ndarray, y: cunumeric.ndarray):
+    x_store = get_store_from_cunumeric_array(x)
+    y_store = get_store_from_cunumeric_array(y)
+
+    # An auto-parallelized version of the kernel.
+    task = ctx.create_task(SparseOpCode.CSR_SPMV_ROW_SPLIT)
+    task.add_output(y_store)
+    task.add_input(A.pos)
+    task.add_input(A.crd)
+    task.add_input(A.vals)
+    task.add_input(x_store)
+    task.add_alignment(y_store, A.pos)
+    task.add_image_constraint(
+        A.pos,
+        A.crd,
+        range=True,
+        functor=CompressedImagePartition,
+    )
+    task.add_alignment(A.crd, A.vals)
+    # TODO (rohany): Both adding an image constraint explicitly and an
+    #  alignment constraint between vals and crd works now. Adding the
+    #  image is explicit though, while adding the alignment is more in
+    #  line with the DISTAL way of doing things.
+    #
+    # task.add_image_constraint(self.pos, self.vals, range=True)
+    #
+    # An important optimization is to use an image operation to request
+    # only the necessary pieces of data from the x vector in y = Ax. We
+    # don't make an attempt to use a sparse instance, so we allocate
+    # the full vector x in each task, but by using the sparse instance
+    # we ensure that only the necessary pieces of data are
+    # communicated. In many common sparse matrix patterns, this can
+    # result in an asymptotic decrease in the amount of communication.
+    # This is a bit of a hassle (requires some data copying and
+    # reorganization to get the coordinates correct) when the input
+    # store has been transformed, so we'll just avoid this case for
+    # now.
+    if x_store.transformed:
+        # So we don't get blind-sided by this again, issue a warning
+        level = find_last_user_stacklevel()
+        warnings.warn(
+            "SpMV not using image optimization due to reshaped x in "
+            "y=Ax. This will cause performance and memory usage to "
+            "suffer as you scale.",
+            category=RuntimeWarning,
+            stacklevel=level,
+        )
+        task.add_broadcast(x_store)
+    else:
+        # The image of the selected coordinates into other vector is
+        # not complete or disjoint.
+        task.add_image_constraint(
+            A.crd,
+            x_store,
+            range=False,
+            disjoint=False,
+            complete=False,
+            functor=MinMaxImagePartition,
+        )
     task.execute()
 
 
