@@ -20,6 +20,8 @@ import numpy
 import pyarrow
 from legate.core import Array, Future, Store, types
 
+import sparse
+
 from .config import SparseOpCode
 from .runtime import ctx
 
@@ -45,7 +47,12 @@ class WrappedStore:
         # @property isn't working...
         arrow_type = self.store.type.type
         if isinstance(arrow_type, numpy.dtype):
-            arrow_type = pyarrow.from_numpy_dtype(arrow_type)
+            if arrow_type == numpy.complex64:
+                arrow_type = types.Complex64Dtype()
+            elif arrow_type == numpy.complex128:
+                arrow_type = types.Complex128Dtype()
+            else:
+                arrow_type = pyarrow.from_numpy_dtype(arrow_type)
 
         # We don't have nullable data for the moment
         # until we support masked arrays
@@ -163,6 +170,32 @@ def require_float64_dtypes(*args):
             raise NotImplementedError(
                 "This operation currently only supports float64 types."
             )
+
+
+# find_common_type performs a similar analysis to
+# cunumeric.ndarray.find_common_type to find a common type
+# between all of the arguments.
+def find_common_type(*args):
+    array_types = list()
+    scalar_types = list()
+    for array in args:
+        if sparse.is_sparse_matrix(array):
+            array_types.append(array.dtype)
+        elif array.size == 1:
+            scalar_types.append(array.dtype)
+        else:
+            array_types.append(array.dtype)
+    return numpy.find_common_type(array_types, scalar_types)
+
+
+# cast_to_common_type casts all arguments to the same common dtype.
+def cast_to_common_type(*args):
+    # Find a common type for all of the arguments.
+    common_type = find_common_type(*args)
+    # Cast each input to the common type. Ideally, if all of the
+    # arguments are already the common type then this will
+    # be a no-op.
+    return tuple(arg.astype(common_type, copy=False) for arg in args)
 
 
 # factor_int decomposes an integer into a close to square grid.
