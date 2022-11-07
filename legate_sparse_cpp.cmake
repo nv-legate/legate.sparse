@@ -109,6 +109,7 @@ list(APPEND legate_sparse_SOURCES
   src/sparse/array/csr/get_diagonal.cc
   src/sparse/array/csr/spmv.cc
   src/sparse/mapper/mapper.cc
+  src/sparse/sort/sort.cc
 
   src/projections.cc
   src/quantum.cc
@@ -122,6 +123,7 @@ if(Legion_USE_OpenMP)
     src/sparse/array/csr/add_omp.cc
     src/sparse/array/csr/get_diagonal_omp.cc
     src/sparse/array/csr/spmv_omp.cc
+    src/sparse/sort/sort_omp.cc
 
     src/quantum_omp.cc
     src/runge_kutta_omp.cc
@@ -135,9 +137,9 @@ if(Legion_USE_CUDA)
     src/sparse/array/csr/get_diagonal.cu
     src/sparse/array/csr/add.cu
     src/sparse/array/csr/spmv.cu
+    src/sparse/sort/sort.cu
 
     src/cudalibs.cu
-    src/sort.cu
     src/tasks.cu
   )
 endif()

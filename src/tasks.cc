@@ -16,7 +16,6 @@
 
 #include "sparse.h"
 #include "tasks.h"
-#include "sort_template.inl"
 
 #include <fstream>
 
@@ -1355,11 +1354,6 @@ void EuclideanCDist::cpu_variant(legate::TaskContext& ctx)
   }
 }
 
-void SortByKey::cpu_variant(legate::TaskContext& ctx)
-{
-  SortBody<coord_ty, val_ty, decltype(thrust::host)>(ctx, Memory::SYSTEM_MEM, thrust::host);
-}
-
 void VecMultAdd::cpu_variant(legate::TaskContext& ctx)
 {
   auto& lhs        = ctx.outputs()[0];
@@ -1428,14 +1422,6 @@ static void __attribute__((constructor)) register_tasks(void)
   sparse::ReadMTXToCOO::register_variants();
 
   sparse::EuclideanCDist::register_variants();
-
-  // Sort variants have to be marked as concurrent.
-  {
-    auto options = legate::VariantOptions{}.with_concurrent(true);
-    sparse::SortByKey::register_variants({{LEGATE_CPU_VARIANT, options},
-                                          {LEGATE_GPU_VARIANT, options},
-                                          {LEGATE_OMP_VARIANT, options}});
-  }
 
   sparse::VecMultAdd::register_variants();
 }
