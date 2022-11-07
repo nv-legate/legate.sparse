@@ -145,33 +145,6 @@ class SpMMDenseCSR : public SparseTask<SpMMDenseCSR> {
 #endif
 };
 
-// Addition.
-// TODO (rohany): It seems like addition is not something supported by CuSparse. We'll
-//  have to utilize DISTAL to get the fastest implementation of GPU sparse matrix addition.
-class AddCSRCSRNNZ : public SparseTask<AddCSRCSRNNZ> {
- public:
-  static const int TASK_ID = LEGATE_SPARSE_ADD_CSR_CSR_NNZ;
-  static void cpu_variant(legate::TaskContext& ctx);
-#ifdef LEGATE_USE_OPENMP
-  static void omp_variant(legate::TaskContext& ctx);
-#endif
-#ifdef LEGATE_USE_CUDA
-  static void gpu_variant(legate::TaskContext& context);
-#endif
-};
-
-class AddCSRCSR : public SparseTask<AddCSRCSR> {
- public:
-  static const int TASK_ID = LEGATE_SPARSE_ADD_CSR_CSR;
-  static void cpu_variant(legate::TaskContext& ctx);
-#ifdef LEGATE_USE_OPENMP
-  static void omp_variant(legate::TaskContext& ctx);
-#endif
-#ifdef LEGATE_USE_CUDA
-  static void gpu_variant(legate::TaskContext& context);
-#endif
-};
-
 // Element-wise multiplication.
 class ElemwiseMultCSRCSRNNZ : public SparseTask<ElemwiseMultCSRCSRNNZ> {
  public:

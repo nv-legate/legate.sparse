@@ -1252,55 +1252,10 @@ class csr_array(CompressedBase, DenseSparseBase):
         else:
             raise NotImplementedError
         assert self.shape == other.shape
+        # TODO (rohany): I'm adding this in here so that I remember to
+        #  add tests for this once I am able.
         require_float64_dtypes(self, other)
-        # Create the assemble query result array.
-        q_nnz = ctx.create_store(nnz_ty, shape=(self.shape[0]))
-        task = ctx.create_task(SparseOpCode.ADD_CSR_CSR_NNZ)
-        task.add_output(q_nnz)
-        self._add_to_task(task, input=True, vals=False)
-        other._add_to_task(task, input=True, vals=False)
-        task.add_scalar_arg(self.shape[1], types.int64)
-        # Partitioning.
-        task.add_alignment(q_nnz, self.pos)
-        task.add_alignment(self.pos, other.pos)
-        task.add_image_constraint(
-            self.pos, self.crd, range=True, functor=CompressedImagePartition
-        )
-        task.add_image_constraint(
-            other.pos, other.crd, range=True, functor=CompressedImagePartition
-        )
-        task.execute()
-
-        pos, nnz = self.nnz_to_pos(q_nnz)
-        crd = ctx.create_store(coord_ty, shape=(nnz))
-        vals = ctx.create_store(self.dtype, shape=(nnz))
-
-        task = ctx.create_task(SparseOpCode.ADD_CSR_CSR)
-        task.add_output(pos)
-        task.add_output(crd)
-        task.add_output(vals)
-        self._add_to_task(task)
-        other._add_to_task(task)
-        task.add_scalar_arg(self.shape[1], types.int64)
-        # Partitioning.
-        task.add_alignment(pos, self.pos)
-        task.add_alignment(self.pos, other.pos)
-        task.add_image_constraint(
-            pos, crd, range=True, functor=CompressedImagePartition
-        )
-        task.add_image_constraint(
-            self.pos, self.crd, range=True, functor=CompressedImagePartition
-        )
-        task.add_image_constraint(
-            other.pos, other.crd, range=True, functor=CompressedImagePartition
-        )
-        task.add_alignment(crd, vals)
-        task.add_alignment(self.crd, self.vals)
-        task.add_alignment(other.crd, other.vals)
-        # Make sure that we get pos in READ_WRITE mode.
-        task.add_input(pos)
-        task.execute()
-        return csr_array((vals, crd, pos), shape=self.shape)
+        return add(*cast_to_common_type(self, other))
 
     # rmatmul represents the operation other @ self.
     def __rmatmul__(self, other):
@@ -1473,6 +1428,64 @@ def spmv(A: csr_array, x: cunumeric.ndarray, y: cunumeric.ndarray):
             functor=MinMaxImagePartition,
         )
     task.execute()
+
+
+def add(B: csr_array, C: csr_array) -> csr_array:
+    # Create the assemble query result array.
+    shape = B.shape
+    q_nnz = ctx.create_store(nnz_ty, shape=(shape[0]))
+    task = ctx.create_task(SparseOpCode.ADD_CSR_CSR_NNZ)
+    task.add_output(q_nnz)
+    task.add_input(B.pos)
+    task.add_input(B.crd)
+    task.add_input(C.pos)
+    task.add_input(C.crd)
+    task.add_scalar_arg(shape[1], types.int64)
+    # Partitioning.
+    task.add_alignment(q_nnz, B.pos)
+    task.add_alignment(B.pos, C.pos)
+    task.add_image_constraint(
+        B.pos, B.crd, range=True, functor=CompressedImagePartition
+    )
+    task.add_image_constraint(
+        C.pos, C.crd, range=True, functor=CompressedImagePartition
+    )
+    task.execute()
+
+    pos, nnz = CompressedBase.nnz_to_pos_cls(q_nnz)
+    crd = ctx.create_store(coord_ty, shape=(nnz,))
+    vals = ctx.create_store(B.dtype, shape=(nnz,))
+
+    task = ctx.create_task(SparseOpCode.ADD_CSR_CSR)
+    task.add_output(pos)
+    task.add_output(crd)
+    task.add_output(vals)
+    task.add_input(B.pos)
+    task.add_input(B.crd)
+    task.add_input(B.vals)
+    task.add_input(C.pos)
+    task.add_input(C.crd)
+    task.add_input(C.vals)
+    task.add_scalar_arg(shape[1], types.int64)
+    # Partitioning.
+    task.add_alignment(pos, B.pos)
+    task.add_alignment(B.pos, C.pos)
+    task.add_image_constraint(
+        pos, crd, range=True, functor=CompressedImagePartition
+    )
+    task.add_image_constraint(
+        B.pos, B.crd, range=True, functor=CompressedImagePartition
+    )
+    task.add_image_constraint(
+        C.pos, C.crd, range=True, functor=CompressedImagePartition
+    )
+    task.add_alignment(crd, vals)
+    task.add_alignment(B.crd, B.vals)
+    task.add_alignment(C.crd, C.vals)
+    # Make sure that we get pos in READ_WRITE mode.
+    task.add_input(pos)
+    task.execute()
+    return csr_array((vals, crd, pos), shape=shape, dtype=B.dtype)
 
 
 csr_matrix = csr_array
