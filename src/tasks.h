@@ -317,17 +317,6 @@ class ExpandPosToCoordinates : public SparseTask<ExpandPosToCoordinates> {
 };
 
 // Tasks for conversion to dense arrays.
-class CSRToDense : public SparseTask<CSRToDense> {
- public:
-  static const int TASK_ID = LEGATE_SPARSE_CSR_TO_DENSE;
-  static void cpu_variant(legate::TaskContext& ctx);
-#ifdef LEGATE_USE_OPENMP
-  static void omp_variant(legate::TaskContext& ctx);
-#endif
-#ifdef LEGATE_USE_CUDA
-  static void gpu_variant(legate::TaskContext& context);
-#endif
-};
 
 class CSCToDense : public SparseTask<CSCToDense> {
  public:
