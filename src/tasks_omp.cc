@@ -17,8 +17,6 @@
 #include "sparse.h"
 #include "distal_utils.h"
 #include "tasks.h"
-#include "sort.h"
-#include "sort_template.inl"
 
 #include <omp.h>
 
@@ -1103,13 +1101,6 @@ void EuclideanCDist::omp_variant(legate::TaskContext& ctx)
       out_acc[{i, j}] = sqrt(diff);
     }
   }
-}
-
-void SortByKey::omp_variant(legate::TaskContext& ctx)
-{
-  auto kind = Sparse::has_numamem ? Memory::SOCKET_MEM : Memory::SYSTEM_MEM;
-  auto exec = thrust::omp::par;
-  SortBody<coord_ty, val_ty, decltype(exec)>(ctx, kind, exec);
 }
 
 void VecMultAdd::omp_variant(legate::TaskContext& ctx)

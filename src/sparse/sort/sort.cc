@@ -16,6 +16,7 @@
 
 #include "sparse/sort/sort.h"
 #include "sparse/sort/sort_template.inl"
+#include "sparse/sort/sort_cpu_template.inl"
 
 #include <core/comm/coll.h>
 
