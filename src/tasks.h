@@ -490,22 +490,6 @@ class EuclideanCDist : public SparseTask<EuclideanCDist> {
 #endif
 };
 
-// SortByKey sorts a set of key regions and a value region.
-// Out of an input `n` regions, the first `n-1` regions are
-// zipped together to be a key to sort the value region `n`.
-// SortByKey operates in place.
-class SortByKey : public SparseTask<SortByKey> {
- public:
-  static const int TASK_ID = LEGATE_SPARSE_SORT_BY_KEY;
-  static void cpu_variant(legate::TaskContext& ctx);
-#ifdef LEGATE_USE_OPENMP
-  static void omp_variant(legate::TaskContext& ctx);
-#endif
-#ifdef LEGATE_USE_CUDA
-  static void gpu_variant(legate::TaskContext& ctx);
-#endif
-};
-
 class VecMultAdd : public SparseTask<VecMultAdd> {
  public:
   static const int TASK_ID = LEGATE_SPARSE_VEC_MULT_ADD;
