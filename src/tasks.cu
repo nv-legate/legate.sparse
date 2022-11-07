@@ -65,47 +65,6 @@ cusparseSpMatDescr_t makeCuSparseCSR(Store& pos, Store& crd, size_t cols)
   return matDescr;
 }
 
-cusparseDnMatDescr_t makeCuSparseDenseMat(Store& mat)
-{
-  auto d = mat.domain();
-
-  // TODO (rohany): If we need to do this somewhere else I'll extract it into
-  //  a helper method as well. The annoyance of having to extract the stride
-  //  as well is not worth it currently.
-  // Change how we get the pointer based on the privilege of the input store.
-  val_ty* valsPtr = nullptr;
-  size_t ld       = 0;
-  if (mat.is_writable() && mat.is_readable()) {
-    auto acc = mat.read_write_accessor<val_ty, 2>();
-    valsPtr  = acc.ptr(d.lo());
-    ld       = acc.accessor.strides[0] / sizeof(val_ty);
-  } else if (mat.is_writable() && !mat.is_readable()) {
-    auto acc = mat.write_accessor<val_ty, 2>();
-    valsPtr  = acc.ptr(d.lo());
-    ld       = acc.accessor.strides[0] / sizeof(val_ty);
-  } else if (!mat.is_writable() && mat.is_readable()) {
-    auto acc = mat.read_accessor<val_ty, 2>();
-    valsPtr  = const_cast<val_ty*>(acc.ptr(d.lo()));
-    ld       = acc.accessor.strides[0] / sizeof(val_ty);
-  } else if (mat.is_reducible()) {
-    auto acc = mat.reduce_accessor<SumReduction<val_ty>, true /* exclusive */, 2>();
-    valsPtr  = acc.ptr(d.lo());
-    ld       = acc.accessor.strides[0] / sizeof(val_ty);
-  } else {
-    assert(false);
-  }
-
-  cusparseDnMatDescr_t matDescr;
-  CHECK_CUSPARSE(cusparseCreateDnMat(&matDescr,
-                                     d.hi()[0] - d.lo()[0] + 1, /* rows */
-                                     d.hi()[1] - d.lo()[1] + 1, /* columns */
-                                     ld,
-                                     (void*)valsPtr,
-                                     cuda_val_ty,
-                                     CUSPARSE_ORDER_ROW));
-  return matDescr;
-}
-
 __global__ void tropical_spmv_kernel(size_t rows,
                                      coord_ty offset,
                                      coord_ty num_fields,
@@ -1423,84 +1382,6 @@ void ElemwiseMultCSRDense::gpu_variant(legate::TaskContext& ctx)
                                                                               B_crd_acc,
                                                                               B_vals_acc,
                                                                               C_vals_acc);
-  CHECK_CUDA_STREAM(stream);
-}
-
-__global__ void CSRtoDenseKernel(size_t rows,
-                                 Rect<1> bounds,
-                                 AccessorRW<val_ty, 2> A_vals_acc,
-                                 AccessorRO<Rect<1>, 1> B_pos_acc,
-                                 AccessorRO<coord_ty, 1> B_crd_acc,
-                                 AccessorRO<val_ty, 1> B_vals_acc)
-{
-  const auto idx = global_tid_1d();
-  if (idx >= rows) return;
-  coord_ty i = idx + bounds.lo[0];
-  for (coord_ty j_pos = B_pos_acc[i].lo; j_pos < B_pos_acc[i].hi + 1; j_pos++) {
-    auto j             = B_crd_acc[j_pos];
-    A_vals_acc[{i, j}] = B_vals_acc[j_pos];
-  }
-}
-
-void CSRToDense::gpu_variant(legate::TaskContext& ctx)
-{
-  auto& A_vals = ctx.outputs()[0];
-  auto& B_pos  = ctx.inputs()[0];
-  auto& B_crd  = ctx.inputs()[1];
-  auto& B_vals = ctx.inputs()[2];
-
-  // We have to promote the pos region for the auto-parallelizer to kick in,
-  // so remove the transformation before proceeding.
-  if (B_pos.transformed()) { B_pos.remove_transform(); }
-
-  // Break out early if the iteration space partition is empty.
-  if (B_pos.domain().empty()) { return; }
-
-  auto stream = get_cached_stream();
-
-  // If we are running on an old cuSPARSE version, then we don't
-  // have access to many cuSPARSE functions. In that case, use
-  // a hand-written version.
-#if (CUSPARSE_VER_MAJOR < 11 || CUSPARSE_VER_MINOR < 2)
-  auto B_domain = B_pos.domain();
-  auto rows     = B_domain.hi()[0] - B_domain.lo()[0] + 1;
-  auto blocks   = get_num_blocks_1d(rows);
-  CSRtoDenseKernel<<<blocks, THREADS_PER_BLOCK, 0, stream>>>(
-    rows,
-    Rect<1>(B_domain.lo(), B_domain.hi()),
-    A_vals.read_write_accessor<val_ty, 2>(),
-    B_pos.read_accessor<Rect<1>, 1>(),
-    B_crd.read_accessor<coord_ty, 1>(),
-    B_vals.read_accessor<val_ty, 1>());
-#else
-  // Get context sensitive objects.
-  auto handle = get_cusparse();
-  CHECK_CUSPARSE(cusparseSetStream(handle, stream));
-
-  // Construct our cuSPARSE matrices.
-  auto A_domain = A_vals.domain();
-  auto cusparse_A = makeCuSparseDenseMat(A_vals);
-  auto cusparse_B =
-    makeCuSparseCSR(B_pos, B_crd, B_vals, A_domain.hi()[1] - A_domain.lo()[1] + 1 /* cols */);
-
-  // Finally make the cuSPARSE calls.
-  size_t bufSize = 0;
-  CHECK_CUSPARSE(cusparseSparseToDense_bufferSize(
-    handle, cusparse_B, cusparse_A, CUSPARSE_SPARSETODENSE_ALG_DEFAULT, &bufSize));
-  // Allocate a buffer if we need to.
-  void* workspacePtr = nullptr;
-  if (bufSize > 0) {
-    DeferredBuffer<char, 1> buf({0, bufSize - 1}, Memory::GPU_FB_MEM);
-    workspacePtr = buf.ptr(0);
-  }
-  // Finally do the conversion.
-  CHECK_CUSPARSE(cusparseSparseToDense(
-    handle, cusparse_B, cusparse_A, CUSPARSE_SPARSETODENSE_ALG_DEFAULT, workspacePtr));
-  // Destroy the created objects.
-  CHECK_CUSPARSE(cusparseDestroyDnMat(cusparse_A));
-  CHECK_CUSPARSE(cusparseDestroySpMat(cusparse_B));
-#endif
-
   CHECK_CUDA_STREAM(stream);
 }
 

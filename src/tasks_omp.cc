@@ -794,46 +794,6 @@ void ElemwiseMultCSRDense::omp_variant(legate::TaskContext& ctx)
   }
 }
 
-// CSRToDense was adapted from DISTAL generated code.
-// A(i, j) = B(i, j)
-// Schedule:
-// distribute({i}, {io}, {ii}, pieces)
-// parallelize(ii, CPUThread, NoRaces)
-void CSRToDense::omp_variant(legate::TaskContext& ctx)
-{
-  auto& A_vals = ctx.outputs()[0];
-  auto& B_pos  = ctx.inputs()[0];
-  auto& B_crd  = ctx.inputs()[1];
-  auto& B_vals = ctx.inputs()[2];
-
-  // We have to promote the pos region for the auto-parallelizer to kick in,
-  // so remove the transformation before proceeding.
-  if (B_pos.transformed()) { B_pos.remove_transform(); }
-
-  auto A_vals_acc = A_vals.write_accessor<val_ty, 2>();
-  auto B_pos_acc  = B_pos.read_accessor<Rect<1>, 1>();
-  auto B_crd_acc  = B_crd.read_accessor<coord_ty, 1>();
-  auto B_vals_acc = B_vals.read_accessor<val_ty, 1>();
-
-  // Initialize the output array.
-  auto A_domain = A_vals.domain();
-  auto A_lo     = A_domain.lo();
-  auto A_hi     = A_domain.hi();
-#pragma omp parallel for schedule(static) collapse(2)
-  for (coord_ty i = A_lo[0]; i < A_hi[0] + 1; i++) {
-    for (coord_ty j = A_lo[1]; j < A_hi[1] + 1; j++) { A_vals_acc[{i, j}] = 0.0; }
-  }
-
-  auto B_domain = B_pos.domain();
-#pragma omp parallel for schedule(monotonic : dynamic, 128)
-  for (coord_ty i = B_domain.lo()[0]; i < B_domain.hi()[0] + 1; i++) {
-    for (size_t jB = B_pos_acc[i].lo; jB < B_pos_acc[i].hi + 1; jB++) {
-      auto j             = B_crd_acc[jB];
-      A_vals_acc[{i, j}] = B_vals_acc[jB];
-    }
-  }
-}
-
 // CSCToDense was adapted from DISTAL generated code.
 // A(i, j) = B(i, j)
 // Schedule:

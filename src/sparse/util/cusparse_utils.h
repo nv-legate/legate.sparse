@@ -192,6 +192,46 @@ cusparseDnVecDescr_t makeCuSparseDenseVec(const legate::Store& vec)
   return vecDescr;
 }
 
+// makeCuSparseDenseMat creates a cuSparse dense vector from an input store.
+template <typename VAL_TY = double>
+cusparseDnMatDescr_t makeCuSparseDenseMat(const legate::Store& mat)
+{
+  auto d = mat.domain();
+
+  // Change how we get the pointer based on the privilege of the input store.
+  VAL_TY* valsPtr = nullptr;
+  size_t ld       = 0;
+  if (mat.is_writable() && mat.is_readable()) {
+    auto acc = mat.read_write_accessor<VAL_TY, 2>();
+    valsPtr  = acc.ptr(d.lo());
+    ld       = acc.accessor.strides[0] / sizeof(VAL_TY);
+  } else if (mat.is_writable() && !mat.is_readable()) {
+    auto acc = mat.write_accessor<VAL_TY, 2>();
+    valsPtr  = acc.ptr(d.lo());
+    ld       = acc.accessor.strides[0] / sizeof(VAL_TY);
+  } else if (!mat.is_writable() && mat.is_readable()) {
+    auto acc = mat.read_accessor<VAL_TY, 2>();
+    valsPtr  = const_cast<VAL_TY*>(acc.ptr(d.lo()));
+    ld       = acc.accessor.strides[0] / sizeof(VAL_TY);
+  } else if (mat.is_reducible()) {
+    auto acc = mat.reduce_accessor<Legion::SumReduction<VAL_TY>, true /* exclusive */, 2>();
+    valsPtr  = acc.ptr(d.lo());
+    ld       = acc.accessor.strides[0] / sizeof(VAL_TY);
+  } else {
+    assert(false);
+  }
+
+  cusparseDnMatDescr_t matDescr;
+  CHECK_CUSPARSE(cusparseCreateDnMat(&matDescr,
+                                     d.hi()[0] - d.lo()[0] + 1, /* rows */
+                                     d.hi()[1] - d.lo()[1] + 1, /* columns */
+                                     ld,
+                                     (void*)valsPtr,
+                                     cusparseDataType<VAL_TY>(),
+                                     CUSPARSE_ORDER_ROW));
+  return matDescr;
+}
+
 // cast is a small utility kernel to cast an array of one type into another.
 template <typename T1, typename T2>
 __global__ void cast(size_t elems, T1* out, const T2* in)
