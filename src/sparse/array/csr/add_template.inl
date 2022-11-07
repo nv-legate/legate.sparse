@@ -82,7 +82,12 @@ template <VariantKind KIND>
 static void add_csr_csr_nnz_template(TaskContext& context)
 {
   auto& inputs = context.inputs();
-  AddCSRCSRNNZArgs args{context.outputs()[0], inputs[0], inputs[1], inputs[2], inputs[3]};
+  AddCSRCSRNNZArgs args{context.outputs()[0],
+                        inputs[0],
+                        inputs[1],
+                        inputs[2],
+                        inputs[3],
+                        context.scalars()[0].value<int64_t>()};
   index_type_dispatch(args.B_crd.code(), AddCSRCSRNNZImpl<KIND>{}, args);
 }
 
@@ -99,7 +104,8 @@ static void add_csr_csr_template(TaskContext& context)
                      inputs[2],
                      inputs[3],
                      inputs[4],
-                     inputs[5]};
+                     inputs[5],
+                     context.scalars()[0].value<int64_t>()};
   index_type_value_type_dispatch(
     args.A_crd.code(), args.A_vals.code(), AddCSRCSRImpl<KIND>{}, args);
 }

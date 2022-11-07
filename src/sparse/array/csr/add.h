@@ -28,6 +28,7 @@ struct AddCSRCSRNNZArgs {
   const legate::Store& B_crd;
   const legate::Store& C_pos;
   const legate::Store& C_crd;
+  const int64_t cols;
 };
 
 class AddCSRCSRNNZ : public SparseTask<AddCSRCSRNNZ> {
@@ -52,6 +53,7 @@ struct AddCSRCSRArgs {
   const legate::Store& C_pos;
   const legate::Store& C_crd;
   const legate::Store& C_vals;
+  const int64_t cols;
 };
 
 class AddCSRCSR : public SparseTask<AddCSRCSR> {

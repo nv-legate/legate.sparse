@@ -192,4 +192,23 @@ cusparseDnVecDescr_t makeCuSparseDenseVec(const legate::Store& vec)
   return vecDescr;
 }
 
+// cast is a small utility kernel to cast an array of one type into another.
+template <typename T1, typename T2>
+__global__ void cast(size_t elems, T1* out, const T2* in)
+{
+  const auto idx = global_tid_1d();
+  if (idx >= elems) return;
+  out[idx] = T1(in[idx]);
+}
+
+// localIndPtrToNnz is a utility kernel to turn a cuSPARSE computed
+// indptr array into an nnz array.
+template <typename T>
+__global__ void localIndptrToNnz(size_t rows, uint64_t* out, T* in)
+{
+  const auto idx = global_tid_1d();
+  if (idx >= rows) return;
+  out[idx] = in[idx + 1] - in[idx];
+}
+
 }  // namespace sparse
