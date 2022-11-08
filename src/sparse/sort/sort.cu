@@ -129,10 +129,15 @@ struct SampleSorter<VariantKind::GPU, INDEX_TY, VAL_TY, Policy, Comm> {
                                          size_t my_rank,
                                          size_t num_ranks,
                                          Legion::Memory::Kind mem,
-                                         Comm* comm)
+                                         Comm* comm_ptr)
   {
     auto stream   = get_cached_stream();
     size_t volume = local_sorted.size;
+    // To make the template dispatch work out, we take a pointer
+    // to a communicator. However, the communicator we get from
+    // the context is already a ncclComm_t*, so we have to do
+    // one dereference here to make the types work out.
+    auto comm = *comm_ptr;
 
     // collect local samples - for now we take num_ranks samples for every node
     // worst case this leads to 2*N/ranks elements on a single node
@@ -359,7 +364,7 @@ struct SampleSorter<VariantKind::GPU, INDEX_TY, VAL_TY, Policy, Comm> {
   auto stream = get_cached_stream();
   ThrustAllocator alloc(Memory::GPU_FB_MEM);
   auto policy = thrust::cuda::par(alloc).on(stream);
-  sort_by_key_template<VariantKind::GPU, decltype(policy), ncclComm_t>(
+  sort_by_key_template<VariantKind::GPU, decltype(policy), ncclComm_t*>(
     ctx, policy, Memory::GPU_FB_MEM);
   CHECK_CUDA_STREAM(stream);
 }
