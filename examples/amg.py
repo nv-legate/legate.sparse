@@ -415,12 +415,7 @@ def cycle(levels, lvl, x, b):
     coarse_x = levels[lvl].coarse_x_alloc
 
     if lvl == len(levels) - 2:
-        # FIXME: cuNumeric's solve takes forever to converge, so
-        # we fall back to NumPy's solve until that's fixed.
-        # np.linalg.solve(levels[-1].dense_A, coarse_b, out=coarse_x)
-        coarse_x = numpy.linalg.solve(
-            levels[-1].dense_A.__array__(), coarse_b.__array__()
-        )
+        np.linalg.solve(levels[-1].dense_A, coarse_b, out=coarse_x)
     else:
         cycle(levels, lvl + 1, coarse_x, coarse_b)
 
