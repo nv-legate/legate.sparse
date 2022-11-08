@@ -218,7 +218,6 @@ class coo_array(CompressedBase):
     def tocsr(self, copy=False):
         if copy:
             raise NotImplementedError
-        require_float64_dtypes(self)
 
         # We'll try a different (and parallel) approach here. First, we'll sort
         # the data using key (row, column), and sort the values accordingly.
@@ -241,7 +240,6 @@ class coo_array(CompressedBase):
         # The input stores need to all be aligned.
         task.add_alignment(self._i, self._j)
         task.add_alignment(self._i, self._vals)
-        # TODO (rohany): Change this once we have a GPU implementation.
         if runtime.num_gpus > 1:
             task.add_nccl_communicator()
         elif runtime.num_gpus == 0:
@@ -254,11 +252,11 @@ class coo_array(CompressedBase):
         # each partition.
         num_procs = runtime.num_procs
         # TODO (rohany): If I try to partition this on really small inputs
-        # (like size 0 or 1 stores) across multiple processors, I see some
-        # sparse non-deterministic failures. I haven't root caused these, and
-        # I'm running out of time to figure them out. It seems just not
-        # partitioning the input on these really small matrices side-steps the
-        # underlying issue.
+        #  (like size 0 or 1 stores) across multiple processors, I see some
+        #  sparse non-deterministic failures. I haven't root caused these, and
+        #  I'm running out of time to figure them out. It seems just not
+        #  partitioning the input on these really small matrices side-steps the
+        #  underlying issue.
         if rows_store.shape[0] <= num_procs:
             num_procs = 1
         row_tiling = (rows_store.shape[0] + num_procs - 1) // num_procs
@@ -302,18 +300,18 @@ class coo_array(CompressedBase):
         task.add_scalar_arg(self.shape[0], types.int64)
         task.execute()
         # TODO (rohany): On small inputs, it appears that I get a
-        # non-deterministic failure, which appears either as a segfault or an
-        # incorrect output. This appears to show up only an OpenMP processors,
-        # and appears when running the full test suite with 4 opemps and 2
-        # openmp threads. My notes from debugging this are as follows:
-        #  * The result of the sort appears to be correct.
-        #  * We start with a valid COO matrix.
-        #  * Adding print statements make the bug much harder to reproduce.
-        #  * In particular, the bug is harder to reproduce when q_nnz is
-        #    printed out before the `self.nnz_to_pos(q_nnz)` line here.
-        #  * If q_nnz is printed out after the `self.nnz_to_pos(q_nnz)` line,
-        #    then the computation looks correct but an incorrect pos array is
-        #    generated.
+        #  non-deterministic failure, which appears either as a segfault or an
+        #  incorrect output. This appears to show up only an OpenMP processors,
+        #  and appears when running the full test suite with 4 opemps and 2
+        #  openmp threads. My notes from debugging this are as follows:
+        #   * The result of the sort appears to be correct.
+        #   * We start with a valid COO matrix.
+        #   * Adding print statements make the bug much harder to reproduce.
+        #   * In particular, the bug is harder to reproduce when q_nnz is
+        #     printed out before the `self.nnz_to_pos(q_nnz)` line here.
+        #   * If q_nnz is printed out after the `self.nnz_to_pos(q_nnz)` line,
+        #     then the computation looks correct but an incorrect pos array is
+        #     generated.
 
         pos, _ = self.nnz_to_pos(q_nnz)
         return sparse.csr_array(
@@ -323,7 +321,6 @@ class coo_array(CompressedBase):
     def tocsc(self, copy=False):
         if copy:
             raise NotImplementedError
-        require_float64_dtypes(self)
         # The strategy for CSC conversion is the same as COO conversion, we'll
         # just sort by the columns and then the rows.
         rows_store = ctx.create_store(self._i.type, ndim=1)
@@ -354,11 +351,11 @@ class coo_array(CompressedBase):
         # each partition.
         num_procs = runtime.num_procs
         # TODO (rohany): If I try to partition this on really small inputs
-        # (like size 0 or 1 stores) across multiple processors, I see some
-        # sparse non-deterministic failures. I haven't root caused these, and
-        # I'm running out of time to figure them out. It seems just not
-        # partitioning the input on these really small matrices side-steps the
-        # underlying issue.
+        #  (like size 0 or 1 stores) across multiple processors, I see some
+        #  sparse non-deterministic failures. I haven't root caused these, and
+        #  I'm running out of time to figure them out. It seems just not
+        #  partitioning the input on these really small matrices side-steps the
+        #  underlying issue.
         if cols_store.shape[0] <= num_procs:
             num_procs = 1
         col_tiling = (cols_store.shape[0] + num_procs - 1) // num_procs
