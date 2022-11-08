@@ -20,7 +20,6 @@ from legate.core.shape import Shape
 
 from .config import SparseOpCode
 from .runtime import ctx, runtime
-from .types import float64
 from .utils import (
     factor_int,
     get_store_from_cunumeric_array,
@@ -48,19 +47,20 @@ def cdist(XA, XB, metric="euclidean", *, out=None, **kwargs):
     XB_store = get_store_from_cunumeric_array(XB)
     # We'll launch over a 2-D grid, parallelizing over tiles of the
     # output matrix.
-    output = ctx.create_store(float64, shape=(XA.shape[0], XB.shape[0]))
+    output = get_store_from_cunumeric_array(
+        cunumeric.zeros((XA.shape[0], XB.shape[0]), dtype=cunumeric.float64)
+    )
     num_procs = runtime.num_procs
     grid = Shape(factor_int(num_procs))
     x_tiling = (output.shape[0] + grid[0] - 1) // grid[0]
     y_tiling = (output.shape[1] + grid[1] - 1) // grid[1]
+    output_part = output.partition(Tiling(Shape((x_tiling, y_tiling)), grid))
 
     task = ctx.create_manual_task(
         SparseOpCode.EUCLIDEAN_CDIST, launch_domain=Rect(hi=grid)
     )
     # First, we partition the output into tiles.
-    task.add_output(
-        output.partition(Tiling(Shape((x_tiling, y_tiling)), grid))
-    )
+    task.add_output(output_part)
     # For each output tile, we need the corresponding set of rows in XA. We'll
     # do this creating a disjoint partition over just the grid[0] color space,
     # and adding a projection functor on the launch space to pick corresponding
@@ -79,5 +79,7 @@ def cdist(XA, XB, metric="euclidean", *, out=None, **kwargs):
         ),
         proj=lambda p: (p[1], 0),
     )
+    # Add the output as an input again to get the zeroed data.
+    task.add_input(output_part)
     task.execute()
     return store_to_cunumeric_array(output)
