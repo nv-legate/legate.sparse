@@ -19,9 +19,7 @@
 // Useful for IDEs.
 #include "sparse/array/csr/add.h"
 #include "sparse/util/dispatch.h"
-
-// TODO (rohany): Put this somewhere...
-typedef uint64_t nnz_ty;
+#include "sparse/util/typedefs.h"
 
 namespace sparse {
 

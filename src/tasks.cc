@@ -836,61 +836,6 @@ void COOToDense::cpu_variant(legate::TaskContext& ctx)
   }
 }
 
-void DenseToCSRNNZ::cpu_variant(legate::TaskContext& ctx)
-{
-  auto& nnz    = ctx.outputs()[0];
-  auto& B_vals = ctx.inputs()[0];
-
-  // We have to promote the nnz region for the auto-parallelizer to kick in,
-  // so remove the transformation before proceeding.
-  if (nnz.transformed()) { nnz.remove_transform(); }
-
-  auto nnz_acc    = nnz.write_accessor<nnz_ty, 1>();
-  auto B_vals_acc = B_vals.read_accessor<val_ty, 2>();
-
-  auto dom = B_vals.domain();
-  auto lo  = dom.lo();
-  auto hi  = dom.hi();
-  for (coord_ty i = lo[0]; i < hi[0] + 1; i++) {
-    uint64_t row_nnz = 0;
-    for (coord_ty j = lo[1]; j < hi[1] + 1; j++) {
-      if (B_vals_acc[{i, j}] != 0.0) { row_nnz++; }
-    }
-    nnz_acc[i] = row_nnz;
-  }
-}
-
-void DenseToCSR::cpu_variant(legate::TaskContext& ctx)
-{
-  auto& A_pos  = ctx.outputs()[0];
-  auto& A_crd  = ctx.outputs()[1];
-  auto& A_vals = ctx.outputs()[2];
-  auto& B_vals = ctx.inputs()[0];
-
-  // We have to promote the pos region for the auto-parallelizer to kick in,
-  // so remove the transformation before proceeding.
-  if (A_pos.transformed()) { A_pos.remove_transform(); }
-
-  auto A_pos_acc  = A_pos.read_write_accessor<Rect<1>, 1>();
-  auto A_crd_acc  = A_crd.write_accessor<coord_ty, 1>();
-  auto A_vals_acc = A_vals.write_accessor<val_ty, 1>();
-  auto B_vals_acc = B_vals.read_accessor<val_ty, 2>();
-
-  auto dom = B_vals.domain();
-  auto lo  = dom.lo();
-  auto hi  = dom.hi();
-  for (coord_ty i = lo[0]; i < hi[0] + 1; i++) {
-    int nnz_pos = A_pos_acc[i].lo;
-    for (coord_ty j = lo[1]; j < hi[1] + 1; j++) {
-      if (B_vals_acc[{i, j}] != 0.0) {
-        A_crd_acc[nnz_pos]  = j;
-        A_vals_acc[nnz_pos] = B_vals_acc[{i, j}];
-        nnz_pos++;
-      }
-    }
-  }
-}
-
 void DenseToCSCNNZ::cpu_variant(legate::TaskContext& ctx)
 {
   auto& nnz    = ctx.outputs()[0];
@@ -1364,8 +1309,6 @@ static void __attribute__((constructor)) register_tasks(void)
 
   sparse::CSCToDense::register_variants();
   sparse::COOToDense::register_variants();
-  sparse::DenseToCSRNNZ::register_variants();
-  sparse::DenseToCSR::register_variants();
   sparse::DenseToCSCNNZ::register_variants();
   sparse::DenseToCSC::register_variants();
   sparse::DIAToCSRNNZ::register_variants();
