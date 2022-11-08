@@ -191,11 +191,13 @@ def test_csr_dense_elemwise_mul(filename):
 
 
 @pytest.mark.parametrize("filename", test_mtx_files)
-def test_csr_elemwise_add(filename):
-    arr = legate_io.mmread(filename)
-    s = sci_io.mmread(filename)
-    res_legate = arr.tocsr() + csr_array(np.roll(arr.todense(), 1))
-    res_scipy = s.tocsr() + scpy.csr_array(np.roll(s.toarray(), 1))
+@pytest.mark.parametrize("b_type", types)
+@pytest.mark.parametrize("c_type", types)
+def test_csr_elemwise_add(filename, b_type, c_type):
+    arr = legate_io.mmread(filename).tocsr().astype(b_type)
+    s = sci_io.mmread(filename).tocsr().astype(b_type)
+    res_legate = arr + csr_array(np.roll(arr.todense().astype(c_type), 1))
+    res_scipy = s + scpy.csr_array(np.roll(s.toarray().astype(c_type), 1))
     assert np.allclose(res_legate.todense(), res_scipy.todense())
 
 

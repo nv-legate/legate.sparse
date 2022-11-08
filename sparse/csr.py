@@ -104,7 +104,6 @@ class csr_array(CompressedBase, DenseSparseBase):
         if isinstance(arg, cunumeric.ndarray):
             assert arg.ndim == 2
             shape = arg.shape
-
             # Conversion from dense arrays is pretty easy. We'll do a row-wise
             # distribution and use a two-pass algorithm that first counts the
             # non-zeros per row and then fills them in.
@@ -993,9 +992,13 @@ class csr_array(CompressedBase, DenseSparseBase):
     def todense(self, order=None, out=None):
         if order is not None:
             raise NotImplementedError
-        require_float64_dtypes(self, out)
         if out is not None:
             out = cunumeric.array(out)
+            if out.dtype != self.dtype:
+                raise ValueError(
+                    f"Output type {out.dtype} is not consistent "
+                    f"with dtype {self.dtype}"
+                )
             out = get_store_from_cunumeric_array(out)
         elif out is None:
             out = ctx.create_store(self.dtype, shape=self.shape)
@@ -1252,9 +1255,6 @@ class csr_array(CompressedBase, DenseSparseBase):
         else:
             raise NotImplementedError
         assert self.shape == other.shape
-        # TODO (rohany): I'm adding this in here so that I remember to
-        #  add tests for this once I am able.
-        require_float64_dtypes(self, other)
         return add(*cast_to_common_type(self, other))
 
     # rmatmul represents the operation other @ self.
