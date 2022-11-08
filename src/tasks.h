@@ -336,30 +336,6 @@ class COOToDense : public SparseTask<COOToDense> {
   static void cpu_variant(legate::TaskContext& ctx);
 };
 
-class DenseToCSRNNZ : public SparseTask<DenseToCSRNNZ> {
- public:
-  static const int TASK_ID = LEGATE_SPARSE_DENSE_TO_CSR_NNZ;
-  static void cpu_variant(legate::TaskContext& ctx);
-#ifdef LEGATE_USE_OPENMP
-  static void omp_variant(legate::TaskContext& ctx);
-#endif
-#ifdef LEGATE_USE_CUDA
-  static void gpu_variant(legate::TaskContext& context);
-#endif
-};
-
-class DenseToCSR : public SparseTask<DenseToCSR> {
- public:
-  static const int TASK_ID = LEGATE_SPARSE_DENSE_TO_CSR;
-  static void cpu_variant(legate::TaskContext& ctx);
-#ifdef LEGATE_USE_OPENMP
-  static void omp_variant(legate::TaskContext& ctx);
-#endif
-#ifdef LEGATE_USE_CUDA
-  static void gpu_variant(legate::TaskContext& context);
-#endif
-};
-
 class DenseToCSCNNZ : public SparseTask<DenseToCSCNNZ> {
  public:
   static const int TASK_ID = LEGATE_SPARSE_DENSE_TO_CSC_NNZ;

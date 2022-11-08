@@ -78,7 +78,6 @@ constexpr decltype(auto) index_type_dispatch(legate::LegateTypeCode index_type,
                                              Functor f,
                                              Fnargs&&... args)
 {
-  // First dispatch onto the index type.
   switch (index_type) {
     case legate::LegateTypeCode::INT32_LT: {
       return f.template operator()<legate::LegateTypeCode::INT32_LT>(std::forward<Fnargs>(args)...);
@@ -90,6 +89,33 @@ constexpr decltype(auto) index_type_dispatch(legate::LegateTypeCode index_type,
   }
   assert(false);
   return f.template operator()<legate::LegateTypeCode::INT32_LT>(std::forward<Fnargs>(args)...);
+}
+
+template <typename Functor, typename... Fnargs>
+constexpr decltype(auto) value_type_dispatch(legate::LegateTypeCode value_type,
+                                             Functor f,
+                                             Fnargs&&... args)
+{
+  switch (value_type) {
+    case legate::LegateTypeCode::FLOAT_LT: {
+      return f.template operator()<legate::LegateTypeCode::FLOAT_LT>(std::forward<Fnargs>(args)...);
+    }
+    case legate::LegateTypeCode::DOUBLE_LT: {
+      return f.template operator()<legate::LegateTypeCode::DOUBLE_LT>(
+        std::forward<Fnargs>(args)...);
+    }
+    case legate::LegateTypeCode::COMPLEX64_LT: {
+      return f.template operator()<legate::LegateTypeCode::COMPLEX64_LT>(
+        std::forward<Fnargs>(args)...);
+    }
+    case legate::LegateTypeCode::COMPLEX128_LT: {
+      return f.template operator()<legate::LegateTypeCode::COMPLEX128_LT>(
+        std::forward<Fnargs>(args)...);
+    }
+    default: break;
+  }
+  assert(false);
+  return f.template operator()<legate::LegateTypeCode::FLOAT_LT>(std::forward<Fnargs>(args)...);
 }
 
 }  // namespace sparse
