@@ -518,6 +518,9 @@ if __name__ == "__main__":
     else:
         # A = poisson2D(num_nodes).tocsr()
         A = diffusion2D(num_nodes, epsilon=0.1, theta=np.pi / 4).tocsr()
+    # Make sure all random state gets initialized before we do any
+    # timing, as the first call to random can be expensive.
+    float(np.max(np.random.random((A.shape[0],))))
 
     start_build = time()
     B = np.ones((A.shape[0], 1))
