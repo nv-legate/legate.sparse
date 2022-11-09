@@ -891,106 +891,6 @@ void DenseToCSC::cpu_variant(legate::TaskContext& ctx)
   }
 }
 
-void DIAToCSRNNZ::cpu_variant(legate::TaskContext& ctx)
-{
-  assert(ctx.is_single_task());
-  auto& nnz       = ctx.outputs()[0];
-  auto& B_offsets = ctx.inputs()[0];
-  auto& B_data    = ctx.inputs()[1];
-
-  auto nnz_acc       = nnz.write_accessor<nnz_ty, 1>();
-  auto B_offsets_acc = B_offsets.read_accessor<coord_ty, 1>();
-  auto B_data_acc    = B_data.read_accessor<val_ty, 2>();
-
-  auto m = ctx.scalars()[0].value<int64_t>();
-  auto n = ctx.scalars()[1].value<int64_t>();
-
-  // Initialize the nnz array.
-  for (PointInDomainIterator<1> itr(nnz.domain()); itr(); itr++) { nnz_acc[*itr] = 0; }
-
-  auto data_domain = B_data.domain();
-  // Figure out the number of non-zeros per row.
-  for (PointInDomainIterator<1> offsets_itr(B_offsets.domain()); offsets_itr(); offsets_itr++) {
-    auto offset   = B_offsets_acc[*offsets_itr];
-    int64_t col   = 0;
-    int64_t row   = 0;
-    int64_t start = data_domain.lo()[1];
-    int64_t end   = data_domain.hi()[1] + 1;
-    if (offset > 0) {
-      col += offset;
-      start += offset;
-    } else {
-      row += (-offset);
-      end = m + offset;
-    }
-    for (int64_t k = start; k < end; k++) {
-      if (row >= m || col >= n) break;
-      auto elem = B_data_acc[{*offsets_itr, k}];
-      if (elem != 0.0) { nnz_acc[row]++; }
-      col++;
-      row++;
-    }
-  }
-}
-
-void DIAToCSR::cpu_variant(legate::TaskContext& ctx)
-{
-  assert(ctx.is_single_task());
-  auto& A_pos     = ctx.outputs()[0];
-  auto& A_crd     = ctx.outputs()[1];
-  auto& A_vals    = ctx.outputs()[2];
-  auto& B_offsets = ctx.inputs()[0];
-  auto& B_data    = ctx.inputs()[1];
-
-  auto A_pos_acc     = A_pos.read_write_accessor<Rect<1>, 1>();
-  auto A_crd_acc     = A_crd.write_accessor<coord_ty, 1>();
-  auto A_vals_acc    = A_vals.write_accessor<val_ty, 1>();
-  auto B_offsets_acc = B_offsets.read_accessor<int64_t, 1>();
-  auto B_data_acc    = B_data.read_accessor<val_ty, 2>();
-
-  int m = ctx.scalars()[0].value<int64_t>();
-  int n = ctx.scalars()[1].value<int64_t>();
-
-  auto data_domain = B_data.domain();
-  for (PointInDomainIterator<1> offsets_itr(B_offsets.domain()); offsets_itr(); offsets_itr++) {
-    auto offset   = B_offsets_acc[*offsets_itr];
-    int64_t col   = 0;
-    int64_t row   = 0;
-    int64_t start = data_domain.lo()[1];
-    int64_t end   = data_domain.hi()[1] + 1;
-    if (offset > 0) {
-      col += offset;
-      start += offset;
-    } else {
-      row += (-offset);
-      end = m + offset;
-    }
-    for (int64_t k = start; k < end; k++) {
-      if (row >= m || col >= n) break;
-      auto elem = B_data_acc[{*offsets_itr, k}];
-      if (elem != 0.0) {
-        auto j_pos        = A_pos_acc[row].lo;
-        A_pos_acc[row].lo = A_pos_acc[row].lo + 1;
-        A_crd_acc[j_pos]  = col;
-        A_vals_acc[j_pos] = elem;
-      }
-      col++;
-      row++;
-    }
-  }
-
-  // TODO (rohany): Note that we do this differently than in DISTAL, where we
-  //  always allocate a temporary ghost region, so we can iterate in standard order.
-  // Finalize the changes to the pos array.
-  for (int64_t it = A_pos.domain().hi()[0]; it >= 0; it--) {
-    if (it == 0) {
-      A_pos_acc[0].lo = 0;
-    } else {
-      A_pos_acc[it].lo = A_pos_acc[it - 1].lo;
-    }
-  }
-}
-
 void ZipToRect1::cpu_variant(legate::TaskContext& ctx)
 {
   auto& output = ctx.outputs()[0];
@@ -1311,8 +1211,6 @@ static void __attribute__((constructor)) register_tasks(void)
   sparse::COOToDense::register_variants();
   sparse::DenseToCSCNNZ::register_variants();
   sparse::DenseToCSC::register_variants();
-  sparse::DIAToCSRNNZ::register_variants();
-  sparse::DIAToCSR::register_variants();
   sparse::BoundsFromPartitionedCoordinates::register_variants();
   sparse::SortedCoordsToCounts::register_variants();
   sparse::ExpandPosToCoordinates::register_variants();

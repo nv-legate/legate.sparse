@@ -360,24 +360,6 @@ class DenseToCSC : public SparseTask<DenseToCSC> {
 #endif
 };
 
-class DIAToCSRNNZ : public SparseTask<DIAToCSRNNZ> {
- public:
-  static const int TASK_ID = LEGATE_SPARSE_DIA_TO_CSR_NNZ;
-  static void cpu_variant(legate::TaskContext& ctx);
-#ifdef LEGATE_USE_OPENMP
-  static void omp_variant(legate::TaskContext& ctx) { DIAToCSRNNZ::cpu_variant(ctx); }
-#endif
-};
-
-class DIAToCSR : public SparseTask<DIAToCSR> {
- public:
-  static const int TASK_ID = LEGATE_SPARSE_DIA_TO_CSR;
-  static void cpu_variant(legate::TaskContext& ctx);
-#ifdef LEGATE_USE_OPENMP
-  static void omp_variant(legate::TaskContext& ctx) { DIAToCSR::cpu_variant(ctx); }
-#endif
-};
-
 // Utility tasks.
 class ZipToRect1 : public SparseTask<ZipToRect1> {
  public:
