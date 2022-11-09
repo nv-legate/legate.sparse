@@ -104,6 +104,7 @@ include(cmake/Modules/set_cpu_arch_flags.cmake)
 set_cpu_arch_flags(legate_sparse_CXX_OPTIONS)
 
 list(APPEND legate_sparse_SOURCES
+  src/sparse/array/conv/coo_to_dense.cc
   src/sparse/array/conv/csr_to_dense.cc
   src/sparse/array/conv/dense_to_csr.cc
   src/sparse/array/csc/spmv.cc

@@ -330,12 +330,6 @@ class CSCToDense : public SparseTask<CSCToDense> {
 #endif
 };
 
-class COOToDense : public SparseTask<COOToDense> {
- public:
-  static const int TASK_ID = LEGATE_SPARSE_COO_TO_DENSE;
-  static void cpu_variant(legate::TaskContext& ctx);
-};
-
 class DenseToCSCNNZ : public SparseTask<DenseToCSCNNZ> {
  public:
   static const int TASK_ID = LEGATE_SPARSE_DENSE_TO_CSC_NNZ;

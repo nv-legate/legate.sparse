@@ -815,27 +815,6 @@ void CSCToDense::cpu_variant(legate::TaskContext& ctx)
   }
 }
 
-void COOToDense::cpu_variant(legate::TaskContext& ctx)
-{
-  auto& result_store = ctx.outputs()[0];
-  auto& rows_store   = ctx.inputs()[0];
-  auto& cols_store   = ctx.inputs()[1];
-  auto& vals_store   = ctx.inputs()[2];
-  assert(ctx.is_single_task());
-
-  auto result = result_store.write_accessor<val_ty, 2>();
-  auto rows   = rows_store.read_accessor<coord_ty, 1>();
-  auto cols   = cols_store.read_accessor<coord_ty, 1>();
-  auto vals   = vals_store.read_accessor<val_ty, 1>();
-  auto dom    = rows_store.domain();
-  for (coord_ty pos = dom.lo()[0]; pos < dom.hi()[0] + 1; pos++) {
-    auto i         = rows[pos];
-    auto j         = cols[pos];
-    auto val       = vals[pos];
-    result[{i, j}] = val;
-  }
-}
-
 void DenseToCSCNNZ::cpu_variant(legate::TaskContext& ctx)
 {
   auto& nnz    = ctx.outputs()[0];
@@ -1208,7 +1187,6 @@ static void __attribute__((constructor)) register_tasks(void)
   sparse::CSCSDDMM::register_variants();
 
   sparse::CSCToDense::register_variants();
-  sparse::COOToDense::register_variants();
   sparse::DenseToCSCNNZ::register_variants();
   sparse::DenseToCSC::register_variants();
   sparse::BoundsFromPartitionedCoordinates::register_variants();

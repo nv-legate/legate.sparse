@@ -64,7 +64,6 @@ from .types import coord_ty, nnz_ty
 from .utils import (
     cast_arr,
     get_store_from_cunumeric_array,
-    require_float64_dtypes,
     store_to_cunumeric_array,
 )
 
@@ -86,13 +85,13 @@ class coo_array(CompressedBase):
             #  think that this is a valid python thing to do.
             arr = sparse.csr_array(arg).tocoo()
             shape = arr.shape
-            data = cast_arr(arr._vals, dtype=dtype)
+            data = cast_arr(arr._vals, dtype=arg.dtype)
             row = cast_arr(arr._i, dtype=coord_ty)
             col = cast_arr(arr._j, dtype=coord_ty)
         elif isinstance(arg, scipy.sparse.coo_array):
             # TODO (rohany): Not sure yet how to handle duplicates.
             shape = arg.shape
-            data = cunumeric.array(arg.data, dtype=dtype)
+            data = cunumeric.array(arg.data, dtype=arg.dtype)
             row = cunumeric.array(arg.row, dtype=coord_ty)
             col = cunumeric.array(arg.col, dtype=coord_ty)
         else:
@@ -405,7 +404,6 @@ class coo_array(CompressedBase):
         )
 
     def todense(self):
-        require_float64_dtypes(self)
         result = cunumeric.zeros(self.shape, dtype=self.dtype)
         result_store = get_store_from_cunumeric_array(result)
         task = ctx.create_task(SparseOpCode.COO_TO_DENSE)
