@@ -1624,32 +1624,6 @@ void DenseToCSC::gpu_variant(legate::TaskContext& ctx)
   // CHECK_CUSPARSE(cusparseDestroyDnMat(cusparse_B));
 }
 
-__global__ void unzip_rect1_kernel(size_t elems, int64_t* lo, int64_t* hi, const Rect<1>* in)
-{
-  const auto idx = global_tid_1d();
-  if (idx >= elems) return;
-  lo[idx] = in[idx].lo;
-  hi[idx] = in[idx].hi;
-}
-
-void UnZipRect1::gpu_variant(legate::TaskContext& ctx)
-{
-  auto& lo    = ctx.outputs()[0];
-  auto& hi    = ctx.outputs()[1];
-  auto& in    = ctx.inputs()[0];
-  auto dom    = in.domain();
-  auto elems  = dom.get_volume();
-  auto blocks = get_num_blocks_1d(elems);
-  if (blocks == 0) return;
-  auto stream = get_cached_stream();
-  unzip_rect1_kernel<<<blocks, THREADS_PER_BLOCK, 0, stream>>>(
-    elems,
-    lo.write_accessor<int64_t, 1>().ptr(lo.domain().lo()),
-    hi.write_accessor<int64_t, 1>().ptr(hi.domain().lo()),
-    in.read_accessor<Rect<1>, 1>().ptr(in.domain().lo()));
-  CHECK_CUDA_STREAM(stream);
-}
-
 void FastImageRange::gpu_variant(legate::TaskContext& ctx)
 {
   auto& input  = ctx.inputs()[0];
