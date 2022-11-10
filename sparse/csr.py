@@ -390,6 +390,32 @@ class csr_array(CompressedBase, DenseSparseBase):
                 other = other.squeeze(1)
                 other_originally_2d = True
 
+            # The SpMV code uses an image from the coordinates into the
+            # other vector to reduce the amount of communication needed,
+            # see below for more details. When the other vector is
+            # transformed, we can't do this optimization without an affine
+            # transformation on the image. Worse, when some more complicated
+            # transforms have been applied to the input vector, we may end
+            # up sending a sliced instance to the cuSPARSE tasks that is not
+            # a contiguous piece of memory. So, when the input vector is
+            # transformed, make a temporary copy into a contiguous instance
+            # to allow for both the image optimization and to sidestep any
+            # problems with leaf tasks. It seems like part of the problem
+            # would be alleviated to use an `exact` mapping in the legate
+            # sparse mapper, but this still seems like a better solution
+            # as we would avoid replication of the other vector when it is
+            # transformed.
+            other_store = get_store_from_cunumeric_array(other)
+            if other_store.transformed:
+                level = find_last_user_stacklevel()
+                warnings.warn(
+                    "CSR SpMV creating an implicit copy due to "
+                    "transformed x vector.",
+                    category=RuntimeWarning,
+                    stacklevel=level,
+                )
+                other = cunumeric.array(other)
+
             # Coerce A and x into a common type. Use that coerced type
             # to find the type of the output.
             A, x = cast_to_common_type(self, other)
@@ -1401,32 +1427,16 @@ def spmv(A: csr_array, x: cunumeric.ndarray, y: cunumeric.ndarray):
     # we ensure that only the necessary pieces of data are
     # communicated. In many common sparse matrix patterns, this can
     # result in an asymptotic decrease in the amount of communication.
-    # This is a bit of a hassle (requires some data copying and
-    # reorganization to get the coordinates correct) when the input
-    # store has been transformed, so we'll just avoid this case for
-    # now.
-    if x_store.transformed:
-        # So we don't get blind-sided by this again, issue a warning
-        level = find_last_user_stacklevel()
-        warnings.warn(
-            "SpMV not using image optimization due to reshaped x in "
-            "y=Ax. This will cause performance and memory usage to "
-            "suffer as you scale.",
-            category=RuntimeWarning,
-            stacklevel=level,
-        )
-        task.add_broadcast(x_store)
-    else:
-        # The image of the selected coordinates into other vector is
-        # not complete or disjoint.
-        task.add_image_constraint(
-            A.crd,
-            x_store,
-            range=False,
-            disjoint=False,
-            complete=False,
-            functor=MinMaxImagePartition,
-        )
+    # The image of the selected coordinates into other vector is
+    # not complete or disjoint.
+    task.add_image_constraint(
+        A.crd,
+        x_store,
+        range=False,
+        disjoint=False,
+        complete=False,
+        functor=MinMaxImagePartition,
+    )
     task.execute()
 
 
