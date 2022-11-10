@@ -1148,23 +1148,6 @@ void SortedCoordsToCounts::gpu_variant(legate::TaskContext& ctx)
   CHECK_CUDA_STREAM(stream);
 }
 
-void ExpandPosToCoordinates::gpu_variant(legate::TaskContext& ctx)
-{
-  auto& pos    = ctx.inputs()[0];
-  auto& result = ctx.outputs()[0];
-  auto stream  = get_cached_stream();
-  auto kind    = Memory::GPU_FB_MEM;
-  ThrustAllocator alloc(kind);
-  auto policy = thrust::cuda::par(alloc).on(stream);
-  ExpandPosToCoordinates::expand_pos_impl(policy,
-                                          pos.read_accessor<Rect<1>, 1>(),
-                                          pos.domain(),
-                                          result.write_accessor<coord_ty, 1>(),
-                                          result.domain(),
-                                          kind);
-  CHECK_CUDA_STREAM(stream);
-}
-
 __global__ void elementwise_mult_csr_csr_nnz_kernel(size_t rows,
                                                     Rect<1> iterBounds,
                                                     AccessorWO<nnz_ty, 1> nnz,
