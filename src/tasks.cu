@@ -1650,29 +1650,6 @@ void UnZipRect1::gpu_variant(legate::TaskContext& ctx)
   CHECK_CUDA_STREAM(stream);
 }
 
-__global__ void scale_rect1_kernel(size_t elems, Rect<1>* out, int64_t scale)
-{
-  const auto idx = global_tid_1d();
-  if (idx >= elems) return;
-  out[idx].lo = out[idx].lo + scale;
-  out[idx].hi = out[idx].hi + scale;
-}
-
-void ScaleRect1::gpu_variant(legate::TaskContext& ctx)
-{
-  auto& out   = ctx.outputs()[0];
-  auto task   = ctx.task_;
-  auto scale  = task->futures[0].get_result<int64_t>();
-  auto dom    = out.domain();
-  auto elems  = dom.get_volume();
-  auto blocks = get_num_blocks_1d(elems);
-  if (blocks == 0) return;
-  auto stream = get_cached_stream();
-  scale_rect1_kernel<<<blocks, THREADS_PER_BLOCK, 0, stream>>>(
-    elems, out.read_write_accessor<Rect<1>, 1>().ptr(dom.lo()), scale);
-  CHECK_CUDA_STREAM(stream);
-}
-
 void FastImageRange::gpu_variant(legate::TaskContext& ctx)
 {
   auto& input  = ctx.inputs()[0];

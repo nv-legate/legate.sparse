@@ -878,64 +878,6 @@ void DenseToCSC::omp_variant(legate::TaskContext& ctx)
   }
 }
 
-void UnZipRect1::omp_variant(legate::TaskContext& ctx)
-{
-  auto bounds = ctx.inputs()[0].domain();
-  if (bounds.empty()) return;
-  if (ctx.outputs()[0].dim() == 1) {
-    auto out1 = ctx.outputs()[0].write_accessor<int64_t, 1>();
-    auto out2 = ctx.outputs()[1].write_accessor<int64_t, 1>();
-    auto in   = ctx.inputs()[0].read_accessor<Rect<1>, 1>();
-#pragma omp parallel for schedule(static)
-    for (int64_t i = bounds.lo()[0]; i < bounds.hi()[0] + 1; i++) {
-      auto rect = in[i];
-      out1[i]   = rect.lo;
-      out2[i]   = rect.hi;
-    }
-  } else if (ctx.outputs()[0].dim() == 2) {
-    auto out1 = ctx.outputs()[0].write_accessor<int64_t, 2>();
-    auto out2 = ctx.outputs()[1].write_accessor<int64_t, 2>();
-    auto in   = ctx.inputs()[0].read_accessor<Rect<1>, 2>();
-#pragma omp parallel for schedule(static) collapse(2)
-    for (int64_t i = bounds.lo()[0]; i < bounds.hi()[0] + 1; i++) {
-      for (int64_t j = bounds.lo()[1]; j < bounds.hi()[1] + 1; j++) {
-        auto rect    = in[{i, j}];
-        out1[{i, j}] = rect.lo;
-        out2[{i, j}] = rect.hi;
-      }
-    }
-  } else {
-    assert(ctx.outputs()[0].dim() == 3);
-    auto out1 = ctx.outputs()[0].write_accessor<int64_t, 3>();
-    auto out2 = ctx.outputs()[1].write_accessor<int64_t, 3>();
-    auto in   = ctx.inputs()[0].read_accessor<Rect<1>, 3>();
-#pragma omp parallel for schedule(static) collapse(3)
-    for (int64_t i = bounds.lo()[0]; i < bounds.hi()[0] + 1; i++) {
-      for (int64_t j = bounds.lo()[1]; j < bounds.hi()[1] + 1; j++) {
-        for (int64_t k = bounds.lo()[2]; k < bounds.hi()[2] + 1; k++) {
-          auto rect       = in[{i, j, k}];
-          out1[{i, j, k}] = rect.lo;
-          out2[{i, j, k}] = rect.hi;
-        }
-      }
-    }
-  }
-}
-
-void ScaleRect1::omp_variant(legate::TaskContext& ctx)
-{
-  auto bounds = ctx.outputs()[0].domain();
-  if (bounds.empty()) return;
-  auto out   = ctx.outputs()[0].read_write_accessor<Rect<1>, 1>();
-  auto task  = ctx.task_;
-  auto scale = task->futures[0].get_result<int64_t>();
-#pragma omp parallel for schedule(static)
-  for (int64_t i = bounds.lo()[0]; i < bounds.hi()[0] + 1; i++) {
-    out[i].lo = out[i].lo + scale;
-    out[i].hi = out[i].hi + scale;
-  }
-}
-
 void FastImageRange::omp_variant(legate::TaskContext& ctx)
 {
   auto& input  = ctx.inputs()[0];
