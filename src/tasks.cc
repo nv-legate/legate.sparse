@@ -858,19 +858,6 @@ void DenseToCSC::cpu_variant(legate::TaskContext& ctx)
   }
 }
 
-void ZipToRect1::cpu_variant(legate::TaskContext& ctx)
-{
-  auto& output = ctx.outputs()[0];
-  if (output.domain().empty()) return;
-  auto output_acc = output.write_accessor<Rect<1>, 1>();
-  auto lo         = ctx.inputs()[0].read_accessor<uint64_t, 1>();
-  auto hi         = ctx.inputs()[1].read_accessor<uint64_t, 1>();
-
-  for (PointInDomainIterator<1> itr(output.domain()); itr(); itr++) {
-    output_acc[*itr] = {lo[*itr], hi[*itr] - 1};
-  }
-}
-
 void UnZipRect1::cpu_variant(legate::TaskContext& ctx)
 {
   if (ctx.outputs()[0].domain().empty()) return;
@@ -1180,7 +1167,6 @@ static void __attribute__((constructor)) register_tasks(void)
   sparse::BoundsFromPartitionedCoordinates::register_variants();
   sparse::SortedCoordsToCounts::register_variants();
 
-  sparse::ZipToRect1::register_variants();
   sparse::UnZipRect1::register_variants();
   sparse::ScaleRect1::register_variants();
   sparse::UpcastFutureToRegion::register_variants();
