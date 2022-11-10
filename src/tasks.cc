@@ -858,52 +858,6 @@ void DenseToCSC::cpu_variant(legate::TaskContext& ctx)
   }
 }
 
-void UnZipRect1::cpu_variant(legate::TaskContext& ctx)
-{
-  if (ctx.outputs()[0].domain().empty()) return;
-  if (ctx.outputs()[0].dim() == 1) {
-    auto out1 = ctx.outputs()[0].write_accessor<int64_t, 1>();
-    auto out2 = ctx.outputs()[1].write_accessor<int64_t, 1>();
-    auto in   = ctx.inputs()[0].read_accessor<Rect<1>, 1>();
-    for (PointInDomainIterator<1> itr(ctx.inputs()[0].domain()); itr(); itr++) {
-      auto rect  = in[*itr];
-      out1[*itr] = rect.lo;
-      out2[*itr] = rect.hi;
-    }
-  } else if (ctx.outputs()[0].dim() == 2) {
-    auto out1 = ctx.outputs()[0].write_accessor<int64_t, 2>();
-    auto out2 = ctx.outputs()[1].write_accessor<int64_t, 2>();
-    auto in   = ctx.inputs()[0].read_accessor<Rect<1>, 2>();
-    for (PointInDomainIterator<2> itr(ctx.inputs()[0].domain()); itr(); itr++) {
-      auto rect  = in[*itr];
-      out1[*itr] = rect.lo;
-      out2[*itr] = rect.hi;
-    }
-  } else {
-    assert(ctx.outputs()[0].dim() == 3);
-    auto out1 = ctx.outputs()[0].write_accessor<int64_t, 3>();
-    auto out2 = ctx.outputs()[1].write_accessor<int64_t, 3>();
-    auto in   = ctx.inputs()[0].read_accessor<Rect<1>, 3>();
-    for (PointInDomainIterator<3> itr(ctx.inputs()[0].domain()); itr(); itr++) {
-      auto rect  = in[*itr];
-      out1[*itr] = rect.lo;
-      out2[*itr] = rect.hi;
-    }
-  }
-}
-
-void ScaleRect1::cpu_variant(legate::TaskContext& ctx)
-{
-  if (ctx.outputs()[0].domain().empty()) return;
-  auto out   = ctx.outputs()[0].read_write_accessor<Rect<1>, 1>();
-  auto task  = ctx.task_;
-  auto scale = task->futures[0].get_result<int64_t>();
-  for (PointInDomainIterator<1> itr(ctx.outputs()[0].domain()); itr(); itr++) {
-    out[*itr].lo = out[*itr].lo + scale;
-    out[*itr].hi = out[*itr].hi + scale;
-  }
-}
-
 template <typename T>
 void UpcastFutureToRegion::cpu_variant_impl(legate::TaskContext& ctx)
 {
@@ -1167,8 +1121,6 @@ static void __attribute__((constructor)) register_tasks(void)
   sparse::BoundsFromPartitionedCoordinates::register_variants();
   sparse::SortedCoordsToCounts::register_variants();
 
-  sparse::UnZipRect1::register_variants();
-  sparse::ScaleRect1::register_variants();
   sparse::UpcastFutureToRegion::register_variants();
   sparse::FastImageRange::register_variants();
 

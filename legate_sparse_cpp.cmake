@@ -112,6 +112,8 @@ list(APPEND legate_sparse_SOURCES
   src/sparse/array/csr/add.cc
   src/sparse/array/csr/get_diagonal.cc
   src/sparse/array/csr/spmv.cc
+  src/sparse/array/util/scale_rect.cc
+  src/sparse/array/util/unzip_rect.cc
   src/sparse/array/util/zip_to_rect.cc
   src/sparse/mapper/mapper.cc
   src/sparse/sort/sort.cc
@@ -131,6 +133,8 @@ if(Legion_USE_OpenMP)
     src/sparse/array/csr/add_omp.cc
     src/sparse/array/csr/get_diagonal_omp.cc
     src/sparse/array/csr/spmv_omp.cc
+    src/sparse/array/util/scale_rect_omp.cc
+    src/sparse/array/util/unzip_rect_omp.cc
     src/sparse/array/util/zip_to_rect_omp.cc
     src/sparse/sort/sort_omp.cc
 
@@ -149,6 +153,8 @@ if(Legion_USE_CUDA)
     src/sparse/array/csr/get_diagonal.cu
     src/sparse/array/csr/add.cu
     src/sparse/array/csr/spmv.cu
+    src/sparse/array/util/scale_rect.cu
+    src/sparse/array/util/unzip_rect.cu
     src/sparse/array/util/zip_to_rect.cu
     src/sparse/sort/sort.cu
 
