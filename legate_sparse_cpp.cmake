@@ -115,6 +115,7 @@ list(APPEND legate_sparse_SOURCES
   src/sparse/array/util/scale_rect.cc
   src/sparse/array/util/unzip_rect.cc
   src/sparse/array/util/zip_to_rect.cc
+  src/sparse/io/mtx_to_coo.cc
   src/sparse/mapper/mapper.cc
   src/sparse/sort/sort.cc
 

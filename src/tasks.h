@@ -293,12 +293,6 @@ class FastImageRange : public SparseTask<FastImageRange> {
 #endif
 };
 
-class ReadMTXToCOO : public SparseTask<ReadMTXToCOO> {
- public:
-  static const int TASK_ID = LEGATE_SPARSE_READ_MTX_TO_COO;
-  static void cpu_variant(legate::TaskContext& ctx);
-};
-
 class EuclideanCDist : public SparseTask<EuclideanCDist> {
  public:
   static const int TASK_ID = LEGATE_SPARSE_EUCLIDEAN_CDIST;
