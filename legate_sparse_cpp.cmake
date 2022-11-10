@@ -118,6 +118,7 @@ list(APPEND legate_sparse_SOURCES
   src/sparse/io/mtx_to_coo.cc
   src/sparse/mapper/mapper.cc
   src/sparse/sort/sort.cc
+  src/sparse/util/upcast_future.cc
 
   src/projections.cc
   src/quantum.cc

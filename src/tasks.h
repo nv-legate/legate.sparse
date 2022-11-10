@@ -271,16 +271,6 @@ class DenseToCSC : public SparseTask<DenseToCSC> {
 
 // Utility tasks.
 
-class UpcastFutureToRegion : public SparseTask<UpcastFutureToRegion> {
- public:
-  static const int TASK_ID = LEGATE_SPARSE_UPCAST_FUTURE_TO_REGION;
-  static void cpu_variant(legate::TaskContext& ctx);
-
- private:
-  template <typename T>
-  static void cpu_variant_impl(legate::TaskContext& ctx);
-};
-
 class FastImageRange : public SparseTask<FastImageRange> {
  public:
   static const int TASK_ID = LEGATE_SPARSE_FAST_IMAGE_RANGE;

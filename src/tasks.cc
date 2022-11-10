@@ -856,66 +856,6 @@ void DenseToCSC::cpu_variant(legate::TaskContext& ctx)
   }
 }
 
-template <typename T>
-void UpcastFutureToRegion::cpu_variant_impl(legate::TaskContext& ctx)
-{
-  auto& in_fut = ctx.inputs()[0];
-  const T* src;
-  T* dst;
-  switch (in_fut.dim()) {
-    case 0: {
-      // Futures can be 0-dimensional. legate doesn't appear to complain
-      // if we make a 1-D accessor of a 0-D "store".
-      dst = ctx.outputs()[0].write_accessor<T, 1>().ptr(0);
-      src = ctx.inputs()[0].read_accessor<T, 1>().ptr(0);
-      break;
-    }
-    case 1: {
-      dst = ctx.outputs()[0].write_accessor<T, 1>().ptr(0);
-      src = ctx.inputs()[0].read_accessor<T, 1>().ptr(0);
-      break;
-    }
-    case 2: {
-      dst = ctx.outputs()[0].write_accessor<T, 2>().ptr({0, 0});
-      src = ctx.inputs()[0].read_accessor<T, 2>().ptr({0, 0});
-      break;
-    }
-    case 3: {
-      dst = ctx.outputs()[0].write_accessor<T, 3>().ptr({0, 0, 0});
-      src = ctx.inputs()[0].read_accessor<T, 3>().ptr({0, 0, 0});
-      break;
-    }
-  }
-  memcpy(dst, src, sizeof(T));
-}
-
-void UpcastFutureToRegion::cpu_variant(legate::TaskContext& ctx)
-{
-  assert(ctx.is_single_task());
-  auto future_size = ctx.scalars()[0].value<size_t>();
-  switch (future_size) {
-    case 1: {
-      UpcastFutureToRegion::cpu_variant_impl<uint8_t>(ctx);
-      break;
-    }
-    case 2: {
-      UpcastFutureToRegion::cpu_variant_impl<uint16_t>(ctx);
-      break;
-    }
-    case 4: {
-      UpcastFutureToRegion::cpu_variant_impl<uint32_t>(ctx);
-      break;
-    }
-    case 8: {
-      UpcastFutureToRegion::cpu_variant_impl<uint64_t>(ctx);
-      break;
-    }
-    default: {
-      assert(false);
-    }
-  }
-}
-
 void FastImageRange::cpu_variant(legate::TaskContext& ctx)
 {
   auto& input  = ctx.inputs()[0];
@@ -1010,7 +950,6 @@ static void __attribute__((constructor)) register_tasks(void)
   sparse::BoundsFromPartitionedCoordinates::register_variants();
   sparse::SortedCoordsToCounts::register_variants();
 
-  sparse::UpcastFutureToRegion::register_variants();
   sparse::FastImageRange::register_variants();
 
   sparse::EuclideanCDist::register_variants();
