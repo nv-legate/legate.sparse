@@ -271,18 +271,6 @@ class DenseToCSC : public SparseTask<DenseToCSC> {
 
 // Utility tasks.
 
-class FastImageRange : public SparseTask<FastImageRange> {
- public:
-  static const int TASK_ID = LEGATE_SPARSE_FAST_IMAGE_RANGE;
-  static void cpu_variant(legate::TaskContext& ctx);
-#ifdef LEGATE_USE_OPENMP
-  static void omp_variant(legate::TaskContext& ctx);
-#endif
-#ifdef LEGATE_USE_CUDA
-  static void gpu_variant(legate::TaskContext& context);
-#endif
-};
-
 class EuclideanCDist : public SparseTask<EuclideanCDist> {
  public:
   static const int TASK_ID = LEGATE_SPARSE_EUCLIDEAN_CDIST;

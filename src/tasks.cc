@@ -856,21 +856,6 @@ void DenseToCSC::cpu_variant(legate::TaskContext& ctx)
   }
 }
 
-void FastImageRange::cpu_variant(legate::TaskContext& ctx)
-{
-  auto& input  = ctx.inputs()[0];
-  auto& output = ctx.outputs()[0];
-  if (input.transformed()) { input.remove_transform(); }
-  auto in  = input.read_accessor<Rect<1>, 1>();
-  auto out = output.write_accessor<Domain, 1>();
-  auto dom = input.domain();
-  if (dom.empty()) {
-    out[0] = Rect<1>::make_empty();
-  } else {
-    out[0] = Rect<1>{in[dom.lo()].lo, in[dom.hi()].hi};
-  }
-}
-
 void EuclideanCDist::cpu_variant(legate::TaskContext& ctx)
 {
   auto& out = ctx.outputs()[0];
@@ -949,8 +934,6 @@ static void __attribute__((constructor)) register_tasks(void)
   sparse::DenseToCSC::register_variants();
   sparse::BoundsFromPartitionedCoordinates::register_variants();
   sparse::SortedCoordsToCounts::register_variants();
-
-  sparse::FastImageRange::register_variants();
 
   sparse::EuclideanCDist::register_variants();
 
