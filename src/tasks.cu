@@ -1624,31 +1624,6 @@ void DenseToCSC::gpu_variant(legate::TaskContext& ctx)
   // CHECK_CUSPARSE(cusparseDestroyDnMat(cusparse_B));
 }
 
-__global__ void zip_rect1_kernel(size_t elems, Rect<1>* out, const uint64_t* lo, const uint64_t* hi)
-{
-  const auto idx = global_tid_1d();
-  if (idx >= elems) return;
-  out[idx] = {lo[idx], hi[idx] - 1};
-}
-
-void ZipToRect1::gpu_variant(legate::TaskContext& ctx)
-{
-  auto& output       = ctx.outputs()[0];
-  auto& lo           = ctx.inputs()[0];
-  auto& hi           = ctx.inputs()[1];
-  auto output_domain = output.domain();
-  auto elems         = output_domain.get_volume();
-  auto blocks        = get_num_blocks_1d(elems);
-  if (blocks == 0) return;
-  auto stream = get_cached_stream();
-  zip_rect1_kernel<<<blocks, THREADS_PER_BLOCK, 0, stream>>>(
-    elems,
-    output.write_accessor<Rect<1>, 1>().ptr(output_domain.lo()),
-    lo.read_accessor<uint64_t, 1>().ptr(lo.domain().lo()),
-    hi.read_accessor<uint64_t, 1>().ptr(hi.domain().lo()));
-  CHECK_CUDA_STREAM(stream);
-}
-
 __global__ void unzip_rect1_kernel(size_t elems, int64_t* lo, int64_t* hi, const Rect<1>* in)
 {
   const auto idx = global_tid_1d();

@@ -878,20 +878,6 @@ void DenseToCSC::omp_variant(legate::TaskContext& ctx)
   }
 }
 
-void ZipToRect1::omp_variant(legate::TaskContext& ctx)
-{
-  auto& output = ctx.outputs()[0];
-  if (output.domain().empty()) return;
-  auto output_acc = output.write_accessor<Rect<1>, 1>();
-  auto lo         = ctx.inputs()[0].read_accessor<uint64_t, 1>();
-  auto hi         = ctx.inputs()[1].read_accessor<uint64_t, 1>();
-  auto bounds     = output.domain();
-#pragma omp parallel for schedule(static)
-  for (int64_t i = bounds.lo()[0]; i < bounds.hi()[0] + 1; i++) {
-    output_acc[i] = {lo[i], hi[i] - 1};
-  }
-}
-
 void UnZipRect1::omp_variant(legate::TaskContext& ctx)
 {
   auto bounds = ctx.inputs()[0].domain();
