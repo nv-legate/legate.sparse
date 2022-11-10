@@ -766,18 +766,6 @@ void SortedCoordsToCounts::cpu_variant(legate::TaskContext& ctx)
   for (PointInDomainIterator<1> itr(dom); itr(); itr++) { out[in[*itr]] <<= 1; }
 }
 
-void ExpandPosToCoordinates::cpu_variant(legate::TaskContext& ctx)
-{
-  auto& pos    = ctx.inputs()[0];
-  auto& result = ctx.outputs()[0];
-  ExpandPosToCoordinates::expand_pos_impl(thrust::host,
-                                          pos.read_accessor<Rect<1>, 1>(),
-                                          pos.domain(),
-                                          result.write_accessor<coord_ty, 1>(),
-                                          result.domain(),
-                                          Memory::SYSTEM_MEM);
-}
-
 // CSCToDense was adapted from DISTAL generated code.
 // A(i, j) = B(i, j)
 // Schedule:
@@ -1191,7 +1179,6 @@ static void __attribute__((constructor)) register_tasks(void)
   sparse::DenseToCSC::register_variants();
   sparse::BoundsFromPartitionedCoordinates::register_variants();
   sparse::SortedCoordsToCounts::register_variants();
-  sparse::ExpandPosToCoordinates::register_variants();
 
   sparse::ZipToRect1::register_variants();
   sparse::UnZipRect1::register_variants();

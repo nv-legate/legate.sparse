@@ -660,19 +660,6 @@ void SortedCoordsToCounts::omp_variant(legate::TaskContext& ctx)
   for (size_t i = 0; i < (result.first - keys.ptr(0)); i++) { out[keys[i]] <<= counts[i]; }
 }
 
-void ExpandPosToCoordinates::omp_variant(legate::TaskContext& ctx)
-{
-  auto& pos    = ctx.inputs()[0];
-  auto& result = ctx.outputs()[0];
-  ExpandPosToCoordinates::expand_pos_impl(
-    thrust::omp::par,
-    pos.read_accessor<Rect<1>, 1>(),
-    pos.domain(),
-    result.write_accessor<coord_ty, 1>(),
-    result.domain(),
-    Sparse::has_numamem ? Memory::SOCKET_MEM : Memory::SYSTEM_MEM);
-}
-
 // ElemwiseMultCSRCSRNNZ and ElemwiseMultCSRCSR are adapted from DISTAL generated code.
 // A(i, j) = B(i, j) + C(i, j)
 // Schedule:
