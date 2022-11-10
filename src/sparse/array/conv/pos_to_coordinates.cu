@@ -17,6 +17,7 @@
 #include "sparse/array/conv/pos_to_coordinates.h"
 #include "sparse/array/conv/pos_to_coordinates_template.inl"
 #include "cuda_help.h"
+#include "thrust_allocator.h"
 
 namespace sparse {
 
