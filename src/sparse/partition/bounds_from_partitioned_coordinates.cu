@@ -33,6 +33,7 @@ struct BoundsFromPartitionedCoordinatesImplBody<VariantKind::GPU, INDEX_CODE> {
                   AccessorRO<INDEX_TY, 1> input,
                   const Domain& dom)
   {
+    auto stream = get_cached_stream();
     if (dom.empty()) {
       auto result = Domain(Rect<1>::make_empty());
       auto ptr    = output.ptr(0);
@@ -46,15 +47,15 @@ struct BoundsFromPartitionedCoordinatesImplBody<VariantKind::GPU, INDEX_CODE> {
       auto policy = thrust::cuda::par(alloc).on(stream);
       auto ptr    = input.ptr(dom.lo());
       auto result = thrust::minmax_element(policy, ptr, ptr + dom.get_volume());
-      coord_ty lo, hi;
-      cudaMemcpy(&lo, result.first, sizeof(coord_ty), cudaMemcpyDeviceToHost);
-      cudaMemcpy(&hi, result.second, sizeof(coord_ty), cudaMemcpyDeviceToHost);
-      Domain output({lo, hi});
+      INDEX_TY lo, hi;
+      cudaMemcpy(&lo, result.first, sizeof(INDEX_TY), cudaMemcpyDeviceToHost);
+      cudaMemcpy(&hi, result.second, sizeof(INDEX_TY), cudaMemcpyDeviceToHost);
+      Domain output_dom({lo, hi});
       auto output_ptr = output.ptr(0);
 #ifdef LEGATE_NO_FUTURES_ON_FB
-      *output_ptr = output;
+      *output_ptr = output_dom;
 #else
-      cudaMemcpy(output_ptr, &output, sizeof(Domain), cudaMemcpyHostToDevice);
+      cudaMemcpy(output_ptr, &output_dom, sizeof(Domain), cudaMemcpyHostToDevice);
 #endif
     }
     CHECK_CUDA_STREAM(stream);
