@@ -244,18 +244,4 @@ class DenseToCSC : public SparseTask<DenseToCSC> {
 #endif
 };
 
-// Utility tasks.
-
-class EuclideanCDist : public SparseTask<EuclideanCDist> {
- public:
-  static const int TASK_ID = LEGATE_SPARSE_EUCLIDEAN_CDIST;
-  static void cpu_variant(legate::TaskContext& ctx);
-#ifdef LEGATE_USE_OPENMP
-  static void omp_variant(legate::TaskContext& ctx);
-#endif
-#ifdef LEGATE_USE_CUDA
-  static void gpu_variant(legate::TaskContext& context);
-#endif
-};
-
 }  // namespace sparse
