@@ -118,4 +118,23 @@ constexpr decltype(auto) value_type_dispatch(legate::LegateTypeCode value_type,
   return f.template operator()<legate::LegateTypeCode::FLOAT_LT>(std::forward<Fnargs>(args)...);
 }
 
+template <typename Functor, typename... Fnargs>
+constexpr decltype(auto) value_type_dispatch_no_complex(legate::LegateTypeCode value_type,
+                                                        Functor f,
+                                                        Fnargs&&... args)
+{
+  switch (value_type) {
+    case legate::LegateTypeCode::FLOAT_LT: {
+      return f.template operator()<legate::LegateTypeCode::FLOAT_LT>(std::forward<Fnargs>(args)...);
+    }
+    case legate::LegateTypeCode::DOUBLE_LT: {
+      return f.template operator()<legate::LegateTypeCode::DOUBLE_LT>(
+        std::forward<Fnargs>(args)...);
+    }
+    default: break;
+  }
+  assert(false);
+  return f.template operator()<legate::LegateTypeCode::FLOAT_LT>(std::forward<Fnargs>(args)...);
+}
+
 }  // namespace sparse

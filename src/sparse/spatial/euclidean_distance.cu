@@ -79,7 +79,7 @@ struct EuclideanCDistImplBody<VariantKind::GPU, VAL_CODE> {
     }
     {
       Pitches<1> pitches;
-      auto volume = pitches.flatten(iterBounds);
+      auto volume = pitches.flatten(out_rect);
       auto blocks = get_num_blocks_1d(volume);
       elementwise_sqrt<<<blocks, THREADS_PER_BLOCK, 0, stream>>>(volume, pitches, out_rect, out);
     }

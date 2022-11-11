@@ -51,7 +51,7 @@ static void euclidean_distance_template(TaskContext& context)
     inputs[0],
     inputs[1],
   };
-  value_type_dispatch(args.out.code(), EuclideanCDistImpl<KIND>{}, args);
+  value_type_dispatch_no_complex(args.out.code(), EuclideanCDistImpl<KIND>{}, args);
 }
 
 }  // namespace sparse
