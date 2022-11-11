@@ -72,10 +72,10 @@ struct ElemwiseMultCSRDenseArgsImplBody<VariantKind::GPU, INDEX_CODE, VAL_CODE> 
     // Find the offsets within the pos array that each coordinate should search for.
     DeferredBuffer<int64_t, 1> buf({0, blocks}, Memory::GPU_FB_MEM);
     taco_binarySearchBeforeBlockLaunch(stream,
-                                       B_pos_acc,
+                                       B_pos,
                                        buf.ptr(0),
-                                       B_rect.lo,
-                                       B_rect.hi,
+                                       B_pos_rect.lo,
+                                       B_pos_rect.hi,
                                        THREADS_PER_BLOCK,
                                        THREADS_PER_BLOCK,
                                        blocks,
