@@ -705,35 +705,4 @@ void ElemwiseMultCSRCSR::omp_variant(legate::TaskContext& ctx)
   }
 }
 
-void ElemwiseMultCSRDense::omp_variant(legate::TaskContext& ctx)
-{
-  auto& A_vals = ctx.outputs()[0];
-  auto& B_pos  = ctx.inputs()[0];
-  auto& B_crd  = ctx.inputs()[1];
-  auto& B_vals = ctx.inputs()[2];
-  auto& C_vals = ctx.inputs()[3];
-
-  // We have to promote the pos region for the auto-parallelizer to kick in,
-  // so remove the transformation before proceeding.
-  if (B_pos.transformed()) { B_pos.remove_transform(); }
-
-  auto A_vals_acc = A_vals.write_accessor<val_ty, 1>();
-  auto B_pos_acc  = B_pos.read_accessor<Rect<1>, 1>();
-  auto B_crd_acc  = B_crd.read_accessor<coord_ty, 1>();
-  auto B_vals_acc = B_vals.read_accessor<val_ty, 1>();
-  auto C_vals_acc = C_vals.read_accessor<val_ty, 2>();
-
-  // TODO (rohany) I'm starting with a row-based distribution here, though
-  //  a non-zero based parallelization scheme even within the rows allocated
-  //  to a particular processor could be used.
-  auto B_domain = B_pos.domain();
-#pragma omp parallel for schedule(monotonic : dynamic, 128)
-  for (coord_t i = B_domain.lo()[0]; i < B_domain.hi()[0] + 1; i++) {
-    for (size_t jB = B_pos_acc[i].lo; jB < B_pos_acc[i].hi + 1; jB++) {
-      coord_t j      = B_crd_acc[jB];
-      A_vals_acc[jB] = B_vals_acc[jB] * C_vals_acc[{i, j}];
-    }
-  }
-}
-
 }  // namespace sparse
