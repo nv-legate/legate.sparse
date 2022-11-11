@@ -1070,43 +1070,6 @@ void CSCSDDMM::gpu_variant(legate::TaskContext& ctx)
   CHECK_CUDA_STREAM(stream);
 }
 
-void BoundsFromPartitionedCoordinates::gpu_variant(legate::TaskContext& ctx)
-{
-  auto& input  = ctx.inputs()[0];
-  auto& output = ctx.outputs()[0];
-  assert(output.is_future());
-
-  auto stream     = get_cached_stream();
-  auto input_acc  = input.read_accessor<coord_ty, 1>();
-  auto output_acc = output.write_accessor<Domain, 1>();
-  auto dom        = input.domain();
-  if (dom.empty()) {
-    auto result = Domain(Rect<1>::make_empty());
-    auto ptr    = output_acc.ptr(0);
-#ifdef LEGATE_NO_FUTURES_ON_FB
-    *ptr = result;
-#else
-    cudaMemcpy(ptr, &result, sizeof(Domain), cudaMemcpyHostToDevice);
-#endif
-  } else {
-    ThrustAllocator alloc(Memory::GPU_FB_MEM);
-    auto policy = thrust::cuda::par(alloc).on(stream);
-    auto ptr    = input_acc.ptr(dom.lo());
-    auto result = thrust::minmax_element(policy, ptr, ptr + dom.get_volume());
-    coord_ty lo, hi;
-    cudaMemcpy(&lo, result.first, sizeof(coord_ty), cudaMemcpyDeviceToHost);
-    cudaMemcpy(&hi, result.second, sizeof(coord_ty), cudaMemcpyDeviceToHost);
-    Domain output({lo, hi});
-    auto output_ptr = output_acc.ptr(0);
-#ifdef LEGATE_NO_FUTURES_ON_FB
-    *output_ptr = output;
-#else
-    cudaMemcpy(output_ptr, &output, sizeof(Domain), cudaMemcpyHostToDevice);
-#endif
-  }
-  CHECK_CUDA_STREAM(stream);
-}
-
 template <typename T>
 __global__ void scatter_reduce(size_t elems, T out, coord_t* keys, uint64_t* counts)
 {
@@ -1420,7 +1383,7 @@ void CSCToDense::gpu_variant(legate::TaskContext& ctx)
   CHECK_CUSPARSE(cusparseSetStream(handle, stream));
 
   // Construct our cuSPARSE matrices.
-  auto A_domain = A_vals.domain();
+  auto A_domain   = A_vals.domain();
   auto cusparse_A = makeCuSparseDenseMat(A_vals);
   auto cusparse_B =
     makeCuSparseCSC(B_pos, B_crd, B_vals, A_domain.hi()[0] - A_domain.lo()[0] + 1 /* rows */);
@@ -1489,8 +1452,8 @@ void DenseToCSCNNZ::gpu_variant(legate::TaskContext& ctx)
   CHECK_CUSPARSE(cusparseSetStream(handle, stream));
 
   auto B_domain = B_vals.domain();
-  auto rows = B_domain.hi()[0] - B_domain.lo()[0] + 1;
-  auto cols = B_domain.hi()[1] - B_domain.lo()[1] + 1;
+  auto rows     = B_domain.hi()[0] - B_domain.lo()[0] + 1;
+  auto cols     = B_domain.hi()[1] - B_domain.lo()[1] + 1;
   // Allocate an output buffer for the offsets.
   DeferredBuffer<int64_t, 1> A_indptr({0, cols}, Memory::GPU_FB_MEM);
 
