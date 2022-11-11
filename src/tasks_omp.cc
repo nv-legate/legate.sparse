@@ -615,33 +615,6 @@ void CSCSDDMM::omp_variant(legate::TaskContext& ctx)
   }
 }
 
-void SortedCoordsToCounts::omp_variant(legate::TaskContext& ctx)
-{
-  auto& output  = ctx.reductions()[0];
-  auto& input   = ctx.inputs()[0];
-  auto max_vals = ctx.scalars()[0].value<int64_t>();
-  auto dom      = input.domain();
-  if (output.domain().empty() || dom.empty()) return;
-  auto in  = input.read_accessor<coord_ty, 1>();
-  auto out = output.reduce_accessor<SumReduction<uint64_t>, true /* exclusive */, 1>();
-
-  // TODO (rohany): We could make a call to unique before this to avoid allocating
-  //  O(rows/cols) space. For now this shouldn't be too much of a problem. Unfortunately
-  //  unique counting has just recently landed, and I'm not sure when our thrust version
-  //  will pick up the change: https://github.com/NVIDIA/thrust/issues/1612.
-  auto kind = Sparse::has_numamem ? Memory::SOCKET_MEM : Memory::SYSTEM_MEM;
-  DeferredBuffer<coord_t, 1> keys({0, max_vals - 1}, kind);
-  DeferredBuffer<uint64_t, 1> counts({0, max_vals - 1}, kind);
-  auto result = thrust::reduce_by_key(thrust::omp::par,
-                                      in.ptr(dom.lo()),
-                                      in.ptr(dom.lo()) + dom.get_volume(),
-                                      thrust::make_constant_iterator(1),
-                                      keys.ptr(0),
-                                      counts.ptr(0));
-#pragma omp parallel for schedule(static)
-  for (size_t i = 0; i < (result.first - keys.ptr(0)); i++) { out[keys[i]] <<= counts[i]; }
-}
-
 // ElemwiseMultCSRCSRNNZ and ElemwiseMultCSRCSR are adapted from DISTAL generated code.
 // A(i, j) = B(i, j) + C(i, j)
 // Schedule:

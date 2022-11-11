@@ -206,20 +206,6 @@ class CSCSDDMM : public SparseTask<CSCSDDMM> {
 #endif
 };
 
-// Tasks for conversion between formats.
-
-class SortedCoordsToCounts : public SparseTask<SortedCoordsToCounts> {
- public:
-  static const int TASK_ID = LEGATE_SPARSE_SORTED_COORDS_TO_COUNTS;
-  static void cpu_variant(legate::TaskContext& ctx);
-#ifdef LEGATE_USE_OPENMP
-  static void omp_variant(legate::TaskContext& ctx);
-#endif
-#ifdef LEGATE_USE_CUDA
-  static void gpu_variant(legate::TaskContext& ctx);
-#endif
-};
-
 // Tasks for conversion to dense arrays.
 
 class CSCToDense : public SparseTask<CSCToDense> {
