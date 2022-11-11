@@ -827,33 +827,6 @@ void DenseToCSC::cpu_variant(legate::TaskContext& ctx)
   }
 }
 
-void EuclideanCDist::cpu_variant(legate::TaskContext& ctx)
-{
-  auto& out = ctx.outputs()[0];
-  auto& XA  = ctx.inputs()[0];
-  auto& XB  = ctx.inputs()[1];
-
-  auto out_acc = out.write_accessor<val_ty, 2>();
-  auto XA_acc  = XA.read_accessor<val_ty, 2>();
-  auto XB_acc  = XB.read_accessor<val_ty, 2>();
-
-  auto out_domain = out.domain();
-  auto out_lo     = out_domain.lo();
-  auto out_hi     = out_domain.hi();
-  auto XA_domain  = XA.domain();
-  auto XA_lo      = XA_domain.lo();
-  auto XA_hi      = XA_domain.hi();
-  for (coord_ty i = out_lo[0]; i < out_hi[0] + 1; i++) {
-    for (coord_ty j = out_lo[1]; j < out_hi[1] + 1; j++) {
-      val_ty diff = 0.0;
-      for (coord_ty k = XA_lo[1]; k < XA_hi[1] + 1; k++) {
-        diff += pow((XA_acc[{i, k}] - XB_acc[{j, k}]), 2);
-      }
-      out_acc[{i, j}] = sqrt(diff);
-    }
-  }
-}
-
 }  // namespace sparse
 
 namespace {  // anonymous
@@ -881,7 +854,5 @@ static void __attribute__((constructor)) register_tasks(void)
   sparse::CSCToDense::register_variants();
   sparse::DenseToCSCNNZ::register_variants();
   sparse::DenseToCSC::register_variants();
-
-  sparse::EuclideanCDist::register_variants();
 }
 }  // namespace

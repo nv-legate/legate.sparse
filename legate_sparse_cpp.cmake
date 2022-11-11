@@ -122,6 +122,7 @@ list(APPEND legate_sparse_SOURCES
   src/sparse/partition/bounds_from_partitioned_coordinates.cc
   src/sparse/partition/fast_image_range.cc
   src/sparse/sort/sort.cc
+  src/sparse/spatial/euclidean_distance.cc
   src/sparse/util/upcast_future.cc
 
   src/projections.cc
@@ -147,6 +148,7 @@ if(Legion_USE_OpenMP)
     src/sparse/partition/bounds_from_partitioned_coordinates_omp.cc
     src/sparse/partition/fast_image_range_omp.cc
     src/sparse/sort/sort_omp.cc
+    src/sparse/spatial/euclidean_distance_omp.cc
 
     src/quantum_omp.cc
     src/runge_kutta_omp.cc
@@ -171,6 +173,7 @@ if(Legion_USE_CUDA)
     src/sparse/partition/bounds_from_partitioned_coordinates.cu
     src/sparse/partition/fast_image_range.cu
     src/sparse/sort/sort.cu
+    src/sparse/spatial/euclidean_distance.cu
 
     src/cudalibs.cu
     src/tasks.cu
