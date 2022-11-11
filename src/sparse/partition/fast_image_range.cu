@@ -16,6 +16,7 @@
 
 #include "sparse/partition/fast_image_range.h"
 #include "sparse/partition/fast_image_range_template.inl"
+#include "cuda_help.h"
 
 namespace sparse {
 

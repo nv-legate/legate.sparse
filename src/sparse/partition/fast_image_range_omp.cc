@@ -26,7 +26,7 @@ using namespace legate;
 {
   // The OMP implementation is the same as the CPU one, so call
   // it directly here.
-  fast_image_range_template<VariantKind::CPU>(context);
+  FastImageRange::cpu_variant(context);
 }
 
 }  // namespace sparse
