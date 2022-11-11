@@ -17,6 +17,7 @@
 #include "sparse/array/conv/sorted_coords_to_counts.h"
 #include "sparse/array/conv/sorted_coords_to_counts_template.inl"
 
+#include <thrust/execution_policy.h>
 #include <thrust/iterator/constant_iterator.h>
 #include <thrust/reduce.h>
 

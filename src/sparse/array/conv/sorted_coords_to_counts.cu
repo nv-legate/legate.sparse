@@ -19,6 +19,7 @@
 #include "cuda_help.h"
 #include "thrust_allocator.h"
 
+#include <thrust/execution_policy.h>
 #include <thrust/iterator/constant_iterator.h>
 #include <thrust/reduce.h>
 
@@ -62,10 +63,11 @@ struct SortedCoordsToCountsImplBody<VariantKind::GPU, INDEX_CODE, ACC> {
       elems, out, keys.ptr(0), counts.ptr(0));
     CHECK_CUDA_STREAM(stream);
   };
+};
 
-  /*static*/ void SortedCoordsToCounts::gpu_variant(TaskContext& context)
-  {
-    sorted_coords_to_counts_template<VariantKind::GPU>(context);
-  }
+/*static*/ void SortedCoordsToCounts::gpu_variant(TaskContext& context)
+{
+  sorted_coords_to_counts_template<VariantKind::GPU>(context);
+}
 
 }  // namespace sparse
