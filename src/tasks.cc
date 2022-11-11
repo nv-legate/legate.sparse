@@ -735,17 +735,6 @@ void CSCSDDMM::cpu_variant(legate::TaskContext& ctx)
   }
 }
 
-void SortedCoordsToCounts::cpu_variant(legate::TaskContext& ctx)
-{
-  auto& output = ctx.reductions()[0];
-  auto& input  = ctx.inputs()[0];
-  auto dom     = input.domain();
-  if (output.domain().empty()) return;
-  auto in  = input.read_accessor<coord_ty, 1>();
-  auto out = output.reduce_accessor<SumReduction<uint64_t>, true /* exclusive */, 1>();
-  for (PointInDomainIterator<1> itr(dom); itr(); itr++) { out[in[*itr]] <<= 1; }
-}
-
 // CSCToDense was adapted from DISTAL generated code.
 // A(i, j) = B(i, j)
 // Schedule:
@@ -914,7 +903,6 @@ static void __attribute__((constructor)) register_tasks(void)
   sparse::CSCToDense::register_variants();
   sparse::DenseToCSCNNZ::register_variants();
   sparse::DenseToCSC::register_variants();
-  sparse::SortedCoordsToCounts::register_variants();
 
   sparse::EuclideanCDist::register_variants();
 
