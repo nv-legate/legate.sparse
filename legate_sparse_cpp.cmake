@@ -118,6 +118,7 @@ list(APPEND legate_sparse_SOURCES
   src/sparse/array/util/zip_to_rect.cc
   src/sparse/io/mtx_to_coo.cc
   src/sparse/mapper/mapper.cc
+  src/sparse/linalg/axpby.cc
   src/sparse/partition/bounds_from_partitioned_coordinates.cc
   src/sparse/partition/fast_image_range.cc
   src/sparse/sort/sort.cc
@@ -142,6 +143,7 @@ if(Legion_USE_OpenMP)
     src/sparse/array/util/scale_rect_omp.cc
     src/sparse/array/util/unzip_rect_omp.cc
     src/sparse/array/util/zip_to_rect_omp.cc
+    src/sparse/linalg/axpby_omp.cc
     src/sparse/partition/bounds_from_partitioned_coordinates_omp.cc
     src/sparse/partition/fast_image_range_omp.cc
     src/sparse/sort/sort_omp.cc
@@ -165,6 +167,7 @@ if(Legion_USE_CUDA)
     src/sparse/array/util/scale_rect.cu
     src/sparse/array/util/unzip_rect.cu
     src/sparse/array/util/zip_to_rect.cu
+    src/sparse/linalg/axpby.cu
     src/sparse/partition/bounds_from_partitioned_coordinates.cu
     src/sparse/partition/fast_image_range.cu
     src/sparse/sort/sort.cu

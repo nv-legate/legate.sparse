@@ -861,28 +861,4 @@ void EuclideanCDist::omp_variant(legate::TaskContext& ctx)
   }
 }
 
-void VecMultAdd::omp_variant(legate::TaskContext& ctx)
-{
-  auto& lhs        = ctx.outputs()[0];
-  auto& rhs        = ctx.inputs()[0];
-  auto& beta_store = ctx.inputs()[1];
-  bool left        = ctx.scalars()[0].value<bool>();
-  auto dom         = lhs.domain();
-  auto lhs_acc     = lhs.read_write_accessor<val_ty, 1>();
-  auto rhs_acc     = rhs.read_accessor<val_ty, 1>();
-  auto beta        = beta_store.read_accessor<val_ty, 1>()[0];
-
-  if (left) {
-#pragma omp parallel for schedule(static)
-    for (coord_ty i = dom.lo()[0]; i < dom.hi()[0] + 1; i++) {
-      lhs_acc[i] = (lhs_acc[i] * beta) + rhs_acc[i];
-    }
-  } else {
-#pragma omp parallel for schedule(static)
-    for (coord_ty i = dom.lo()[0]; i < dom.hi()[0] + 1; i++) {
-      lhs_acc[i] = lhs_acc[i] + (beta * rhs_acc[i]);
-    }
-  }
-}
-
 }  // namespace sparse
