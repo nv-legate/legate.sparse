@@ -14,8 +14,8 @@
  *
  */
 
-#include "sparse/array/conv/csr_to_dense.h"
-#include "sparse/array/conv/csr_to_dense_template.inl"
+#include "sparse/array/conv/csc_to_dense.h"
+#include "sparse/array/conv/csc_to_dense_template.inl"
 #include "sparse/util/cusparse_utils.h"
 
 namespace sparse {
@@ -24,7 +24,7 @@ using namespace Legion;
 using namespace legate;
 
 template <typename INDEX_TY, typename VAL_TY>
-__global__ void CSRtoDenseKernel(size_t rows,
+__global__ void CSCtoDenseKernel(size_t cols,
                                  Rect<2> bounds,
                                  AccessorRW<VAL_TY, 2> A_vals,
                                  AccessorRO<Rect<1>, 1> B_pos,
@@ -32,21 +32,21 @@ __global__ void CSRtoDenseKernel(size_t rows,
                                  AccessorRO<VAL_TY, 1> B_vals)
 {
   const auto idx = global_tid_1d();
-  if (idx >= rows) return;
-  INDEX_TY i = idx + bounds.lo[0];
+  if (idx >= cols) return;
+  INDEX_TY j = idx + bounds.lo[1];
   // Initialize the row with all zeros.
-  for (INDEX_TY j = bounds.lo[1]; j < bounds.hi[1] + 1; j++) { A_vals[{i, j}] = 0.0; }
+  for (INDEX_TY i = bounds.lo[0]; i < bounds.hi[0] + 1; i++) { A_vals[{i, j}] = 0.0; }
   // Copy the non-zero values into place.
-  for (INDEX_TY j_pos = B_pos[i].lo; j_pos < B_pos[i].hi + 1; j_pos++) {
-    INDEX_TY j     = B_crd[j_pos];
-    A_vals[{i, j}] = B_vals[j_pos];
+  for (INDEX_TY iB = B_pos[j].lo; iB < B_pos[j].hi + 1; iB++) {
+    INDEX_TY i     = B_crd[iB];
+    A_vals[{i, j}] = B_vals[iB];
   }
 }
 
 template <>
-struct CSRToDenseImpl<VariantKind::GPU> {
+struct CSCToDenseImpl<VariantKind::GPU> {
   template <LegateTypeCode INDEX_CODE, LegateTypeCode VAL_CODE>
-  void operator()(CSRToDenseArgs& args) const
+  void operator()(CSCToDenseArgs& args) const
   {
     using INDEX_TY = legate_type_of<INDEX_CODE>;
     using VAL_TY   = legate_type_of<VAL_CODE>;
@@ -66,10 +66,10 @@ struct CSRToDenseImpl<VariantKind::GPU> {
     // a hand-written version.
 #if (CUSPARSE_VER_MAJOR < 11 || CUSPARSE_VER_MINOR < 2)
     auto B_domain = B_pos.domain();
-    auto rows     = B_domain.hi()[0] - B_domain.lo()[0] + 1;
-    auto blocks   = get_num_blocks_1d(rows);
-    CSRtoDenseKernel<<<blocks, THREADS_PER_BLOCK, 0, stream>>>(
-      rows,
+    auto cols     = B_domain.hi()[1] - B_domain.lo()[1] + 1;
+    auto blocks   = get_num_blocks_1d(cols);
+    CSCtoDenseKernel<<<blocks, THREADS_PER_BLOCK, 0, stream>>>(
+      cols,
       A_vals.shape<2>(),
       A_vals.read_write_accessor<VAL_TY, 2>(),
       B_pos.read_accessor<Rect<1>, 1>(),
@@ -83,7 +83,7 @@ struct CSRToDenseImpl<VariantKind::GPU> {
     // Construct our cuSPARSE matrices.
     auto A_domain   = A_vals.domain();
     auto cusparse_A = makeCuSparseDenseMat<VAL_TY>(A_vals);
-    auto cusparse_B = makeCuSparseCSR<INDEX_TY, VAL_TY>(
+    auto cusparse_B = makeCuSparseCSC<INDEX_TY, VAL_TY>(
       B_pos, B_crd, B_vals, A_domain.hi()[1] - A_domain.lo()[1] + 1 /* cols */);
 
     // Finally make the cuSPARSE calls.
@@ -108,9 +108,9 @@ struct CSRToDenseImpl<VariantKind::GPU> {
   }
 };
 
-/*static*/ void CSRToDense::gpu_variant(TaskContext& context)
+/*static*/ void CSCToDense::gpu_variant(TaskContext& context)
 {
-  csr_to_dense_template<VariantKind::GPU>(context);
+  csc_to_dense_template<VariantKind::GPU>(context);
 }
 
 }  // namespace sparse
