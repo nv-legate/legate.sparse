@@ -615,24 +615,6 @@ void CSCSDDMM::omp_variant(legate::TaskContext& ctx)
   }
 }
 
-void BoundsFromPartitionedCoordinates::omp_variant(legate::TaskContext& ctx)
-{
-  auto& input  = ctx.inputs()[0];
-  auto& output = ctx.outputs()[0];
-  assert(output.is_future());
-
-  auto input_acc  = input.read_accessor<coord_ty, 1>();
-  auto output_acc = output.write_accessor<Domain, 1>();
-  auto dom        = input.domain();
-  if (dom.empty()) {
-    output_acc[0] = {0, -1};
-  } else {
-    auto ptr      = input_acc.ptr(dom.lo());
-    auto result   = thrust::minmax_element(thrust::omp::par, ptr, ptr + dom.get_volume());
-    output_acc[0] = {*result.first, *result.second};
-  }
-}
-
 void SortedCoordsToCounts::omp_variant(legate::TaskContext& ctx)
 {
   auto& output  = ctx.reductions()[0];

@@ -207,17 +207,6 @@ class CSCSDDMM : public SparseTask<CSCSDDMM> {
 };
 
 // Tasks for conversion between formats.
-class BoundsFromPartitionedCoordinates : public SparseTask<BoundsFromPartitionedCoordinates> {
- public:
-  static const int TASK_ID = LEGATE_SPARSE_BOUNDS_FROM_PARTITIONED_COORDINATES;
-  static void cpu_variant(legate::TaskContext& ctx);
-#ifdef LEGATE_USE_OPENMP
-  static void omp_variant(legate::TaskContext& ctx);
-#endif
-#ifdef LEGATE_USE_CUDA
-  static void gpu_variant(legate::TaskContext& ctx);
-#endif
-};
 
 class SortedCoordsToCounts : public SparseTask<SortedCoordsToCounts> {
  public:

@@ -735,24 +735,6 @@ void CSCSDDMM::cpu_variant(legate::TaskContext& ctx)
   }
 }
 
-void BoundsFromPartitionedCoordinates::cpu_variant(legate::TaskContext& ctx)
-{
-  auto& input  = ctx.inputs()[0];
-  auto& output = ctx.outputs()[0];
-  assert(output.is_future());
-
-  auto input_acc  = input.read_accessor<coord_ty, 1>();
-  auto output_acc = output.write_accessor<Domain, 1>();
-  auto dom        = input.domain();
-  if (dom.empty()) {
-    output_acc[0] = {0, -1};
-  } else {
-    auto ptr      = input_acc.ptr(dom.lo());
-    auto result   = thrust::minmax_element(thrust::host, ptr, ptr + dom.get_volume());
-    output_acc[0] = {*result.first, *result.second};
-  }
-}
-
 void SortedCoordsToCounts::cpu_variant(legate::TaskContext& ctx)
 {
   auto& output = ctx.reductions()[0];
@@ -932,7 +914,6 @@ static void __attribute__((constructor)) register_tasks(void)
   sparse::CSCToDense::register_variants();
   sparse::DenseToCSCNNZ::register_variants();
   sparse::DenseToCSC::register_variants();
-  sparse::BoundsFromPartitionedCoordinates::register_variants();
   sparse::SortedCoordsToCounts::register_variants();
 
   sparse::EuclideanCDist::register_variants();
