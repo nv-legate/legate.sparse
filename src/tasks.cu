@@ -1624,38 +1624,6 @@ void DenseToCSC::gpu_variant(legate::TaskContext& ctx)
   // CHECK_CUSPARSE(cusparseDestroyDnMat(cusparse_B));
 }
 
-void FastImageRange::gpu_variant(legate::TaskContext& ctx)
-{
-  auto& input  = ctx.inputs()[0];
-  auto& output = ctx.outputs()[0];
-  if (input.transformed()) { input.remove_transform(); }
-  auto in     = input.read_accessor<Rect<1>, 1>();
-  auto out    = output.write_accessor<Domain, 1>();
-  auto dom    = input.domain();
-  auto stream = get_cached_stream();
-  if (dom.empty()) {
-    Domain result{Rect<1>::make_empty()};
-    auto ptr = out.ptr(0);
-#ifdef LEGATE_NO_FUTURES_ON_FB
-    *ptr = result;
-#else
-    cudaMemcpy(ptr, &result, sizeof(Domain), cudaMemcpyHostToDevice);
-#endif
-  } else {
-    Rect<1> lo, hi;
-    cudaMemcpy(&lo, in.ptr(dom.lo()), sizeof(Rect<1>), cudaMemcpyDeviceToHost);
-    cudaMemcpy(&hi, in.ptr(dom.hi()), sizeof(Rect<1>), cudaMemcpyDeviceToHost);
-    Domain result{Rect<1>{lo.lo, hi.hi}};
-    auto ptr = out.ptr(0);
-#ifdef LEGATE_NO_FUTURES_ON_FB
-    *ptr = result;
-#else
-    cudaMemcpy(ptr, &result, sizeof(Domain), cudaMemcpyHostToDevice);
-#endif
-  }
-  CHECK_CUDA_STREAM(stream);
-}
-
 __global__ void accumulate_euclidean_diffs(size_t volume,
                                            Pitches<2> pitches,
                                            Rect<3> iterBounds,
