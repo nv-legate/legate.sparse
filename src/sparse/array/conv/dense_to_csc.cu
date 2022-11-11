@@ -14,8 +14,8 @@
  *
  */
 
-#include "sparse/array/conv/dense_to_csr.h"
-#include "sparse/array/conv/dense_to_csr_template.inl"
+#include "sparse/array/conv/dense_to_csc.h"
+#include "sparse/array/conv/dense_to_csc_template.inl"
 #include "sparse/util/cusparse_utils.h"
 
 namespace sparse {
@@ -129,9 +129,9 @@ __global__ void denseToCSCKernel(size_t cols,
   const auto idx = global_tid_1d();
   if (idx >= cols) return;
   coord_t j       = idx + bounds.lo[1];
-  coord_t nnz_pos = A_pos_acc[j].lo;
+  coord_t nnz_pos = A_pos[j].lo;
   for (auto i = bounds.lo[0]; i < bounds.hi[0] + 1; i++) {
-    if (B_vals_acc[{i, j}] != static_cast<VAL_TY>(0.0)) {
+    if (B_vals[{i, j}] != static_cast<VAL_TY>(0.0)) {
       A_crd[nnz_pos]  = i;
       A_vals[nnz_pos] = B_vals[{i, j}];
       nnz_pos++;
@@ -166,9 +166,9 @@ struct DenseToCSCImpl<VariantKind::GPU> {
       cols,
       Rect<2>(B_domain.lo(), B_domain.hi()),
       A_pos.read_write_accessor<Rect<1>, 1>(),
-      A_crd.write_accessor<coord_ty, 1>(),
-      A_vals.write_accessor<val_ty, 1>(),
-      B_vals.read_accessor<val_ty, 2>());
+      A_crd.write_accessor<INDEX_TY, 1>(),
+      A_vals.write_accessor<VAL_TY, 1>(),
+      B_vals.read_accessor<VAL_TY, 2>());
     CHECK_CUDA_STREAM(stream);
 
     // TODO (rohany): The below cuSPARSE code is buggy. In particular, it results
