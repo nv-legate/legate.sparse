@@ -106,6 +106,7 @@ set_cpu_arch_flags(legate_sparse_CXX_OPTIONS)
 list(APPEND legate_sparse_SOURCES
   src/sparse/array/conv/coo_to_dense.cc
   src/sparse/array/conv/csr_to_dense.cc
+  src/sparse/array/conv/dense_to_csc.cc
   src/sparse/array/conv/dense_to_csr.cc
   src/sparse/array/conv/pos_to_coordinates.cc
   src/sparse/array/conv/sorted_coords_to_counts.cc
@@ -134,6 +135,7 @@ list(APPEND legate_sparse_SOURCES
 if(Legion_USE_OpenMP)
   list(APPEND legate_sparse_SOURCES
     src/sparse/array/conv/csr_to_dense_omp.cc
+    src/sparse/array/conv/dense_to_csc_omp.cc
     src/sparse/array/conv/dense_to_csr_omp.cc
     src/sparse/array/conv/pos_to_coordinates_omp.cc
     src/sparse/array/conv/sorted_coords_to_counts_omp.cc
@@ -159,6 +161,7 @@ endif()
 if(Legion_USE_CUDA)
   list(APPEND legate_sparse_SOURCES
     src/sparse/array/conv/csr_to_dense.cu
+    src/sparse/array/conv/dense_to_csc.cu
     src/sparse/array/conv/dense_to_csr.cu
     src/sparse/array/conv/pos_to_coordinates.cu
     src/sparse/array/conv/sorted_coords_to_counts.cu

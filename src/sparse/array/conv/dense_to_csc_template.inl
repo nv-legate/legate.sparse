@@ -17,7 +17,7 @@
 #pragma once
 
 // Useful for IDEs.
-#include "sparse/array/conv/dense_to_csr.h"
+#include "sparse/array/conv/dense_to_csc.h"
 #include "sparse/util/dispatch.h"
 #include "sparse/util/typedefs.h"
 
@@ -27,12 +27,12 @@ using namespace Legion;
 using namespace legate;
 
 template <VariantKind KIND, LegateTypeCode VAL_CODE>
-struct DenseToCSRNNZImplBody;
+struct DenseToCSCNNZImplBody;
 
 template <VariantKind KIND>
-struct DenseToCSRNNZImpl {
+struct DenseToCSCNNZImpl {
   template <LegateTypeCode VAL_CODE>
-  void operator()(DenseToCSRNNZArgs& args) const
+  void operator()(DenseToCSCNNZArgs& args) const
   {
     using VAL_TY = legate_type_of<VAL_CODE>;
 
@@ -40,17 +40,17 @@ struct DenseToCSRNNZImpl {
     auto B_vals = args.B_vals.read_accessor<VAL_TY, 2>();
 
     if (args.nnz.domain().empty()) return;
-    DenseToCSRNNZImplBody<KIND, VAL_CODE>()(nnz, B_vals, args.B_vals.shape<2>());
+    DenseToCSCNNZImplBody<KIND, VAL_CODE>()(nnz, B_vals, args.B_vals.shape<2>());
   }
 };
 
 template <VariantKind KIND, LegateTypeCode INDEX_CODE, LegateTypeCode VAL_CODE>
-struct DenseToCSRImplBody;
+struct DenseToCSCImplBody;
 
 template <VariantKind KIND>
-struct DenseToCSRImpl {
+struct DenseToCSCImpl {
   template <LegateTypeCode INDEX_CODE, LegateTypeCode VAL_CODE>
-  void operator()(DenseToCSRArgs& args) const
+  void operator()(DenseToCSCArgs& args) const
   {
     using INDEX_TY = legate_type_of<INDEX_CODE>;
     using VAL_TY   = legate_type_of<VAL_CODE>;
@@ -61,32 +61,32 @@ struct DenseToCSRImpl {
     auto B_vals = args.B_vals.read_accessor<VAL_TY, 2>();
 
     if (args.A_pos.domain().empty()) return;
-    DenseToCSRImplBody<KIND, INDEX_CODE, VAL_CODE>()(
+    DenseToCSCImplBody<KIND, INDEX_CODE, VAL_CODE>()(
       A_pos, A_crd, A_vals, B_vals, args.B_vals.shape<2>());
   }
 };
 
 template <VariantKind KIND>
-static void dense_to_csr_nnz_template(TaskContext& context)
+static void dense_to_csc_nnz_template(TaskContext& context)
 {
   auto& outputs = context.outputs();
   // We have to promote the nnz region for the auto-parallelizer to kick in,
   // so remove the transformation before proceeding.
   if (outputs[0].transformed()) { outputs[0].remove_transform(); }
-  DenseToCSRNNZArgs args{outputs[0], context.inputs()[0]};
-  value_type_dispatch(args.B_vals.code(), DenseToCSRNNZImpl<KIND>{}, args);
+  DenseToCSCNNZArgs args{outputs[0], context.inputs()[0]};
+  value_type_dispatch(args.B_vals.code(), DenseToCSCNNZImpl<KIND>{}, args);
 }
 
 template <VariantKind KIND>
-static void dense_to_csr_template(TaskContext& context)
+static void dense_to_csc_template(TaskContext& context)
 {
   auto& outputs = context.outputs();
   // We have to promote the pos region for the auto-parallelizer to kick in,
   // so remove the transformation before proceeding.
   if (outputs[0].transformed()) { outputs[0].remove_transform(); }
-  DenseToCSRArgs args{outputs[0], outputs[1], outputs[2], context.inputs()[0]};
+  DenseToCSCArgs args{outputs[0], outputs[1], outputs[2], context.inputs()[0]};
   index_type_value_type_dispatch(
-    args.A_crd.code(), args.B_vals.code(), DenseToCSRImpl<KIND>{}, args);
+    args.A_crd.code(), args.B_vals.code(), DenseToCSCImpl<KIND>{}, args);
 }
 
 }  // namespace sparse
