@@ -258,16 +258,4 @@ class EuclideanCDist : public SparseTask<EuclideanCDist> {
 #endif
 };
 
-class VecMultAdd : public SparseTask<VecMultAdd> {
- public:
-  static const int TASK_ID = LEGATE_SPARSE_VEC_MULT_ADD;
-  static void cpu_variant(legate::TaskContext& ctx);
-#ifdef LEGATE_USE_OPENMP
-  static void omp_variant(legate::TaskContext& ctx);
-#endif
-#ifdef LEGATE_USE_CUDA
-  static void gpu_variant(legate::TaskContext& ctx);
-#endif
-};
-
 }  // namespace sparse

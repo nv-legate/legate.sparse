@@ -98,7 +98,10 @@ enum LegateSparseOpCode {
   // Random other tasks that aren't really sparse...
   LEGATE_SPARSE_EUCLIDEAN_CDIST,
   LEGATE_SPARSE_SORT_BY_KEY,
-  LEGATE_SPARSE_VEC_MULT_ADD,
+
+  // Dense linear algebra tasks needed for things
+  // like iterative linear solvers.
+  LEGATE_SPARSE_AXPBY,
 
   // Utility tasks for loading cuda libraries.
   LEGATE_SPARSE_LOAD_CUDALIBS,

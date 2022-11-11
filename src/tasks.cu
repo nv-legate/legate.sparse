@@ -1612,45 +1612,4 @@ void EuclideanCDist::gpu_variant(legate::TaskContext& ctx)
   CHECK_CUDA_STREAM(stream);
 }
 
-template <bool LEFT>
-__global__ void vec_mult_add_kernel(size_t elems,
-                                    coord_ty offset,
-                                    AccessorRW<val_ty, 1> lhs,
-                                    AccessorRO<val_ty, 1> rhs,
-                                    AccessorRO<val_ty, 1> beta_acc)
-{
-  const auto idx = global_tid_1d();
-  if (idx >= elems) return;
-  auto i    = idx + offset;
-  auto beta = beta_acc[0];
-  if (LEFT) {
-    lhs[i] = (lhs[i] * beta) + rhs[i];
-  } else {
-    lhs[i] = lhs[i] + (beta * rhs[i]);
-  }
-}
-
-void VecMultAdd::gpu_variant(legate::TaskContext& ctx)
-{
-  auto& lhs        = ctx.outputs()[0];
-  auto& rhs        = ctx.inputs()[0];
-  auto& beta_store = ctx.inputs()[1];
-  bool left        = ctx.scalars()[0].value<bool>();
-  auto dom         = lhs.domain();
-  if (dom.empty()) return;
-  auto lhs_acc  = lhs.read_write_accessor<val_ty, 1>();
-  auto rhs_acc  = rhs.read_accessor<val_ty, 1>();
-  auto beta_acc = beta_store.read_accessor<val_ty, 1>();
-  auto blocks   = get_num_blocks_1d(dom.get_volume());
-  auto stream   = get_cached_stream();
-  if (left) {
-    vec_mult_add_kernel<true><<<blocks, THREADS_PER_BLOCK, 0, stream>>>(
-      dom.get_volume(), dom.lo()[0], lhs_acc, rhs_acc, beta_acc);
-  } else {
-    vec_mult_add_kernel<false><<<blocks, THREADS_PER_BLOCK, 0, stream>>>(
-      dom.get_volume(), dom.lo()[0], lhs_acc, rhs_acc, beta_acc);
-  }
-  CHECK_CUDA_STREAM(stream);
-}
-
 }  // namespace sparse
