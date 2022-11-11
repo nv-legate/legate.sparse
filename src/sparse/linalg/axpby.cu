@@ -25,7 +25,7 @@ using namespace legate;
 
 template <typename VAL_TY>
 __global__ void axpby_kernel(size_t elems,
-                             coord_ty offset,
+                             coord_t offset,
                              AccessorRW<VAL_TY, 1> y,
                              AccessorRO<VAL_TY, 1> x,
                              AccessorRO<VAL_TY, 1> alpha,
