@@ -157,18 +157,6 @@ class ElemwiseMultCSRCSR : public SparseTask<ElemwiseMultCSRCSR> {
 #endif
 };
 
-class CSRSDDMM : public SparseTask<CSRSDDMM> {
- public:
-  static const int TASK_ID = LEGATE_SPARSE_CSR_SDDMM;
-  static void cpu_variant(legate::TaskContext& ctx);
-#ifdef LEGATE_USE_OPENMP
-  static void omp_variant(legate::TaskContext& ctx);
-#endif
-#ifdef LEGATE_USE_CUDA
-  static void gpu_variant(legate::TaskContext& context);
-#endif
-};
-
 class CSCSDDMM : public SparseTask<CSCSDDMM> {
  public:
   static const int TASK_ID = LEGATE_SPARSE_CSC_SDDMM;
