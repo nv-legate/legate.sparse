@@ -595,42 +595,6 @@ void ElemwiseMultCSRCSR::cpu_variant(legate::TaskContext& ctx)
   }
 }
 
-void CSRSDDMM::cpu_variant(legate::TaskContext& ctx)
-{
-  auto& A_vals = ctx.outputs()[0];
-  auto& B_pos  = ctx.inputs()[0];
-  auto& B_crd  = ctx.inputs()[1];
-  auto& B_vals = ctx.inputs()[2];
-  auto& C_vals = ctx.inputs()[3];
-  auto& D_vals = ctx.inputs()[4];
-
-  // We have to promote the pos region for the auto-parallelizer to kick in,
-  // so remove the transformation before proceeding.
-  if (B_pos.transformed()) { B_pos.remove_transform(); }
-
-  auto A_vals_acc = A_vals.write_accessor<val_ty, 1>();
-  auto B_pos_acc  = B_pos.read_accessor<Rect<1>, 1>();
-  auto B_crd_acc  = B_crd.read_accessor<coord_ty, 1>();
-  auto B_vals_acc = B_vals.read_accessor<val_ty, 1>();
-  auto C_vals_acc = C_vals.read_accessor<val_ty, 2>();
-  auto D_vals_acc = D_vals.read_accessor<val_ty, 2>();
-
-  auto B_domain = B_pos.domain();
-  auto C_domain = C_vals.domain();
-  auto C_lo     = C_domain.lo();
-  auto C_hi     = C_domain.hi();
-
-  for (coord_t i = B_domain.lo()[0]; i < B_domain.hi()[0] + 1; i++) {
-    for (size_t jB = B_pos_acc[i].lo; jB < B_pos_acc[i].hi + 1; jB++) {
-      coord_t j      = B_crd_acc[jB];
-      A_vals_acc[jB] = 0.0;
-      for (coord_t k = C_lo[1]; k < C_hi[1] + 1; k++) {
-        A_vals_acc[jB] += B_vals_acc[jB] * (C_vals_acc[{i, k}] * D_vals_acc[{k, j}]);
-      }
-    }
-  }
-}
-
 void CSCSDDMM::cpu_variant(legate::TaskContext& ctx)
 {
   auto& A_vals = ctx.outputs()[0];
@@ -685,7 +649,6 @@ static void __attribute__((constructor)) register_tasks(void)
 
   sparse::ElemwiseMultCSRCSRNNZ::register_variants();
   sparse::ElemwiseMultCSRCSR::register_variants();
-  sparse::CSRSDDMM::register_variants();
   sparse::CSCSDDMM::register_variants();
 }
 }  // namespace
