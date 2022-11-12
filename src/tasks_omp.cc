@@ -451,67 +451,6 @@ void SpMMDenseCSR::omp_variant(legate::TaskContext& ctx)
   }
 }
 
-void CSCSDDMM::omp_variant(legate::TaskContext& ctx)
-{
-  auto& A_vals = ctx.outputs()[0];
-  auto& B_pos  = ctx.inputs()[0];
-  auto& B_crd  = ctx.inputs()[1];
-  auto& B_vals = ctx.inputs()[2];
-  auto& C_vals = ctx.inputs()[3];
-  auto& D_vals = ctx.inputs()[4];
-
-  // We have to promote the pos region for the auto-parallelizer to kick in,
-  // so remove the transformation before proceeding.
-  if (B_pos.transformed()) { B_pos.remove_transform(); }
-
-  auto A_vals_acc = A_vals.write_accessor<val_ty, 1>();
-  auto B_pos_acc  = B_pos.read_accessor<Rect<1>, 1>();
-  auto B_crd_acc  = B_crd.read_accessor<coord_ty, 1>();
-  auto B_vals_acc = B_vals.read_accessor<val_ty, 1>();
-  auto C_vals_acc = C_vals.read_accessor<val_ty, 2>();
-  auto D_vals_acc = D_vals.read_accessor<val_ty, 2>();
-
-  auto B_pos_domain = B_pos.domain();
-  auto B_crd_domain = B_crd.domain();
-  auto C_domain     = C_vals.domain();
-  auto B_pos_lo     = B_pos_domain.lo();
-  auto B_pos_hi     = B_pos_domain.hi();
-  auto B_crd_lo     = B_crd_domain.lo();
-  auto B_crd_hi     = B_crd_domain.hi();
-  auto C_lo         = C_domain.lo();
-  auto C_hi         = C_domain.hi();
-
-  // Return if there are no non-zeros to process.
-  if (B_crd_domain.empty()) return;
-
-  // We'll chunk up the non-zeros into pieces so that each thread
-  // only needs to perform one binary search.
-  auto tot_nnz     = B_crd_domain.get_volume();
-  auto num_threads = omp_get_max_threads();
-  auto tile_size   = (tot_nnz + num_threads - 1) / num_threads;
-#pragma omp parallel for schedule(static)
-  for (size_t tid = 0; tid < num_threads; tid++) {
-    auto first_nnz = tid * tile_size + B_crd_lo[0];
-    size_t j_pos   = taco_binarySearchBefore(B_pos_acc, B_pos_lo[0], B_pos_hi[0], first_nnz);
-    coord_ty j     = j_pos;
-    for (size_t nnz_idx = (tid * tile_size); nnz_idx < std::min((tid + 1) * tile_size, tot_nnz);
-         nnz_idx++) {
-      size_t i_pos = nnz_idx + B_crd_lo[0];
-      coord_ty i   = B_crd_acc[i_pos];
-      // Bump up our row pointer until we find this position.
-      while (!B_pos_acc[j_pos].contains(i_pos)) {
-        j_pos++;
-        j = j_pos;
-      }
-      val_ty sum = 0.0;
-      for (coord_ty k = C_lo[1]; k < C_hi[1] + 1; k++) {
-        sum += B_vals_acc[i_pos] * (C_vals_acc[{i, k}] * D_vals_acc[{k, j}]);
-      }
-      A_vals_acc[i_pos] = sum;
-    }
-  }
-}
-
 // ElemwiseMultCSRCSRNNZ and ElemwiseMultCSRCSR are adapted from DISTAL generated code.
 // A(i, j) = B(i, j) + C(i, j)
 // Schedule:
