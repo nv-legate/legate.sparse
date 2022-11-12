@@ -59,7 +59,7 @@ struct CSCSDDMMImplBody<VariantKind::OMP, INDEX_CODE, VAL_CODE> {
           j = j_pos;
         }
         VAL_TY sum = static_cast<VAL_TY>(0);
-        for (auto k = rect.lo[0]; k < rect.hi[1] + 1; k++) {
+        for (auto k = rect.lo[0]; k < rect.hi[0] + 1; k++) {
           sum += B_vals[i_pos] * (C_vals[{i, k}] * D_vals[{k, j}]);
         }
         A_vals[i_pos] = sum;
