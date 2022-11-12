@@ -25,8 +25,8 @@ using namespace legate;
 
 template <typename INDEX_TY>
 __global__ void tropical_spmv_kernel(size_t rows,
-                                     coord_ty offset,
-                                     coord_ty num_fields,
+                                     coord_t offset,
+                                     INDEX_TY num_fields,
                                      const AccessorWO<INDEX_TY, 2> y,
                                      const AccessorRO<Rect<1>, 1> pos,
                                      const AccessorRO<INDEX_TY, 1> crd,
