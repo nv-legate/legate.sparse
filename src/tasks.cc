@@ -24,47 +24,6 @@ using namespace Legion;
 
 namespace sparse {
 
-void CSRSpMVRowSplitTropicalSemiring::cpu_variant(legate::TaskContext& ctx)
-{
-  auto& y   = ctx.outputs()[0];
-  auto& pos = ctx.inputs()[0];
-  auto& crd = ctx.inputs()[1];
-  auto& x   = ctx.inputs()[2];
-
-  // We have to promote the pos region for the auto-parallelizer to kick in,
-  // so remove the transformation before proceeding.
-  if (pos.transformed()) { pos.remove_transform(); }
-
-  auto yacc   = y.write_accessor<coord_ty, 2>();
-  auto posacc = pos.read_accessor<Rect<1>, 1>();
-  auto crdacc = crd.read_accessor<coord_ty, 1>();
-  auto xacc   = x.read_accessor<coord_ty, 2>();
-  auto bounds = y.domain();
-
-  auto num_fields = x.domain().hi()[1] - x.domain().lo()[1] + 1;
-  for (coord_ty i = bounds.lo()[0]; i < bounds.hi()[0] + 1; i++) {
-    // Initialize the output.
-    for (coord_ty f = 0; f < num_fields; f++) { yacc[{i, f}] = 0; }
-    for (size_t jpos = posacc[i].lo; jpos < posacc[i].hi + 1; jpos++) {
-      auto j         = crdacc[jpos];
-      bool y_greater = true;
-      for (coord_ty f = 0; f < num_fields; f++) {
-        if (yacc[{i, f}] > xacc[{j, f}]) {
-          y_greater = true;
-          break;
-        } else if (yacc[{i, f}] < xacc[{j, f}]) {
-          y_greater = false;
-          break;
-        }
-        // Else the fields are equal, so move onto the next field.
-      }
-      if (!y_greater) {
-        for (coord_ty f = 0; f < num_fields; f++) { yacc[{i, f}] = xacc[{j, f}]; }
-      }
-    }
-  }
-}
-
 // TODO (rohany): In a real implementation, we could template this
 //  implementation to use a different operator or semiring.
 // SpGEMM on CSR = CSR x CSR is adapted from DISTAL/TACO generated code.
@@ -713,8 +672,6 @@ void CSCSDDMM::cpu_variant(legate::TaskContext& ctx)
 namespace {  // anonymous
 static void __attribute__((constructor)) register_tasks(void)
 {
-  sparse::CSRSpMVRowSplitTropicalSemiring::register_variants();
-
   sparse::SpGEMMCSRxCSRxCSRNNZ::register_variants();
   sparse::SpGEMMCSRxCSRxCSR::register_variants();
   sparse::SpGEMMCSRxCSRxCSRGPU::register_variants();

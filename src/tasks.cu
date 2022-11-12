@@ -65,67 +65,6 @@ cusparseSpMatDescr_t makeCuSparseCSR(Store& pos, Store& crd, size_t cols)
   return matDescr;
 }
 
-__global__ void tropical_spmv_kernel(size_t rows,
-                                     coord_ty offset,
-                                     coord_ty num_fields,
-                                     AccessorWO<coord_ty, 2> y,
-                                     AccessorRO<Rect<1>, 1> pos,
-                                     AccessorRO<coord_ty, 1> crd,
-                                     AccessorRO<coord_ty, 2> x)
-{
-  const auto idx = global_tid_1d();
-  if (idx >= rows) return;
-  coord_ty i = idx + offset;
-  // Initialize the output.
-  for (coord_ty f = 0; f < num_fields; f++) { y[{i, f}] = 0; }
-  for (size_t jpos = pos[i].lo; jpos < pos[i].hi + 1; jpos++) {
-    auto j         = crd[jpos];
-    bool y_greater = true;
-    for (coord_ty f = 0; f < num_fields; f++) {
-      if (y[{i, f}] > x[{j, f}]) {
-        y_greater = true;
-        break;
-      } else if (y[{i, f}] < x[{j, f}]) {
-        y_greater = false;
-        break;
-      }
-      // Else the fields are equal, so move onto the next field.
-    }
-    if (!y_greater) {
-      for (coord_ty f = 0; f < num_fields; f++) { y[{i, f}] = x[{j, f}]; }
-    }
-  }
-}
-
-void CSRSpMVRowSplitTropicalSemiring::gpu_variant(legate::TaskContext& ctx)
-{
-  auto& y   = ctx.outputs()[0];
-  auto& pos = ctx.inputs()[0];
-  auto& crd = ctx.inputs()[1];
-  auto& x   = ctx.inputs()[2];
-
-  // We have to promote the pos region for the auto-parallelizer to kick in,
-  // so remove the transformation before proceeding.
-  if (pos.transformed()) { pos.remove_transform(); }
-  auto stream = get_cached_stream();
-
-  // Break out if there aren't any rows.
-  if (pos.domain().empty()) { return; }
-
-  auto num_fields = x.domain().hi()[1] - x.domain().lo()[1] + 1;
-  auto blocks     = get_num_blocks_1d(pos.domain().get_volume());
-  // Since we can't use cuSPARSE over this semiring, we'll implement
-  // a simple row-based kernel.
-  tropical_spmv_kernel<<<blocks, THREADS_PER_BLOCK, 0, stream>>>(pos.domain().get_volume(),
-                                                                 pos.domain().lo()[0],
-                                                                 num_fields,
-                                                                 y.write_accessor<coord_ty, 2>(),
-                                                                 pos.read_accessor<Rect<1>, 1>(),
-                                                                 crd.read_accessor<coord_ty, 1>(),
-                                                                 x.read_accessor<coord_ty, 2>());
-  CHECK_CUDA_STREAM(stream);
-}
-
 template <typename T>
 __global__ void localIndptrToPos(size_t rows, Rect<1>* out, T* in)
 {

@@ -37,19 +37,6 @@ typedef double val_ty;
 
 // Compute kernels.
 
-// A row-based SpMV over the tropical semiring instead of +,*.
-class CSRSpMVRowSplitTropicalSemiring : public SparseTask<CSRSpMVRowSplitTropicalSemiring> {
- public:
-  static const int TASK_ID = LEGATE_SPARSE_CSR_SPMV_ROW_SPLIT_TROPICAL_SEMIRING;
-  static void cpu_variant(legate::TaskContext& ctx);
-#ifdef LEGATE_USE_OPENMP
-  static void omp_variant(legate::TaskContext& ctx);
-#endif
-#ifdef LEGATE_USE_CUDA
-  static void gpu_variant(legate::TaskContext& context);
-#endif
-};
-
 // SpGEMM kernels.
 class SpGEMMCSRxCSRxCSRNNZ : public SparseTask<SpGEMMCSRxCSRxCSRNNZ> {
  public:
