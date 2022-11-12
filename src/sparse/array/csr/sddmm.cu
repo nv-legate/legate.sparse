@@ -16,6 +16,7 @@
 
 #include "sparse/array/csr/sddmm.h"
 #include "sparse/array/csr/sddmm_template.inl"
+#include "cuda_help.h"
 #include "distal_cuda_utils.h"
 
 namespace sparse {
@@ -23,7 +24,7 @@ namespace sparse {
 using namespace Legion;
 using namespace legate;
 
-template <typename INDEX_TY, VAL_TY>
+template <typename INDEX_TY, typename VAL_TY>
 __global__ void sddmm_csr_kernel(size_t nnzs,
                                  size_t pos_offset,
                                  int64_t* block_starts,
@@ -66,6 +67,7 @@ struct CSRSDDMMImplBody<VariantKind::GPU, INDEX_CODE, VAL_CODE> {
                   const Rect<2>& rect,
                   const Rect<1>& vals_rect)
   {
+    auto stream = get_cached_stream();
     // The data has been distributed row-wise across the machine, and we can
     // do a non-zero based distribution among the local GPU threads.
     auto nnzs = vals_rect.volume();
