@@ -274,9 +274,7 @@ def mis_aggregate(C):
     y[:, 0] += x[:, 0]
     C.tropical_spmv(y, out=z)
 
-    # TODO (rohany): This data is currently _ok_ as a 32-bit integer because
-    #  we cast incoming data to the expected types in the COO constructor.
-    data = np.ones(N_fine, dtype=np.uint32)
+    data = np.ones(N_fine, dtype=np.float64)
     row = np.arange(N_fine)
     col = z[:, 1]
 
@@ -417,12 +415,7 @@ def cycle(levels, lvl, x, b):
     coarse_x = levels[lvl].coarse_x_alloc
 
     if lvl == len(levels) - 2:
-        # FIXME: cuNumeric's solve takes forever to converge, so
-        # we fall back to NumPy's solve until that's fixed.
-        # np.linalg.solve(levels[-1].dense_A, coarse_b, out=coarse_x)
-        coarse_x = numpy.linalg.solve(
-            levels[-1].dense_A.__array__(), coarse_b.__array__()
-        )
+        np.linalg.solve(levels[-1].dense_A, coarse_b, out=coarse_x)
     else:
         cycle(levels, lvl + 1, coarse_x, coarse_b)
 
@@ -525,6 +518,9 @@ if __name__ == "__main__":
     else:
         # A = poisson2D(num_nodes).tocsr()
         A = diffusion2D(num_nodes, epsilon=0.1, theta=np.pi / 4).tocsr()
+    # Make sure all random state gets initialized before we do any
+    # timing, as the first call to random can be expensive.
+    float(np.max(np.random.random((A.shape[0],))))
 
     start_build = time()
     B = np.ones((A.shape[0], 1))

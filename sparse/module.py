@@ -48,13 +48,12 @@
 import cunumeric
 import numpy
 
-from .array import (
-    coo_array,
-    csr_array,
-    dia_array,
-    get_store_from_cunumeric_array,
-    pack_to_rect1_store,
-)
+from .base import pack_to_rect1_store
+from .coo import coo_array
+from .csc import csc_array
+from .csr import csr_array
+from .dia import dia_array
+from .utils import get_store_from_cunumeric_array
 
 
 def spdiags(data, diags, m, n, format=None):
@@ -225,7 +224,7 @@ def eye(m, n=None, k=0, dtype=numpy.float64, format="csr"):
     if n is None:
         n = m
     if format == "csr" and k == 0 and m == n:
-        row_lo = cunumeric.arange(m, dtype=numpy.uint64)
+        row_lo = cunumeric.arange(m, dtype=numpy.int64)
         row_hi = row_lo + 1
         # TODO (rohany): Make a version of this function that enables control
         # over whether or not rectanges are inclusive or exclusive. That way we
@@ -322,3 +321,16 @@ def kron(A, B, format=None):
     data = data.reshape(-1)
 
     return coo_array((data, (row, col)), shape=output_shape).asformat(format)
+
+
+# is_sparse_matrix returns whether or not an object is a legate
+# sparse created sparse matrix.
+def is_sparse_matrix(o):
+    return any(
+        (
+            isinstance(o, csr_array),
+            isinstance(o, csc_array),
+            isinstance(o, coo_array),
+            isinstance(o, dia_array),
+        )
+    )

@@ -78,8 +78,6 @@ enum LegateSparseOpCode {
   LEGATE_SPARSE_DENSE_TO_CSR,
   LEGATE_SPARSE_DENSE_TO_CSC_NNZ,
   LEGATE_SPARSE_DENSE_TO_CSC,
-  LEGATE_SPARSE_DIA_TO_CSR_NNZ,
-  LEGATE_SPARSE_DIA_TO_CSR,
   LEGATE_SPARSE_BOUNDS_FROM_PARTITIONED_COORDINATES,
   LEGATE_SPARSE_SORTED_COORDS_TO_COUNTS,
   LEGATE_SPARSE_EXPAND_POS_TO_COORDINATES,
@@ -100,7 +98,10 @@ enum LegateSparseOpCode {
   // Random other tasks that aren't really sparse...
   LEGATE_SPARSE_EUCLIDEAN_CDIST,
   LEGATE_SPARSE_SORT_BY_KEY,
-  LEGATE_SPARSE_VEC_MULT_ADD,
+
+  // Dense linear algebra tasks needed for things
+  // like iterative linear solvers.
+  LEGATE_SPARSE_AXPBY,
 
   // Utility tasks for loading cuda libraries.
   LEGATE_SPARSE_LOAD_CUDALIBS,

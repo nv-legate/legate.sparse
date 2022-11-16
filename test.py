@@ -24,6 +24,7 @@ from legate.tester.test_plan import TestPlan
 from legate.tester.test_system import TestSystem
 
 # Add some other tests that we shouldn't run.
+SKIPPED_EXAMPLES.add("examples/plot.py")
 SKIPPED_EXAMPLES.add("examples/pyamg_legate_test.py")
 SKIPPED_EXAMPLES.add("examples/reference_amg.py")
 

@@ -74,9 +74,9 @@ from math import sqrt
 import cunumeric as np
 from legate.core import track_provenance
 
-from .array import get_store_from_cunumeric_array
 from .config import SparseOpCode
 from .runtime import ctx, runtime
+from .utils import get_store_from_cunumeric_array
 
 
 # TODO (rohany): This only works for positive semi-definite matrices,
@@ -466,29 +466,32 @@ def make_linear_operator(A):
         return _SparseMatrixLinearOperator(A)
 
 
-# vec_mult_add is a fused vector-vector-addition with a scalar.
-# When left=True it computes:
-#   lhs = lhs * beta + rhs
-# else it computes:
-#   lhs += beta * rhs
-# in one shot. This is important for performance, so we implement
-# our own instead of utilizing cunumeric.
+# axpby computes y = alpha * x + beta * y in a single fused
+# computation for increased performance. When alpha and/or
+# beta are `None`, the value 1 is used instead.
 @track_provenance(runtime.legate_context, nested=True)
-def vec_mult_add(lhs, rhs, beta, left=False):
-    lhs_store = get_store_from_cunumeric_array(lhs)
-    rhs_store = get_store_from_cunumeric_array(rhs)
+def axpby(y, x, alpha=None, beta=None):
+    y_store = get_store_from_cunumeric_array(y)
+    x_store = get_store_from_cunumeric_array(x)
+    task = ctx.create_task(SparseOpCode.AXPBY)
+    task.add_output(y_store)
+    task.add_input(x_store)
+    if alpha is None:
+        alpha = np.array(1.0, dtype=y.dtype)
+    if beta is None:
+        beta = np.array(1.0, dtype=y.dtype)
+    assert isinstance(alpha, np.ndarray) and alpha.size == 1
     assert isinstance(beta, np.ndarray) and beta.size == 1
+    alpha_store = get_store_from_cunumeric_array(alpha, allow_future=True)
     beta_store = get_store_from_cunumeric_array(beta, allow_future=True)
-    task = ctx.create_task(SparseOpCode.VEC_MULT_ADD)
-    task.add_output(lhs_store)
-    task.add_input(rhs_store)
+    task.add_input(alpha_store)
     task.add_input(beta_store)
-    task.add_input(lhs_store)
-    task.add_alignment(lhs_store, rhs_store)
+    task.add_input(y_store)
+    task.add_alignment(y_store, x_store)
+    task.add_broadcast(alpha_store)
     task.add_broadcast(beta_store)
-    task.add_scalar_arg(left, bool)
     task.execute()
-    return lhs
+    return y
 
 
 def cg(
@@ -542,7 +545,7 @@ def cg(
             beta = rz / oldrtz
             # Utilize a fused vector addition with scalar multiplication
             # kernel. Computes p = p * beta + z.
-            vec_mult_add(p, z, beta, left=True)
+            axpby(p, z, beta=beta)
         A.matvec(p, out=Ap)
         # Update pAp in place.
         pAp = p.dot(Ap)
@@ -550,9 +553,9 @@ def cg(
         alpha = rz / pAp
         # Utilize fused vector adds here as well.
         # Computes x += alpha * p.
-        vec_mult_add(x, p, alpha, left=False)
+        axpby(x, p, alpha=alpha)
         # Computes r -= alpha * Ap.
-        vec_mult_add(r, Ap, -alpha, left=False)
+        axpby(r, Ap, alpha=-alpha)
         if (i % conv_test_iters == 0 or i == (maxiter - 1)) and np.linalg.norm(
             r
         ) < tol:

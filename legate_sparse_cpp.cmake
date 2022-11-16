@@ -104,10 +104,32 @@ include(cmake/Modules/set_cpu_arch_flags.cmake)
 set_cpu_arch_flags(legate_sparse_CXX_OPTIONS)
 
 list(APPEND legate_sparse_SOURCES
+  src/sparse/array/conv/coo_to_dense.cc
+  src/sparse/array/conv/csc_to_dense.cc
+  src/sparse/array/conv/csr_to_dense.cc
+  src/sparse/array/conv/dense_to_csc.cc
+  src/sparse/array/conv/dense_to_csr.cc
+  src/sparse/array/conv/pos_to_coordinates.cc
+  src/sparse/array/conv/sorted_coords_to_counts.cc
+  src/sparse/array/csc/sddmm.cc
   src/sparse/array/csc/spmv.cc
+  src/sparse/array/csr/add.cc
   src/sparse/array/csr/get_diagonal.cc
+  src/sparse/array/csr/mult_dense.cc
+  src/sparse/array/csr/sddmm.cc
   src/sparse/array/csr/spmv.cc
+  src/sparse/array/csr/tropical_spmv.cc
+  src/sparse/array/util/scale_rect.cc
+  src/sparse/array/util/unzip_rect.cc
+  src/sparse/array/util/zip_to_rect.cc
+  src/sparse/io/mtx_to_coo.cc
   src/sparse/mapper/mapper.cc
+  src/sparse/linalg/axpby.cc
+  src/sparse/partition/bounds_from_partitioned_coordinates.cc
+  src/sparse/partition/fast_image_range.cc
+  src/sparse/sort/sort.cc
+  src/sparse/spatial/euclidean_distance.cc
+  src/sparse/util/upcast_future.cc
 
   src/projections.cc
   src/quantum.cc
@@ -117,9 +139,28 @@ list(APPEND legate_sparse_SOURCES
 
 if(Legion_USE_OpenMP)
   list(APPEND legate_sparse_SOURCES
+    src/sparse/array/conv/csc_to_dense_omp.cc
+    src/sparse/array/conv/csr_to_dense_omp.cc
+    src/sparse/array/conv/dense_to_csc_omp.cc
+    src/sparse/array/conv/dense_to_csr_omp.cc
+    src/sparse/array/conv/pos_to_coordinates_omp.cc
+    src/sparse/array/conv/sorted_coords_to_counts_omp.cc
+    src/sparse/array/csc/sddmm_omp.cc
     src/sparse/array/csc/spmv_omp.cc
+    src/sparse/array/csr/add_omp.cc
     src/sparse/array/csr/get_diagonal_omp.cc
+    src/sparse/array/csr/mult_dense_omp.cc
+    src/sparse/array/csr/sddmm_omp.cc
     src/sparse/array/csr/spmv_omp.cc
+    src/sparse/array/csr/tropical_spmv_omp.cc
+    src/sparse/array/util/scale_rect_omp.cc
+    src/sparse/array/util/unzip_rect_omp.cc
+    src/sparse/array/util/zip_to_rect_omp.cc
+    src/sparse/linalg/axpby_omp.cc
+    src/sparse/partition/bounds_from_partitioned_coordinates_omp.cc
+    src/sparse/partition/fast_image_range_omp.cc
+    src/sparse/sort/sort_omp.cc
+    src/sparse/spatial/euclidean_distance_omp.cc
 
     src/quantum_omp.cc
     src/runge_kutta_omp.cc
@@ -129,12 +170,30 @@ endif()
 
 if(Legion_USE_CUDA)
   list(APPEND legate_sparse_SOURCES
+    src/sparse/array/conv/csc_to_dense.cu
+    src/sparse/array/conv/csr_to_dense.cu
+    src/sparse/array/conv/dense_to_csc.cu
+    src/sparse/array/conv/dense_to_csr.cu
+    src/sparse/array/conv/pos_to_coordinates.cu
+    src/sparse/array/conv/sorted_coords_to_counts.cu
+    src/sparse/array/csc/sddmm.cu
     src/sparse/array/csc/spmv.cu
+    src/sparse/array/csr/add.cu
     src/sparse/array/csr/get_diagonal.cu
+    src/sparse/array/csr/mult_dense.cu
+    src/sparse/array/csr/sddmm.cu
     src/sparse/array/csr/spmv.cu
+    src/sparse/array/csr/tropical_spmv.cu
+    src/sparse/array/util/scale_rect.cu
+    src/sparse/array/util/unzip_rect.cu
+    src/sparse/array/util/zip_to_rect.cu
+    src/sparse/linalg/axpby.cu
+    src/sparse/partition/bounds_from_partitioned_coordinates.cu
+    src/sparse/partition/fast_image_range.cu
+    src/sparse/sort/sort.cu
+    src/sparse/spatial/euclidean_distance.cu
 
     src/cudalibs.cu
-    src/sort.cu
     src/tasks.cu
   )
 endif()

@@ -55,9 +55,9 @@ from scipy.integrate import OdeSolution
 from scipy.optimize import OptimizeResult
 
 from . import dop853_coefficients
-from .array import get_store_from_cunumeric_array
 from .config import SparseOpCode, types
 from .runtime import ctx, runtime
+from .utils import get_store_from_cunumeric_array
 
 # Define the RK solver family.
 

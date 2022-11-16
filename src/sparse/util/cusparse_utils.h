@@ -74,6 +74,18 @@ inline cudaDataType cusparseDataType<double>()
   return CUDA_R_64F;
 }
 
+template <>
+inline cudaDataType cusparseDataType<complex<float>>()
+{
+  return CUDA_C_32F;
+}
+
+template <>
+inline cudaDataType cusparseDataType<complex<double>>()
+{
+  return CUDA_C_64F;
+}
+
 // Template dispatch for the index type.
 template <typename INDEX_TY>
 cusparseIndexType_t cusparseIndexType();
@@ -178,6 +190,65 @@ cusparseDnVecDescr_t makeCuSparseDenseVec(const legate::Store& vec)
                                      getPtrFromStore<VAL_TY, 1>(vec),
                                      cusparseDataType<VAL_TY>()));
   return vecDescr;
+}
+
+// makeCuSparseDenseMat creates a cuSparse dense vector from an input store.
+template <typename VAL_TY = double>
+cusparseDnMatDescr_t makeCuSparseDenseMat(const legate::Store& mat)
+{
+  auto d = mat.domain();
+
+  // Change how we get the pointer based on the privilege of the input store.
+  VAL_TY* valsPtr = nullptr;
+  size_t ld       = 0;
+  if (mat.is_writable() && mat.is_readable()) {
+    auto acc = mat.read_write_accessor<VAL_TY, 2>();
+    valsPtr  = acc.ptr(d.lo());
+    ld       = acc.accessor.strides[0] / sizeof(VAL_TY);
+  } else if (mat.is_writable() && !mat.is_readable()) {
+    auto acc = mat.write_accessor<VAL_TY, 2>();
+    valsPtr  = acc.ptr(d.lo());
+    ld       = acc.accessor.strides[0] / sizeof(VAL_TY);
+  } else if (!mat.is_writable() && mat.is_readable()) {
+    auto acc = mat.read_accessor<VAL_TY, 2>();
+    valsPtr  = const_cast<VAL_TY*>(acc.ptr(d.lo()));
+    ld       = acc.accessor.strides[0] / sizeof(VAL_TY);
+  } else if (mat.is_reducible()) {
+    auto acc = mat.reduce_accessor<Legion::SumReduction<VAL_TY>, true /* exclusive */, 2>();
+    valsPtr  = acc.ptr(d.lo());
+    ld       = acc.accessor.strides[0] / sizeof(VAL_TY);
+  } else {
+    assert(false);
+  }
+
+  cusparseDnMatDescr_t matDescr;
+  CHECK_CUSPARSE(cusparseCreateDnMat(&matDescr,
+                                     d.hi()[0] - d.lo()[0] + 1, /* rows */
+                                     d.hi()[1] - d.lo()[1] + 1, /* columns */
+                                     ld,
+                                     (void*)valsPtr,
+                                     cusparseDataType<VAL_TY>(),
+                                     CUSPARSE_ORDER_ROW));
+  return matDescr;
+}
+
+// cast is a small utility kernel to cast an array of one type into another.
+template <typename T1, typename T2>
+__global__ void cast(size_t elems, T1* out, const T2* in)
+{
+  const auto idx = global_tid_1d();
+  if (idx >= elems) return;
+  out[idx] = T1(in[idx]);
+}
+
+// localIndPtrToNnz is a utility kernel to turn a cuSPARSE computed
+// indptr array into an nnz array.
+template <typename T>
+__global__ void localIndptrToNnz(size_t rows, uint64_t* out, T* in)
+{
+  const auto idx = global_tid_1d();
+  if (idx >= rows) return;
+  out[idx] = in[idx + 1] - in[idx];
 }
 
 }  // namespace sparse

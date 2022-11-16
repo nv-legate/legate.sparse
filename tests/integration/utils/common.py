@@ -14,6 +14,8 @@
 
 import os
 
+import numpy as np
+
 
 def prepend_path(paths):
     return [os.path.join("testdata", path) for path in paths]
@@ -28,3 +30,5 @@ test_mtx_files = prepend_path(
         "karate.mtx",
     ]
 )
+
+types = [np.float32, np.float64, np.complex64, np.complex128]

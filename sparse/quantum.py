@@ -12,16 +12,12 @@ from legate.core.launcher import Broadcast, TaskLauncher
 from legate.core.partition import DomainPartition, Tiling
 from legate.core.shape import Shape
 
-from .array import (
-    CompressedBase,
-    coord_ty,
-    csr_array,
-    get_store_from_cunumeric_array,
-    nnz_ty,
-    store_to_cunumeric_array,
-)
+from .base import CompressedBase
 from .config import SparseOpCode, domain_ty, types
+from .csr import csr_array
 from .runtime import ctx, runtime
+from .types import coord_ty, nnz_ty
+from .utils import get_store_from_cunumeric_array, store_to_cunumeric_array
 
 
 class LegateHamiltonianDriver:
@@ -185,7 +181,7 @@ class LegateHamiltonianDriver:
         cols_upper = (self.nstates - 1) - np.concatenate(
             list(reversed(cols_upper_group))
         )
-        vals_upper = np.ones(rows_upper.shape[0], dtype=np.float64)
+        vals_upper = np.ones(rows_upper.shape[0], dtype=dtype)
 
         rows_lower = (self.nstates - 1) - np.concatenate(
             list(reversed(rows_lower_group))
@@ -193,15 +189,23 @@ class LegateHamiltonianDriver:
         cols_lower = (self.nstates - 1) - np.concatenate(
             list(reversed(cols_lower_group))
         )
-        vals_lower = np.ones(rows_lower.shape[0], dtype=np.float64)
+        vals_lower = np.ones(rows_lower.shape[0], dtype=dtype)
 
         # Next, directly create CSR matrices, instead of going through the
         # constructor that implicitly performs a global sort.
         upper = raw_create_csr(
-            rows_upper, cols_upper, vals_upper, (self.nstates, self.nstates)
+            rows_upper,
+            cols_upper,
+            vals_upper,
+            (self.nstates, self.nstates),
+            dtype,
         )
         lower = raw_create_csr(
-            rows_lower, cols_lower, vals_lower, (self.nstates, self.nstates)
+            rows_lower,
+            cols_lower,
+            vals_lower,
+            (self.nstates, self.nstates),
+            dtype,
         )
 
         # Finally, the resulting matrix is the sum of the upper and lower
@@ -241,7 +245,9 @@ class LegateHamiltonianMIS(object):
         C = np.array(np.flip(np.repeat(levels, poly)).astype(self.dtype))
         enum_states = np.arange(self.nstates)
         self._hamiltonian = csr_array(
-            (C, (enum_states, enum_states)), shape=(self.nstates, self.nstates)
+            (C, (enum_states, enum_states)),
+            shape=(self.nstates, self.nstates),
+            dtype=dtype,
         )
 
         # These are your independent sets of the original graphs, ordered by
@@ -399,7 +405,7 @@ def sort_by_key(rows, cols):
 
 # This code is extracted from array.py and is the final step of CSR
 # matrix construction after coordinates have been sorted.
-def raw_create_csr(rows, cols, vals, shape):
+def raw_create_csr(rows, cols, vals, shape, dtype):
     rows_store = get_store_from_cunumeric_array(rows)
     cols_store = get_store_from_cunumeric_array(cols)
     vals_store = get_store_from_cunumeric_array(vals)
@@ -464,9 +470,7 @@ def raw_create_csr(rows, cols, vals, shape):
     #  * If q_nnz is printed out after the `self.nnz_to_pos(q_nnz)` line, then
     #    the computation looks correct but an incorrect pos array is generated.
     pos, _ = CompressedBase.nnz_to_pos_cls(q_nnz)
-    return csr_array(
-        (vals_store, cols_store, pos), shape=shape, dtype=np.float64
-    )
+    return csr_array((vals_store, cols_store, pos), shape=shape, dtype=dtype)
 
 
 def enumerate_independent_sets(

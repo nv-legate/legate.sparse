@@ -18,18 +18,13 @@ Not sure what is supposed to go in here...
 
 """
 
-from .array import (
-    csr_array,
-    csr_matrix,
-    coo_array,
-    coo_matrix,
-    csc_array,
-    csc_matrix,
-    dia_array,
-    dia_matrix,
-)
 from .module import *
 from .coverage import clone_module
+
+from .csr import csr_array, csr_matrix
+from .csc import csc_array, csc_matrix
+from .coo import coo_array, coo_matrix
+from .dia import dia_array, dia_matrix
 
 import scipy.sparse as _sp
 
