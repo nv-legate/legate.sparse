@@ -23,12 +23,16 @@ namespace sparse {
 using namespace Legion;
 using namespace legate;
 
-__global__ void scale_rect1_kernel(size_t elems, const AccessorRW<Rect<1>, 1> out, int64_t scale)
+__global__ void scale_rect1_kernel(size_t elems,
+                                   coord_t offset,
+                                   const AccessorRW<Rect<1>, 1> out,
+                                   int64_t scale)
 {
-  const auto idx = global_tid_1d();
-  if (idx >= elems) return;
-  out[idx].lo = out[idx].lo + scale;
-  out[idx].hi = out[idx].hi + scale;
+  const auto tid = global_tid_1d();
+  if (tid >= elems) return;
+  const auto idx = tid + offset;
+  out[idx].lo    = out[idx].lo + scale;
+  out[idx].hi    = out[idx].hi + scale;
 }
 
 template <>
@@ -38,7 +42,7 @@ struct ScaleRect1ImplBody<VariantKind::GPU> {
     auto elems  = rect.volume();
     auto blocks = get_num_blocks_1d(elems);
     auto stream = get_cached_stream();
-    scale_rect1_kernel<<<blocks, THREADS_PER_BLOCK, 0, stream>>>(elems, output, scale);
+    scale_rect1_kernel<<<blocks, THREADS_PER_BLOCK, 0, stream>>>(elems, rect.lo, output, scale);
     CHECK_CUDA_STREAM(stream);
   }
 };

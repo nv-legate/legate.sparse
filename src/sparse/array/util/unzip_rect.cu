@@ -24,14 +24,16 @@ using namespace Legion;
 using namespace legate;
 
 __global__ void unzip_rect1_kernel(size_t elems,
+                                   coord_t offset,
                                    const AccessorWO<int64_t, 1> lo,
                                    const AccessorWO<int64_t, 1> hi,
                                    const AccessorRO<Rect<1>, 1> in)
 {
-  const auto idx = global_tid_1d();
-  if (idx >= elems) return;
-  lo[idx] = in[idx].lo;
-  hi[idx] = in[idx].hi;
+  const auto tid = global_tid_1d();
+  if (tid >= elems) return;
+  const auto idx = tid + offset;
+  lo[idx]        = in[idx].lo;
+  hi[idx]        = in[idx].hi;
 }
 
 template <>
@@ -43,9 +45,8 @@ struct UnZipRect1ImplBody<VariantKind::GPU> {
   {
     auto elems  = rect.volume();
     auto blocks = get_num_blocks_1d(elems);
-#pragma omp parallel for schedule(static)
     auto stream = get_cached_stream();
-    unzip_rect1_kernel<<<blocks, THREADS_PER_BLOCK, 0, stream>>>(elems, out1, out2, in);
+    unzip_rect1_kernel<<<blocks, THREADS_PER_BLOCK, 0, stream>>>(elems, rect.lo, out1, out2, in);
     CHECK_CUDA_STREAM(stream);
   }
 };

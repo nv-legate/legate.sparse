@@ -26,7 +26,7 @@ using namespace legate;
 template <typename INDEX_TY, typename VAL_TY>
 __global__ void CSCtoDenseKernel(size_t cols,
                                  Rect<2> bounds,
-                                 AccessorRW<VAL_TY, 2> A_vals,
+                                 AccessorWO<VAL_TY, 2> A_vals,
                                  AccessorRO<Rect<1>, 1> B_pos,
                                  AccessorRO<INDEX_TY, 1> B_crd,
                                  AccessorRO<VAL_TY, 1> B_vals)
@@ -68,13 +68,12 @@ struct CSCToDenseImpl<VariantKind::GPU> {
     auto B_domain = B_pos.domain();
     auto cols     = B_domain.hi()[1] - B_domain.lo()[1] + 1;
     auto blocks   = get_num_blocks_1d(cols);
-    CSCtoDenseKernel<<<blocks, THREADS_PER_BLOCK, 0, stream>>>(
-      cols,
-      A_vals.shape<2>(),
-      A_vals.read_write_accessor<VAL_TY, 2>(),
-      B_pos.read_accessor<Rect<1>, 1>(),
-      B_crd.read_accessor<INDEX_TY, 1>(),
-      B_vals.read_accessor<VAL_TY, 1>());
+    CSCtoDenseKernel<<<blocks, THREADS_PER_BLOCK, 0, stream>>>(cols,
+                                                               A_vals.shape<2>(),
+                                                               A_vals.write_accessor<VAL_TY, 2>(),
+                                                               B_pos.read_accessor<Rect<1>, 1>(),
+                                                               B_crd.read_accessor<INDEX_TY, 1>(),
+                                                               B_vals.read_accessor<VAL_TY, 1>());
 #else
     // Get context sensitive objects.
     auto handle = get_cusparse();
@@ -84,7 +83,7 @@ struct CSCToDenseImpl<VariantKind::GPU> {
     auto A_domain   = A_vals.domain();
     auto cusparse_A = makeCuSparseDenseMat<VAL_TY>(A_vals);
     auto cusparse_B = makeCuSparseCSC<INDEX_TY, VAL_TY>(
-      B_pos, B_crd, B_vals, A_domain.hi()[1] - A_domain.lo()[1] + 1 /* cols */);
+      B_pos, B_crd, B_vals, A_domain.hi()[0] - A_domain.lo()[0] + 1 /* rows */);
 
     // Finally make the cuSPARSE calls.
     size_t bufSize = 0;

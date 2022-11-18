@@ -24,13 +24,15 @@ using namespace Legion;
 using namespace legate;
 
 __global__ void zip_rect1_kernel(size_t elems,
+                                 coord_t offset,
                                  const AccessorWO<Rect<1>, 1> out,
                                  const AccessorRO<uint64_t, 1> lo,
                                  const AccessorRO<uint64_t, 1> hi)
 {
-  const auto idx = global_tid_1d();
-  if (idx >= elems) return;
-  out[idx] = {lo[idx], hi[idx] - 1};
+  const auto tid = global_tid_1d();
+  if (tid >= elems) return;
+  const auto idx = tid + offset;
+  out[idx]       = {lo[idx], hi[idx] - 1};
 }
 
 template <>
@@ -43,7 +45,7 @@ struct ZipToRect1ImplBody<VariantKind::GPU> {
     auto stream = get_cached_stream();
     auto elems  = rect.volume();
     auto blocks = get_num_blocks_1d(elems);
-    zip_rect1_kernel<<<blocks, THREADS_PER_BLOCK, 0, stream>>>(elems, output, lo, hi);
+    zip_rect1_kernel<<<blocks, THREADS_PER_BLOCK, 0, stream>>>(elems, rect.lo, output, lo, hi);
     CHECK_CUDA_STREAM(stream);
   }
 };
