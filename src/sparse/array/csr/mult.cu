@@ -107,7 +107,7 @@ __global__ void elementwise_mult_csr_csr_kernel(const size_t rows,
 }
 
 template <LegateTypeCode INDEX_CODE, LegateTypeCode VAL_CODE>
-struct ElemwiseMultCSRCSRImplBody<VariantKind::CPU, INDEX_CODE, VAL_CODE> {
+struct ElemwiseMultCSRCSRImplBody<VariantKind::GPU, INDEX_CODE, VAL_CODE> {
   using INDEX_TY = legate_type_of<INDEX_CODE>;
   using VAL_TY   = legate_type_of<VAL_CODE>;
   void operator()(const AccessorRW<Rect<1>, 1>& A_pos,

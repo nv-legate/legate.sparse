@@ -83,7 +83,12 @@ static void spmm_template(TaskContext& context)
   // We have to promote the pos region for the auto-parallelizer to kick in,
   // so remove the transformation before proceeding.
   if (inputs[0].transformed()) { inputs[0].remove_transform(); }
-  SpMMCSRArgs args{context.outputs()[0], inputs[0], inputs[1], inputs[2], inputs[3]};
+  SpMMCSRArgs args{context.outputs()[0],
+                   inputs[0],
+                   inputs[1],
+                   inputs[2],
+                   inputs[3],
+                   context.scalars()[0].value<int64_t>()};
   index_type_value_type_dispatch(args.B_crd.code(), args.A_vals.code(), SpMMCSRImpl<KIND>{}, args);
 }
 

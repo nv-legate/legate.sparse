@@ -72,8 +72,8 @@ struct SpMMDenseCSRImplBody<VariantKind::OMP, INDEX_CODE, VAL_CODE, ACC> {
 // cost of reading the sparse tensor C i times. This assumes that i
 // is generally small.
 #pragma omp parallel for schedule(static)
-    for (coord_ty i = rect.lo[0]; i < rect.hi[0] + 1; i++) {
-      for (coord_ty k = rect.lo[1]; k < rect.hi[1] + 1; k++) {
+    for (auto i = rect.lo[0]; i < rect.hi[0] + 1; i++) {
+      for (auto k = rect.lo[1]; k < rect.hi[1] + 1; k++) {
         for (size_t jB = C_pos[k].lo; jB < C_pos[k].hi + 1; jB++) {
           INDEX_TY j = C_crd[jB];
           A_vals[{i, j}] <<= B_vals[{i, k}] * C_vals[jB];

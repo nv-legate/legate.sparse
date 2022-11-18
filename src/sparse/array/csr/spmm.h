@@ -28,6 +28,7 @@ struct SpMMCSRArgs {
   const legate::Store& B_crd;
   const legate::Store& B_vals;
   const legate::Store& C_vals;
+  const int64_t B1_dim;
 };
 
 class SpMMCSR : public SparseTask<SpMMCSR> {

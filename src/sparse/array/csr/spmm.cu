@@ -16,7 +16,8 @@
 
 #include "sparse/array/csr/spmm.h"
 #include "sparse/array/csr/spmm_template.inl"
-#include "cusparse_utils.h"
+#include "sparse/util/cusparse_utils.h"
+#include "distal_cuda_utils.h"
 
 namespace sparse {
 
@@ -31,9 +32,16 @@ struct SpMMCSRImpl<VariantKind::GPU> {
     using INDEX_TY = legate_type_of<INDEX_CODE>;
     using VAL_TY   = legate_type_of<VAL_CODE>;
 
+    const auto& A_vals = args.A_vals;
+    const auto& B_pos  = args.B_pos;
+    const auto& B_crd  = args.B_crd;
+    const auto& B_vals = args.B_vals;
+    const auto& C_vals = args.C_vals;
+    const auto B1_dim  = args.B1_dim;
+
     // Break out early if the iteration space partition is empty.
-    if (args.A_vals.domain().empty() || args.B_pos.domain().empty() ||
-        args.C_vals.domain().empty()) {
+    if (A_vals.domain().empty() || B_pos.domain().empty() || B_vals.domain().empty() ||
+        C_vals.domain().empty()) {
       return;
     }
 
@@ -103,7 +111,7 @@ struct SpMMCSRImpl<VariantKind::GPU> {
     CHECK_CUSPARSE(cusparseDestroyDnMat(cusparse_C));
     CHECK_CUDA_STREAM(stream);
   }
-}
+};
 
 template <LegateTypeCode INDEX_CODE, LegateTypeCode VAL_CODE>
 struct SpMMCSRImplBody<VariantKind::CPU, INDEX_CODE, VAL_CODE> {
@@ -181,8 +189,8 @@ struct SpMMDenseCSRImplBody<VariantKind::GPU, INDEX_CODE, VAL_CODE, ACC> {
     taco_binarySearchBeforeBlockLaunch(stream,
                                        C_pos,
                                        buf.ptr(0),
-                                       nnz_rect.lo,
-                                       nnz_rect.hi,
+                                       rect.lo[1],
+                                       rect.hi[1],
                                        THREADS_PER_BLOCK,
                                        THREADS_PER_BLOCK,
                                        blocks,

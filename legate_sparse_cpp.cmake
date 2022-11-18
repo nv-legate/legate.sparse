@@ -184,7 +184,7 @@ if(Legion_USE_CUDA)
     src/sparse/array/csc/spmv.cu
     src/sparse/array/csr/add.cu
     src/sparse/array/csr/get_diagonal.cu
-    src/sparse/array/csr/mult.cc
+    src/sparse/array/csr/mult.cu
     src/sparse/array/csr/mult_dense.cu
     src/sparse/array/csr/sddmm.cu
     src/sparse/array/csr/spmm.cu
