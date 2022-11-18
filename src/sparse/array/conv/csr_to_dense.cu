@@ -26,7 +26,7 @@ using namespace legate;
 template <typename INDEX_TY, typename VAL_TY>
 __global__ void CSRtoDenseKernel(size_t rows,
                                  Rect<2> bounds,
-                                 AccessorRW<VAL_TY, 2> A_vals,
+                                 AccessorWO<VAL_TY, 2> A_vals,
                                  AccessorRO<Rect<1>, 1> B_pos,
                                  AccessorRO<INDEX_TY, 1> B_crd,
                                  AccessorRO<VAL_TY, 1> B_vals)
@@ -68,13 +68,13 @@ struct CSRToDenseImpl<VariantKind::GPU> {
     auto B_domain = B_pos.domain();
     auto rows     = B_domain.hi()[0] - B_domain.lo()[0] + 1;
     auto blocks   = get_num_blocks_1d(rows);
-    CSRtoDenseKernel<<<blocks, THREADS_PER_BLOCK, 0, stream>>>(
-      rows,
-      A_vals.shape<2>(),
-      A_vals.read_write_accessor<VAL_TY, 2>(),
-      B_pos.read_accessor<Rect<1>, 1>(),
-      B_crd.read_accessor<INDEX_TY, 1>(),
-      B_vals.read_accessor<VAL_TY, 1>());
+    std::cout << B_domain << " " << A_vals.domain() << std::endl;
+    CSRtoDenseKernel<<<blocks, THREADS_PER_BLOCK, 0, stream>>>(rows,
+                                                               A_vals.shape<2>(),
+                                                               A_vals.write_accessor<VAL_TY, 2>(),
+                                                               B_pos.read_accessor<Rect<1>, 1>(),
+                                                               B_crd.read_accessor<INDEX_TY, 1>(),
+                                                               B_vals.read_accessor<VAL_TY, 1>());
 #else
     // Get context sensitive objects.
     auto handle = get_cusparse();
