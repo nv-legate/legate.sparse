@@ -23,7 +23,7 @@ using namespace Legion;
 using namespace legate;
 
 template <LegateTypeCode INDEX_CODE, LegateTypeCode VAL_CODE>
-struct SpMMCSRImplBody<VariantKind::CPU, INDEX_CODE, VAL_CODE> {
+struct SpMMCSRImplBody<VariantKind::OMP, INDEX_CODE, VAL_CODE> {
   using INDEX_TY = legate_type_of<INDEX_CODE>;
   using VAL_TY   = legate_type_of<VAL_CODE>;
 
@@ -36,11 +36,13 @@ struct SpMMCSRImplBody<VariantKind::CPU, INDEX_CODE, VAL_CODE> {
                   const Rect<2>& C_rect)
   {
     // Zero out the output array.
+#pragma omp parallel for schedule(static) collapse(2)
     for (auto i = A_rect.lo[0]; i < A_rect.hi[0] + 1; i++) {
       for (auto j = C_rect.lo[1]; j < C_rect.hi[1] + 1; j++) {
         A_vals[{i, j}] = static_cast<VAL_TY>(0);
       }
     }
+#pragma omp parallel for schedule(monotonic : dynamic, 128)
     for (auto i = A_rect.lo[0]; i < A_rect.hi[0] + 1; i++) {
       for (size_t kB = B_pos[i].lo; kB < B_pos[i].hi + 1; kB++) {
         auto k = B_crd[kB];
@@ -53,7 +55,7 @@ struct SpMMCSRImplBody<VariantKind::CPU, INDEX_CODE, VAL_CODE> {
 };
 
 template <LegateTypeCode INDEX_CODE, LegateTypeCode VAL_CODE, typename ACC>
-struct SpMMDenseCSRImplBody<VariantKind::CPU, INDEX_CODE, VAL_CODE, ACC> {
+struct SpMMDenseCSRImplBody<VariantKind::OMP, INDEX_CODE, VAL_CODE, ACC> {
   using INDEX_TY = legate_type_of<INDEX_CODE>;
   using VAL_TY   = legate_type_of<VAL_CODE>;
 
@@ -65,10 +67,15 @@ struct SpMMDenseCSRImplBody<VariantKind::CPU, INDEX_CODE, VAL_CODE, ACC> {
                   const Rect<2>& rect,
                   const Rect<1>& _)
   {
-    for (auto k = rect.lo[1]; k < rect.hi[1] + 1; k++) {
-      for (size_t jB = C_pos[k].lo; jB < C_pos[k].hi + 1; jB++) {
-        auto j = C_crd[jB];
-        for (auto i = rect.lo[0]; i < rect.hi[0] + 1; i++) {
+// This loop ordering (i, k, j) allows for in-order accessing of all
+// three tensors and avoids atomic reductions into the output at the
+// cost of reading the sparse tensor C i times. This assumes that i
+// is generally small.
+#pragma omp parallel for schedule(static)
+    for (coord_ty i = rect.lo[0]; i < rect.hi[0] + 1; i++) {
+      for (coord_ty k = rect.lo[1]; k < rect.hi[1] + 1; k++) {
+        for (size_t jB = C_pos[k].lo; jB < C_pos[k].hi + 1; jB++) {
+          INDEX_TY j = C_crd[jB];
           A_vals[{i, j}] <<= B_vals[{i, k}] * C_vals[jB];
         }
       }
@@ -76,23 +83,14 @@ struct SpMMDenseCSRImplBody<VariantKind::CPU, INDEX_CODE, VAL_CODE, ACC> {
   }
 };
 
-/*static*/ void SpMMCSR::cpu_variant(TaskContext& context)
+/*static*/ void SpMMCSR::omp_variant(TaskContext& context)
 {
-  spmm_template<VariantKind::CPU>(context);
+  spmm_template<VariantKind::OMP>(context);
 }
 
-/*static*/ void SpMMDenseCSR::cpu_variant(TaskContext& context)
+/*static*/ void SpMMDenseCSR::omp_variant(TaskContext& context)
 {
-  spmm_dense_csr_template<VariantKind::CPU>(context);
+  spmm_dense_csr_template<VariantKind::OMP>(context);
 }
-
-namespace  // unnamed
-{
-static void __attribute__((constructor)) register_tasks(void)
-{
-  SpMMCSR::register_variants();
-  SpMMDenseCSR::register_variants();
-}
-}  // namespace
 
 }  // namespace sparse

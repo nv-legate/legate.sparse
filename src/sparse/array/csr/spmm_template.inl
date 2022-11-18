@@ -59,15 +59,20 @@ struct SpMMDenseCSRImpl {
     using INDEX_TY = legate_type_of<INDEX_CODE>;
     using VAL_TY   = legate_type_of<VAL_CODE>;
 
-    auto A_vals = args.A_vals.reduce_accessor<SumReduction<VAL_TY>, true /* exclusive */, 2>();
+    auto A_vals =
+      args.A_vals
+        .reduce_accessor<SumReduction<VAL_TY>, KIND != VariantKind::GPU /* exclusive */, 2>();
     auto B_vals = args.B_vals.read_accessor<VAL_TY, 2>();
     auto C_pos  = args.C_pos.read_accessor<Rect<1>, 1>();
     auto C_crd  = args.C_crd.read_accessor<INDEX_TY, 1>();
     auto C_vals = args.C_vals.read_accessor<VAL_TY, 1>();
 
-    if (args.A_vals.domain().empty() || args.B_vals.domain().empty()) { return; }
+    if (args.A_vals.domain().empty() || args.B_vals.domain().empty() ||
+        args.C_vals.domain().empty()) {
+      return;
+    }
     SpMMDenseCSRImplBody<KIND, INDEX_CODE, VAL_CODE, decltype(A_vals)>()(
-      A_vals, B_vals, C_pos, C_crd, C_vals, args.B_vals.shape<2>());
+      A_vals, B_vals, C_pos, C_crd, C_vals, args.B_vals.shape<2>(), args.C_vals.shape<1>());
   }
 };
 
