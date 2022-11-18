@@ -20,7 +20,7 @@ env:
   PYTHONUNBUFFERED: 1
 jobs:
   build:
-    if: ${{ github.repository == 'nv-legate/legate.sparse' }}
+    if: ${{ github.repository == 'marcinz/legate.sparse.public' }}
     runs-on: self-hosted
     steps:
       - name: Dump GitHub context
@@ -65,7 +65,7 @@ jobs:
           name: build-log
           path: ./**/${{ env.COMMIT }}-build.log.gpg
   test:
-    if: ${{ github.repository == 'nv-legate/legate.sparse' }}
+    if: ${{ github.repository == 'marcinz/legate.sparse.public' }}
     runs-on: self-hosted
     needs: build
     strategy:
