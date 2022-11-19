@@ -150,7 +150,11 @@ class csc_array(CompressedBase, DenseSparseBase):
             raise NotImplementedError
 
         assert shape is not None
-        self.shape = shape
+        # Ensure that we don't accidentally include ndarray
+        # objects as the elements of our shapes, as that can
+        # lead to reference cycles or issues when talking to
+        # legate under the hood.
+        self.shape = tuple(int(i) for i in shape)
 
         # Use the user's dtype if requested, otherwise infer it from
         # the input data.

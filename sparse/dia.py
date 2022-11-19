@@ -81,7 +81,11 @@ class dia_array(CompressedBase):
             dtype = numpy.dtype(dtype)
 
         self.dtype = dtype
-        self.shape = shape
+        # Ensure that we don't accidentally include ndarray
+        # objects as the elements of our shapes, as that can
+        # lead to reference cycles or issues when talking to
+        # legate under the hood.
+        self.shape = tuple(int(i) for i in shape)
         self._offsets = get_store_from_cunumeric_array(offsets)
         self._data = get_store_from_cunumeric_array(data)
 
