@@ -34,9 +34,6 @@ from legate.core.shape import Shape
 from .config import SparseOpCode, domain_ty
 from .runtime import ctx, runtime as sparse_runtime
 
-# Extract the partition manager from the runtime.
-part_mgr = runtime.partition_manager
-
 
 # CompressedImagePartition is a special implementation of
 # taking an image partition that utilizes some domain knowledge
@@ -74,7 +71,7 @@ class CompressedImagePartition(ImagePartition):
             # that they expect.
             # return super().construct(region, complete)
 
-        index_partition = part_mgr.find_index_partition(
+        index_partition = runtime.partition_manager.find_index_partition(
             region.index_space, self
         )
         if index_partition is None:
@@ -111,7 +108,7 @@ class CompressedImagePartition(ImagePartition):
             result = DomainPartition(
                 Shape(ispace=region.index_space), self.color_shape, domains
             ).construct(region)
-            part_mgr.record_index_partition(
+            runtime.partition_manager.record_index_partition(
                 region.index_space, self, result.index_partition
             )
             return result
@@ -146,7 +143,7 @@ class MinMaxImagePartition(ImagePartition):
         color_transform: Optional[Transform] = None,
     ) -> Optional[LegionPartition]:
         assert len(self._store.shape) == 1 and not self._range
-        index_partition = part_mgr.find_index_partition(
+        index_partition = runtime.partition_manager.find_index_partition(
             region.index_space, self
         )
         if index_partition is None:
@@ -184,7 +181,7 @@ class MinMaxImagePartition(ImagePartition):
                     part, Rect(hi=Shape(ispace=region.index_space))
                 )
             result = part.construct(region)
-            part_mgr.record_index_partition(
+            runtime.partition_manager.record_index_partition(
                 region.index_space, self, result.index_partition
             )
             return result
