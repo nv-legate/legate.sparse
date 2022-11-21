@@ -14,13 +14,14 @@
  *
  */
 
-#include "tasks.h"
 #include "sparse.h"
 #include "quantum.h"
 
 using namespace Legion;
 
 namespace sparse {
+
+using coord_ty = int64_t;
 
 template <int N, typename T>
 void EnumerateIndependentSets::cpu_variant_impl(legate::TaskContext& ctx)
