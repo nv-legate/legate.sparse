@@ -146,20 +146,24 @@ def test_csr_spmm_rmatmul_types(filename, b_type, c_type):
 
 
 @pytest.mark.parametrize("filename", test_mtx_files)
-def test_csr_csr_csr_spgemm(filename):
+@pytest.mark.parametrize("b_type", types)
+@pytest.mark.parametrize("c_type", types)
+def test_csr_csr_csr_spgemm(filename, b_type, c_type):
     arr = legate_io.mmread(filename)
     s = sci_io.mmread(filename).tocsr()
-    res_legate = arr.tocsr() @ arr.tocsr()
-    res_sci = s @ s
+    res_legate = arr.tocsr().astype(b_type) @ arr.tocsr().astype(c_type)
+    res_sci = s.astype(b_type) @ s.astype(c_type)
     assert np.allclose(res_legate.todense(), res_sci.todense())
 
 
 @pytest.mark.parametrize("filename", test_mtx_files)
-def test_csr_csr_csc_spgemm(filename):
+@pytest.mark.parametrize("b_type", types)
+@pytest.mark.parametrize("c_type", types)
+def test_csr_csr_csc_spgemm(filename, b_type, c_type):
     arr = legate_io.mmread(filename)
     s = sci_io.mmread(filename)
-    res_legate = arr.tocsr() @ arr.tocsc()
-    res_sci = s.tocsr() @ s.tocsc()
+    res_legate = arr.tocsr().astype(b_type) @ arr.tocsc().astype(c_type)
+    res_sci = s.tocsr().astype(b_type) @ s.tocsc().astype(c_type)
     assert np.allclose(res_legate.todense(), res_sci.todense())
 
 

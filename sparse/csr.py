@@ -46,6 +46,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import warnings
+from typing import Any
 
 import cunumeric
 import numpy
@@ -85,7 +86,6 @@ from .utils import (
     factor_int,
     find_last_user_stacklevel,
     get_store_from_cunumeric_array,
-    require_float64_dtypes,
     store_to_cunumeric_array,
 )
 
@@ -461,427 +461,16 @@ class csr_array(CompressedBase, DenseSparseBase):
                     output, shape=output.shape, dtype=output.dtype
                 )
             return output
-
-        # TODO (rohany): Let's just worry about handling CSR output for now. It
-        # looks like TACO can do CSC outputs, but let's think about that in the
-        # future.
-        # TODO (rohany): See how we can leverage the runtime to help us do the
-        # communication to construct the CSC array in parallel if we partition
-        # i and j.
         elif isinstance(other, sparse.csc_array):
             if out is not None:
                 raise ValueError("Cannot specify out for CSRxCSC matmul.")
-            require_float64_dtypes(self, other)
             assert self.shape[1] == other.shape[0]
-            # Here, we want to enable partitioning the i and j dimensions of
-            # A(i, j) = B(i, k) * C(k, j).  To do this, we'll first logically
-            # organize our processors into a 2-D grid, and partition the pos
-            # region of B along the i dimension of the processor grid,
-            # replicated onto the j dimension, and partition C along the j
-            # dimension, replicated onto the i dimension.
-            num_procs = runtime.num_procs
-            grid = Shape(factor_int(num_procs))
-
-            rows_proj_fn = runtime.get_1d_to_2d_functor_id(
-                grid[0], grid[1], True
-            )
-            cols_proj_fn = runtime.get_1d_to_2d_functor_id(
-                grid[0], grid[1], False
-            )
-            _sparse.register_legate_sparse_1d_to_2d_functor(
-                rows_proj_fn, grid[0], grid[1], True
-            )  # True is for the rows.
-            _sparse.register_legate_sparse_1d_to_2d_functor(
-                cols_proj_fn, grid[0], grid[1], False
-            )  # False is for the cols.
-
-            # To create a tiling on a 2-D color space of a 1-D region, we first
-            # promote the region into a 2-D region, and then apply a tiling to
-            # it with the correct color shape. In particular, we want to
-            # broadcast the colorings over the i dimension across the j
-            # dimension of the grid, which the promotion does for us.
-            my_promoted_pos = self.pos.promote(1)
-            my_pos_tiling = Tiling(
-                Shape(((self.pos.shape[0] + grid[0] - 1) // grid[0], 1)), grid
-            )
-            my_pos_partition = my_promoted_pos.partition(my_pos_tiling)
-            other_promoted_pos = other.pos.promote(0)
-            other_pos_tiling = (other.pos.shape[0] + grid[1] - 1) // grid[1]
-            other_pos_partition = other_promoted_pos.partition(
-                Tiling(Shape((1, other_pos_tiling)), grid)
-            )
-
-            # TODO (rohany): There's a really weird interaction here that needs
-            # help from wonchan.  If I'm deriving a partition from another, I
-            # need the partition pos all of the transformations that are
-            # applied to it. However, the normal partition.partition is the
-            # partition before any transformations. I'm not sure what's the
-            # best way to untangle this.
-            my_pos_image = ImagePartition(
-                self.pos,
-                my_pos_partition._storage_partition._partition,
-                ctx.mapper_id,
-                range=True,
-            )
-            other_pos_image = ImagePartition(
-                other.pos,
-                other_pos_partition._storage_partition._partition,
-                ctx.mapper_id,
-                range=True,
-            )
-
-            # First, we launch a task that tiles the output matrix and creates
-            # a local csr matrix result for each tile.
-            task = ctx.create_manual_task(
-                SparseOpCode.SPGEMM_CSR_CSR_CSC_LOCAL_TILES,
-                launch_domain=Rect(hi=(num_procs,)),
-            )
-            # Note that while we colored the region in a 2-D color space,
-            # legate does some smart things to essentially reduce the coloring
-            # to a 1-D coloring and uses projection functors to send the right
-            # subregions to the right tasks.  So, we use a special functor that
-            # we register that understands the logic for this particular type
-            # of partitioning.
-            task.add_input(my_pos_partition, proj=rows_proj_fn)
-            task.add_input(self.crd.partition(my_pos_image), proj=rows_proj_fn)
-            task.add_input(
-                self.vals.partition(my_pos_image), proj=rows_proj_fn
-            )
-            task.add_input(other_pos_partition, proj=cols_proj_fn)
-            task.add_input(
-                other.crd.partition(other_pos_image), proj=cols_proj_fn
-            )
-            task.add_input(
-                other.vals.partition(other_pos_image), proj=cols_proj_fn
-            )
-            # Finally, create some unbound stores that will represent the
-            # logical components of each sub-csr matrix that are created by the
-            # launched tasks.
-            pos = ctx.create_store(rect1, ndim=1)
-            crd = ctx.create_store(coord_ty, ndim=1)
-            vals = ctx.create_store(self.dtype, ndim=1)
-            task.add_output(pos)
-            task.add_output(crd)
-            task.add_output(vals)
-            task.add_scalar_arg(other.shape[0], types.int64)
-            task.execute()
-
-            # Due to recent changes in the legate core, we don't get a future
-            # map back if the size of the launch is 1, meaning that we won't
-            # have key partitions the launch over. Luckily if the launch domain
-            # has size 1 then all of the data structures we have created are a
-            # valid CSR array, so we can return early.
-            if num_procs == 1:
-                return csr_array(
-                    (vals, crd, pos), shape=(self.shape[0], other.shape[1])
-                )
-
-            # After the local execution, we need to start building a global CSR
-            # array.  First, we offset all of the local pos pieces with indices
-            # in the global crd and vals arrays. Since each local pos region is
-            # already valid, we just need to perform a scan over the final size
-            # of each local crd region and offset each pos region by the
-            # result.
-            pos_part = pos.partition(pos.get_key_partition())
-            scan_local_results_and_scale_pos(
-                crd.get_key_partition()._weights, pos, pos_part, num_procs
-            )
-
-            # Now it gets trickier. We have to massage the local tiles of csr
-            # matrices into one global CSR matrix. To do this, we will consider
-            # each row of the processor grid independently. Within each row of
-            # the grid, each tile contains a CSR matrix over the same set of
-            # rows of the output, but different columns. So, we will distribute
-            # those rows across the processors in the current row. We construct
-            # a store that describes how the communication should occur between
-            # the processors in the current row. Each processor records the
-            # pieces of their local pos regions that correspond to the rows
-            # assigned to each other processor in the grid. We can then apply
-            # image operations to this store to collect the slices of the local
-            # results that should be sent to each processor. Precisely, we
-            # create a 3-D region that describes for each processor in the
-            # processor grid, the range of entries to be sent to the other
-            # processors in that row.
-            partitioner_store = ctx.create_store(
-                rect1, shape=Shape((grid[0], grid[1], grid[1]))
-            )
-            # TODO (rohany): This operation _should_ be possible with tiling
-            # operations, but I can't get the API to do what I want -- the
-            # problem appears to be trying to match a 2-D coloring onto a 3-D
-            # region.
-            partitioner_store_coloring = {}
-            for i in range(grid[0]):
-                for j in range(grid[1]):
-                    rect = Rect(
-                        lo=(i, j, 0),
-                        hi=(i, j, grid[1] - 1),
-                        dim=3,
-                        exclusive=False,
-                    )
-                    partitioner_store_coloring[Point((i, j))] = rect
-            partitioner_store_partition = partitioner_store.partition(
-                DomainPartition(
-                    partitioner_store.shape, grid, partitioner_store_coloring
-                )
-            )
-            task = ctx.create_manual_task(
-                SparseOpCode.SPGEMM_CSR_CSR_CSC_COMM_COMPUTE,
-                launch_domain=Rect(hi=(num_procs,)),
-            )
-            promote_1d_to_2d = ctx.get_projection_id(
-                SparseProjectionFunctor.PROMOTE_1D_TO_2D
-            )
-            task.add_output(partitioner_store_partition, proj=promote_1d_to_2d)
-            task.add_input(my_pos_partition, proj=rows_proj_fn)
-            task.add_input(pos_part)
-            # Scalar arguments must use the legate core type system.
-            task.add_scalar_arg(grid[0], types.int32)
-            task.add_scalar_arg(grid[1], types.int32)
-            task.execute()
-
-            # We now create a transposed partition of the store to get sets of
-            # ranges assigned to each processor. This partition selects for
-            # each processor the ranges created for that processor by all of
-            # the other processor.
-            transposed_partitioner_store_coloring = {}
-            for i in range(grid[0]):
-                for j in range(grid[1]):
-                    rect = Rect(
-                        lo=(i, 0, j),
-                        hi=(i, grid[1] - 1, j),
-                        dim=3,
-                        exclusive=False,
-                    )
-                    transposed_partitioner_store_coloring[Point((i, j))] = rect
-            transposed_partition = partitioner_store.partition(
-                DomainPartition(
-                    partitioner_store.shape,
-                    grid,
-                    transposed_partitioner_store_coloring,
-                )
-            )
-            # Cascade images down to the global pos, crd and vals regions.
-            global_pos_partition = pos.partition(
-                ImagePartition(
-                    partitioner_store,
-                    transposed_partition.partition,
-                    ctx.mapper_id,
-                    range=True,
-                )
-            )
-            global_crd_partition = crd.partition(
-                ImagePartition(
-                    pos,
-                    global_pos_partition.partition,
-                    ctx.mapper_id,
-                    range=True,
-                )
-            )
-            global_vals_partition = vals.partition(
-                ImagePartition(
-                    pos,
-                    global_pos_partition.partition,
-                    ctx.mapper_id,
-                    range=True,
-                )
-            )
-            # This next task utilizes the pieces computed by the transposed
-            # partition and gathers them into contiguous pieces to form the
-            # result csr matrix.
-            task = ctx.create_manual_task(
-                SparseOpCode.SPGEMM_CSR_CSR_CSC_SHUFFLE,
-                launch_domain=Rect(hi=(num_procs,)),
-            )
-            task.add_input(global_pos_partition, proj=promote_1d_to_2d)
-            task.add_input(global_crd_partition, proj=promote_1d_to_2d)
-            task.add_input(global_vals_partition, proj=promote_1d_to_2d)
-            # We could compute this up front with a 2 pass algorithm, but it
-            # seems expedient to just use Legion's output region support for
-            # now.
-            final_pos = ctx.create_store(rect1, ndim=1)
-            final_crd = ctx.create_store(coord_ty, ndim=1)
-            final_vals = ctx.create_store(self.dtype, ndim=1)
-            task.add_output(final_pos)
-            task.add_output(final_crd)
-            task.add_output(final_vals)
-            task.execute()
-
-            # At this point, we have an almost valid csr array. The only thing
-            # missing is that again each pos array created by the grouping task
-            # is not globally offset. We adjust this with one more scan over
-            # all of the output sizes.
-            weights = final_crd.get_key_partition()._weights
-            scan_local_results_and_scale_pos(
-                weights,
-                final_pos,
-                final_pos.partition(final_pos.get_key_partition()),
-                num_procs,
-            )
-            return csr_array(
-                (final_vals, final_crd, final_pos),
-                shape=Shape((self.shape[0], other.shape[1])),
-            )
+            return spgemm_csr_csr_csc(*cast_to_common_type(self, other))
         elif isinstance(other, csr_array):
             if out is not None:
                 raise ValueError("Cannot provide out for CSRxCSC matmul.")
             assert self.shape[1] == other.shape[0]
-            require_float64_dtypes(self, other)
-            # Due to limitations in cuSPARSE, we cannot use a uniform task
-            # implementation for CSRxCSRxCSR SpGEMM across CPUs, OMPs and GPUs.
-            # The GPU implementation will create a set of local CSR matrices
-            # that will be aggregated into a global CSR.
-            if runtime.num_gpus > 0:
-                pos = ctx.create_store(rect1, shape=self.shape[0])
-                crd = ctx.create_store(coord_ty, ndim=1)
-                vals = ctx.create_store(float64, ndim=1)
-                num_procs = runtime.num_procs
-                tile_shape = (self.shape[0] + num_procs - 1) // num_procs
-                tiling = Tiling(Shape(tile_shape), Shape(num_procs))
-                task = ctx.create_manual_task(
-                    SparseOpCode.SPGEMM_CSR_CSR_CSR_GPU,
-                    launch_domain=Rect(hi=(num_procs,)),
-                )
-                pos_part = pos.partition(tiling)
-                task.add_output(pos_part)
-                task.add_output(crd)
-                task.add_output(vals)
-                my_pos_part = self.pos.partition(tiling)
-                task.add_input(my_pos_part)
-                image = CompressedImagePartition(
-                    self.pos, my_pos_part.partition, ctx.mapper_id, range=True
-                )
-                crd_part = self.crd.partition(image)
-                task.add_input(self.crd.partition(image))
-                task.add_input(self.vals.partition(image))
-                # The C matrix is unfortunately replicated in this algorithm.
-                # However, we can make the world a little better for us by
-                # gathering only the rows of C that are referenced by each
-                # partition using Image operations.
-                task.add_input(other.pos)
-                crd_image = MinMaxImagePartition(
-                    self.crd, crd_part.partition, ctx.mapper_id, range=False
-                )
-                other_pos_part = other.pos.partition(crd_image)
-                task.add_input(
-                    other.crd.partition(
-                        ImagePartition(
-                            other.pos,
-                            other_pos_part.partition,
-                            ctx.mapper_id,
-                            range=True,
-                        )
-                    )
-                )
-                task.add_input(
-                    other.vals.partition(
-                        ImagePartition(
-                            other.pos,
-                            other_pos_part.partition,
-                            ctx.mapper_id,
-                            range=True,
-                        )
-                    )
-                )
-                task.add_scalar_arg(other.shape[1], types.uint64)
-                task.execute()
-                # Build the global CSR array by performing a scan across the
-                # individual CSR results. Due to a recent change in legate.core
-                # that doesn't do future map reductions on launches of size
-                # one, we have to gaurd this operation as crd might not have a
-                # key partition.
-                if num_procs > 1:
-                    scan_local_results_and_scale_pos(
-                        crd.get_key_partition()._weights,
-                        pos,
-                        pos_part,
-                        num_procs,
-                    )
-                return csr_array(
-                    (vals, crd, pos), shape=(self.shape[0], other.shape[1])
-                )
-            else:
-                # Create the query result.
-                q_nnz = ctx.create_store(nnz_ty, shape=self.shape[0])
-                task = ctx.create_task(SparseOpCode.SPGEMM_CSR_CSR_CSR_NNZ)
-                task.add_output(q_nnz)
-                self._add_to_task(task, vals=False)
-                other._add_to_task(task, vals=False)
-                task.add_alignment(q_nnz, self.pos)
-                task.add_image_constraint(
-                    self.pos,
-                    self.crd,
-                    range=True,
-                    functor=CompressedImagePartition,
-                )
-                # We'll only ask for the rows used by each partition by
-                # following an image of pos through crd. We'll then use that
-                # partition to declare the pieces of crd and vals of other that
-                # are needed by the matmul. The resulting image of coordinates
-                # into rows of other is not necessarily complete or disjoint.
-                task.add_image_constraint(
-                    self.crd,
-                    other.pos,
-                    range=False,
-                    disjoint=False,
-                    complete=False,
-                    functor=MinMaxImagePartition,
-                )
-                # Since the target partition of pos is likely not contiguous,
-                # we can't use the CompressedImagePartition functor and have to
-                # fall back to a standard functor. Since the source partition
-                # of the rows is not complete or disjoint, the images into crd
-                # and vals are not disjoint either.
-                task.add_image_constraint(
-                    other.pos,
-                    other.crd,
-                    range=True,
-                    disjoint=False,
-                    complete=False,
-                )
-                task.add_image_constraint(
-                    other.pos,
-                    other.vals,
-                    range=True,
-                    disjoint=False,
-                    complete=False,
-                )
-                task.add_scalar_arg(other.shape[1], types.uint64)
-                task.execute()
-
-                pos, nnz = self.nnz_to_pos(q_nnz)
-                crd = ctx.create_store(coord_ty, shape=(nnz))
-                vals = ctx.create_store(self.dtype, shape=(nnz))
-
-                task = ctx.create_task(SparseOpCode.SPGEMM_CSR_CSR_CSR)
-                task.add_output(pos)
-                task.add_output(crd)
-                task.add_output(vals)
-                self._add_to_task(task)
-                other._add_to_task(task)
-                task.add_alignment(self.pos, pos)
-                task.add_image_constraint(
-                    self.pos,
-                    self.crd,
-                    range=True,
-                    functor=CompressedImagePartition,
-                )
-                task.add_alignment(self.crd, self.vals)
-                task.add_image_constraint(
-                    pos, crd, range=True, functor=CompressedImagePartition
-                )
-                task.add_alignment(crd, vals)
-                task.add_broadcast(other.pos)
-                task.add_broadcast(other.crd)
-                task.add_broadcast(other.vals)
-                # Add pos to the inputs as well so that we get READ_WRITE
-                # privileges.
-                task.add_input(pos)
-                task.add_scalar_arg(other.shape[1], types.uint64)
-                task.execute()
-                return csr_array(
-                    (vals, crd, pos),
-                    shape=Shape((self.shape[0], other.shape[1])),
-                )
+            return spgemm_csr_csr_csr(*cast_to_common_type(self, other))
         elif isinstance(other, cunumeric.ndarray):
             # We can dispatch to SpMM here. There are different implementations
             # that one can go for, like the 2-D distribution, or the 1-D
@@ -1543,6 +1132,415 @@ def sddmm_impl(
     task.execute()
     return csr_array.make_with_same_nnz_structure(
         B, (result_vals, B.crd, B.pos)
+    )
+
+
+# spgemm_csr_csr_csr computes A = B @ C when B and C and
+# both csr matrices, and returns the result A as a csr matrix.
+def spgemm_csr_csr_csr(B: csr_array, C: csr_array) -> csr_array:
+    # Due to limitations in cuSPARSE, we cannot use a uniform task
+    # implementation for CSRxCSRxCSR SpGEMM across CPUs, OMPs and GPUs.
+    # The GPU implementation will create a set of local CSR matrices
+    # that will be aggregated into a global CSR.
+    if runtime.num_gpus > 0:
+        pos = ctx.create_store(rect1, shape=B.shape[0])
+        crd = ctx.create_store(coord_ty, ndim=1)
+        vals = ctx.create_store(float64, ndim=1)
+        num_procs = runtime.num_procs
+        tile_shape = (B.shape[0] + num_procs - 1) // num_procs
+        tiling = Tiling(Shape(tile_shape), Shape(num_procs))
+        task = ctx.create_manual_task(
+            SparseOpCode.SPGEMM_CSR_CSR_CSR_GPU,
+            launch_domain=Rect(hi=(num_procs,)),
+        )
+        pos_part = pos.partition(tiling)
+        task.add_output(pos_part)
+        task.add_output(crd)
+        task.add_output(vals)
+        my_pos_part = B.pos.partition(tiling)
+        task.add_input(my_pos_part)
+        image = CompressedImagePartition(
+            B.pos, my_pos_part.partition, ctx.mapper_id, range=True
+        )
+        crd_part = B.crd.partition(image)
+        task.add_input(B.crd.partition(image))
+        task.add_input(B.vals.partition(image))
+        # The C matrix is unfortunately replicated in this algorithm.
+        # However, we can make the world a little better for us by
+        # gathering only the rows of C that are referenced by each
+        # partition using Image operations.
+        task.add_input(C.pos)
+        crd_image = MinMaxImagePartition(
+            B.crd, crd_part.partition, ctx.mapper_id, range=False
+        )
+        other_pos_part = C.pos.partition(crd_image)
+        task.add_input(
+            C.crd.partition(
+                ImagePartition(
+                    C.pos,
+                    other_pos_part.partition,
+                    ctx.mapper_id,
+                    range=True,
+                )
+            )
+        )
+        task.add_input(
+            C.vals.partition(
+                ImagePartition(
+                    C.pos,
+                    other_pos_part.partition,
+                    ctx.mapper_id,
+                    range=True,
+                )
+            )
+        )
+        task.add_scalar_arg(C.shape[1], types.uint64)
+        task.execute()
+        # Build the global CSR array by performing a scan across the
+        # individual CSR results. Due to a recent change in legate.core
+        # that doesn't do future map reductions on launches of size
+        # one, we have to gaurd this operation as crd might not have a
+        # key partition.
+        if num_procs > 1:
+            scan_local_results_and_scale_pos(
+                crd.get_key_partition()._weights,
+                pos,
+                pos_part,
+                num_procs,
+            )
+        return csr_array((vals, crd, pos), shape=(B.shape[0], C.shape[1]))
+    else:
+        # Create the query result.
+        q_nnz = ctx.create_store(nnz_ty, shape=B.shape[0])
+        task = ctx.create_task(SparseOpCode.SPGEMM_CSR_CSR_CSR_NNZ)
+        task.add_output(q_nnz)
+        task.add_input(B.pos)
+        task.add_input(B.crd)
+        task.add_input(C.pos)
+        task.add_input(C.crd)
+        task.add_alignment(q_nnz, B.pos)
+        task.add_image_constraint(
+            B.pos,
+            B.crd,
+            range=True,
+            functor=CompressedImagePartition,
+        )
+        # We'll only ask for the rows used by each partition by
+        # following an image of pos through crd. We'll then use that
+        # partition to declare the pieces of crd and vals of other that
+        # are needed by the matmul. The resulting image of coordinates
+        # into rows of other is not necessarily complete or disjoint.
+        task.add_image_constraint(
+            B.crd,
+            C.pos,
+            range=False,
+            disjoint=False,
+            complete=False,
+            functor=MinMaxImagePartition,
+        )
+        # Since the target partition of pos is likely not contiguous,
+        # we can't use the CompressedImagePartition functor and have to
+        # fall back to a standard functor. Since the source partition
+        # of the rows is not complete or disjoint, the images into crd
+        # and vals are not disjoint either.
+        task.add_image_constraint(
+            C.pos,
+            C.crd,
+            range=True,
+            disjoint=False,
+            complete=False,
+        )
+        task.add_image_constraint(
+            C.pos,
+            C.vals,
+            range=True,
+            disjoint=False,
+            complete=False,
+        )
+        task.add_scalar_arg(C.shape[1], types.uint64)
+        task.execute()
+
+        pos, nnz = CompressedBase.nnz_to_pos_cls(q_nnz)
+        crd = ctx.create_store(coord_ty, shape=(nnz))
+        vals = ctx.create_store(B.dtype, shape=(nnz))
+
+        task = ctx.create_task(SparseOpCode.SPGEMM_CSR_CSR_CSR)
+        task.add_output(pos)
+        task.add_output(crd)
+        task.add_output(vals)
+        task.add_input(B.pos)
+        task.add_input(B.crd)
+        task.add_input(B.vals)
+        task.add_input(C.pos)
+        task.add_input(C.crd)
+        task.add_input(C.vals)
+        task.add_alignment(B.pos, pos)
+        task.add_image_constraint(
+            B.pos,
+            B.crd,
+            range=True,
+            functor=CompressedImagePartition,
+        )
+        task.add_alignment(B.crd, B.vals)
+        task.add_image_constraint(
+            pos, crd, range=True, functor=CompressedImagePartition
+        )
+        task.add_alignment(crd, vals)
+        task.add_broadcast(C.pos)
+        task.add_broadcast(C.crd)
+        task.add_broadcast(C.vals)
+        # Add pos to the inputs as well so that we get READ_WRITE
+        # privileges.
+        task.add_input(pos)
+        task.add_scalar_arg(C.shape[1], types.uint64)
+        task.execute()
+        return csr_array(
+            (vals, crd, pos),
+            shape=Shape((B.shape[0], C.shape[1])),
+        )
+
+
+# spgemm_csr_csr_csc computes A = B @ C when B is a csr_array,
+# C is a csc_array, and returns A as a csr_array.
+def spgemm_csr_csr_csc(B: csr_array, C: Any) -> csr_array:
+    # Here, we want to enable partitioning the i and j dimensions of
+    # A(i, j) = B(i, k) * C(k, j).  To do this, we'll first logically
+    # organize our processors into a 2-D grid, and partition the pos
+    # region of B along the i dimension of the processor grid,
+    # replicated onto the j dimension, and partition C along the j
+    # dimension, replicated onto the i dimension.
+    num_procs = runtime.num_procs
+    grid = Shape(factor_int(num_procs))
+
+    rows_proj_fn = runtime.get_1d_to_2d_functor_id(grid[0], grid[1], True)
+    cols_proj_fn = runtime.get_1d_to_2d_functor_id(grid[0], grid[1], False)
+    _sparse.register_legate_sparse_1d_to_2d_functor(
+        rows_proj_fn, grid[0], grid[1], True
+    )  # True is for the rows.
+    _sparse.register_legate_sparse_1d_to_2d_functor(
+        cols_proj_fn, grid[0], grid[1], False
+    )  # False is for the cols.
+
+    # To create a tiling on a 2-D color space of a 1-D region, we first
+    # promote the region into a 2-D region, and then apply a tiling to
+    # it with the correct color shape. In particular, we want to
+    # broadcast the colorings over the i dimension across the j
+    # dimension of the grid, which the promotion does for us.
+    my_promoted_pos = B.pos.promote(1)
+    my_pos_tiling = Tiling(
+        Shape(((B.pos.shape[0] + grid[0] - 1) // grid[0], 1)), grid
+    )
+    my_pos_partition = my_promoted_pos.partition(my_pos_tiling)
+    other_promoted_pos = C.pos.promote(0)
+    other_pos_tiling = (C.pos.shape[0] + grid[1] - 1) // grid[1]
+    other_pos_partition = other_promoted_pos.partition(
+        Tiling(Shape((1, other_pos_tiling)), grid)
+    )
+
+    # TODO (rohany): There's a really weird interaction here that needs
+    # help from wonchan.  If I'm deriving a partition from another, I
+    # need the partition pos before all of the transformations that are
+    # applied to it. However, the normal partition.partition is the
+    # partition before any transformations. I'm not sure what's the
+    # best way to untangle this.
+    my_pos_image = ImagePartition(
+        B.pos,
+        my_pos_partition._storage_partition._partition,
+        ctx.mapper_id,
+        range=True,
+    )
+    other_pos_image = ImagePartition(
+        C.pos,
+        other_pos_partition._storage_partition._partition,
+        ctx.mapper_id,
+        range=True,
+    )
+
+    # First, we launch a task that tiles the output matrix and creates
+    # a local csr matrix result for each tile.
+    task = ctx.create_manual_task(
+        SparseOpCode.SPGEMM_CSR_CSR_CSC_LOCAL_TILES,
+        launch_domain=Rect(hi=(num_procs,)),
+    )
+    # Note that while we colored the region in a 2-D color space,
+    # legate does some smart things to essentially reduce the coloring
+    # to a 1-D coloring and uses projection functors to send the right
+    # subregions to the right tasks.  So, we use a special functor that
+    # we register that understands the logic for this particular type
+    # of partitioning.
+    task.add_input(my_pos_partition, proj=rows_proj_fn)
+    task.add_input(B.crd.partition(my_pos_image), proj=rows_proj_fn)
+    task.add_input(B.vals.partition(my_pos_image), proj=rows_proj_fn)
+    task.add_input(other_pos_partition, proj=cols_proj_fn)
+    task.add_input(C.crd.partition(other_pos_image), proj=cols_proj_fn)
+    task.add_input(C.vals.partition(other_pos_image), proj=cols_proj_fn)
+    # Finally, create some unbound stores that will represent the
+    # logical components of each sub-csr matrix that are created by the
+    # launched tasks.
+    pos = ctx.create_store(rect1, ndim=1)
+    crd = ctx.create_store(coord_ty, ndim=1)
+    vals = ctx.create_store(B.dtype, ndim=1)
+    task.add_output(pos)
+    task.add_output(crd)
+    task.add_output(vals)
+    task.add_scalar_arg(C.shape[0], types.int64)
+    task.execute()
+
+    # Due to recent changes in the legate core, we don't get a future
+    # map back if the size of the launch is 1, meaning that we won't
+    # have key partitions the launch over. Luckily if the launch domain
+    # has size 1 then all of the data structures we have created are a
+    # valid CSR array, so we can return early.
+    if num_procs == 1:
+        return csr_array(
+            (vals, crd, pos), shape=(B.shape[0], C.shape[1]), dtype=B.dtype
+        )
+
+    # After the local execution, we need to start building a global CSR
+    # array.  First, we offset all of the local pos pieces with indices
+    # in the global crd and vals arrays. Since each local pos region is
+    # already valid, we just need to perform a scan over the final size
+    # of each local crd region and offset each pos region by the
+    # result.
+    pos_part = pos.partition(pos.get_key_partition())
+    scan_local_results_and_scale_pos(
+        crd.get_key_partition()._weights, pos, pos_part, num_procs
+    )
+
+    # Now it gets trickier. We have to massage the local tiles of csr
+    # matrices into one global CSR matrix. To do this, we will consider
+    # each row of the processor grid independently. Within each row of
+    # the grid, each tile contains a CSR matrix over the same set of
+    # rows of the output, but different columns. So, we will distribute
+    # those rows across the processors in the current row. We construct
+    # a store that describes how the communication should occur between
+    # the processors in the current row. Each processor records the
+    # pieces of their local pos regions that correspond to the rows
+    # assigned to each other processor in the grid. We can then apply
+    # image operations to this store to collect the slices of the local
+    # results that should be sent to each processor. Precisely, we
+    # create a 3-D region that describes for each processor in the
+    # processor grid, the range of entries to be sent to the other
+    # processors in that row.
+    partitioner_store = ctx.create_store(
+        rect1, shape=Shape((grid[0], grid[1], grid[1]))
+    )
+    # TODO (rohany): This operation _should_ be possible with tiling
+    # operations, but I can't get the API to do what I want -- the
+    # problem appears to be trying to match a 2-D coloring onto a 3-D
+    # region.
+    partitioner_store_coloring = {}
+    for i in range(grid[0]):
+        for j in range(grid[1]):
+            rect = Rect(
+                lo=(i, j, 0),
+                hi=(i, j, grid[1] - 1),
+                dim=3,
+                exclusive=False,
+            )
+            partitioner_store_coloring[Point((i, j))] = rect
+    partitioner_store_partition = partitioner_store.partition(
+        DomainPartition(
+            partitioner_store.shape, grid, partitioner_store_coloring
+        )
+    )
+    task = ctx.create_manual_task(
+        SparseOpCode.SPGEMM_CSR_CSR_CSC_COMM_COMPUTE,
+        launch_domain=Rect(hi=(num_procs,)),
+    )
+    promote_1d_to_2d = ctx.get_projection_id(
+        SparseProjectionFunctor.PROMOTE_1D_TO_2D
+    )
+    task.add_output(partitioner_store_partition, proj=promote_1d_to_2d)
+    task.add_input(my_pos_partition, proj=rows_proj_fn)
+    task.add_input(pos_part)
+    # Scalar arguments must use the legate core type system.
+    task.add_scalar_arg(grid[0], types.int32)
+    task.add_scalar_arg(grid[1], types.int32)
+    task.execute()
+
+    # We now create a transposed partition of the store to get sets of
+    # ranges assigned to each processor. This partition selects for
+    # each processor the ranges created for that processor by all of
+    # the other processor.
+    transposed_partitioner_store_coloring = {}
+    for i in range(grid[0]):
+        for j in range(grid[1]):
+            rect = Rect(
+                lo=(i, 0, j),
+                hi=(i, grid[1] - 1, j),
+                dim=3,
+                exclusive=False,
+            )
+            transposed_partitioner_store_coloring[Point((i, j))] = rect
+    transposed_partition = partitioner_store.partition(
+        DomainPartition(
+            partitioner_store.shape,
+            grid,
+            transposed_partitioner_store_coloring,
+        )
+    )
+    # Cascade images down to the global pos, crd and vals regions.
+    global_pos_partition = pos.partition(
+        ImagePartition(
+            partitioner_store,
+            transposed_partition.partition,
+            ctx.mapper_id,
+            range=True,
+        )
+    )
+    global_crd_partition = crd.partition(
+        ImagePartition(
+            pos,
+            global_pos_partition.partition,
+            ctx.mapper_id,
+            range=True,
+        )
+    )
+    global_vals_partition = vals.partition(
+        ImagePartition(
+            pos,
+            global_pos_partition.partition,
+            ctx.mapper_id,
+            range=True,
+        )
+    )
+    # This next task utilizes the pieces computed by the transposed
+    # partition and gathers them into contiguous pieces to form the
+    # result csr matrix.
+    task = ctx.create_manual_task(
+        SparseOpCode.SPGEMM_CSR_CSR_CSC_SHUFFLE,
+        launch_domain=Rect(hi=(num_procs,)),
+    )
+    task.add_input(global_pos_partition, proj=promote_1d_to_2d)
+    task.add_input(global_crd_partition, proj=promote_1d_to_2d)
+    task.add_input(global_vals_partition, proj=promote_1d_to_2d)
+    # We could compute this up front with a 2 pass algorithm, but it
+    # seems expedient to just use Legion's output region support for
+    # now.
+    final_pos = ctx.create_store(rect1, ndim=1)
+    final_crd = ctx.create_store(coord_ty, ndim=1)
+    final_vals = ctx.create_store(B.dtype, ndim=1)
+    task.add_output(final_pos)
+    task.add_output(final_crd)
+    task.add_output(final_vals)
+    task.execute()
+
+    # At this point, we have an almost valid csr array. The only thing
+    # missing is that again each pos array created by the grouping task
+    # is not globally offset. We adjust this with one more scan over
+    # all of the output sizes.
+    weights = final_crd.get_key_partition()._weights
+    scan_local_results_and_scale_pos(
+        weights,
+        final_pos,
+        final_pos.partition(final_pos.get_key_partition()),
+        num_procs,
+    )
+    return csr_array(
+        (final_vals, final_crd, final_pos),
+        shape=Shape((B.shape[0], C.shape[1])),
+        dtype=B.dtype,
     )
 
 
