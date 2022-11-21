@@ -16,8 +16,8 @@
 
 #include "sparse/sort/sort.h"
 #include "sparse/sort/sort_template.inl"
-#include "thrust_allocator.h"
-#include "cuda_help.h"
+#include "sparse/util/thrust_allocator.h"
+#include "sparse/util/cuda_help.h"
 
 namespace sparse {
 

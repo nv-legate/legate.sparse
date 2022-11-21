@@ -16,7 +16,7 @@
 
 #include "sparse/array/csr/tropical_spmv.h"
 #include "sparse/array/csr/tropical_spmv_template.inl"
-#include "cuda_help.h"
+#include "sparse/util/cuda_help.h"
 
 namespace sparse {
 

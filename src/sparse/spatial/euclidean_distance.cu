@@ -16,9 +16,9 @@
 
 #include "sparse/spatial/euclidean_distance.h"
 #include "sparse/spatial/euclidean_distance_template.inl"
-#include "cuda_help.h"
-#include "distal_cuda_utils.h"
-#include "pitches.h"
+#include "sparse/util/cuda_help.h"
+#include "sparse/util/distal_cuda_utils.h"
+#include "sparse/util/pitches.h"
 
 namespace sparse {
 

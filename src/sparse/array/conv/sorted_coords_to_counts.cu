@@ -16,8 +16,8 @@
 
 #include "sparse/array/conv/sorted_coords_to_counts.h"
 #include "sparse/array/conv/sorted_coords_to_counts_template.inl"
-#include "cuda_help.h"
-#include "thrust_allocator.h"
+#include "sparse/util/cuda_help.h"
+#include "sparse/util/thrust_allocator.h"
 
 #include <thrust/execution_policy.h>
 #include <thrust/iterator/constant_iterator.h>

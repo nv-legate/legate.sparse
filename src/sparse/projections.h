@@ -16,7 +16,7 @@
 
 #pragma once
 
-#include "sparse_c.h"
+#include "sparse/sparse_c.h"
 #include "legate.h"
 
 namespace sparse {

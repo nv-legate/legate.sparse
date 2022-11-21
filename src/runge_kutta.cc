@@ -14,7 +14,7 @@
  *
  */
 
-#include "sparse.h"
+#include "sparse/sparse.h"
 #include "runge_kutta.h"
 
 using namespace Legion;

@@ -16,7 +16,7 @@
 
 #include "sparse/array/util/unzip_rect.h"
 #include "sparse/array/util/unzip_rect_template.inl"
-#include "cuda_help.h"
+#include "sparse/util/cuda_help.h"
 
 namespace sparse {
 

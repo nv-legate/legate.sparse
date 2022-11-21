@@ -16,7 +16,7 @@
 
 #include "sparse/array/util/zip_to_rect.h"
 #include "sparse/array/util/zip_to_rect_template.inl"
-#include "cuda_help.h"
+#include "sparse/util/cuda_help.h"
 
 namespace sparse {
 

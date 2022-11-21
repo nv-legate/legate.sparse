@@ -17,7 +17,7 @@
 #include "sparse/array/csr/spmm.h"
 #include "sparse/array/csr/spmm_template.inl"
 #include "sparse/util/cusparse_utils.h"
-#include "distal_cuda_utils.h"
+#include "sparse/util/distal_cuda_utils.h"
 
 namespace sparse {
 

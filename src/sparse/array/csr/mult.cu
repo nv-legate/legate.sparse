@@ -17,7 +17,7 @@
 #include "sparse/array/csr/mult.h"
 #include "sparse/array/csr/mult_template.inl"
 #include "sparse/util/typedefs.h"
-#include "cuda_help.h"
+#include "sparse/util/cuda_help.h"
 
 namespace sparse {
 

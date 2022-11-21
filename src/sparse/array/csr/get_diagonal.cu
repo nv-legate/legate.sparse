@@ -16,7 +16,7 @@
 
 #include "sparse/array/csr/get_diagonal.h"
 #include "sparse/array/csr/get_diagonal_template.inl"
-#include "cuda_help.h"
+#include "sparse/util/cuda_help.h"
 
 namespace sparse {
 

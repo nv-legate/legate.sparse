@@ -15,7 +15,7 @@
  */
 
 #include "legate.h"
-#include "sparse_c.h"
+#include "sparse/sparse_c.h"
 #include "sparse/mapper/mapper.h"
 
 #include <algorithm>

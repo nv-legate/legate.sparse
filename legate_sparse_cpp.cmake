@@ -104,6 +104,7 @@ include(cmake/Modules/set_cpu_arch_flags.cmake)
 set_cpu_arch_flags(legate_sparse_CXX_OPTIONS)
 
 list(APPEND legate_sparse_SOURCES
+  src/quantum/quantum.cc
   src/sparse/array/conv/coo_to_dense.cc
   src/sparse/array/conv/csc_to_dense.cc
   src/sparse/array/conv/csr_to_dense.cc
@@ -131,17 +132,17 @@ list(APPEND legate_sparse_SOURCES
   src/sparse/linalg/axpby.cc
   src/sparse/partition/bounds_from_partitioned_coordinates.cc
   src/sparse/partition/fast_image_range.cc
+  src/sparse/projections.cc
   src/sparse/sort/sort.cc
   src/sparse/spatial/euclidean_distance.cc
   src/sparse/util/upcast_future.cc
 
-  src/projections.cc
-  src/quantum.cc
   src/runge_kutta.cc
 )
 
 if(Legion_USE_OpenMP)
   list(APPEND legate_sparse_SOURCES
+    src/quantum/quantum_omp.cc
     src/sparse/array/conv/csc_to_dense_omp.cc
     src/sparse/array/conv/csr_to_dense_omp.cc
     src/sparse/array/conv/dense_to_csc_omp.cc
@@ -169,7 +170,6 @@ if(Legion_USE_OpenMP)
     src/sparse/sort/sort_omp.cc
     src/sparse/spatial/euclidean_distance_omp.cc
 
-    src/quantum_omp.cc
     src/runge_kutta_omp.cc
   )
 endif()
@@ -197,13 +197,12 @@ if(Legion_USE_CUDA)
     src/sparse/array/util/scale_rect.cu
     src/sparse/array/util/unzip_rect.cu
     src/sparse/array/util/zip_to_rect.cu
+    src/sparse/cudalibs.cu
     src/sparse/linalg/axpby.cu
     src/sparse/partition/bounds_from_partitioned_coordinates.cu
     src/sparse/partition/fast_image_range.cu
     src/sparse/sort/sort.cu
     src/sparse/spatial/euclidean_distance.cu
-
-    src/cudalibs.cu
   )
 endif()
 
@@ -211,7 +210,7 @@ list(APPEND legate_sparse_SOURCES
   # This must always be the last file!
   # It guarantees we do our registration callback
   # only after all task variants are recorded
-  src/sparse.cc
+  src/sparse/sparse.cc
 )
 
 if(NOT CMAKE_BUILD_TYPE STREQUAL "Release")
