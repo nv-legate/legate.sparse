@@ -70,16 +70,16 @@ struct SpGEMMCSRxCSRxCSCLocalTilesImplBody<VariantKind::OMP, INDEX_CODE, VAL_COD
     }
 
     // Do an in-place, inclusive scan on nnz.
-    auto nnz_base = nnz.ptr(B_lo);
+    auto nnz_base = nnz.ptr(B_rect.lo[0]);
     thrust::inclusive_scan(
-      thrust::omp::par, nnz_base, nnz_base + (B_hi[0] - B_lo[0] + 1), nnz_base);
+      thrust::omp::par, nnz_base, nnz_base + (B_rect.hi[0] - B_rect.lo[0] + 1), nnz_base);
     // Construct the final pos array.
     auto A_pos =
       A_pos_store.create_output_buffer<Rect<1>, 1>(B_rect.volume(), true /* return_buffer */);
 #pragma omp parallel for schedule(static)
     for (size_t i = B_rect.lo[0]; i < B_rect.hi[0] + 1; i++) {
-      size_t prev                 = i == B_rect.lo[0] ? 0 : nnz[i - 1];
-      A_pos_acc[i - B_rect.lo[0]] = {prev, nnz[i] - 1};
+      size_t prev             = i == B_rect.lo[0] ? 0 : nnz[i - 1];
+      A_pos[i - B_rect.lo[0]] = {prev, nnz[i] - 1};
     }
     auto tot_nnz = nnz[B_rect.hi[0]];
     auto A_crd   = A_crd_store.create_output_buffer<INDEX_TY, 1>(tot_nnz, true /* return_buffer */);
@@ -88,7 +88,7 @@ struct SpGEMMCSRxCSRxCSCLocalTilesImplBody<VariantKind::OMP, INDEX_CODE, VAL_COD
     for (auto i = B_rect.lo[0]; i < B_rect.hi[0] + 1; i++) {
       // Important: We need to offset the access into the output buffers, as they
       // are not globally indexed objects.
-      size_t nnz_pos = A_pos[i - B_lo[0]].lo;
+      size_t nnz_pos = A_pos[i - B_rect.lo[0]].lo;
       for (auto j = C_rect.lo[0]; j < C_rect.hi[0] + 1; j++) {
         VAL_TY result     = static_cast<VAL_TY>(0);
         bool set          = false;
@@ -183,7 +183,7 @@ struct SpGEMMCSRxCSRxCSCShuffleImplBody<VariantKind::OMP, INDEX_CODE, VAL_CODE> 
       size_t elems = 0;
       for (auto rect : rects) {
         auto global_pos_idx = rect.lo + i;
-        if (rect.contains(global_pos_idx)) { elems += global_pos_acc[global_pos_idx].volume(); }
+        if (rect.contains(global_pos_idx)) { elems += global_pos[global_pos_idx].volume(); }
       }
       row_offsets[i] = elems;
     }

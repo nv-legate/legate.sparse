@@ -78,9 +78,9 @@ struct SpGEMMCSRxCSRxCSRGPUImpl {
     // Cast the input arrays into 32 bit integer coordinates if needed.
     int32_t* B_crd_int = nullptr;
     int32_t* C_crd_int = nullptr;
-    if constexpr (VAL_CODE == LegateTypeCode::INT32_LT) {
-      B_crd_int = B_crd.read_accessor<INDEX_TY, 1>().ptr(B_crd.domain().lo());
-      C_crd_int = C_crd.read_accessor<INDEX_TY, 1>().ptr(C_crd.domain().lo());
+    if constexpr (INDEX_CODE == LegateTypeCode::INT32_LT) {
+      B_crd_int = const_cast<int32_t*>(B_crd.read_accessor<INDEX_TY, 1>().ptr(B_crd.domain().lo()));
+      C_crd_int = const_cast<int32_t*>(C_crd.read_accessor<INDEX_TY, 1>().ptr(C_crd.domain().lo()));
     } else {
       DeferredBuffer<int32_t, 1> B_crd_int_buf({0, B_crd.domain().get_volume() - 1},
                                                Memory::GPU_FB_MEM);

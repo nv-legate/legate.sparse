@@ -44,21 +44,21 @@ std::vector<StoreMapping> LegateSparseMapper::store_mappings(
     // If we're running on a GPU, then we need to map the output region
     // into zero copy memory. We can check this by seeing if zero copy
     // memory is an option for us to map tasks onto.
-    if (std::find(options.begin(), options.end(), StoreTarget::ZCMEM) != options.end) {
+    if (std::find(options.begin(), options.end(), StoreTarget::ZCMEM) != options.end()) {
       auto& outputs = task.outputs();
       auto& inputs  = task.inputs();
       assert(outputs.size() + inputs.size() == 3);
       std::vector<StoreMapping> mappings(3);
       mappings[0] = StoreMapping::default_mapping(outputs[0], StoreTarget::ZCMEM);
-      mappings[1] = StoreMapping::default_mapping(inputs[0].options.front());
-      mappings[2] = StoreMapping::default_mapping(inputs[1].options.front());
+      mappings[1] = StoreMapping::default_mapping(inputs[0], options.front());
+      mappings[2] = StoreMapping::default_mapping(inputs[1], options.front());
       return mappings;
     }
   }
   // Just do the default thing for now.
   auto& inputs = task.inputs();
   std::vector<StoreMapping> mappings(inputs.size());
-  for (size_t i = 0; i < inputs().size(); i++) {
+  for (size_t i = 0; i < inputs.size(); i++) {
     mappings[i] = StoreMapping::default_mapping(inputs[i], options.front());
   }
   return mappings;

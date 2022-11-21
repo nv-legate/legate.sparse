@@ -28,7 +28,7 @@ using namespace Legion;
 using namespace legate;
 
 template <typename INDEX_TY>
-__global__ void offset_coordinates_to_global(size_t elems, INDEX_TY offset, INDEX_TY* coords)
+__global__ void offset_coordinates_to_global(size_t elems, coord_t offset, INDEX_TY* coords)
 {
   const auto idx = global_tid_1d();
   if (idx >= elems) return;
@@ -85,8 +85,8 @@ struct SpGEMMCSRxCSRxCSCLocalTilesImpl<VariantKind::GPU> {
     int32_t* B_crd_int = nullptr;
     int32_t* C_crd_int = nullptr;
     if constexpr (INDEX_CODE == LegateTypeCode::INT32_LT) {
-      B_crd_int = B_crd.read_accessor<INDEX_TY, 1>().ptr(B_crd.domain().lo());
-      C_crd_int = C_crd.read_accessor<INDEX_TY, 1>().ptr(C_crd.domain().lo());
+      B_crd_int = const_cast<int32_t*>(B_crd.read_accessor<INDEX_TY, 1>().ptr(B_crd.domain().lo()));
+      C_crd_int = const_cast<int32_t*>(C_crd.read_accessor<INDEX_TY, 1>().ptr(C_crd.domain().lo()));
     } else {
       DeferredBuffer<int32_t, 1> B_crd_int_buf({0, B_crd.domain().get_volume() - 1},
                                                Memory::GPU_FB_MEM);
@@ -96,15 +96,15 @@ struct SpGEMMCSRxCSRxCSCLocalTilesImpl<VariantKind::GPU> {
         auto dom    = B_crd.domain();
         auto elems  = dom.get_volume();
         auto blocks = get_num_blocks_1d(elems);
-        cast<int, coord_ty><<<blocks, THREADS_PER_BLOCK, 0, stream>>>(
-          elems, B_crd_int_buf.ptr(0), B_crd.read_accessor<coord_ty, 1>().ptr(dom.lo()));
+        cast<int32_t, INDEX_TY><<<blocks, THREADS_PER_BLOCK, 0, stream>>>(
+          elems, B_crd_int_buf.ptr(0), B_crd.read_accessor<INDEX_TY, 1>().ptr(dom.lo()));
       }
       {
         auto dom    = C_crd.domain();
         auto elems  = dom.get_volume();
         auto blocks = get_num_blocks_1d(elems);
-        cast<int, coord_ty><<<blocks, THREADS_PER_BLOCK, 0, stream>>>(
-          elems, C_crd_int_buf.ptr(0), C_crd.read_accessor<coord_ty, 1>().ptr(dom.lo()));
+        cast<int32_t, INDEX_TY><<<blocks, THREADS_PER_BLOCK, 0, stream>>>(
+          elems, C_crd_int_buf.ptr(0), C_crd.read_accessor<INDEX_TY, 1>().ptr(dom.lo()));
       }
       B_crd_int = B_crd_int_buf.ptr(0);
       C_crd_int = C_crd_int_buf.ptr(0);
@@ -124,8 +124,8 @@ struct SpGEMMCSRxCSRxCSCLocalTilesImpl<VariantKind::GPU> {
                                                  C_rows,
                                                  C_crd.domain().get_volume(),
                                                  getPtrFromStore<VAL_TY, 1>(C_vals),
-                                                 C_indptr,
-                                                 C_crd_int.ptr(0),
+                                                 C_indptr.ptr(0),
+                                                 C_crd_int,
                                                  C_CSR_vals.ptr(0),
                                                  C_CSR_indptr.ptr(0),
                                                  C_CSR_crd.ptr(0),
@@ -141,8 +141,8 @@ struct SpGEMMCSRxCSRxCSCLocalTilesImpl<VariantKind::GPU> {
                                       C_rows,
                                       C_crd.domain().get_volume(),
                                       getPtrFromStore<VAL_TY, 1>(C_vals),
-                                      C_indptr,
-                                      C_crd_int.ptr(0),
+                                      C_indptr.ptr(0),
+                                      C_crd_int,
                                       C_CSR_vals.ptr(0),
                                       C_CSR_indptr.ptr(0),
                                       C_CSR_crd.ptr(0),
@@ -159,8 +159,8 @@ struct SpGEMMCSRxCSRxCSCLocalTilesImpl<VariantKind::GPU> {
                                      B_rows,
                                      C_rows /* cols */,
                                      B_crd.domain().get_volume() /* nnz */,
-                                     B_indptr,
-                                     B_crd_int.ptr(0),
+                                     B_indptr.ptr(0),
+                                     B_crd_int,
                                      getPtrFromStore<VAL_TY, 1>(B_vals),
                                      CUSPARSE_INDEX_32I,
                                      CUSPARSE_INDEX_32I,
@@ -268,7 +268,7 @@ struct SpGEMMCSRxCSRxCSCLocalTilesImpl<VariantKind::GPU> {
     } else {
       A_crd_int = DeferredBuffer<int32_t, 1>({0, A_nnz - 1}, Memory::GPU_FB_MEM);
     }
-    auto A_vals_acc = A_vals.create_output_buffer<val_ty, 1>(A_nnz, true /* return_buffer */);
+    auto A_vals_acc = A_vals.create_output_buffer<VAL_TY, 1>(A_nnz, true /* return_buffer */);
     CHECK_CUSPARSE(
       cusparseCsrSetPointers(cusparse_A, A_indptr.ptr(0), A_crd_int.ptr(0), A_vals_acc.ptr(0)));
     CHECK_CUSPARSE(cusparseSpGEMM_copy(handle,
@@ -410,14 +410,14 @@ struct SpGEMMCSRxCSRxCSCShuffleImplBody<VariantKind::GPU, INDEX_CODE, VAL_CODE> 
       total_rows = std::max(itr->volume(), total_rows);
       if (itr->empty()) continue;
       Rect<1> lo, hi;
-      cudaMemcpy(&lo, global_pos_acc.ptr(itr->lo), sizeof(Rect<1>), cudaMemcpyDeviceToHost);
-      cudaMemcpy(&hi, global_pos_acc.ptr(itr->hi), sizeof(Rect<1>), cudaMemcpyDeviceToHost);
+      cudaMemcpy(&lo, global_pos.ptr(itr->lo), sizeof(Rect<1>), cudaMemcpyDeviceToHost);
+      cudaMemcpy(&hi, global_pos.ptr(itr->hi), sizeof(Rect<1>), cudaMemcpyDeviceToHost);
       total_nnzs += hi.hi[0] - lo.lo[0] + 1;
     }
     // Allocate our output buffers.
     auto pos_acc  = out_pos.create_output_buffer<Rect<1>, 1>(total_rows, true /* return_buffer */);
-    auto crd_acc  = out_crd.create_output_buffer<coord_ty, 1>(total_nnzs, true /* return_buffer */);
-    auto vals_acc = out_vals.create_output_buffer<val_ty, 1>(total_nnzs, true /* return_buffer */);
+    auto crd_acc  = out_crd.create_output_buffer<INDEX_TY, 1>(total_nnzs, true /* return_buffer */);
+    auto vals_acc = out_vals.create_output_buffer<VAL_TY, 1>(total_nnzs, true /* return_buffer */);
 
     // We'll start with a simple row-based parallelization for our copies. If/when performance
     // suffers due to this, we can think about algorithms for a full-data based parallelization.
@@ -427,7 +427,7 @@ struct SpGEMMCSRxCSRxCSCShuffleImplBody<VariantKind::GPU, INDEX_CODE, VAL_CODE> 
       rects.ptr(0), rects_cpu.data(), sizeof(Rect<1>) * rects_cpu.size(), cudaMemcpyHostToDevice);
     auto blocks = get_num_blocks_1d(total_rows);
     calculate_copy_sizes<<<blocks, THREADS_PER_BLOCK, 0, stream>>>(
-      total_rows, rects_cpu.size(), rects, row_offsets, global_pos_acc);
+      total_rows, rects_cpu.size(), rects, row_offsets, global_pos);
     // Scan over the counts to find the offsets for each row.
     ThrustAllocator alloc(Memory::GPU_FB_MEM);
     auto policy = thrust::cuda::par(alloc).on(stream);
