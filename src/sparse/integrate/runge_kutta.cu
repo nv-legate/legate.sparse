@@ -24,13 +24,13 @@ using namespace Legion;
 using namespace legate;
 
 template <typename K_TY, typename A_TY>
-__global__ rk_kernel(const size_t elems,
-                     const coord_t offset,
-                     const AccessorWO<K_TY, 1> dy,
-                     const AccessorRO<K_TY, 2> K,
-                     const AccessorRO<A_TY, 1> a,
-                     const int32_t s,
-                     const double h)
+__global__ void rk_kernel(const size_t elems,
+                          const coord_t offset,
+                          const AccessorWO<K_TY, 1> dy,
+                          const AccessorRO<K_TY, 2> K,
+                          const AccessorRO<A_TY, 1> a,
+                          const int32_t s,
+                          const double h)
 {
   const auto tid = global_tid_1d();
   if (tid >= elems) return;

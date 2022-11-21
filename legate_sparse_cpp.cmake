@@ -169,8 +169,6 @@ if(Legion_USE_OpenMP)
     src/sparse/partition/fast_image_range_omp.cc
     src/sparse/sort/sort_omp.cc
     src/sparse/spatial/euclidean_distance_omp.cc
-
-    src/runge_kutta_omp.cc
   )
 endif()
 
