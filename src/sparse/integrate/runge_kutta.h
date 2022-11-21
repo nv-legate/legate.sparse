@@ -22,12 +22,23 @@
 
 namespace sparse {
 
+struct RKCalcDyArgs {
+  const legate::Store& dy;
+  const legate::Store& K;
+  const legate::Store& a;
+  const int32_t s;
+  const double h;
+};
+
 class RKCalcDy : public SparseTask<RKCalcDy> {
  public:
   static const int TASK_ID = LEGATE_SPARSE_RK_CALC_DY;
   static void cpu_variant(legate::TaskContext& ctx);
 #ifdef LEGATE_USE_OPENMP
   static void omp_variant(legate::TaskContext& ctx);
+#endif
+#ifdef LEGATE_USE_CUDA
+  static void gpu_variant(legate::TaskContext& ctx);
 #endif
 };
 
