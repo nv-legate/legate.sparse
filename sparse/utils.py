@@ -159,19 +159,6 @@ def cast_arr(arr, dtype=None):
     return arr
 
 
-# require_float64_dtypes is a helper utility to ensure that we only
-# use float64 types for operations without type dispatch until we
-# have type dispatch implemented for all of the operations.
-def require_float64_dtypes(*args):
-    for o in args:
-        if o is None:
-            continue
-        if o.dtype != numpy.float64:
-            raise NotImplementedError(
-                "This operation currently only supports float64 types."
-            )
-
-
 # find_common_type performs a similar analysis to
 # cunumeric.ndarray.find_common_type to find a common type
 # between all of the arguments.
