@@ -67,9 +67,9 @@ from .runtime import ctx, runtime
 from .types import coord_ty, float64, nnz_ty
 from .utils import (
     cast_arr,
+    cast_to_common_type,
     cast_to_store,
     get_store_from_cunumeric_array,
-    require_float64_dtypes,
     store_to_cunumeric_array,
 )
 
@@ -344,7 +344,6 @@ class csc_array(CompressedBase, DenseSparseBase):
         return self
 
     def dot(self, other, out=None):
-        require_float64_dtypes(self, other, out)
         if out is not None:
             assert isinstance(out, cunumeric.ndarray)
         if len(other.shape) == 1 or (
@@ -357,39 +356,30 @@ class csc_array(CompressedBase, DenseSparseBase):
                 other = other.squeeze(1)
                 other_originally_2d = True
             assert self.shape[1] == other.shape[0]
-            # Ensure that we write into the output when possible.
-            if out is not None:
+
+            A, x = cast_to_common_type(self, other)
+            if out is None:
+                y = cunumeric.zeros((self.shape[0],), dtype=A.dtype)
+            else:
+                if out.dtype != A.dtype:
+                    raise ValueError(
+                        f"Output type {out.dtype} is not consistent "
+                        f"with resolved dtype {A.dtype}"
+                    )
                 if other_originally_2d:
                     assert out.shape == (self.shape[0], 1)
                     out = out.squeeze(1)
                 else:
                     assert out.shape == (self.shape[0],)
-                out.fill(0.0)
-                output = out
-                output_store = get_store_from_cunumeric_array(out)
-            else:
-                output = cunumeric.zeros((self.shape[0],), dtype=float64)
-                output_store = get_store_from_cunumeric_array(output)
-            other_store = get_store_from_cunumeric_array(other)
-            task = ctx.create_task(SparseOpCode.CSC_SPMV_COL_SPLIT)
-            task.add_reduction(output_store, ReductionOp.ADD)
-            task.add_input(self.pos)
-            task.add_input(self.crd)
-            task.add_input(self.vals)
-            task.add_input(other_store)
-            task.add_broadcast(output_store)
-            task.add_alignment(self.pos, other_store)
-            task.add_image_constraint(
-                self.pos,
-                self.crd,
-                range=True,
-                functor=CompressedImagePartition,
-            )
-            task.add_alignment(self.crd, self.vals)
-            task.execute()
+                out.fill(0)
+                y = out
+
+            # Invoke the SpMV after setup.
+            spmv(A, x, y)
+
             if other_originally_2d:
-                output = output.reshape((-1, 1))
-            return output
+                y = y.reshape((-1, 1))
+            return y
         else:
             return self.tocsr().dot(other, out=out)
 
@@ -400,7 +390,6 @@ class csc_array(CompressedBase, DenseSparseBase):
         raise NotImplementedError
 
     def todense(self, order=None, out=None):
-        require_float64_dtypes(self, out)
         if order is not None:
             raise NotImplementedError
         if out is not None:
@@ -436,18 +425,6 @@ class csc_array(CompressedBase, DenseSparseBase):
     # is _not_ part of the scipy.sparse package but is prudent to add as
     # a kernel in many emerging workloads.
     def sddmm(self, C, D):
-        # We'll start out with a row-based distribution of the CSR matrix.  In
-        # the future, we can look into doing a non-zero based distribution of
-        # the computation, as there aren't really any downsides of doing it
-        # versus a row-based distribution. The problem with both is that they
-        # require replicating the D matrix onto all processors. Doing a
-        # partitioning strategy that partitions up the j dimension of the
-        # computation is harder.  This operation is also non-zero structure
-        # preserving, so we'll just write into an output array of values and
-        # share the pos and crd arrays.
-        # TODO (rohany): An option is also partitioning up the `k` dimension of
-        # the computation (allows for partitioning C twice and D once), but
-        # requires reducing into the output.
         if isinstance(C, numpy.ndarray):
             C = cunumeric.array(C)
         if isinstance(D, numpy.ndarray):
@@ -458,45 +435,7 @@ class csc_array(CompressedBase, DenseSparseBase):
             and self.shape[1] == D.shape[1]
             and C.shape[1] == D.shape[0]
         )
-        require_float64_dtypes(self, C, D)
-        C_store = get_store_from_cunumeric_array(C)
-        D_store = get_store_from_cunumeric_array(D)
-        result_vals = ctx.create_store(self.dtype, shape=self.vals.shape)
-
-        promoted_pos = self.pos.promote(0, D_store.shape[0])
-        task = ctx.create_task(SparseOpCode.CSC_SDDMM)
-        task.add_output(result_vals)
-        task.add_input(promoted_pos)
-        task.add_input(self.crd)
-        task.add_input(self.vals)
-        task.add_input(C_store)
-        task.add_input(D_store)
-        # Partition the rows of the sparse matrix and C.
-        task.add_broadcast(promoted_pos, 0)
-        task.add_alignment(promoted_pos, D_store)
-        task.add_image_constraint(
-            promoted_pos,
-            result_vals,
-            range=True,
-            functor=CompressedImagePartition,
-        )
-        task.add_image_constraint(
-            promoted_pos,
-            self.crd,
-            range=True,
-            functor=CompressedImagePartition,
-        )
-        task.add_image_constraint(
-            promoted_pos,
-            self.vals,
-            range=True,
-            functor=CompressedImagePartition,
-        )
-        task.add_broadcast(C_store)
-        task.execute()
-        return csc_array.make_with_same_nnz_structure(
-            self, (result_vals, self.crd, self.pos)
-        )
+        return sddmm_impl(*cast_to_common_type(self, C, D))
 
     # TODO (rohany): Deduplicate these methods against csr_matrix.
     def __str__(self):
@@ -510,6 +449,85 @@ class csc_array(CompressedBase, DenseSparseBase):
 
     def _unpack_pos(self):
         return unpack_rect1_store(self.pos)
+
+
+# spmv computes y = A @ x.
+def spmv(A: csc_array, x: cunumeric.ndarray, y: cunumeric.ndarray) -> None:
+    x_store = get_store_from_cunumeric_array(x)
+    y_store = get_store_from_cunumeric_array(y)
+
+    task = ctx.create_task(SparseOpCode.CSC_SPMV_COL_SPLIT)
+    task.add_reduction(y_store, ReductionOp.ADD)
+    task.add_input(A.pos)
+    task.add_input(A.crd)
+    task.add_input(A.vals)
+    task.add_input(x_store)
+    task.add_broadcast(y_store)
+    task.add_alignment(A.pos, x_store)
+    task.add_image_constraint(
+        A.pos,
+        A.crd,
+        range=True,
+        functor=CompressedImagePartition,
+    )
+    task.add_alignment(A.crd, A.vals)
+    task.execute()
+
+
+# sddmm_impl computes A = B * (C @ D) when B is sparse, and returns A.
+def sddmm_impl(
+    B: csc_array, C: cunumeric.ndarray, D: cunumeric.ndarray
+) -> csc_array:
+    # We'll start out with a row-based distribution of the CSR matrix.  In
+    # the future, we can look into doing a non-zero based distribution of
+    # the computation, as there aren't really any downsides of doing it
+    # versus a row-based distribution. The problem with both is that they
+    # require replicating the D matrix onto all processors. Doing a
+    # partitioning strategy that partitions up the j dimension of the
+    # computation is harder.  This operation is also non-zero structure
+    # preserving, so we'll just write into an output array of values and
+    # share the pos and crd arrays.
+    # TODO (rohany): An option is also partitioning up the `k` dimension of
+    # the computation (allows for partitioning C twice and D once), but
+    # requires reducing into the output.
+    C_store = get_store_from_cunumeric_array(C)
+    D_store = get_store_from_cunumeric_array(D)
+    result_vals = ctx.create_store(B.dtype, shape=B.vals.shape)
+
+    promoted_pos = B.pos.promote(0, D_store.shape[0])
+    task = ctx.create_task(SparseOpCode.CSC_SDDMM)
+    task.add_output(result_vals)
+    task.add_input(promoted_pos)
+    task.add_input(B.crd)
+    task.add_input(B.vals)
+    task.add_input(C_store)
+    task.add_input(D_store)
+    # Partition the rows of the sparse matrix and C.
+    task.add_broadcast(promoted_pos, 0)
+    task.add_alignment(promoted_pos, D_store)
+    task.add_image_constraint(
+        promoted_pos,
+        result_vals,
+        range=True,
+        functor=CompressedImagePartition,
+    )
+    task.add_image_constraint(
+        promoted_pos,
+        B.crd,
+        range=True,
+        functor=CompressedImagePartition,
+    )
+    task.add_image_constraint(
+        promoted_pos,
+        B.vals,
+        range=True,
+        functor=CompressedImagePartition,
+    )
+    task.add_broadcast(C_store)
+    task.execute()
+    return csc_array.make_with_same_nnz_structure(
+        B, (result_vals, B.crd, B.pos)
+    )
 
 
 csc_matrix = csc_array

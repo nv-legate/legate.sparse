@@ -20,7 +20,7 @@ import pytest
 import scipy.io as sci_io
 import scipy.sparse as scpy
 from legate.core.solver import Partitioner
-from utils.common import test_mtx_files
+from utils.common import test_mtx_files, types
 
 import sparse.io as legate_io
 from sparse import csc_array, runtime
@@ -83,20 +83,23 @@ def test_csc_conj(filename, copy):
 
 
 @pytest.mark.parametrize("filename", test_mtx_files)
-def test_csc_dot(filename):
+@pytest.mark.parametrize("mat_type", types)
+@pytest.mark.parametrize("vec_type", types)
+def test_csc_dot(filename, mat_type, vec_type):
     # Test vectors and n-1 matrices.
-    arr = legate_io.mmread(filename).tocsc()
-    s = sci_io.mmread(filename).tocsc()
-    vec = np.random.random((arr.shape[0]))
+    arr = legate_io.mmread(filename).tocsc().astype(mat_type)
+    s = sci_io.mmread(filename).tocsc().astype(mat_type)
+    vec = np.random.random((arr.shape[0])).astype(vec_type)
     assert np.allclose(arr @ vec, s @ vec)
     assert np.allclose(arr.dot(vec), s.dot(vec))
-    result_l = np.zeros((arr.shape[0]))
+    out_type = numpy.find_common_type([mat_type, vec_type], [])
+    result_l = np.zeros((arr.shape[0]), dtype=out_type)
     arr.dot(vec, out=result_l)
     assert np.allclose(result_l, s.dot(vec))
-    vec = np.random.random((arr.shape[0], 1))
+    vec = np.random.random((arr.shape[0], 1)).astype(vec_type)
     assert np.allclose(arr @ vec, s @ vec)
     assert np.allclose(arr.dot(vec), s.dot(vec))
-    result_l = np.zeros((arr.shape[0], 1))
+    result_l = np.zeros((arr.shape[0], 1), dtype=out_type)
     arr.dot(vec, out=result_l)
     assert np.allclose(result_l, s.dot(vec))
 
