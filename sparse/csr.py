@@ -1145,7 +1145,7 @@ def spgemm_csr_csr_csr(B: csr_array, C: csr_array) -> csr_array:
     if runtime.num_gpus > 0:
         pos = ctx.create_store(rect1, shape=B.shape[0])
         crd = ctx.create_store(coord_ty, ndim=1)
-        vals = ctx.create_store(float64, ndim=1)
+        vals = ctx.create_store(B.dtype, ndim=1)
         num_procs = runtime.num_procs
         tile_shape = (B.shape[0] + num_procs - 1) // num_procs
         tiling = Tiling(Shape(tile_shape), Shape(num_procs))
