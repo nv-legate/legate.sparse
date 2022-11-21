@@ -16,8 +16,8 @@
 
 #include "sparse/partition/bounds_from_partitioned_coordinates.h"
 #include "sparse/partition/bounds_from_partitioned_coordinates_template.inl"
-#include "cuda_help.h"
-#include "thrust_allocator.h"
+#include "sparse/util/cuda_help.h"
+#include "sparse/util/thrust_allocator.h"
 
 #include <thrust/extrema.h>
 

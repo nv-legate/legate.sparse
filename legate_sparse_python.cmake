@@ -46,7 +46,7 @@ endif()
 execute_process(
   COMMAND ${CMAKE_C_COMPILER}
     -E -DLEGATE_USE_PYTHON_CFFI
-    -P "${CMAKE_CURRENT_SOURCE_DIR}/src/sparse_c.h"
+    -P "${CMAKE_CURRENT_SOURCE_DIR}/src/sparse/sparse_c.h"
   ECHO_ERROR_VARIABLE
   OUTPUT_VARIABLE header
   COMMAND_ERROR_IS_FATAL ANY

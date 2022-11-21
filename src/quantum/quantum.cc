@@ -14,8 +14,8 @@
  *
  */
 
-#include "sparse.h"
-#include "quantum.h"
+#include "sparse/sparse.h"
+#include "quantum/quantum.h"
 
 using namespace Legion;
 

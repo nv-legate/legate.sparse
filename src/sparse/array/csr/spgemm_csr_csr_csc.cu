@@ -17,7 +17,7 @@
 #include "sparse/array/csr/spgemm_csr_csr_csc.h"
 #include "sparse/array/csr/spgemm_csr_csr_csc_template.inl"
 #include "sparse/util/cusparse_utils.h"
-#include "thrust_allocator.h"
+#include "sparse/util/thrust_allocator.h"
 
 #include <thrust/execution_policy.h>
 #include <thrust/scan.h>

@@ -14,7 +14,7 @@
  *
  */
 
-#include "sparse.h"
+#include "sparse/sparse.h"
 #include "projections.h"
 
 #include "sparse/mapper/mapper.h"

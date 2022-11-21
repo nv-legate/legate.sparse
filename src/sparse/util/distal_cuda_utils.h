@@ -46,9 +46,9 @@
 
 #pragma once
 
-#include "sparse.h"
-#include "cuda_help.h"
-#include "distal_utils.h"
+#include "sparse/sparse.h"
+#include "sparse/util/cuda_help.h"
+#include "sparse/util/distal_utils.h"
 
 namespace sparse {
 

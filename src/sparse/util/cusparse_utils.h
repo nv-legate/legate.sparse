@@ -14,8 +14,8 @@
  *
  */
 
-#include "sparse.h"
-#include "cuda_help.h"
+#include "sparse/sparse.h"
+#include "sparse/util/cuda_help.h"
 
 namespace sparse {
 

@@ -14,9 +14,9 @@
  *
  */
 
-#include "omp_help.h"
-#include "quantum.h"
-#include "sparse.h"
+#include "sparse/util/omp_help.h"
+#include "quantum/quantum.h"
+#include "sparse/sparse.h"
 
 #include <thrust/binary_search.h>
 #include <thrust/execution_policy.h>

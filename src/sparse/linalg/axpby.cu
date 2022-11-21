@@ -16,7 +16,7 @@
 
 #include "sparse/linalg/axpby.h"
 #include "sparse/linalg/axpby_template.inl"
-#include "cuda_help.h"
+#include "sparse/util/cuda_help.h"
 
 namespace sparse {
 

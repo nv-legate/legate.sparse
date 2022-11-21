@@ -14,9 +14,9 @@
  *
  */
 
-#include "sparse.h"
-#include "sparse_c.h"
-#include "cudalibs.h"
+#include "sparse/sparse.h"
+#include "sparse/sparse_c.h"
+#include "sparse/cudalibs.h"
 
 #include <stdio.h>
 

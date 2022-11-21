@@ -16,7 +16,7 @@
 
 #include "sparse/array/csc/sddmm.h"
 #include "sparse/array/csc/sddmm_template.inl"
-#include "distal_utils.h"
+#include "sparse/util/distal_utils.h"
 
 #include <omp.h>
 
