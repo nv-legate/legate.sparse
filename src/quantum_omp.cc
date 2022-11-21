@@ -17,7 +17,6 @@
 #include "omp_help.h"
 #include "quantum.h"
 #include "sparse.h"
-#include "tasks.h"
 
 #include <thrust/binary_search.h>
 #include <thrust/execution_policy.h>
@@ -26,6 +25,8 @@
 using namespace Legion;
 
 namespace sparse {
+
+using coord_ty = int64_t;
 
 template <int N, typename T>
 void EnumerateIndependentSets::omp_variant_impl(legate::TaskContext& ctx)

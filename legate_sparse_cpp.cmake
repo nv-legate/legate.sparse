@@ -118,6 +118,7 @@ list(APPEND legate_sparse_SOURCES
   src/sparse/array/csr/mult.cc
   src/sparse/array/csr/mult_dense.cc
   src/sparse/array/csr/sddmm.cc
+  src/sparse/array/csr/spgemm_csr_csr_csc.cc
   src/sparse/array/csr/spgemm_csr_csr_csr.cc
   src/sparse/array/csr/spmm.cc
   src/sparse/array/csr/spmv.cc
@@ -137,7 +138,6 @@ list(APPEND legate_sparse_SOURCES
   src/projections.cc
   src/quantum.cc
   src/runge_kutta.cc
-  src/tasks.cc
 )
 
 if(Legion_USE_OpenMP)
@@ -155,6 +155,7 @@ if(Legion_USE_OpenMP)
     src/sparse/array/csr/mult_omp.cc
     src/sparse/array/csr/mult_dense_omp.cc
     src/sparse/array/csr/sddmm_omp.cc
+    src/sparse/array/csr/spgemm_csr_csr_csc_omp.cc
     src/sparse/array/csr/spgemm_csr_csr_csr_omp.cc
     src/sparse/array/csr/spmm_omp.cc
     src/sparse/array/csr/spmv_omp.cc
@@ -170,7 +171,6 @@ if(Legion_USE_OpenMP)
 
     src/quantum_omp.cc
     src/runge_kutta_omp.cc
-    src/tasks_omp.cc
   )
 endif()
 
@@ -189,6 +189,7 @@ if(Legion_USE_CUDA)
     src/sparse/array/csr/mult.cu
     src/sparse/array/csr/mult_dense.cu
     src/sparse/array/csr/sddmm.cu
+    src/sparse/array/csr/spgemm_csr_csr_csc.cu
     src/sparse/array/csr/spgemm_csr_csr_csr.cu
     src/sparse/array/csr/spmm.cu
     src/sparse/array/csr/spmv.cu
@@ -203,7 +204,6 @@ if(Legion_USE_CUDA)
     src/sparse/spatial/euclidean_distance.cu
 
     src/cudalibs.cu
-    src/tasks.cu
   )
 endif()
 

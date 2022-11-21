@@ -20,20 +20,22 @@
 #include "sparse_c.h"
 #include "legate.h"
 
-#include <thrust/execution_policy.h>
-#include <thrust/functional.h>
-#include <thrust/gather.h>
-#include <thrust/iterator/counting_iterator.h>
-#include <thrust/scan.h>
-#include <thrust/scatter.h>
-#include <thrust/transform.h>
-
 namespace sparse {
 
-// Extract common types into typedefs to make the code easier to change later.
-typedef uint64_t nnz_ty;
-typedef int64_t coord_ty;
-typedef double val_ty;
+struct SpGEMMCSRxCSRxCSCLocalTilesArgs {
+  // The A stores are not const because we will use
+  // create_output_buffer on them.
+  legate::Store& A_pos;
+  legate::Store& A_crd;
+  legate::Store& A_vals;
+  const legate::Store& B_pos;
+  const legate::Store& B_crd;
+  const legate::Store& B_vals;
+  const legate::Store& C_pos;
+  const legate::Store& C_crd;
+  const legate::Store& C_vals;
+  const int64_t C_rows;
+};
 
 class SpGEMMCSRxCSRxCSCLocalTiles : public SparseTask<SpGEMMCSRxCSRxCSCLocalTiles> {
  public:
@@ -47,6 +49,14 @@ class SpGEMMCSRxCSRxCSCLocalTiles : public SparseTask<SpGEMMCSRxCSRxCSCLocalTile
 #endif
 };
 
+struct SpGEMMCSRxCSRxCSCCommComputeArgs {
+  const legate::Store& out;
+  const legate::Store& pos;
+  const legate::Store& global_pos;
+  const int32_t gx;
+  const int32_t gy;
+};
+
 class SpGEMMCSRxCSRxCSCCommCompute : public SparseTask<SpGEMMCSRxCSRxCSCCommCompute> {
  public:
   static const int TASK_ID = LEGATE_SPARSE_SPGEMM_CSR_CSR_CSC_COMM_COMPUTE;
@@ -54,10 +64,19 @@ class SpGEMMCSRxCSRxCSCCommCompute : public SparseTask<SpGEMMCSRxCSRxCSCCommComp
 #ifdef LEGATE_USE_OPENMP
   static void omp_variant(legate::TaskContext& ctx);
 #endif
-  // TODO (rohany): I don't think that this task needs a GPU implementation, as it
-  //  shouldn't be moving a large amount of data around. If it ends up appearing
-  //  that the cost of moving the data it uses is relatively large then we can
-  //  add a dummy GPU implementation.
+#ifdef LEGATE_USE_CUDA
+  static void gpu_variant(legate::TaskContext& ctx);
+#endif
+};
+
+struct SpGEMMCSRxCSRxCSCShuffleArgs {
+  // We'll use create_output_buffer on these stores.
+  legate::Store& out_pos;
+  legate::Store& out_crd;
+  legate::Store& out_vals;
+  const legate::Store& global_pos;
+  const legate::Store& global_crd;
+  const legate::Store& global_vals;
 };
 
 class SpGEMMCSRxCSRxCSCShuffle : public SparseTask<SpGEMMCSRxCSRxCSCShuffle> {
