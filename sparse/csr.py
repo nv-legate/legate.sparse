@@ -883,72 +883,27 @@ class csr_array(CompressedBase, DenseSparseBase):
                     shape=Shape((self.shape[0], other.shape[1])),
                 )
         elif isinstance(other, cunumeric.ndarray):
-            assert self.shape[1] == other.shape[0]
-            require_float64_dtypes(self, other)
             # We can dispatch to SpMM here. There are different implementations
             # that one can go for, like the 2-D distribution, or the 1-D
             # non-zero balanced distribution.
-            other_store = get_store_from_cunumeric_array(other)
-            if out is not None:
-                assert out.shape == (self.shape[0], other.shape[1])
-                output_store = get_store_from_cunumeric_array(out)
-            else:
-                output_store = ctx.create_store(
-                    self.dtype, shape=Shape((self.shape[0], other.shape[1]))
+            assert self.shape[1] == other.shape[0]
+            A, B = cast_to_common_type(self, other)
+            if out is None:
+                C = store_to_cunumeric_array(
+                    ctx.create_store(
+                        A.dtype, shape=(self.shape[0], other.shape[1])
+                    )
                 )
-            # TODO (rohany): In an initial implementation, we'll partition
-            # things only by the `i` dimension of the computation. However, the
-            # leaf kernel as written allows for both the `i` and `j` dimensions
-            # of the computation to be partitioned. I'm avoiding doing the
-            # multi-dimensional parallelism here because I'm not sure how to
-            # express it within the solver's partitioning constraints. This is
-            # the first example of needing affine projections the partitioning
-            # -- we need to partition the output into tiles, and project the
-            # first dimension onto self.pos, and project the second dimension
-            # onto other.
-            promoted_pos = self.pos.promote(1, output_store.shape[1])
-            task = ctx.create_task(SparseOpCode.SPMM_CSR_DENSE)
-            task.add_output(output_store)
-            task.add_input(promoted_pos)
-            task.add_input(self.crd)
-            task.add_input(self.vals)
-            task.add_input(other_store)
-            # Partitioning.
-            task.add_broadcast(promoted_pos, 1)
-            task.add_alignment(output_store, promoted_pos)
-            task.add_image_constraint(
-                promoted_pos,
-                self.crd,
-                range=True,
-                functor=CompressedImagePartition,
-            )
-            task.add_image_constraint(
-                promoted_pos,
-                self.vals,
-                range=True,
-                functor=CompressedImagePartition,
-            )
-
-            # In order to do the image from the coordinates into the
-            # corresponding rows of other, we have to apply an AffineProjection
-            # from the coordinates to cast them up to reference rows of other,
-            # rather than single points. The API for this is a bit restrictive,
-            # so we have to pass a staged MinMaxImagePartition functor through
-            # to the image constraint.
-            def partFunc(*args, **kwargs):
-                return MinMaxImagePartition(*args, proj_dims=[0], **kwargs)
-
-            task.add_image_constraint(
-                self.crd,
-                other_store,
-                range=False,
-                disjoint=False,
-                complete=False,
-                functor=partFunc,
-            )
-            task.add_scalar_arg(self.shape[1], types.int64)
-            task.execute()
-            return store_to_cunumeric_array(output_store)
+            else:
+                if out.dtype != A.dtype:
+                    raise ValueError(
+                        f"Output type {out.dtype} is not consistent "
+                        f"with resolved dtype {A.dtype}"
+                    )
+                assert out.shape == (self.shape[0], other.shape[1])
+                C = out
+            spmm(A, B, C)
+            return C
         else:
             raise NotImplementedError
 
@@ -1061,18 +1016,6 @@ class csr_array(CompressedBase, DenseSparseBase):
     # a kernel in many emerging workloads.
     @track_provenance(runtime.legate_context, nested=True)
     def sddmm(self, C, D):
-        # We'll start out with a row-based distribution of the CSR matrix.  In
-        # the future, we can look into doing a non-zero based distribution of
-        # the computation, as there aren't really any downsides of doing it
-        # versus a row-based distribution. The problem with both is that they
-        # require replicating the D matrix onto all processors. Doing a
-        # partitioning strategy that partitions up the j dimension of the
-        # computation is harder.  This operation is also non-zero structure
-        # preserving, so we'll just write into an output array of values and
-        # share the pos and crd arrays.
-        # TODO (rohany): An option is also partitioning up the `k` dimension of
-        # the computation (allows for partitioning C twice and D once), but
-        # requires reducing into the output.
         if isinstance(C, numpy.ndarray):
             C = cunumeric.array(C)
         if isinstance(D, numpy.ndarray):
@@ -1083,44 +1026,7 @@ class csr_array(CompressedBase, DenseSparseBase):
             and self.shape[1] == D.shape[1]
             and C.shape[1] == D.shape[0]
         )
-        require_float64_dtypes(self, C, D)
-        C_store = get_store_from_cunumeric_array(C)
-        D_store = get_store_from_cunumeric_array(D)
-        result_vals = ctx.create_store(self.dtype, shape=self.vals.shape)
-        task = ctx.create_task(SparseOpCode.CSR_SDDMM)
-        task.add_output(result_vals)
-        promoted_pos = self.pos.promote(1, C_store.shape[1])
-        task.add_input(promoted_pos)
-        task.add_input(self.crd)
-        task.add_input(self.vals)
-        task.add_input(C_store)
-        task.add_input(D_store)
-        # Partition the rows of the sparse matrix and C.
-        task.add_broadcast(promoted_pos, 1)
-        task.add_alignment(promoted_pos, C_store)
-        task.add_image_constraint(
-            promoted_pos,
-            result_vals,
-            range=True,
-            functor=CompressedImagePartition,
-        )
-        task.add_image_constraint(
-            promoted_pos,
-            self.crd,
-            range=True,
-            functor=CompressedImagePartition,
-        )
-        task.add_image_constraint(
-            promoted_pos,
-            self.vals,
-            range=True,
-            functor=CompressedImagePartition,
-        )
-        task.add_broadcast(D_store)
-        task.execute()
-        return csr_array.make_with_same_nnz_structure(
-            self, (result_vals, self.crd, self.pos)
-        )
+        return sddmm_impl(*cast_to_common_type(self, C, D))
 
     def multiply(self, other):
         return self * other
@@ -1141,67 +1047,10 @@ class csr_array(CompressedBase, DenseSparseBase):
     # This is an element-wise operation now.
     def __mul__(self, other):
         if isinstance(other, csr_array):
-            require_float64_dtypes(self, other)
             assert self.shape == other.shape
-            # TODO (rohany): This common pattern could probably be deduplicated
-            # somehow.  Create the assemble query result array.
-            q_nnz = ctx.create_store(nnz_ty, shape=(self.shape[0]))
-            task = ctx.create_task(SparseOpCode.ELEM_MULT_CSR_CSR_NNZ)
-            task.add_output(q_nnz)
-            self._add_to_task(task, input=True, vals=False)
-            other._add_to_task(task, input=True, vals=False)
-            task.add_scalar_arg(self.shape[1], types.int64)
-            task.add_alignment(q_nnz, self.pos)
-            task.add_alignment(self.pos, other.pos)
-            task.add_image_constraint(
-                self.pos,
-                self.crd,
-                range=True,
-                functor=CompressedImagePartition,
-            )
-            task.add_image_constraint(
-                other.pos,
-                other.crd,
-                range=True,
-                functor=CompressedImagePartition,
-            )
-            task.execute()
+            B, C = cast_to_common_type(self, other)
+            return mult(B, C)
 
-            pos, nnz = self.nnz_to_pos(q_nnz)
-            crd = ctx.create_store(coord_ty, shape=(nnz))
-            vals = ctx.create_store(self.dtype, shape=(nnz))
-
-            task = ctx.create_task(SparseOpCode.ELEM_MULT_CSR_CSR)
-            task.add_output(pos)
-            task.add_output(crd)
-            task.add_output(vals)
-            self._add_to_task(task)
-            other._add_to_task(task)
-            task.add_scalar_arg(self.shape[1], types.int64)
-            task.add_alignment(pos, self.pos)
-            task.add_alignment(self.pos, other.pos)
-            task.add_image_constraint(
-                pos, crd, range=True, functor=CompressedImagePartition
-            )
-            task.add_image_constraint(
-                self.pos,
-                self.crd,
-                range=True,
-                functor=CompressedImagePartition,
-            )
-            task.add_image_constraint(
-                other.pos,
-                other.crd,
-                range=True,
-                functor=CompressedImagePartition,
-            )
-            task.add_alignment(crd, vals)
-            task.add_alignment(self.crd, self.vals)
-            task.add_alignment(other.crd, other.vals)
-            # Make sure that pos is in READ_WRITE mode.
-            task.add_input(pos)
-            task.execute()
-            return csr_array((vals, crd, pos), shape=self.shape)
         # If we got a sparse matrix type that we know about, try and convert it
         # to csr to complete the addition.
         if sparse.is_sparse_matrix(other):
@@ -1221,44 +1070,7 @@ class csr_array(CompressedBase, DenseSparseBase):
             )
         elif isinstance(other, cunumeric.ndarray):
             assert self.shape == other.shape
-            require_float64_dtypes(self, other)
-            # This is an operation that preserves the non-zero structure of
-            # the output, so we'll just allocate a new store of values for
-            # the output matrix and share the existing pos and crd arrays.
-            other_store = get_store_from_cunumeric_array(other)
-            result_vals = ctx.create_store(self.dtype, shape=self.vals.shape)
-            promoted_pos = self.pos.promote(1, self.shape[1])
-            task = ctx.create_task(SparseOpCode.ELEM_MULT_CSR_DENSE)
-            task.add_output(result_vals)
-            task.add_input(promoted_pos)
-            task.add_input(self.crd)
-            task.add_input(self.vals)
-            task.add_input(other_store)
-            # Partition the rows.
-            task.add_broadcast(promoted_pos, 1)
-            task.add_alignment(promoted_pos, other_store)
-            task.add_image_constraint(
-                promoted_pos,
-                result_vals,
-                range=True,
-                functor=CompressedImagePartition,
-            )
-            task.add_image_constraint(
-                promoted_pos,
-                self.crd,
-                range=True,
-                functor=CompressedImagePartition,
-            )
-            task.add_image_constraint(
-                promoted_pos,
-                self.vals,
-                range=True,
-                functor=CompressedImagePartition,
-            )
-            task.execute()
-            return csr_array.make_with_same_nnz_structure(
-                self, (result_vals, self.crd, self.pos)
-            )
+            return mult_dense(*cast_to_common_type(self, other))
         else:
             raise NotImplementedError
 
@@ -1291,47 +1103,21 @@ class csr_array(CompressedBase, DenseSparseBase):
     def __rmatmul__(self, other):
         if isinstance(other, numpy.ndarray):
             other = cunumeric.array(other)
-        require_float64_dtypes(self, other)
-        # TODO (rohany): We'll just support a dense RHS matrix right now.
         if len(other.shape) == 1:
             raise NotImplementedError
         elif len(other.shape) == 2:
             assert other.shape[1] == self.shape[0]
-            # TODO (rohany): As with the other SpMM case, we could do a 2-D
-            # distribution, but I'll just do a 1-D distribution right now,
-            # along the k-dimension of the computation.
-            other_store = get_store_from_cunumeric_array(other)
-            output = cunumeric.zeros(
-                (other.shape[0], self.shape[1]), dtype=self.dtype
+            A, B = cast_to_common_type(other, self)
+            # Similiarly to other places in the code, we need to
+            # ensure that any futures created by cunumeric are
+            # promoted to regions for our tasks to work.
+            C = store_to_cunumeric_array(
+                get_store_from_cunumeric_array(
+                    cunumeric.zeros((A.shape[0], B.shape[1]), dtype=A.dtype)
+                )
             )
-            output_store = get_store_from_cunumeric_array(output)
-            promoted_pos = self.pos.promote(0, other_store.shape[0])
-            task = ctx.create_task(SparseOpCode.SPMM_DENSE_CSR)
-            task.add_reduction(output_store, ReductionOp.ADD)
-            task.add_input(other_store)
-            task.add_input(promoted_pos)
-            task.add_input(self.crd)
-            task.add_input(self.vals)
-            # Partition the rows of the sparse matrix.
-            task.add_broadcast(promoted_pos, 0)
-            task.add_alignment(promoted_pos, other_store)
-            task.add_image_constraint(
-                promoted_pos,
-                self.crd,
-                range=True,
-                functor=CompressedImagePartition,
-            )
-            task.add_image_constraint(
-                promoted_pos,
-                self.vals,
-                range=True,
-                functor=CompressedImagePartition,
-            )
-            # Initially, only k is partitioned, so we'll be reducing into the
-            # full output.
-            task.add_broadcast(output_store)
-            task.execute()
-            return store_to_cunumeric_array(output_store)
+            rspmm(A, B, C)
+            return C
         else:
             raise NotImplementedError
 
@@ -1398,6 +1184,7 @@ def scan_local_results_and_scale_pos(
     task.execute()
 
 
+# spmv computes y = A @ x.
 def spmv(A: csr_array, x: cunumeric.ndarray, y: cunumeric.ndarray):
     x_store = get_store_from_cunumeric_array(x)
     y_store = get_store_from_cunumeric_array(y)
@@ -1444,6 +1231,7 @@ def spmv(A: csr_array, x: cunumeric.ndarray, y: cunumeric.ndarray):
     task.execute()
 
 
+# add computes A = B + C and returns A.
 def add(B: csr_array, C: csr_array) -> csr_array:
     # Create the assemble query result array.
     shape = B.shape
@@ -1500,6 +1288,262 @@ def add(B: csr_array, C: csr_array) -> csr_array:
     task.add_input(pos)
     task.execute()
     return csr_array((vals, crd, pos), shape=shape, dtype=B.dtype)
+
+
+# mult computes A = B + C and returns A when C is sparse.
+def mult(B: csr_array, C: csr_array) -> csr_array:
+    q_nnz = ctx.create_store(nnz_ty, shape=(B.shape[0]))
+    task = ctx.create_task(SparseOpCode.ELEM_MULT_CSR_CSR_NNZ)
+    task.add_output(q_nnz)
+    task.add_input(B.pos)
+    task.add_input(B.crd)
+    task.add_input(C.pos)
+    task.add_input(C.crd)
+    task.add_scalar_arg(B.shape[1], types.int64)
+    task.add_alignment(q_nnz, B.pos)
+    task.add_alignment(B.pos, C.pos)
+    task.add_image_constraint(
+        B.pos,
+        B.crd,
+        range=True,
+        functor=CompressedImagePartition,
+    )
+    task.add_image_constraint(
+        C.pos,
+        C.crd,
+        range=True,
+        functor=CompressedImagePartition,
+    )
+    task.execute()
+
+    pos, nnz = CompressedBase.nnz_to_pos_cls(q_nnz)
+    crd = ctx.create_store(coord_ty, shape=(nnz))
+    vals = ctx.create_store(B.dtype, shape=(nnz))
+
+    task = ctx.create_task(SparseOpCode.ELEM_MULT_CSR_CSR)
+    task.add_output(pos)
+    task.add_output(crd)
+    task.add_output(vals)
+    task.add_input(B.pos)
+    task.add_input(B.crd)
+    task.add_input(B.vals)
+    task.add_input(C.pos)
+    task.add_input(C.crd)
+    task.add_input(C.vals)
+    task.add_scalar_arg(B.shape[1], types.int64)
+    task.add_alignment(pos, B.pos)
+    task.add_alignment(B.pos, C.pos)
+    task.add_image_constraint(
+        pos, crd, range=True, functor=CompressedImagePartition
+    )
+    task.add_image_constraint(
+        B.pos,
+        B.crd,
+        range=True,
+        functor=CompressedImagePartition,
+    )
+    task.add_image_constraint(
+        C.pos,
+        C.crd,
+        range=True,
+        functor=CompressedImagePartition,
+    )
+    task.add_alignment(crd, vals)
+    task.add_alignment(B.crd, B.vals)
+    task.add_alignment(C.crd, C.vals)
+    # Make sure that pos is in READ_WRITE mode.
+    task.add_input(pos)
+    task.execute()
+    return csr_array((vals, crd, pos), shape=B.shape, dtype=B.dtype)
+
+
+# mult_dense computes A = B * C when C is dense.
+def mult_dense(B: csr_array, C: cunumeric.ndarray) -> csr_array:
+    # This is an operation that preserves the non-zero structure of
+    # the output, so we'll just allocate a new store of values for
+    # the output matrix and share the existing pos and crd arrays.
+    C_store = get_store_from_cunumeric_array(C)
+    result_vals = ctx.create_store(B.dtype, shape=B.vals.shape)
+    promoted_pos = B.pos.promote(1, B.shape[1])
+    task = ctx.create_task(SparseOpCode.ELEM_MULT_CSR_DENSE)
+    task.add_output(result_vals)
+    task.add_input(promoted_pos)
+    task.add_input(B.crd)
+    task.add_input(B.vals)
+    task.add_input(C_store)
+    # Partition the rows.
+    task.add_broadcast(promoted_pos, 1)
+    task.add_alignment(promoted_pos, C_store)
+    task.add_image_constraint(
+        promoted_pos,
+        result_vals,
+        range=True,
+        functor=CompressedImagePartition,
+    )
+    task.add_image_constraint(
+        promoted_pos,
+        B.crd,
+        range=True,
+        functor=CompressedImagePartition,
+    )
+    task.add_image_constraint(
+        promoted_pos,
+        B.vals,
+        range=True,
+        functor=CompressedImagePartition,
+    )
+    task.execute()
+    return csr_array.make_with_same_nnz_structure(
+        B, (result_vals, B.crd, B.pos)
+    )
+
+
+# spmm computes C = A @ B.
+def spmm(A: csr_array, B: cunumeric.ndarray, C: cunumeric.ndarray) -> None:
+    B_store = get_store_from_cunumeric_array(B)
+    C_store = get_store_from_cunumeric_array(C)
+    # TODO (rohany): In an initial implementation, we'll partition
+    # things only by the `i` dimension of the computation. However, the
+    # leaf kernel as written allows for both the `i` and `j` dimensions
+    # of the computation to be partitioned. I'm avoiding doing the
+    # multi-dimensional parallelism here because I'm not sure how to
+    # express it within the solver's partitioning constraints. This is
+    # the first example of needing affine projections the partitioning
+    # -- we need to partition the output into tiles, and project the
+    # first dimension onto self.pos, and project the second dimension
+    # onto other.
+    promoted_pos = A.pos.promote(1, C_store.shape[1])
+    task = ctx.create_task(SparseOpCode.SPMM_CSR_DENSE)
+    task.add_output(C_store)
+    task.add_input(promoted_pos)
+    task.add_input(A.crd)
+    task.add_input(A.vals)
+    task.add_input(B_store)
+    # Partitioning.
+    task.add_broadcast(promoted_pos, 1)
+    task.add_alignment(C_store, promoted_pos)
+    task.add_image_constraint(
+        promoted_pos,
+        A.crd,
+        range=True,
+        functor=CompressedImagePartition,
+    )
+    task.add_image_constraint(
+        promoted_pos,
+        A.vals,
+        range=True,
+        functor=CompressedImagePartition,
+    )
+
+    # In order to do the image from the coordinates into the
+    # corresponding rows of other, we have to apply an AffineProjection
+    # from the coordinates to cast them up to reference rows of other,
+    # rather than single points. The API for this is a bit restrictive,
+    # so we have to pass a staged MinMaxImagePartition functor through
+    # to the image constraint.
+    def partFunc(*args, **kwargs):
+        return MinMaxImagePartition(*args, proj_dims=[0], **kwargs)
+
+    task.add_image_constraint(
+        A.crd,
+        B_store,
+        range=False,
+        disjoint=False,
+        complete=False,
+        functor=partFunc,
+    )
+    task.add_scalar_arg(A.shape[1], types.int64)
+    task.execute()
+
+
+# rspmm computes C = A @ B.
+def rspmm(A: cunumeric.ndarray, B: csr_array, C: cunumeric.ndarray) -> None:
+    A_store = get_store_from_cunumeric_array(A)
+    C_store = get_store_from_cunumeric_array(C)
+    # TODO (rohany): As with the other SpMM case, we could do a 2-D
+    #  distribution, but I'll just do a 1-D distribution right now,
+    #  along the k-dimension of the computation.
+    promoted_pos = B.pos.promote(0, A_store.shape[0])
+    task = ctx.create_task(SparseOpCode.SPMM_DENSE_CSR)
+    task.add_reduction(C_store, ReductionOp.ADD)
+    task.add_input(A_store)
+    task.add_input(promoted_pos)
+    task.add_input(B.crd)
+    task.add_input(B.vals)
+    # Partition the rows of the sparse matrix.
+    task.add_broadcast(promoted_pos, 0)
+    task.add_alignment(promoted_pos, A_store)
+    task.add_image_constraint(
+        promoted_pos,
+        B.crd,
+        range=True,
+        functor=CompressedImagePartition,
+    )
+    task.add_image_constraint(
+        promoted_pos,
+        B.vals,
+        range=True,
+        functor=CompressedImagePartition,
+    )
+    # Initially, only k is partitioned, so we'll be reducing into the
+    # full output.
+    task.add_broadcast(C_store)
+    task.execute()
+
+
+# sddmm_impl computes A = B * (C @ D), returning A.
+def sddmm_impl(
+    B: csr_array, C: cunumeric.ndarray, D: cunumeric.ndarray
+) -> csr_array:
+    # We'll start out with a row-based distribution of the CSR matrix.  In
+    # the future, we can look into doing a non-zero based distribution of
+    # the computation, as there aren't really any downsides of doing it
+    # versus a row-based distribution. The problem with both is that they
+    # require replicating the D matrix onto all processors. Doing a
+    # partitioning strategy that partitions up the j dimension of the
+    # computation is harder.  This operation is also non-zero structure
+    # preserving, so we'll just write into an output array of values and
+    # share the pos and crd arrays.
+    # TODO (rohany): An option is also partitioning up the `k` dimension of
+    # the computation (allows for partitioning C twice and D once), but
+    # requires reducing into the output.
+    C_store = get_store_from_cunumeric_array(C)
+    D_store = get_store_from_cunumeric_array(D)
+    result_vals = ctx.create_store(B.dtype, shape=B.vals.shape)
+    task = ctx.create_task(SparseOpCode.CSR_SDDMM)
+    task.add_output(result_vals)
+    promoted_pos = B.pos.promote(1, C_store.shape[1])
+    task.add_input(promoted_pos)
+    task.add_input(B.crd)
+    task.add_input(B.vals)
+    task.add_input(C_store)
+    task.add_input(D_store)
+    # Partition the rows of the sparse matrix and C.
+    task.add_broadcast(promoted_pos, 1)
+    task.add_alignment(promoted_pos, C_store)
+    task.add_image_constraint(
+        promoted_pos,
+        result_vals,
+        range=True,
+        functor=CompressedImagePartition,
+    )
+    task.add_image_constraint(
+        promoted_pos,
+        B.crd,
+        range=True,
+        functor=CompressedImagePartition,
+    )
+    task.add_image_constraint(
+        promoted_pos,
+        B.vals,
+        range=True,
+        functor=CompressedImagePartition,
+    )
+    task.add_broadcast(D_store)
+    task.execute()
+    return csr_array.make_with_same_nnz_structure(
+        B, (result_vals, B.crd, B.pos)
+    )
 
 
 csr_matrix = csr_array
