@@ -15,14 +15,15 @@
  */
 
 #include "sparse/array/csr/spgemm_csr_csr_csr.h"
-#include "sparse/utils/cusparse_utils.h"
+#include "sparse/util/cusparse_utils.h"
+#include "sparse/util/dispatch.h"
 
 namespace sparse {
 
 using namespace Legion;
 using namespace legate;
 
-struct SpGEMMCSRxCSRxCSRGPU {
+struct SpGEMMCSRxCSRxCSRGPUImpl {
   template <LegateTypeCode INDEX_CODE, LegateTypeCode VAL_CODE>
   void operator()(SpGEMMCSRxCSRxCSRGPUArgs& args) const
   {
@@ -55,8 +56,8 @@ struct SpGEMMCSRxCSRxCSRGPU {
 
     // If there are no rows to process, then return empty output instances.
     if (B_rows == 0) {
-      A_crd.create_output_buffer<coord_ty, 1>(0, true /* return_data */);
-      A_vals.create_output_buffer<val_ty, 1>(0, true /* return_data */);
+      A_crd.create_output_buffer<INDEX_TY, 1>(0, true /* return_data */);
+      A_vals.create_output_buffer<VAL_TY, 1>(0, true /* return_data */);
       return;
     }
 
@@ -92,14 +93,14 @@ struct SpGEMMCSRxCSRxCSRGPU {
         auto elems  = dom.get_volume();
         auto blocks = get_num_blocks_1d(elems);
         cast<int32_t, INDEX_TY><<<blocks, THREADS_PER_BLOCK, 0, stream>>>(
-          elems, B_crd_int_buf.ptr(0), B_crd.read_accessor<coord_ty, 1>().ptr(dom.lo()));
-        B_crd_int = B_crd_inf_buf.ptr(0);
+          elems, B_crd_int_buf.ptr(0), B_crd.read_accessor<INDEX_TY, 1>().ptr(dom.lo()));
+        B_crd_int = B_crd_int_buf.ptr(0);
       }
       {
         auto blocks = get_num_blocks_1d(C_nnz);
         cast<int32_t, INDEX_TY><<<blocks, THREADS_PER_BLOCK, 0, stream>>>(
-          C_nnz, C_crd_int_buf.ptr(0), C_crd.read_accessor<coord_ty, 1>().ptr(dom.lo()));
-        C_crd_int = C_crd_inf_buf.ptr(0);
+          C_nnz, C_crd_int_buf.ptr(0), C_crd.read_accessor<INDEX_TY, 1>().ptr(C_crd.domain().lo()));
+        C_crd_int = C_crd_int_buf.ptr(0);
       }
     }
 
@@ -120,7 +121,7 @@ struct SpGEMMCSRxCSRxCSRGPU {
       cusparseCreateCsr(&cusparse_C,
                         C_rows,
                         A2_dim /* cols */,
-                        C_nnz,
+                        C_crd.domain().hi()[0] - C_crd.domain().lo()[0] + 1,
                         C_indptr.ptr(0),
                         // Offset for the image optimization.
                         C_crd_int - C_crd.domain().lo()[0],
@@ -222,7 +223,7 @@ struct SpGEMMCSRxCSRxCSRGPU {
     } else {
       A_crd_int = DeferredBuffer<int32_t, 1>({0, A_nnz - 1}, Memory::GPU_FB_MEM);
     }
-    auto A_vals_acc = A_vals.create_output_buffer<val_ty, 1>(A_nnz, true /* return_buffer */);
+    auto A_vals_acc = A_vals.create_output_buffer<VAL_TY, 1>(A_nnz, true /* return_buffer */);
     CHECK_CUSPARSE(
       cusparseCsrSetPointers(cusparse_A, A_indptr.ptr(0), A_crd_int.ptr(0), A_vals_acc.ptr(0)));
     CHECK_CUSPARSE(cusparseSpGEMM_copy(handle,

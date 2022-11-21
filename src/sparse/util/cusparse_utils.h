@@ -254,7 +254,7 @@ __global__ void localIndptrToNnz(size_t rows, uint64_t* out, T* in)
 // localIndptrToPos is a utility kernel to cast an indptr array
 // into a legate.sparse pos array.
 template <typename T>
-__global__ void localIndptrToPos(size_t rows, Rect<1>* out, T* in)
+__global__ void localIndptrToPos(size_t rows, Legion::Rect<1>* out, T* in)
 {
   const auto idx = global_tid_1d();
   if (idx >= rows) return;
