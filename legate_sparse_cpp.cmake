@@ -118,6 +118,7 @@ list(APPEND legate_sparse_SOURCES
   src/sparse/array/csr/mult.cc
   src/sparse/array/csr/mult_dense.cc
   src/sparse/array/csr/sddmm.cc
+  src/sparse/array/csr/spgemm_csr_csr_csr.cc
   src/sparse/array/csr/spmm.cc
   src/sparse/array/csr/spmv.cc
   src/sparse/array/csr/tropical_spmv.cc
@@ -154,6 +155,7 @@ if(Legion_USE_OpenMP)
     src/sparse/array/csr/mult_omp.cc
     src/sparse/array/csr/mult_dense_omp.cc
     src/sparse/array/csr/sddmm_omp.cc
+    src/sparse/array/csr/spgemm_csr_csr_csr_omp.cc
     src/sparse/array/csr/spmm_omp.cc
     src/sparse/array/csr/spmv_omp.cc
     src/sparse/array/csr/tropical_spmv_omp.cc
@@ -187,6 +189,7 @@ if(Legion_USE_CUDA)
     src/sparse/array/csr/mult.cu
     src/sparse/array/csr/mult_dense.cu
     src/sparse/array/csr/sddmm.cu
+    src/sparse/array/csr/spgemm_csr_csr_csr.cu
     src/sparse/array/csr/spmm.cu
     src/sparse/array/csr/spmv.cu
     src/sparse/array/csr/tropical_spmv.cu

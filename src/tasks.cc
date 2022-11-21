@@ -24,124 +24,6 @@ using namespace Legion;
 
 namespace sparse {
 
-// TODO (rohany): In a real implementation, we could template this
-//  implementation to use a different operator or semiring.
-// SpGEMM on CSR = CSR x CSR is adapted from DISTAL/TACO generated code.
-// A(i, j) = B(i, k) * C(k, j)
-// Schedule:
-// assemble(A, AssembleStrategy::Insert)
-// precompute(j, w), w is a workspace of size A2.
-void SpGEMMCSRxCSRxCSRNNZ::cpu_variant(legate::TaskContext& ctx)
-{
-  auto A2_dim = ctx.scalars()[0].value<size_t>();
-  auto& nnz   = ctx.outputs()[0];
-  auto& B_pos = ctx.inputs()[0];
-  auto& B_crd = ctx.inputs()[1];
-  auto& C_pos = ctx.inputs()[2];
-  auto& C_crd = ctx.inputs()[3];
-
-  auto nnz_acc   = nnz.write_accessor<nnz_ty, 1>();
-  auto B_pos_acc = B_pos.read_accessor<Rect<1>, 1>();
-  auto B_crd_acc = B_crd.read_accessor<coord_ty, 1>();
-  auto C_pos_acc = C_pos.read_accessor<Rect<1>, 1>();
-  auto C_crd_acc = C_crd.read_accessor<coord_ty, 1>();
-
-  // Allocate sparse accelerator data.
-  // TODO (rohany): Look at cunumeric for a smarter buffer allocator function.
-  coord_ty initValInt = 0;
-  bool initValBool    = false;
-  DeferredBuffer<coord_ty, 1> index_list(Memory::SYSTEM_MEM, Rect<1>{0, A2_dim - 1}, &initValInt);
-  DeferredBuffer<bool, 1> already_set(Memory::SYSTEM_MEM, Rect<1>{0, A2_dim - 1}, &initValBool);
-  // For this computation, we assume that the rows are partitioned.
-  auto bounds = B_pos.domain();
-  for (auto i = bounds.lo()[0]; i < bounds.hi()[0] + 1; i++) {
-    size_t index_list_size = 0;
-    for (size_t kB = B_pos_acc[i].lo; kB < B_pos_acc[i].hi + 1; kB++) {
-      auto k = B_crd_acc[kB];
-      for (size_t jC = C_pos_acc[k].lo; jC < C_pos_acc[k].hi + 1; jC++) {
-        auto j = C_crd_acc[jC];
-        if (!already_set[j]) {
-          index_list[index_list_size] = j;
-          already_set[j]              = true;
-          index_list_size++;
-        }
-      }
-    }
-    nnz_ty row_nnzs = 0;
-    for (auto index_loc = 0; index_loc < index_list_size; index_loc++) {
-      auto j         = index_list[index_loc];
-      already_set[j] = false;
-      row_nnzs++;
-    }
-    nnz_acc[i] = row_nnzs;
-  }
-}
-
-void SpGEMMCSRxCSRxCSR::cpu_variant(legate::TaskContext& ctx)
-{
-  auto A2_dim  = ctx.scalars()[0].value<size_t>();
-  auto& A_pos  = ctx.outputs()[0];
-  auto& A_crd  = ctx.outputs()[1];
-  auto& A_vals = ctx.outputs()[2];
-
-  auto& B_pos  = ctx.inputs()[0];
-  auto& B_crd  = ctx.inputs()[1];
-  auto& B_vals = ctx.inputs()[2];
-  auto& C_pos  = ctx.inputs()[3];
-  auto& C_crd  = ctx.inputs()[4];
-  auto& C_vals = ctx.inputs()[5];
-
-  auto A_pos_acc  = A_pos.read_write_accessor<Rect<1>, 1>();
-  auto A_crd_acc  = A_crd.write_accessor<coord_ty, 1>();
-  auto A_vals_acc = A_vals.write_accessor<val_ty, 1>();
-  auto B_pos_acc  = B_pos.read_accessor<Rect<1>, 1>();
-  auto B_crd_acc  = B_crd.read_accessor<coord_ty, 1>();
-  auto B_vals_acc = B_vals.read_accessor<val_ty, 1>();
-  auto C_pos_acc  = C_pos.read_accessor<Rect<1>, 1>();
-  auto C_crd_acc  = C_crd.read_accessor<coord_ty, 1>();
-  auto C_vals_acc = C_vals.read_accessor<val_ty, 1>();
-
-  // Allocate sparse accelerator data.
-  // TODO (rohany): Look at cunumeric for a smarter buffer allocator function.
-  coord_ty initValInt  = 0;
-  bool initValBool     = false;
-  val_ty initValDouble = 0.0;
-  DeferredBuffer<coord_ty, 1> index_list(Memory::SYSTEM_MEM, Rect<1>{0, A2_dim - 1}, &initValInt);
-  DeferredBuffer<bool, 1> already_set(Memory::SYSTEM_MEM, Rect<1>{0, A2_dim - 1}, &initValBool);
-  DeferredBuffer<val_ty, 1> workspace(Memory::SYSTEM_MEM, Rect<1>{0, A2_dim - 1}, &initValDouble);
-  // For this computation, we assume that the rows are partitioned.
-  auto bounds = B_pos.domain();
-  for (auto i = bounds.lo()[0]; i < bounds.hi()[0] + 1; i++) {
-    size_t index_list_size = 0;
-    for (size_t kB = B_pos_acc[i].lo; kB < B_pos_acc[i].hi + 1; kB++) {
-      auto k = B_crd_acc[kB];
-      for (size_t jC = C_pos_acc[k].lo; jC < C_pos_acc[k].hi + 1; jC++) {
-        auto j = C_crd_acc[jC];
-        if (!already_set[j]) {
-          index_list[index_list_size] = j;
-          already_set[j]              = true;
-          index_list_size++;
-        }
-        workspace[j] += B_vals_acc[kB] * C_vals_acc[jC];
-      }
-    }
-    // TODO (rohany): I don't think that we need to mutate the pos array
-    //  here since this loop iteration is already scoped to a particular
-    //  row. Instead, we can just extract the position into a register.
-    size_t pA2 = A_pos_acc[i].lo;
-    for (auto index_loc = 0; index_loc < index_list_size; index_loc++) {
-      auto j          = index_list[index_loc];
-      already_set[j]  = false;
-      A_crd_acc[pA2]  = j;
-      A_vals_acc[pA2] = workspace[j];
-      pA2++;
-
-      // Zero out the workspace once we have read the value.
-      workspace[j] = 0.0;
-    }
-  }
-}
-
 // An old version of CSRxCSRxCSC SpGEMM.
 // SpGEMM on CSR = CSR x CSR is adapted from DISTAL/TACO generated code.
 // A(i, j) = B(i, k) * C(k, j)
@@ -431,10 +313,6 @@ void SpGEMMCSRxCSRxCSCShuffle::cpu_variant(legate::TaskContext& ctx)
 namespace {  // anonymous
 static void __attribute__((constructor)) register_tasks(void)
 {
-  sparse::SpGEMMCSRxCSRxCSRNNZ::register_variants();
-  sparse::SpGEMMCSRxCSRxCSR::register_variants();
-  sparse::SpGEMMCSRxCSRxCSRGPU::register_variants();
-
   sparse::SpGEMMCSRxCSRxCSCLocalTiles::register_variants();
   sparse::SpGEMMCSRxCSRxCSCCommCompute::register_variants();
   sparse::SpGEMMCSRxCSRxCSCShuffle::register_variants();

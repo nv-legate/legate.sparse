@@ -35,37 +35,6 @@ typedef uint64_t nnz_ty;
 typedef int64_t coord_ty;
 typedef double val_ty;
 
-// Compute kernels.
-
-// SpGEMM kernels.
-class SpGEMMCSRxCSRxCSRNNZ : public SparseTask<SpGEMMCSRxCSRxCSRNNZ> {
- public:
-  static const int TASK_ID = LEGATE_SPARSE_SPGEMM_CSR_CSR_CSR_NNZ;
-  static void cpu_variant(legate::TaskContext& ctx);
-#ifdef LEGATE_USE_OPENMP
-  static void omp_variant(legate::TaskContext& ctx);
-#endif
-};
-
-class SpGEMMCSRxCSRxCSR : public SparseTask<SpGEMMCSRxCSRxCSR> {
- public:
-  static const int TASK_ID = LEGATE_SPARSE_SPGEMM_CSR_CSR_CSR;
-  static void cpu_variant(legate::TaskContext& ctx);
-#ifdef LEGATE_USE_OPENMP
-  static void omp_variant(legate::TaskContext& ctx);
-#endif
-};
-
-// CSRxCSRxCSR SpGEMM for NVIDIA GPUs. Due to limitations with cuSPARSE,
-// we take a different approach than on CPUs and OMPs.
-class SpGEMMCSRxCSRxCSRGPU : public SparseTask<SpGEMMCSRxCSRxCSRGPU> {
- public:
-  static const int TASK_ID = LEGATE_SPARSE_SPGEMM_CSR_CSR_CSR_GPU;
-#ifdef LEGATE_USE_CUDA
-  static void gpu_variant(legate::TaskContext& ctx);
-#endif
-};
-
 class SpGEMMCSRxCSRxCSCLocalTiles : public SparseTask<SpGEMMCSRxCSRxCSCLocalTiles> {
  public:
   static const int TASK_ID = LEGATE_SPARSE_SPGEMM_CSR_CSR_CSC_LOCAL_TILES;
