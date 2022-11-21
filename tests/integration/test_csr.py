@@ -100,23 +100,44 @@ def test_balance_row_partitions(filename):
 
 
 @pytest.mark.parametrize("filename", test_mtx_files)
-def test_csr_spmm(filename):
-    arr = legate_io.mmread(filename)
-    s = sci_io.mmread(filename)
-    res_legate = arr.tocsr() @ arr.todense()
-    res_sci = s.tocsr() @ s.todense()
+@pytest.mark.parametrize("b_type", types)
+@pytest.mark.parametrize("c_type", types)
+def test_csr_spmm(filename, b_type, c_type):
+    arr = legate_io.mmread(filename).tocsr().astype(b_type)
+    s = sci_io.mmread(filename).tocsr().astype(b_type)
+    c = arr.todense().astype(c_type)
+    res_legate = arr @ c
+    res_sci = s @ c
     assert np.allclose(res_legate, res_sci)
-    result = np.zeros(arr.shape)
-    arr.tocsr().dot(arr.todense(), out=result)
+    result = np.zeros(
+        arr.shape, dtype=numpy.find_common_type([b_type, c_type], [])
+    )
+    arr.dot(c, out=result)
     assert np.allclose(res_legate, res_sci)
 
 
+# We separate the tests parametrized over idim and types to avoid
+# having the number of tests explode.
 @pytest.mark.parametrize("filename", test_mtx_files)
 @pytest.mark.parametrize("idim", [2, 4, 8, 16])
 def test_csr_spmm_rmatmul(filename, idim):
     arr = legate_io.mmread(filename).tocsr()
     x = np.ones((idim, arr.shape[1]))
     s = sci_io.mmread(filename).tocsr()
+    # TODO (rohany): Until we have the dispatch with cunumeric
+    #  then we can stop explicitly calling __rmatmul__. We also
+    #  can't even do it against the scipy matrix because it doesn't
+    #  have the overload either.
+    assert np.allclose(arr.__rmatmul__(x), numpy.array(x) @ s)
+
+
+@pytest.mark.parametrize("filename", test_mtx_files)
+@pytest.mark.parametrize("b_type", types)
+@pytest.mark.parametrize("c_type", types)
+def test_csr_spmm_rmatmul_types(filename, b_type, c_type):
+    arr = legate_io.mmread(filename).tocsr().astype(b_type)
+    x = np.ones((8, arr.shape[1])).astype(c_type)
+    s = sci_io.mmread(filename).tocsr().astype(b_type)
     # TODO (rohany): Until we have the dispatch with cunumeric
     #  then we can stop explicitly calling __rmatmul__. We also
     #  can't even do it against the scipy matrix because it doesn't
@@ -150,18 +171,25 @@ def test_csr_transpose(filename):
 
 
 @pytest.mark.parametrize("filename", test_mtx_files)
-def test_csr_todense(filename):
-    arr = legate_io.mmread(filename).tocsr()
-    s = sci_io.mmread(filename).tocsr()
+@pytest.mark.parametrize("dtype", types)
+def test_csr_todense(filename, dtype):
+    arr = legate_io.mmread(filename).tocsr().astype(dtype)
+    s = sci_io.mmread(filename).tocsr().astype(dtype)
     assert np.array_equal(arr.todense(), s.todense())
 
 
 @pytest.mark.parametrize("filename", test_mtx_files)
-def test_csr_elemwise_mul(filename):
+@pytest.mark.parametrize("b_type", types)
+@pytest.mark.parametrize("c_type", types)
+def test_csr_elemwise_mul(filename, b_type, c_type):
     arr = legate_io.mmread(filename)
     s = sci_io.mmread(filename)
-    res_legate = arr.tocsr() * csr_array(np.roll(arr.todense(), 1))
-    res_scipy = s.tocsr() * scpy.csr_array(np.roll(np.array(s.todense()), 1))
+    res_legate = arr.tocsr().astype(b_type) * csr_array(
+        np.roll(arr.todense(), 1)
+    ).astype(c_type)
+    res_scipy = s.tocsr().astype(b_type) * scpy.csr_array(
+        np.roll(np.array(s.todense()), 1)
+    ).astype(c_type)
     assert np.allclose(res_legate.todense(), res_scipy.todense())
 
 
@@ -180,13 +208,15 @@ def test_csr_sddmm(filename, kdim):
 
 
 @pytest.mark.parametrize("filename", test_mtx_files)
-def test_csr_dense_elemwise_mul(filename):
-    arr = legate_io.mmread(filename)
-    s = sci_io.mmread(filename)
-    c = np.random.random(arr.shape)
-    res_legate = arr.tocsr() * c
+@pytest.mark.parametrize("b_type", types)
+@pytest.mark.parametrize("c_type", types)
+def test_csr_dense_elemwise_mul(filename, b_type, c_type):
+    arr = legate_io.mmread(filename).tocsr().astype(b_type)
+    s = sci_io.mmread(filename).tocsr().astype(b_type)
+    c = np.random.random(arr.shape).astype(c_type)
+    res_legate = arr * c
     # The version of scipy that I have locally still thinks * is matmul.
-    res_scipy = s.tocsr().multiply(numpy.array(c))
+    res_scipy = s.multiply(numpy.array(c))
     assert np.allclose(res_legate.todense(), res_scipy.todense())
 
 
