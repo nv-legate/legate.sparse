@@ -241,19 +241,15 @@ class WeightedJacobi(object):
 
 
 def injection_operator(fine_dim):
-    import numpy
-
     fine_shape = (int(np.sqrt(fine_dim)),) * 2
     coarse_shape = fine_shape[0] // 2, fine_shape[1] // 2
     coarse_dim = np.product(coarse_shape)
-    Rp = numpy.arange(coarse_dim + 1)
-    Rj = numpy.zeros((coarse_dim,), dtype=np.int64)
-    Rx = numpy.ones((coarse_dim,), dtype=np.float64)
-    # We set R[ij][2*i + 2*j*coarse_shape[1]] = 1
-    for ij in range(coarse_dim):
-        i, j = (ij % coarse_shape[1]), (ij // coarse_shape[1])
-        Rj[ij] = 2 * i + 2 * j * coarse_shape[1]
-    Rx, Rj, Rp = np.array(Rx), np.array(Rj), np.array(Rp)
+    Rp = np.arange(coarse_dim + 1)
+    Rx = np.ones((coarse_dim,), dtype=np.float64)
+    ij = np.arange(coarse_dim, dtype=np.int64)
+    i = ij % coarse_shape[1]
+    j = ij // coarse_shape[1]
+    Rj = 2 * i + 2 * j * coarse_shape[1]
     R = sparse.csr_matrix(
         (Rx, Rj, Rp), shape=(coarse_dim, fine_dim), dtype=np.float64
     )
