@@ -74,7 +74,7 @@ from .base import (
     pack_to_rect1_store,
     unpack_rect1_store,
 )
-from .config import SparseOpCode, SparseProjectionFunctor, _sparse, rect1
+from .config import SparseOpCode, SparseProjectionFunctor, rect1
 from .coverage import clone_scipy_arr_kind
 from .partition import CompressedImagePartition, MinMaxImagePartition
 from .runtime import ctx, runtime
@@ -1314,12 +1314,6 @@ def spgemm_csr_csr_csc(B: csr_array, C: Any) -> csr_array:
 
     rows_proj_fn = runtime.get_1d_to_2d_functor_id(grid[0], grid[1], True)
     cols_proj_fn = runtime.get_1d_to_2d_functor_id(grid[0], grid[1], False)
-    _sparse.register_legate_sparse_1d_to_2d_functor(
-        rows_proj_fn, grid[0], grid[1], True
-    )  # True is for the rows.
-    _sparse.register_legate_sparse_1d_to_2d_functor(
-        cols_proj_fn, grid[0], grid[1], False
-    )  # False is for the cols.
 
     # To create a tiling on a 2-D color space of a 1-D region, we first
     # promote the region into a 2-D region, and then apply a tiling to
