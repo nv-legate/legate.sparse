@@ -24,7 +24,7 @@ using namespace Legion;
 using namespace legate;
 
 template <typename VAL_TY>
-__global__ void denseToCSRNNZKernel(size_t cols,
+__global__ void denseToCSCNNZKernel(size_t cols,
                                     Rect<2> bounds,
                                     AccessorWO<nnz_ty, 1> A_nnz,
                                     AccessorRO<VAL_TY, 2> B_vals)
