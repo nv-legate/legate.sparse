@@ -425,7 +425,7 @@ def cycle(levels, lvl, x, b):
     levels[lvl].postsmoother(x, b)
 
 
-def test(A, levels=None, plot=False):
+def test(A, levels=None, plot=False, maxiter=None):
     N = A.shape[0]
     x0 = np.zeros(N)
     b = np.ones(N)
@@ -461,7 +461,13 @@ def test(A, levels=None, plot=False):
         M = None
         conv_test = 25
     _, iters = linalg.cg(
-        A, b=b, x0=x0, M=M, callback=callback, conv_test_iters=conv_test
+        A,
+        b=b,
+        x0=x0,
+        M=M,
+        callback=callback,
+        conv_test_iters=conv_test,
+        maxiter=maxiter,
     )
 
     return residuals, iters
@@ -504,6 +510,7 @@ if __name__ == "__main__":
     parser.add_argument("-nodes", type=int, default=64)
     parser.add_argument("-o", "--output", type=str, default=None)
     parser.add_argument("-r", "--reference-solve", action="store_true")
+    parser.add_argument("-i", "--iters", type=int, default=None)
     parser.add_argument("-pyamg-init", action="store_true")
     args, _ = parser.parse_known_args()
 
@@ -529,7 +536,9 @@ if __name__ == "__main__":
     print_diagnostics(levels)
 
     start_amg_solve = time()
-    amg_residuals, iters = test(A, levels, plot=args.output is not None)
+    amg_residuals, iters = test(
+        A, levels, plot=args.output is not None, maxiter=args.iters
+    )
     stop_amg_solve = time()
     build_time = (end_build - start_build) / 1000.0
     solve_time = (stop_amg_solve - start_amg_solve) / 1000.0
