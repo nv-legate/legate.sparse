@@ -1160,7 +1160,12 @@ def spgemm_csr_csr_csr(B: csr_array, C: csr_array) -> csr_array:
         my_pos_part = B.pos.partition(tiling)
         task.add_input(my_pos_part)
         image = CompressedImagePartition(
-            B.pos, my_pos_part.partition, ctx.mapper_id, range=True
+            B.pos,
+            my_pos_part.partition,
+            ctx.mapper_id,
+            range=True,
+            disjoint=True,
+            complete=True,
         )
         crd_part = B.crd.partition(image)
         task.add_input(B.crd.partition(image))
@@ -1171,7 +1176,12 @@ def spgemm_csr_csr_csr(B: csr_array, C: csr_array) -> csr_array:
         # partition using Image operations.
         task.add_input(C.pos)
         crd_image = MinMaxImagePartition(
-            B.crd, crd_part.partition, ctx.mapper_id, range=False
+            B.crd,
+            crd_part.partition,
+            ctx.mapper_id,
+            range=False,
+            disjoint=False,
+            complete=False,
         )
         other_pos_part = C.pos.partition(crd_image)
         task.add_input(
@@ -1181,6 +1191,8 @@ def spgemm_csr_csr_csr(B: csr_array, C: csr_array) -> csr_array:
                     other_pos_part.partition,
                     ctx.mapper_id,
                     range=True,
+                    disjoint=False,
+                    complete=False,
                 )
             )
         )
@@ -1191,6 +1203,8 @@ def spgemm_csr_csr_csr(B: csr_array, C: csr_array) -> csr_array:
                     other_pos_part.partition,
                     ctx.mapper_id,
                     range=True,
+                    disjoint=False,
+                    complete=False,
                 )
             )
         )
