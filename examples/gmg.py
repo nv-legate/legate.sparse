@@ -216,7 +216,13 @@ class WeightedJacobi(object):
         if level == 0:
             self.temp = np.empty_like(A.shape[0])
         D_inv = 1.0 / A.diagonal()
-        spectral_radius = max_eigenvalue(A @ np.diag(D_inv))
+        # We need to create a new sparse matrix with just this modified
+        # diagonal of A. sparse.eye doesn't have this nob, but we can take
+        # the output of sparse.eye and mess with it to get the matrix
+        # that we want.
+        D_inv_mat = sparse.eye(A.shape[0], n=A.shape[1], dtype=A.dtype)
+        D_inv_mat.data = 1.0 / D_inv
+        spectral_radius = max_eigenvalue(A @ D_inv_mat)
         omega = self._init_omega / spectral_radius
         self.level_params.append((omega, D_inv))
         assert len(self.level_params) - 1 == level
