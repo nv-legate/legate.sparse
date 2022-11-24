@@ -40,6 +40,7 @@ struct SpGEMMCSRxCSRxCSRGPUImpl {
     auto& C_crd  = args.C_crd;
     auto& C_vals = args.C_vals;
     auto& A2_dim = args.A2_dim;
+    auto& C1_dim = args.C1_dim;
 
     // Due to limitations around the cuSPARSE SpGEMM API, we can't do the standard
     // symbolic and actual execution phases of SpGEMM. Instead, we'll have each GPU
@@ -52,7 +53,7 @@ struct SpGEMMCSRxCSRxCSRGPUImpl {
     CHECK_CUSPARSE(cusparseSetStream(handle, stream));
 
     auto B_rows = B_pos.domain().get_volume();
-    auto C_rows = C_pos.domain().get_volume();
+    auto C_rows = C1_dim;
 
     // If there are no rows to process, then return empty output instances.
     if (B_rows == 0) {
@@ -63,17 +64,32 @@ struct SpGEMMCSRxCSRxCSRGPUImpl {
 
     // Convert the pos arrays into local indptr arrays.
     DeferredBuffer<int32_t, 1> B_indptr({0, B_rows}, Memory::GPU_FB_MEM);
-    DeferredBuffer<int32_t, 1> C_indptr({0, C_rows}, Memory::GPU_FB_MEM);
     {
       auto blocks = get_num_blocks_1d(B_rows);
       convertGlobalPosToLocalIndPtr<<<blocks, THREADS_PER_BLOCK, 0, stream>>>(
         B_rows, B_pos.read_accessor<Rect<1>, 1>().ptr(B_pos.domain().lo()), B_indptr.ptr(0));
     }
+    // The image optimization has been applied to C_pos, so we have to
+    // be sneaky with how we construct the pos array. Don't use get_volume()
+    // here as that will compute the domain of this potentially sparse domain.
+    // Instead, use the top and bottom of the bounding box.
+    auto C_pos_size = C_pos.domain().hi()[0] - C_pos.domain().lo()[0] + 1;
+    DeferredBuffer<int32_t, 1> C_indptr_raw({0, C_pos_size + 1}, Memory::GPU_FB_MEM);
     {
-      auto blocks = get_num_blocks_1d(C_rows);
+      auto blocks = get_num_blocks_1d(C_pos_size);
+      // Note that we still use convertGlobalPosToLocalIndPtr instead of
+      // something that computes a global offset. The idea here is to
+      // pretend to cuSPARSE that we have a matrix with C_rows rows,
+      // but has no entries anywhere other than the rows that are
+      // selected by the image. So the indptr is is actually local,
+      // as we want it to start with 0.
       convertGlobalPosToLocalIndPtr<<<blocks, THREADS_PER_BLOCK, 0, stream>>>(
-        C_rows, C_pos.read_accessor<Rect<1>, 1>().ptr(C_pos.domain().lo()), C_indptr.ptr(0));
+        C_pos_size,
+        C_pos.read_accessor<Rect<1>, 1>().ptr(C_pos.domain().lo()),
+        C_indptr_raw.ptr(0));
     }
+    // Offset the C_indptr array past the bottom of the domain.
+    auto C_indptr = C_indptr_raw.ptr(0) - C_pos.domain().lo()[0];
 
     // Cast the input arrays into 32 bit integer coordinates if needed.
     int32_t* B_crd_int = nullptr;
@@ -117,19 +133,21 @@ struct SpGEMMCSRxCSRxCSRGPUImpl {
                                      CUSPARSE_INDEX_32I,
                                      CUSPARSE_INDEX_BASE_ZERO,
                                      cusparseDataType<VAL_TY>()));
-    CHECK_CUSPARSE(
-      cusparseCreateCsr(&cusparse_C,
-                        C_rows,
-                        A2_dim /* cols */,
-                        C_crd.domain().hi()[0] - C_crd.domain().lo()[0] + 1,
-                        C_indptr.ptr(0),
-                        // Offset for the image optimization.
-                        C_crd_int - C_crd.domain().lo()[0],
-                        (VAL_TY*)getPtrFromStore<VAL_TY, 1>(C_vals) - C_vals.domain().lo()[0],
-                        CUSPARSE_INDEX_32I,
-                        CUSPARSE_INDEX_32I,
-                        CUSPARSE_INDEX_BASE_ZERO,
-                        cusparseDataType<VAL_TY>()));
+    CHECK_CUSPARSE(cusparseCreateCsr(&cusparse_C,
+                                     C_rows,
+                                     A2_dim /* cols */,
+                                     // Similarly to the comment above, we are going to
+                                     // tell cuSPARSE we have exactly this number of
+                                     // nonzeros, as those are the only non-zeros in our
+                                     // matrix. We then won't do any offsetting for the image.
+                                     C_crd.domain().hi()[0] - C_crd.domain().lo()[0] + 1,
+                                     C_indptr,
+                                     C_crd_int,
+                                     (VAL_TY*)getPtrFromStore<VAL_TY, 1>(C_vals),
+                                     CUSPARSE_INDEX_32I,
+                                     CUSPARSE_INDEX_32I,
+                                     CUSPARSE_INDEX_BASE_ZERO,
+                                     cusparseDataType<VAL_TY>()));
     CHECK_CUSPARSE(cusparseCreateCsr(&cusparse_A,
                                      B_rows /* rows */,
                                      A2_dim /* cols */,
@@ -277,6 +295,7 @@ struct SpGEMMCSRxCSRxCSRGPUImpl {
     inputs[4],
     inputs[5],
     context.scalars()[0].value<uint64_t>(),
+    context.scalars()[1].value<uint64_t>(),
   };
   index_type_value_type_dispatch(
     args.A_crd.code(), args.A_vals.code(), SpGEMMCSRxCSRxCSRGPUImpl{}, args);
