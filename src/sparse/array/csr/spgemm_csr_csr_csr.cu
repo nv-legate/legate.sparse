@@ -24,7 +24,8 @@ using namespace Legion;
 using namespace legate;
 
 template <typename DST, typename SRC>
-__global__ void cast_and_offset(size_t elems, DST* dst, const SRC* src, int64_t offset) {
+__global__ void cast_and_offset(size_t elems, DST* dst, const SRC* src, int64_t offset)
+{
   const auto idx = global_tid_1d();
   if (idx >= elems) return;
   dst[idx] = static_cast<DST>(src[idx] - offset);
@@ -72,10 +73,10 @@ struct SpGEMMCSRxCSRxCSRGPUImpl {
     auto stream = get_cached_stream();
     CHECK_CUSPARSE(cusparseSetStream(handle, stream));
 
-    auto B_rows = B_pos.domain().get_volume();
+    auto B_rows      = B_pos.domain().get_volume();
     auto B_min_coord = C_pos.domain().lo()[0];
     auto B_max_coord = C_pos.domain().hi()[0];
-    auto C_rows = B_max_coord - B_min_coord + 1;
+    auto C_rows      = B_max_coord - B_min_coord + 1;
 
     // If there are no rows to process, then return empty output instances.
     if (B_rows == 0 || C_rows == 0 || B_crd.domain().empty() || C_crd.domain().empty()) {
@@ -95,9 +96,7 @@ struct SpGEMMCSRxCSRxCSRGPUImpl {
     {
       auto blocks = get_num_blocks_1d(C_rows);
       convertGlobalPosToLocalIndPtr<<<blocks, THREADS_PER_BLOCK, 0, stream>>>(
-        C_rows,
-        C_pos.read_accessor<Rect<1>, 1>().ptr(C_pos.domain().lo()),
-        C_indptr.ptr(0));
+        C_rows, C_pos.read_accessor<Rect<1>, 1>().ptr(C_pos.domain().lo()), C_indptr.ptr(0));
     }
 
     DeferredBuffer<int32_t, 1> B_crd_int({0, B_crd.domain().get_volume() - 1}, Memory::GPU_FB_MEM);
@@ -106,15 +105,16 @@ struct SpGEMMCSRxCSRxCSRGPUImpl {
     auto C_nnz = C_crd.domain().hi()[0] - C_crd.domain().lo()[0] + 1;
     DeferredBuffer<int32_t, 1> C_crd_int({0, C_nnz - 1}, Memory::GPU_FB_MEM);
     {
-        auto dom    = B_crd.domain();
-        auto elems  = dom.get_volume();
-        auto blocks = get_num_blocks_1d(elems);
-        cast_and_offset<int32_t, INDEX_TY><<<blocks, THREADS_PER_BLOCK, 0, stream>>>(elems, B_crd_int.ptr(0), B_crd.read_accessor<INDEX_TY, 1>().ptr(dom.lo()), B_min_coord);
+      auto dom    = B_crd.domain();
+      auto elems  = dom.get_volume();
+      auto blocks = get_num_blocks_1d(elems);
+      cast_and_offset<int32_t, INDEX_TY><<<blocks, THREADS_PER_BLOCK, 0, stream>>>(
+        elems, B_crd_int.ptr(0), B_crd.read_accessor<INDEX_TY, 1>().ptr(dom.lo()), B_min_coord);
     }
     {
-        auto blocks = get_num_blocks_1d(C_nnz);
-        cast<int32_t, INDEX_TY><<<blocks, THREADS_PER_BLOCK, 0, stream>>>(
-          C_nnz, C_crd_int.ptr(0), C_crd.read_accessor<INDEX_TY, 1>().ptr(C_crd.domain().lo()));
+      auto blocks = get_num_blocks_1d(C_nnz);
+      cast<int32_t, INDEX_TY><<<blocks, THREADS_PER_BLOCK, 0, stream>>>(
+        C_nnz, C_crd_int.ptr(0), C_crd.read_accessor<INDEX_TY, 1>().ptr(C_crd.domain().lo()));
     }
 
     // Initialize the cuSPARSE matrices.
