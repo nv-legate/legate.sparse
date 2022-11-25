@@ -23,6 +23,13 @@ namespace sparse {
 using namespace Legion;
 using namespace legate;
 
+template <typename DST, typename SRC>
+__global__ void cast_and_offset(size_t elems, DST* dst, const SRC* src, int64_t offset) {
+  const auto idx = global_tid_1d();
+  if (idx >= elems) return;
+  dst[idx] = static_cast<DST>(src[idx] - offset);
+}
+
 struct SpGEMMCSRxCSRxCSRGPUImpl {
   template <LegateTypeCode INDEX_CODE, LegateTypeCode VAL_CODE>
   void operator()(SpGEMMCSRxCSRxCSRGPUArgs& args) const
@@ -45,7 +52,20 @@ struct SpGEMMCSRxCSRxCSRGPUImpl {
     // Due to limitations around the cuSPARSE SpGEMM API, we can't do the standard
     // symbolic and actual execution phases of SpGEMM. Instead, we'll have each GPU
     // task output a local CSR matrix, and then we'll collapse the results of each
-    // task into a global CSR matrix in Python land.
+    // task into a global CSR matrix in Python land. The computation here and
+    // interaction with cuSPARSE has gone through several iterations, and has
+    // settled on an implementation that avoids all pointer offsetting to be
+    // non-trusting of what cuSPARSE may do when reading pointers. In this task,
+    // we have a row-partitioned B matrix, and use an image from the coordinates
+    // in each partition of B to construct a row partition of the C matrix. Instead
+    // of offsetting any pointers, we'll attempt to construct two new local matrices
+    // that we can pass to cuSPARSE that are themselves valid. In particular, we use
+    // the fact that we took an image from B to construct a matrix B', where each
+    // coordinate in B' has been offset from the minimum coordinate in each partition
+    // of B. The range of min and max coordinates in B is exactly equal to the number
+    // of rows of C. We use this to construct a related matrix of C named C' that
+    // doesn't offset the arrays at all, but uses the results of the images directly,
+    // as the referencing coordinates from B' have been offset already.
 
     // Get context sensitive objects.
     auto handle = get_cusparse();
@@ -53,10 +73,12 @@ struct SpGEMMCSRxCSRxCSRGPUImpl {
     CHECK_CUSPARSE(cusparseSetStream(handle, stream));
 
     auto B_rows = B_pos.domain().get_volume();
-    auto C_rows = C1_dim;
+    auto B_min_coord = C_pos.domain().lo()[0];
+    auto B_max_coord = C_pos.domain().hi()[0];
+    auto C_rows = B_max_coord - B_min_coord + 1;
 
     // If there are no rows to process, then return empty output instances.
-    if (B_rows == 0) {
+    if (B_rows == 0 || C_rows == 0 || B_crd.domain().empty() || C_crd.domain().empty()) {
       A_crd.create_output_buffer<INDEX_TY, 1>(0, true /* return_data */);
       A_vals.create_output_buffer<VAL_TY, 1>(0, true /* return_data */);
       return;
@@ -64,60 +86,35 @@ struct SpGEMMCSRxCSRxCSRGPUImpl {
 
     // Convert the pos arrays into local indptr arrays.
     DeferredBuffer<int32_t, 1> B_indptr({0, B_rows}, Memory::GPU_FB_MEM);
+    DeferredBuffer<int32_t, 1> C_indptr({0, C_rows}, Memory::GPU_FB_MEM);
     {
       auto blocks = get_num_blocks_1d(B_rows);
       convertGlobalPosToLocalIndPtr<<<blocks, THREADS_PER_BLOCK, 0, stream>>>(
         B_rows, B_pos.read_accessor<Rect<1>, 1>().ptr(B_pos.domain().lo()), B_indptr.ptr(0));
     }
-    // The image optimization has been applied to C_pos, so we have to
-    // be sneaky with how we construct the pos array. Don't use get_volume()
-    // here as that will compute the domain of this potentially sparse domain.
-    // Instead, use the top and bottom of the bounding box.
-    auto C_pos_size = C_pos.domain().hi()[0] - C_pos.domain().lo()[0] + 1;
-    DeferredBuffer<int32_t, 1> C_indptr_raw({0, C_pos_size + 1}, Memory::GPU_FB_MEM);
     {
-      auto blocks = get_num_blocks_1d(C_pos_size);
-      // Note that we still use convertGlobalPosToLocalIndPtr instead of
-      // something that computes a global offset. The idea here is to
-      // pretend to cuSPARSE that we have a matrix with C_rows rows,
-      // but has no entries anywhere other than the rows that are
-      // selected by the image. So the indptr is is actually local,
-      // as we want it to start with 0.
+      auto blocks = get_num_blocks_1d(C_rows);
       convertGlobalPosToLocalIndPtr<<<blocks, THREADS_PER_BLOCK, 0, stream>>>(
-        C_pos_size,
+        C_rows,
         C_pos.read_accessor<Rect<1>, 1>().ptr(C_pos.domain().lo()),
-        C_indptr_raw.ptr(0));
+        C_indptr.ptr(0));
     }
-    // Offset the C_indptr array past the bottom of the domain.
-    auto C_indptr = C_indptr_raw.ptr(0) - C_pos.domain().lo()[0];
 
-    // Cast the input arrays into 32 bit integer coordinates if needed.
-    int32_t* B_crd_int = nullptr;
-    int32_t* C_crd_int = nullptr;
-    if constexpr (INDEX_CODE == LegateTypeCode::INT32_LT) {
-      B_crd_int = const_cast<int32_t*>(B_crd.read_accessor<INDEX_TY, 1>().ptr(B_crd.domain().lo()));
-      C_crd_int = const_cast<int32_t*>(C_crd.read_accessor<INDEX_TY, 1>().ptr(C_crd.domain().lo()));
-    } else {
-      DeferredBuffer<int32_t, 1> B_crd_int_buf({0, B_crd.domain().get_volume() - 1},
-                                               Memory::GPU_FB_MEM);
-      // Importantly, don't use the volume for C, as the image optimization
-      // is being applied. Compute an upper bound on the volume directly.
-      auto C_nnz = C_crd.domain().hi()[0] - C_crd.domain().lo()[0] + 1;
-      DeferredBuffer<int32_t, 1> C_crd_int_buf({0, C_nnz - 1}, Memory::GPU_FB_MEM);
-      {
+    DeferredBuffer<int32_t, 1> B_crd_int({0, B_crd.domain().get_volume() - 1}, Memory::GPU_FB_MEM);
+    // Importantly, don't use the volume for C, as the image optimization
+    // is being applied. Compute an upper bound on the volume directly.
+    auto C_nnz = C_crd.domain().hi()[0] - C_crd.domain().lo()[0] + 1;
+    DeferredBuffer<int32_t, 1> C_crd_int({0, C_nnz - 1}, Memory::GPU_FB_MEM);
+    {
         auto dom    = B_crd.domain();
         auto elems  = dom.get_volume();
         auto blocks = get_num_blocks_1d(elems);
-        cast<int32_t, INDEX_TY><<<blocks, THREADS_PER_BLOCK, 0, stream>>>(
-          elems, B_crd_int_buf.ptr(0), B_crd.read_accessor<INDEX_TY, 1>().ptr(dom.lo()));
-        B_crd_int = B_crd_int_buf.ptr(0);
-      }
-      {
+        cast_and_offset<int32_t, INDEX_TY><<<blocks, THREADS_PER_BLOCK, 0, stream>>>(elems, B_crd_int.ptr(0), B_crd.read_accessor<INDEX_TY, 1>().ptr(dom.lo()), B_min_coord);
+    }
+    {
         auto blocks = get_num_blocks_1d(C_nnz);
         cast<int32_t, INDEX_TY><<<blocks, THREADS_PER_BLOCK, 0, stream>>>(
-          C_nnz, C_crd_int_buf.ptr(0), C_crd.read_accessor<INDEX_TY, 1>().ptr(C_crd.domain().lo()));
-        C_crd_int = C_crd_int_buf.ptr(0);
-      }
+          C_nnz, C_crd_int.ptr(0), C_crd.read_accessor<INDEX_TY, 1>().ptr(C_crd.domain().lo()));
     }
 
     // Initialize the cuSPARSE matrices.
@@ -127,7 +124,7 @@ struct SpGEMMCSRxCSRxCSRGPUImpl {
                                      C_rows /* cols */,
                                      B_crd.domain().get_volume() /* nnz */,
                                      B_indptr.ptr(0),
-                                     B_crd_int,
+                                     B_crd_int.ptr(0),
                                      getPtrFromStore<VAL_TY, 1>(B_vals),
                                      CUSPARSE_INDEX_32I,
                                      CUSPARSE_INDEX_32I,
@@ -136,13 +133,9 @@ struct SpGEMMCSRxCSRxCSRGPUImpl {
     CHECK_CUSPARSE(cusparseCreateCsr(&cusparse_C,
                                      C_rows,
                                      A2_dim /* cols */,
-                                     // Similarly to the comment above, we are going to
-                                     // tell cuSPARSE we have exactly this number of
-                                     // nonzeros, as those are the only non-zeros in our
-                                     // matrix. We then won't do any offsetting for the image.
-                                     C_crd.domain().hi()[0] - C_crd.domain().lo()[0] + 1,
-                                     C_indptr,
-                                     C_crd_int,
+                                     C_nnz,
+                                     C_indptr.ptr(0),
+                                     C_crd_int.ptr(0),
                                      (VAL_TY*)getPtrFromStore<VAL_TY, 1>(C_vals),
                                      CUSPARSE_INDEX_32I,
                                      CUSPARSE_INDEX_32I,
