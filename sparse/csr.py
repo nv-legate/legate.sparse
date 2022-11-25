@@ -1184,7 +1184,7 @@ def spgemm_csr_csr_csr(B: csr_array, C: csr_array) -> csr_array:
         )
         other_pos_part = C.pos.partition(crd_image)
         task.add_input(other_pos_part)
-        other_pos_image = ImagePartition(
+        other_pos_image = CompressedImagePartition(
             C.pos,
             other_pos_part.partition,
             ctx.mapper_id,
