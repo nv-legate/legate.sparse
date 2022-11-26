@@ -75,6 +75,7 @@ struct SpGEMMCSRxCSRxCSRGPUArgs {
   const legate::Store& C_crd;
   const legate::Store& C_vals;
   const uint64_t A2_dim;
+  const uint64_t C1_dim;
 };
 
 // CSRxCSRxCSR SpGEMM for NVIDIA GPUs. Due to limitations with cuSPARSE,

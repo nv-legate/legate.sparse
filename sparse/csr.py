@@ -1168,13 +1168,12 @@ def spgemm_csr_csr_csr(B: csr_array, C: csr_array) -> csr_array:
             complete=True,
         )
         crd_part = B.crd.partition(image)
-        task.add_input(B.crd.partition(image))
+        task.add_input(crd_part)
         task.add_input(B.vals.partition(image))
         # The C matrix is unfortunately replicated in this algorithm.
         # However, we can make the world a little better for us by
         # gathering only the rows of C that are referenced by each
         # partition using Image operations.
-        task.add_input(C.pos)
         crd_image = MinMaxImagePartition(
             B.crd,
             crd_part.partition,
@@ -1184,31 +1183,19 @@ def spgemm_csr_csr_csr(B: csr_array, C: csr_array) -> csr_array:
             complete=False,
         )
         other_pos_part = C.pos.partition(crd_image)
-        task.add_input(
-            C.crd.partition(
-                ImagePartition(
-                    C.pos,
-                    other_pos_part.partition,
-                    ctx.mapper_id,
-                    range=True,
-                    disjoint=False,
-                    complete=False,
-                )
-            )
+        task.add_input(other_pos_part)
+        other_pos_image = CompressedImagePartition(
+            C.pos,
+            other_pos_part.partition,
+            ctx.mapper_id,
+            range=True,
+            disjoint=False,
+            complete=False,
         )
-        task.add_input(
-            C.vals.partition(
-                ImagePartition(
-                    C.pos,
-                    other_pos_part.partition,
-                    ctx.mapper_id,
-                    range=True,
-                    disjoint=False,
-                    complete=False,
-                )
-            )
-        )
+        task.add_input(C.crd.partition(other_pos_image))
+        task.add_input(C.vals.partition(other_pos_image))
         task.add_scalar_arg(C.shape[1], types.uint64)
+        task.add_scalar_arg(C.shape[0], types.uint64)
         task.execute()
         # Build the global CSR array by performing a scan across the
         # individual CSR results. Due to a recent change in legate.core
