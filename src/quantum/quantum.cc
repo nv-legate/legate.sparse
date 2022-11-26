@@ -129,7 +129,9 @@ void CreateHamiltonians::cpu_variant_impl(legate::TaskContext& ctx)
   auto& rows              = ctx.outputs()[0];
   auto& cols              = ctx.outputs()[1];
   auto& sets              = ctx.inputs()[0];
-  auto sets_acc           = sets.read_accessor<set_ty, 1>();
+  // The sets are transformed to make partitioning work out.
+  if (sets.transformed()) { sets.remove_transform(); }
+  auto sets_acc = sets.read_accessor<set_ty, 1>();
 
   if (k == 1) {
     // If k == 1, then we don't have any predecessor states to look
@@ -149,7 +151,9 @@ void CreateHamiltonians::cpu_variant_impl(legate::TaskContext& ctx)
       }
     }
   } else {
-    auto& preds               = ctx.inputs()[1];
+    auto& preds = ctx.inputs()[1];
+    // preds is also transformed to make partitioning work out.
+    if (preds.transformed()) { preds.remove_transform(); }
     auto preds_acc            = preds.read_accessor<set_ty, 1>();
     uint64_t preds_idx_offset = ctx.scalars()[4].value<uint64_t>();
 
