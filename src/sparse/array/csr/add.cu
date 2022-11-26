@@ -40,7 +40,10 @@ struct AddCSRCSRNNZImpl<VariantKind::GPU> {
     auto C_crd_domain = args.C_crd.domain();
 
     // Break out early if the iteration space partition is empty.
-    if (B_pos_domain.empty() || C_pos_domain.empty()) { return; }
+    if (B_pos_domain.empty() || C_pos_domain.empty() || B_crd_domain.empty() ||
+        C_crd_domain.empty()) {
+      return;
+    }
 
     // Get context sensitive objects.
     auto handle = get_cusparse();
