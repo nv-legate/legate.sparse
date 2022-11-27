@@ -366,18 +366,35 @@ class csc_array(CompressedBase, DenseSparseBase):
                         f"Output type {out.dtype} is not consistent "
                         f"with resolved dtype {A.dtype}"
                     )
+                # Similiarly to the csr case, we're going to take an
+                # image from crd into the output array. This doesn't
+                # play nicely with transforms that have been applied
+                # to the input array (like squeezing), see csr.py's
+                # dot implementation for more details. So, we'll still
+                # create a temporary in this case, and then do a copy
+                # from the temporary into the output.
+                result = out
                 if other_originally_2d:
                     assert out.shape == (self.shape[0], 1)
+                    # Squeeze out here so that we can do a direct
+                    # assignment later.
                     out = out.squeeze(1)
+                    result = store_to_cunumeric_array(ctx.create_store(A.dtype, shape=(self.shape[0],)))
                 else:
                     assert out.shape == (self.shape[0],)
-                out.fill(0)
-                y = out
+                result.fill(0)
+                y = result
 
             # Invoke the SpMV after setup.
             spmv(A, x, y)
 
             if other_originally_2d:
+                # In this case, we created a temporary to write into.
+                # write back out to the desired result, and reshape
+                # it accordingly.
+                if out is not None:
+                    out[:] = y
+                    y = out
                 y = y.reshape((-1, 1))
             return y
         else:
