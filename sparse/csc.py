@@ -62,7 +62,7 @@ from .base import (
 )
 from .config import SparseOpCode
 from .coverage import clone_scipy_arr_kind
-from .partition import CompressedImagePartition
+from .partition import CompressedImagePartition, MinMaxImagePartition
 from .runtime import ctx, runtime
 from .types import coord_ty, float64, nnz_ty
 from .utils import (
@@ -462,7 +462,6 @@ def spmv(A: csc_array, x: cunumeric.ndarray, y: cunumeric.ndarray) -> None:
     task.add_input(A.crd)
     task.add_input(A.vals)
     task.add_input(x_store)
-    task.add_broadcast(y_store)
     task.add_alignment(A.pos, x_store)
     task.add_image_constraint(
         A.pos,
@@ -471,6 +470,17 @@ def spmv(A: csc_array, x: cunumeric.ndarray, y: cunumeric.ndarray) -> None:
         functor=CompressedImagePartition,
     )
     task.add_alignment(A.crd, A.vals)
+    # We'll also add an image constraint from A.crd to y_store,
+    # as we'll be reducing into a halo region of y_store based
+    # on coordinates in A.crd.
+    task.add_image_constraint(
+        A.crd,
+        y_store,
+        range=False,
+        disjoint=False,
+        complete=False,
+        functor=MinMaxImagePartition,
+    )
     task.execute()
 
 
