@@ -62,7 +62,7 @@ from .base import (
 )
 from .config import SparseOpCode
 from .coverage import clone_scipy_arr_kind
-from .partition import CompressedImagePartition
+from .partition import CompressedImagePartition, MinMaxImagePartition
 from .runtime import ctx, runtime
 from .types import coord_ty, float64, nnz_ty
 from .utils import (
@@ -366,18 +366,37 @@ class csc_array(CompressedBase, DenseSparseBase):
                         f"Output type {out.dtype} is not consistent "
                         f"with resolved dtype {A.dtype}"
                     )
+                # Similiarly to the csr case, we're going to take an
+                # image from crd into the output array. This doesn't
+                # play nicely with transforms that have been applied
+                # to the input array (like squeezing), see csr.py's
+                # dot implementation for more details. So, we'll still
+                # create a temporary in this case, and then do a copy
+                # from the temporary into the output.
+                result = out
                 if other_originally_2d:
                     assert out.shape == (self.shape[0], 1)
+                    # Squeeze out here so that we can do a direct
+                    # assignment later.
                     out = out.squeeze(1)
+                    result = store_to_cunumeric_array(
+                        ctx.create_store(A.dtype, shape=(self.shape[0],))
+                    )
                 else:
                     assert out.shape == (self.shape[0],)
-                out.fill(0)
-                y = out
+                result.fill(0)
+                y = result
 
             # Invoke the SpMV after setup.
             spmv(A, x, y)
 
             if other_originally_2d:
+                # In this case, we created a temporary to write into.
+                # write back out to the desired result, and reshape
+                # it accordingly.
+                if out is not None:
+                    out[:] = y
+                    y = out
                 y = y.reshape((-1, 1))
             return y
         else:
@@ -462,7 +481,6 @@ def spmv(A: csc_array, x: cunumeric.ndarray, y: cunumeric.ndarray) -> None:
     task.add_input(A.crd)
     task.add_input(A.vals)
     task.add_input(x_store)
-    task.add_broadcast(y_store)
     task.add_alignment(A.pos, x_store)
     task.add_image_constraint(
         A.pos,
@@ -471,6 +489,17 @@ def spmv(A: csc_array, x: cunumeric.ndarray, y: cunumeric.ndarray) -> None:
         functor=CompressedImagePartition,
     )
     task.add_alignment(A.crd, A.vals)
+    # We'll also add an image constraint from A.crd to y_store,
+    # as we'll be reducing into a halo region of y_store based
+    # on coordinates in A.crd.
+    task.add_image_constraint(
+        A.crd,
+        y_store,
+        range=False,
+        disjoint=False,
+        complete=False,
+        functor=MinMaxImagePartition,
+    )
     task.execute()
 
 

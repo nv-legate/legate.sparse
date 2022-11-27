@@ -36,7 +36,7 @@ struct CSCSpMVColSplitImpl<VariantKind::GPU> {
     auto& x      = args.x;
 
     // Break out early if the iteration space partition is empty.
-    if (x.domain().empty()) return;
+    if (x.domain().empty() || A_crd.domain().empty() || y.domain().empty()) return;
 
     // Get context sensitive objects.
     auto handle = get_cusparse();
@@ -44,14 +44,31 @@ struct CSCSpMVColSplitImpl<VariantKind::GPU> {
     CHECK_CUSPARSE(cusparseSetStream(handle, stream));
 
     // Construct the CUSPARSE objects from individual regions.
-    auto cusparse_y = makeCuSparseDenseVec<VAL_TY>(y);
+    // The image optimization has been applied to y, so use a similar
+    // dense vector construction method as the CSR SpMV routine. See
+    // the comments there for more details about what is being done.
+    auto y_domain = y.domain();
+    auto rows     = y_domain.hi()[0] + 1;
+    auto y_raw_ptr =
+      y.reduce_accessor<SumReduction<VAL_TY>, true /* exclusive */, 1>().ptr(y_domain.lo());
+    auto y_ptr = y_raw_ptr - static_cast<size_t>(y_domain.lo()[0]);
+    cusparseDnVecDescr_t cusparse_y;
+    CHECK_CUSPARSE(cusparseCreateDnVec(
+      &cusparse_y, rows, const_cast<VAL_TY*>(y_ptr), cusparseDataType<VAL_TY>()));
+    // Use the standard construction methods for the other operands.
     auto cusparse_x = makeCuSparseDenseVec<VAL_TY>(x);
-    auto cusparse_A =
-      makeCuSparseCSC<INDEX_TY, VAL_TY>(A_pos, A_crd, A_vals, y.domain().get_volume() /* rows */);
+    auto cusparse_A = makeCuSparseCSC<INDEX_TY, VAL_TY>(A_pos, A_crd, A_vals, rows);
 
     // Make the CUSPARSE calls.
-    VAL_TY alpha   = 1.0;
-    VAL_TY beta    = 0.0;
+    VAL_TY alpha = 1.0;
+    // This is very subtle but we actually want to set beta=1.0 here
+    // rather than 0.0. If beta=0, then cuSPARSE will try to initialize
+    // the full output vector to 0, which will write into out-of-bounds
+    // memory locations, leading either to segfaults or silent corruption
+    // of other instance's data. By setting beta=1.0 and handling output
+    // initialization on the legate side, we can restrict the kernel to
+    // writing into only the locations referenced by A's coordinates.
+    VAL_TY beta    = 1.0;
     size_t bufSize = 0;
     CHECK_CUSPARSE(cusparseSpMV_bufferSize(handle,
                                            CUSPARSE_OPERATION_NON_TRANSPOSE,
