@@ -379,7 +379,9 @@ class csc_array(CompressedBase, DenseSparseBase):
                     # Squeeze out here so that we can do a direct
                     # assignment later.
                     out = out.squeeze(1)
-                    result = store_to_cunumeric_array(ctx.create_store(A.dtype, shape=(self.shape[0],)))
+                    result = store_to_cunumeric_array(
+                        ctx.create_store(A.dtype, shape=(self.shape[0],))
+                    )
                 else:
                     assert out.shape == (self.shape[0],)
                 result.fill(0)

@@ -57,12 +57,11 @@ struct CSCSpMVColSplitImpl<VariantKind::GPU> {
       &cusparse_y, rows, const_cast<VAL_TY*>(y_ptr), cusparseDataType<VAL_TY>()));
     // Use the standard construction methods for the other operands.
     auto cusparse_x = makeCuSparseDenseVec<VAL_TY>(x);
-    auto cusparse_A =
-      makeCuSparseCSC<INDEX_TY, VAL_TY>(A_pos, A_crd, A_vals, rows);
+    auto cusparse_A = makeCuSparseCSC<INDEX_TY, VAL_TY>(A_pos, A_crd, A_vals, rows);
 
     // Make the CUSPARSE calls.
-    VAL_TY alpha   = 1.0;
-    // This is very subtle but we actually want to set beta=1.0 here 
+    VAL_TY alpha = 1.0;
+    // This is very subtle but we actually want to set beta=1.0 here
     // rather than 0.0. If beta=0, then cuSPARSE will try to initialize
     // the full output vector to 0, which will write into out-of-bounds
     // memory locations, leading either to segfaults or silent corruption
