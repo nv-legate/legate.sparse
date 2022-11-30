@@ -93,9 +93,6 @@ from .utils import (
 @clone_scipy_arr_kind(scipy.sparse.csr_array)
 class csr_array(CompressedBase, DenseSparseBase):
     def __init__(self, arg, shape=None, dtype=None, copy=False):
-        if copy:
-            raise NotImplementedError
-
         self.ndim = 2
         super().__init__()
 
@@ -160,6 +157,8 @@ class csr_array(CompressedBase, DenseSparseBase):
                 get_store_from_cunumeric_array(his),
             )
         elif isinstance(arg, tuple):
+            if copy:
+                raise NotImplementedError
             if shape is None:
                 raise AssertionError("Cannot infer shape in this case.")
 
@@ -289,7 +288,7 @@ class csr_array(CompressedBase, DenseSparseBase):
 
     def conj(self, copy=True):
         if copy:
-            raise NotImplementedError
+            return self.copy().conj(copy=False)
         if self.dtype != float64:
             raise NotImplementedError
         return self
@@ -501,15 +500,17 @@ class csr_array(CompressedBase, DenseSparseBase):
 
     def tocsr(self, copy=False):
         if copy:
-            raise NotImplementedError
+            return self.copy().tocsr(copy=False)
         return self
 
     def tocsc(self, copy=False):
+        if copy:
+            return self.copy().tocsc(copy=False)
         return self.tocoo().tocsc()
 
     def tocoo(self, copy=False):
         if copy:
-            raise NotImplementedError
+            return self.copy().tocoo(copy=False)
         # The conversion to COO is pretty straightforward. The crd and values
         # arrays are already set up for COO, we just need to expand the pos
         # array into coordinates.
@@ -532,7 +533,7 @@ class csr_array(CompressedBase, DenseSparseBase):
 
     def transpose(self, copy=False):
         if copy:
-            raise NotImplementedError
+            return self.copy().transpose(copy=False)
         return sparse.csc_array.make_with_same_nnz_structure(
             self,
             (self.vals, self.crd, self.pos),

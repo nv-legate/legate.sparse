@@ -77,8 +77,6 @@ from .utils import (
 @clone_scipy_arr_kind(scipy.sparse.csc_array)
 class csc_array(CompressedBase, DenseSparseBase):
     def __init__(self, arg, shape=None, dtype=None, copy=False):
-        if copy:
-            raise NotImplementedError
         super().__init__()
 
         if isinstance(arg, numpy.ndarray):
@@ -125,6 +123,8 @@ class csc_array(CompressedBase, DenseSparseBase):
             )
             task.execute()
         elif isinstance(arg, tuple):
+            if copy:
+                raise NotImplementedError
             if shape is None:
                 raise AssertionError("Unable to infer shape.")
             (data, indices, indptr) = arg
@@ -237,17 +237,17 @@ class csc_array(CompressedBase, DenseSparseBase):
 
     def tocsr(self, copy=False):
         if copy:
-            raise NotImplementedError
+            return self.copy().tocsr(copy=False)
         return self.tocoo().tocsr()
 
     def tocsc(self, copy=False):
         if copy:
-            raise NotImplementedError
+            return self.copy().tocsc(copy=False)
         return self
 
     def tocoo(self, copy=False):
         if copy:
-            raise NotImplementedError
+            return self.copy().tocoo(copy=False)
         # The conversion to COO is pretty straightforward. The crd and values
         # arrays are already set up for COO, we just need to expand the pos
         # array into coordinates.
@@ -312,7 +312,7 @@ class csc_array(CompressedBase, DenseSparseBase):
 
     def transpose(self, copy=False):
         if copy:
-            raise NotImplementedError
+            return self.copy().transpose(copy=False)
         return sparse.csr_array.make_with_same_nnz_structure(
             self,
             (self.vals, self.crd, self.pos),
@@ -334,11 +334,9 @@ class csc_array(CompressedBase, DenseSparseBase):
             (get_store_from_cunumeric_array(new_vals), self.crd, self.pos),
         )
 
-    # TODO (rohany): This is a diversion from the API, but we'll set copy to be
-    # false for now.
     def conj(self, copy=False):
         if copy:
-            raise NotImplementedError
+            return self.copy().conj(copy=False)
         if self.dtype != float64:
             raise NotImplementedError
         return self

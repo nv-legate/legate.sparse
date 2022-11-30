@@ -101,9 +101,9 @@ class coo_array(CompressedBase):
             col = cast_arr(col, dtype=coord_ty)
 
         # Extract stores from the cunumeric arrays.
-        self._i = get_store_from_cunumeric_array(row)
-        self._j = get_store_from_cunumeric_array(col)
-        self._vals = get_store_from_cunumeric_array(data)
+        self._i = get_store_from_cunumeric_array(row, copy=copy)
+        self._j = get_store_from_cunumeric_array(col, copy=copy)
+        self._vals = get_store_from_cunumeric_array(data, copy=copy)
 
         if shape is None:
             # TODO (rohany): Perform a max over the rows and cols to estimate
@@ -204,7 +204,7 @@ class coo_array(CompressedBase):
 
     def transpose(self, copy=False):
         if copy:
-            raise NotImplementedError
+            return self.copy().transpose(copy=False)
         return coo_array(
             (self.data, (self.col, self.row)),
             dtype=self.dtype,
@@ -215,12 +215,12 @@ class coo_array(CompressedBase):
 
     def tocoo(self, copy=False):
         if copy:
-            raise NotImplementedError
+            return self.copy()
         return self
 
     def tocsr(self, copy=False):
         if copy:
-            raise NotImplementedError
+            return self.copy().tocsr(copy=False)
 
         # We'll try a different (and parallel) approach here. First, we'll sort
         # the data using key (row, column), and sort the values accordingly.
@@ -323,7 +323,7 @@ class coo_array(CompressedBase):
 
     def tocsc(self, copy=False):
         if copy:
-            raise NotImplementedError
+            return self.copy().tocsc(copy=False)
         # The strategy for CSC conversion is the same as COO conversion, we'll
         # just sort by the columns and then the rows.
         rows_store = ctx.create_store(self._i.type, ndim=1)
