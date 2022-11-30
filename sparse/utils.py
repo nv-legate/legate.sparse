@@ -92,7 +92,9 @@ def store_to_cunumeric_array(store: Store):
 
 # get_store_from_cunumeric_array extracts a store from a cuNumeric array.
 def get_store_from_cunumeric_array(
-    arr: cunumeric.ndarray, allow_future=False
+    arr: cunumeric.ndarray,
+    allow_future=False,
+    copy=False,
 ) -> Store:
     # TODO (rohany): It's unclear how to actually get stores from the
     # __legate_data_interface__ for cunumeric arrays. It seems to depend on
@@ -113,6 +115,9 @@ def get_store_from_cunumeric_array(
     # access stores of cunumeric arrays through the `__legate_data_interface__`
     # if the stores happen to have a complex type. So, we'll do something
     # hackier and just reach into the array's thunk and extract the store.
+    if copy:
+        # If requested to make a copy, do so.
+        arr = cunumeric.array(arr)
     target = arr._thunk
     if isinstance(target, cunumeric.eager.EagerArray):
         target = target.to_deferred_array()

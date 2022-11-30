@@ -64,8 +64,6 @@ from .utils import (
 @clone_scipy_arr_kind(scipy.sparse.dia_array)
 class dia_array(CompressedBase):
     def __init__(self, arg, shape=None, dtype=None, copy=False):
-        if copy:
-            raise NotImplementedError
         if shape is None:
             raise NotImplementedError
         assert isinstance(arg, tuple)
@@ -86,8 +84,8 @@ class dia_array(CompressedBase):
         # lead to reference cycles or issues when talking to
         # legate under the hood.
         self.shape = tuple(int(i) for i in shape)
-        self._offsets = get_store_from_cunumeric_array(offsets)
-        self._data = get_store_from_cunumeric_array(data)
+        self._offsets = get_store_from_cunumeric_array(offsets, copy=copy)
+        self._data = get_store_from_cunumeric_array(data, copy=copy)
 
     @property
     def data(self):
@@ -139,6 +137,8 @@ class dia_array(CompressedBase):
 
     # This implementation of tocoo() is lifted from scipy.sparse.
     def tocoo(self, copy=False):
+        if copy:
+            return self.copy().tocoo(copy=False)
         num_rows, num_cols = self.shape
         num_offsets, offset_len = self.data.shape
         offset_inds = cunumeric.arange(offset_len)
@@ -213,7 +213,7 @@ class dia_array(CompressedBase):
     # This routine is lifted from scipy.sparse's converter.
     def tocsc(self, copy=False):
         if copy:
-            raise AssertionError
+            return self.copy().tocsc(copy=False)
         if self.nnz == 0:
             return sparse.csc_array.make_empty(self.shape, self.dtype)
 
