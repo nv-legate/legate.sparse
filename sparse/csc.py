@@ -64,7 +64,7 @@ from .config import SparseOpCode
 from .coverage import clone_scipy_arr_kind
 from .partition import CompressedImagePartition, MinMaxImagePartition
 from .runtime import ctx, runtime
-from .types import coord_ty, float64, nnz_ty
+from .types import coord_ty, nnz_ty
 from .utils import (
     cast_arr,
     cast_to_common_type,
@@ -337,9 +337,14 @@ class csc_array(CompressedBase, DenseSparseBase):
     def conj(self, copy=False):
         if copy:
             return self.copy().conj(copy=False)
-        if self.dtype != float64:
-            raise NotImplementedError
-        return self
+        return csc_array.make_with_same_nnz_structure(
+            self,
+            (
+                get_store_from_cunumeric_array(self.data.conj()),
+                self.crd,
+                self.pos,
+            ),
+        )
 
     def dot(self, other, out=None):
         if out is not None:

@@ -78,7 +78,7 @@ from .config import SparseOpCode, SparseProjectionFunctor, rect1
 from .coverage import clone_scipy_arr_kind
 from .partition import CompressedImagePartition, MinMaxImagePartition
 from .runtime import ctx, runtime
-from .types import coord_ty, float64, nnz_ty
+from .types import coord_ty, nnz_ty
 from .utils import (
     cast_arr,
     cast_to_common_type,
@@ -289,9 +289,14 @@ class csr_array(CompressedBase, DenseSparseBase):
     def conj(self, copy=True):
         if copy:
             return self.copy().conj(copy=False)
-        if self.dtype != float64:
-            raise NotImplementedError
-        return self
+        return csr_array.make_with_same_nnz_structure(
+            self,
+            (
+                get_store_from_cunumeric_array(self.data.conj()),
+                self.crd,
+                self.pos,
+            ),
+        )
 
     @track_provenance(runtime.legate_context, nested=True)
     def tropical_spmv(self, other, out=None):
