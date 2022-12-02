@@ -222,6 +222,13 @@ class coo_array(CompressedBase):
         if copy:
             return self.copy().tocsr(copy=False)
 
+        # To avoid accidentally creating new communicators once
+        # the program has started up, ensure that sort operations
+        # on small arrays are handled without index launches. We
+        # can't do this easily by setting a broadcast on our
+        # outputs, as we only have unbound stores as outputs.
+        force_serial = self._i.shape[0] <= runtime.num_procs
+
         # We'll try a different (and parallel) approach here. First, we'll sort
         # the data using key (row, column), and sort the values accordingly.
         # The result of this operation is that the columns and values arrays
@@ -231,7 +238,14 @@ class coo_array(CompressedBase):
         cols_store = ctx.create_store(self._j.type, ndim=1)
         vals_store = ctx.create_store(self._vals.type, ndim=1)
         # Now sort the regions.
-        task = ctx.create_task(SparseOpCode.SORT_BY_KEY)
+        if force_serial:
+            task = ctx.create_task(
+                SparseOpCode.SORT_BY_KEY,
+                manual=True,
+                launch_domain=Rect(hi=(1,)),
+            )
+        else:
+            task = ctx.create_task(SparseOpCode.SORT_BY_KEY)
         # Add all of the unbounded outputs.
         task.add_output(rows_store)
         task.add_output(cols_store)
@@ -241,8 +255,9 @@ class coo_array(CompressedBase):
         task.add_input(self._j)
         task.add_input(self._vals)
         # The input stores need to all be aligned.
-        task.add_alignment(self._i, self._j)
-        task.add_alignment(self._i, self._vals)
+        if not force_serial:
+            task.add_alignment(self._i, self._j)
+            task.add_alignment(self._i, self._vals)
         if runtime.num_gpus > 1:
             task.add_nccl_communicator()
         elif runtime.num_gpus == 0:
@@ -324,13 +339,28 @@ class coo_array(CompressedBase):
     def tocsc(self, copy=False):
         if copy:
             return self.copy().tocsc(copy=False)
+
+        # To avoid accidentally creating new communicators once
+        # the program has started up, ensure that sort operations
+        # on small arrays are handled without index launches. We
+        # can't do this easily by setting a broadcast on our
+        # outputs, as we only have unbound stores as outputs.
+        force_serial = self._i.shape[0] <= runtime.num_procs
+
         # The strategy for CSC conversion is the same as COO conversion, we'll
         # just sort by the columns and then the rows.
         rows_store = ctx.create_store(self._i.type, ndim=1)
         cols_store = ctx.create_store(self._j.type, ndim=1)
         vals_store = ctx.create_store(self._vals.type, ndim=1)
         # Now sort the regions.
-        task = ctx.create_task(SparseOpCode.SORT_BY_KEY)
+        if force_serial:
+            task = ctx.create_task(
+                SparseOpCode.SORT_BY_KEY,
+                manual=True,
+                launch_domain=Rect(hi=(1,)),
+            )
+        else:
+            task = ctx.create_task(SparseOpCode.SORT_BY_KEY)
         # Add all of the unbounded outputs.
         task.add_output(cols_store)
         task.add_output(rows_store)
@@ -340,8 +370,9 @@ class coo_array(CompressedBase):
         task.add_input(self._i)
         task.add_input(self._vals)
         # The input stores need to all be aligned.
-        task.add_alignment(self._i, self._j)
-        task.add_alignment(self._i, self._vals)
+        if not force_serial:
+            task.add_alignment(self._i, self._j)
+            task.add_alignment(self._i, self._vals)
         if runtime.num_gpus > 1:
             task.add_nccl_communicator()
         elif runtime.num_gpus == 0:
