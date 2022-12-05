@@ -142,6 +142,16 @@ class MinMaxImagePartition(ImagePartition):
         color_shape: Optional[Shape] = None,
         color_transform: Optional[Transform] = None,
     ) -> Optional[LegionPartition]:
+        # If we've been requested to compute precise images,
+        # then fall back to the standard ImagePartition.
+        if sparse_runtime.args.precise_images:
+            return super().construct(
+                region,
+                complete=complete,
+                color_shape=color_shape,
+                color_transform=color_transform,
+            )
+
         assert len(self._store.shape) == 1 and not self._range
         index_partition = runtime.partition_manager.find_index_partition(
             region.index_space, self
