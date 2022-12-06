@@ -206,11 +206,8 @@ class WeightedJacobi(object):
         # Basically, similar solution to PyAMG.
         self.level_params = []
         self._init_omega = omega
-        # self.temp = None
 
     def init_level_params(self, A, level):
-        # if level == 0:
-        #     self.temp = np.empty_like(A.shape[0])
         D_inv = 1.0 / A.diagonal()
         # We need to create a new sparse matrix with just this modified
         # diagonal of A. sparse.eye doesn't have this nob, but we can take
