@@ -383,7 +383,6 @@ def execute(N, data, smoother, gridop, levels, maxiter, tol, verbose, package):
     x, iters = linalg.cg(
         A, b, tol=tol, maxiter=maxiter, M=M, callback=callback
     )
-    print(np.linalg.norm(A @ x - b))
     if tol <= np.linalg.norm(x):
         print("Converged in %d iterations" % iters)
     else:
