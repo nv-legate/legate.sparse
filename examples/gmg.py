@@ -13,23 +13,18 @@
 # limitations under the License.
 
 import argparse
-
-import cunumeric as np
-from legate.timing import time
-
-import sparse as sparse
-import sparse.linalg
+import numpy
 
 
 def stencil_grid(S, grid, dtype=None, format=None):
-    N_v = int(np.prod(grid))  # number of vertices in the mesh
+    N_v = int(numpy.prod(grid))  # number of vertices in the mesh
     N_s = int((S != 0).sum())  # number of nonzero stencil entries
 
     # diagonal offsets
     diags = np.zeros(N_s, dtype=int)
 
     # compute index offset of each dof within the stencil
-    strides = np.cumprod([1] + list(reversed(grid)))[:-1]
+    strides = numpy.cumprod([1] + list(reversed(grid)))[:-1]
     indices = tuple(i.copy() for i in S.nonzero())
     for i, s in zip(indices, S.shape):
         i -= s // 2
@@ -138,7 +133,7 @@ class GMG(object):
     def __init__(self, A, shape, levels, smoother, gridop):
         self.A = A
         self.shape = shape
-        self.N = np.product(self.shape)
+        self.N = numpy.product(self.shape)
         self.levels = levels
         self.restriction_op = {
             "injection": injection_operator,
@@ -187,7 +182,7 @@ class GMG(object):
         return self.restriction_op(fine_dim)
 
     def linear_operator(self):
-        return sparse.linalg.LinearOperator(
+        return linalg.LinearOperator(
             self.A.shape, dtype=float, matvec=lambda r: self.cycle(r)
         )
 
@@ -210,17 +205,17 @@ class WeightedJacobi(object):
         # Basically, similar solution to PyAMG.
         self.level_params = []
         self._init_omega = omega
-        self.temp = None
+        # self.temp = None
 
     def init_level_params(self, A, level):
-        if level == 0:
-            self.temp = np.empty_like(A.shape[0])
+        # if level == 0:
+        #     self.temp = np.empty_like(A.shape[0])
         D_inv = 1.0 / A.diagonal()
         # We need to create a new sparse matrix with just this modified
         # diagonal of A. sparse.eye doesn't have this nob, but we can take
         # the output of sparse.eye and mess with it to get the matrix
         # that we want.
-        D_inv_mat = sparse.eye(A.shape[0], n=A.shape[1], dtype=A.dtype)
+        D_inv_mat = sparse.eye(A.shape[0], n=A.shape[1], dtype=A.dtype).tocsr()
         D_inv_mat.data = 1.0 / D_inv
         spectral_radius = max_eigenvalue(A @ D_inv_mat)
         omega = self._init_omega / spectral_radius
@@ -249,7 +244,7 @@ class WeightedJacobi(object):
 def injection_operator(fine_dim):
     fine_shape = (int(np.sqrt(fine_dim)),) * 2
     coarse_shape = fine_shape[0] // 2, fine_shape[1] // 2
-    coarse_dim = np.product(coarse_shape)
+    coarse_dim = numpy.product(coarse_shape)
     Rp = np.arange(coarse_dim + 1)
     Rx = np.ones((coarse_dim,), dtype=np.float64)
     ij = np.arange(coarse_dim, dtype=np.int64)
@@ -348,7 +343,7 @@ def required_driver_memory(N):
     NN = N * N
     fine_shape = (int(np.sqrt(NN)),) * 2
     coarse_shape = fine_shape[0] // 2, fine_shape[1] // 2
-    coarse_dim = np.product(coarse_shape)
+    coarse_dim = numpy.product(coarse_shape)
     nnz = 9 * coarse_dim
     elements = nnz + coarse_dim + 1
     bytes = elements * 8
@@ -356,8 +351,7 @@ def required_driver_memory(N):
     print("Max required driver memory for N=%d is %fMB" % (N, mb))
 
 
-def execute(N, data, smoother, gridop, levels, maxiter, tol, verbose):
-
+def execute(N, data, smoother, gridop, levels, maxiter, tol, verbose, package):
     start = time()
     if data == "poisson":
         A = poisson2D(N).tocsr()
@@ -388,9 +382,10 @@ def execute(N, data, smoother, gridop, levels, maxiter, tol, verbose):
     print(f"GMG init time: {(time() - start)/1000} ms")
 
     solve_start = time()
-    x, iters = sparse.linalg.cg(
+    x, iters = linalg.cg(
         A, b, tol=tol, maxiter=maxiter, M=M, callback=callback
     )
+    print(np.linalg.norm(A @ x - b))
     if tol <= np.linalg.norm(x):
         print("Converged in %d iterations" % iters)
     else:
@@ -401,7 +396,7 @@ def execute(N, data, smoother, gridop, levels, maxiter, tol, verbose):
     print(f"Elapsed Time: {total/1000} ms")
 
 
-def main():
+if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "-n",
@@ -468,10 +463,34 @@ def main():
         dest="tol",
         help="convergence check threshold",
     )
+    parser.add_argument(
+        "-p",
+        "--package",
+        dest="package",
+        choices=["legate", "cupy", "scipy"],
+        type=str,
+        default="legate",
+    )
 
     args, _ = parser.parse_known_args()
+
+    # Load up the correct package.
+    if args.package == "legate":
+        import cunumeric as np
+        import sparse as sparse
+        import sparse.linalg as linalg
+        from legate.timing import time
+    else:
+        from time import perf_counter_ns
+        def time():
+            return perf_counter_ns() / 1000.0
+        if args.package == "cupy":
+            import cupy as np
+            import cupyx.scipy.sparse as sparse
+            import cupyx.scipy.sparse.linalg as linalg
+        else:
+            import numpy as np
+            import scipy.sparse as sparse
+            import scipy.sparse.linalg as linalg
+
     execute(**vars(args))
-
-
-if __name__ == "__main__":
-    main()
