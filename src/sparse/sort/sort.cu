@@ -257,48 +257,68 @@ struct SampleSorter<VariantKind::GPU, INDEX_TY, VAL_TY, Policy, Comm> {
     // All2Allv time for each buffer.
     CHECK_NCCL(ncclGroupStart());
     for (size_t r = 0; r < num_ranks; r++) {
-      CHECK_NCCL(ncclSend(sdispls[r] >= sval ? nullptr : coord1_send_buf.ptr(sdispls[r]),
-                          size_send[r] * sizeof(INDEX_TY),
-                          ncclInt8,
-                          r,
-                          *comm,
-                          stream));
-      CHECK_NCCL(ncclRecv(merge_buffers[r].indices1.ptr(0),
-                          size_recv[r] * sizeof(INDEX_TY),
-                          ncclInt8,
-                          r,
-                          *comm,
-                          stream));
+      // We actually need to guard the send and receive operations
+      // behind checks that the sizes are non-zero. We've ran into
+      // bugs where NCCL hangs in very sparse communication patterns
+      // where most nodes are only sending and receiving size 0.
+      if (size_send[r] > 0) {
+        CHECK_NCCL(ncclSend(sdispls[r] >= sval ? nullptr : coord1_send_buf.ptr(sdispls[r]),
+                            size_send[r] * sizeof(INDEX_TY),
+                            ncclInt8,
+                            r,
+                            *comm,
+                            stream));
+      }
+      if (size_recv[r] > 0) {
+        CHECK_NCCL(ncclRecv(merge_buffers[r].indices1.ptr(0),
+                            size_recv[r] * sizeof(INDEX_TY),
+                            ncclInt8,
+                            r,
+                            *comm,
+                            stream));
+      }
     }
     CHECK_NCCL(ncclGroupEnd());
 
     CHECK_NCCL(ncclGroupStart());
     for (size_t r = 0; r < num_ranks; r++) {
-      CHECK_NCCL(ncclSend(sdispls[r] >= sval ? nullptr : coord2_send_buf.ptr(sdispls[r]),
-                          size_send[r] * sizeof(INDEX_TY),
-                          ncclInt8,
-                          r,
-                          *comm,
-                          stream));
-      CHECK_NCCL(ncclRecv(merge_buffers[r].indices2.ptr(0),
-                          size_recv[r] * sizeof(INDEX_TY),
-                          ncclInt8,
-                          r,
-                          *comm,
-                          stream));
+      if (size_send[r] > 0) {
+        CHECK_NCCL(ncclSend(sdispls[r] >= sval ? nullptr : coord2_send_buf.ptr(sdispls[r]),
+                            size_send[r] * sizeof(INDEX_TY),
+                            ncclInt8,
+                            r,
+                            *comm,
+                            stream));
+      }
+      if (size_recv[r] > 0) {
+        CHECK_NCCL(ncclRecv(merge_buffers[r].indices2.ptr(0),
+                            size_recv[r] * sizeof(INDEX_TY),
+                            ncclInt8,
+                            r,
+                            *comm,
+                            stream));
+      }
     }
     CHECK_NCCL(ncclGroupEnd());
 
     CHECK_NCCL(ncclGroupStart());
     for (size_t r = 0; r < num_ranks; r++) {
-      CHECK_NCCL(ncclSend(sdispls[r] >= sval ? nullptr : vals_send_buf.ptr(sdispls[r]),
-                          size_send[r] * sizeof(VAL_TY),
-                          ncclInt8,
-                          r,
-                          *comm,
-                          stream));
-      CHECK_NCCL(ncclRecv(
-        merge_buffers[r].values.ptr(0), size_recv[r] * sizeof(VAL_TY), ncclInt8, r, *comm, stream));
+      if (size_send[r] > 0) {
+        CHECK_NCCL(ncclSend(sdispls[r] >= sval ? nullptr : vals_send_buf.ptr(sdispls[r]),
+                            size_send[r] * sizeof(VAL_TY),
+                            ncclInt8,
+                            r,
+                            *comm,
+                            stream));
+      }
+      if (size_recv[r] > 0) {
+        CHECK_NCCL(ncclRecv(merge_buffers[r].values.ptr(0),
+                            size_recv[r] * sizeof(VAL_TY),
+                            ncclInt8,
+                            r,
+                            *comm,
+                            stream));
+      }
     }
     CHECK_NCCL(ncclGroupEnd());
 
