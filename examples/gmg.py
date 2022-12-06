@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import argparse
+
 import numpy
 
 
@@ -477,13 +478,16 @@ if __name__ == "__main__":
     # Load up the correct package.
     if args.package == "legate":
         import cunumeric as np
+        from legate.timing import time
+
         import sparse as sparse
         import sparse.linalg as linalg
-        from legate.timing import time
     else:
         from time import perf_counter_ns
+
         def time():
             return perf_counter_ns() / 1000.0
+
         if args.package == "cupy":
             import cupy as np
             import cupyx.scipy.sparse as sparse
