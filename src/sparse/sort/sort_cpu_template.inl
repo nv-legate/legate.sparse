@@ -126,6 +126,23 @@ struct SampleSorter {
       rval += size_recv[r];
     }
 
+    // Adjust all of the send and recieve sizes by
+    // the size of the actual datatypes being sent.
+    std::vector<int> sendcounts_index(num_ranks), recvcounts_index(num_ranks);
+    std::vector<int> sendcounts_value(num_ranks), recvcounts_value(num_ranks);
+    std::vector<int> sdispls_index(num_ranks), rdispls_index(num_ranks);
+    std::vector<int> sdispls_value(num_ranks), rdispls_value(num_ranks);
+    for (size_t r = 0; r < num_ranks; r++) {
+      sendcounts_index[r] = sendcounts[r] * sizeof(INDEX_TY);
+      sendcounts_value[r] = sendcounts[r] * sizeof(VAL_TY);
+      recvcounts_index[r] = recvcounts[r] * sizeof(INDEX_TY);
+      recvcounts_value[r] = recvcounts[r] * sizeof(VAL_TY);
+      sdispls_index[r] = sdispls[r] * sizeof(INDEX_TY);
+      sdispls_value[r] = sdispls[r] * sizeof(VAL_TY);
+      rdispls_index[r] = rdispls[r] * sizeof(INDEX_TY);
+      rdispls_value[r] = rdispls[r] * sizeof(VAL_TY);
+    }
+
     auto coord1_send_buf = local_sorted.indices1;
     auto coord2_send_buf = local_sorted.indices2;
     auto vals_send_buf   = local_sorted.values;
@@ -135,33 +152,30 @@ struct SampleSorter {
     auto coord2_recv_buf = create_buffer<INDEX_TY>(rval, mem);
     auto values_recv_buf = create_buffer<VAL_TY>(rval, mem);
 
-    // TODO (rohany): This code below assumes that INDEX_TY's is CollInt64
-    //  and that VAL_TY is CollDouble.
-
     // All2Allv time for each buffer.
     legate::comm::coll::collAlltoallv(coord1_send_buf.ptr(0),
-                                      sendcounts.data(),
-                                      sdispls.data(),
+                                      sendcounts_index.data(),
+                                      sdispls_index.data(),
                                       coord1_recv_buf.ptr(0),
-                                      recvcounts.data(),
-                                      rdispls.data(),
-                                      legate::comm::coll::CollDataType::CollInt64,
+                                      recvcounts_index.data(),
+                                      rdispls_index.data(),
+                                      legate::comm::coll::CollDataType::CollInt8,
                                       *comm);
     legate::comm::coll::collAlltoallv(coord2_send_buf.ptr(0),
-                                      sendcounts.data(),
-                                      sdispls.data(),
+                                      sendcounts_index.data(),
+                                      sdispls_index.data(),
                                       coord2_recv_buf.ptr(0),
-                                      recvcounts.data(),
-                                      rdispls.data(),
-                                      legate::comm::coll::CollDataType::CollInt64,
+                                      recvcounts_index.data(),
+                                      rdispls_index.data(),
+                                      legate::comm::coll::CollDataType::CollInt8,
                                       *comm);
     legate::comm::coll::collAlltoallv(vals_send_buf.ptr(0),
-                                      sendcounts.data(),
-                                      sdispls.data(),
+                                      sendcounts_value.data(),
+                                      sdispls_value.data(),
                                       values_recv_buf.ptr(0),
-                                      recvcounts.data(),
-                                      rdispls.data(),
-                                      legate::comm::coll::CollDataType::CollDouble,
+                                      recvcounts_value.data(),
+                                      rdispls_value.data(),
+                                      legate::comm::coll::CollDataType::CollInt8,
                                       *comm);
 
     // Clean up remaining buffers.
