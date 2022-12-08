@@ -137,10 +137,10 @@ struct SampleSorter {
       sendcounts_value[r] = sendcounts[r] * sizeof(VAL_TY);
       recvcounts_index[r] = recvcounts[r] * sizeof(INDEX_TY);
       recvcounts_value[r] = recvcounts[r] * sizeof(VAL_TY);
-      sdispls_index[r] = sdispls[r] * sizeof(INDEX_TY);
-      sdispls_value[r] = sdispls[r] * sizeof(VAL_TY);
-      rdispls_index[r] = rdispls[r] * sizeof(INDEX_TY);
-      rdispls_value[r] = rdispls[r] * sizeof(VAL_TY);
+      sdispls_index[r]    = sdispls[r] * sizeof(INDEX_TY);
+      sdispls_value[r]    = sdispls[r] * sizeof(VAL_TY);
+      rdispls_index[r]    = rdispls[r] * sizeof(INDEX_TY);
+      rdispls_value[r]    = rdispls[r] * sizeof(VAL_TY);
     }
 
     auto coord1_send_buf = local_sorted.indices1;
