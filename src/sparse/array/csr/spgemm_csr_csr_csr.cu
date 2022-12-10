@@ -24,7 +24,6 @@
 #include <thrust/execution_policy.h>
 #include <thrust/remove.h>
 
-
 namespace sparse {
 
 using namespace Legion;
@@ -38,22 +37,24 @@ __global__ void cast_and_offset(size_t elems, DST* dst, const SRC* src, int64_t 
   dst[idx] = static_cast<DST>(src[idx] - offset);
 }
 
-template<typename COORD_TY>
-__global__ void copy_referenced_locations(size_t elems, int64_t offset, int32_t* dest, const COORD_TY* coords, const Rect<1>* input) {
+template <typename COORD_TY>
+__global__ void copy_referenced_locations(
+  size_t elems, int64_t offset, int32_t* dest, const COORD_TY* coords, const Rect<1>* input)
+{
   const auto idx = global_tid_1d();
   if (idx >= elems) return;
   dest[coords[idx] - offset] = input[coords[idx] - offset].volume();
 }
 
-template<typename COORD_TY, typename ACC1, typename ACC2>
-__global__ void double_indirection(size_t elems, const COORD_TY* coords, ACC1 pos, ACC2 crd, int32_t* dest, int64_t dest_offset) {
+template <typename COORD_TY, typename ACC1, typename ACC2>
+__global__ void double_indirection(
+  size_t elems, const COORD_TY* coords, ACC1 pos, ACC2 crd, int32_t* dest, int64_t dest_offset)
+{
   const auto idx = global_tid_1d();
   if (idx >= elems) return;
 
   auto rect = pos[coords[idx]];
-  for (auto i = rect.lo[0]; i < rect.hi[0] + 1; i++) {
-    dest[i - dest_offset] = crd[i];
-  }
+  for (auto i = rect.lo[0]; i < rect.hi[0] + 1; i++) { dest[i - dest_offset] = crd[i]; }
 }
 
 struct SpGEMMCSRxCSRxCSRGPUImpl {
@@ -129,17 +130,17 @@ struct SpGEMMCSRxCSRxCSRGPUImpl {
 
       thrust::fill(policy, C_indptr.ptr(0), C_indptr.ptr(0) + C_rows + 1, 0);
 
-      auto elems = B_crd.domain().get_volume();
+      auto elems  = B_crd.domain().get_volume();
       auto blocks = get_num_blocks_1d(elems);
       copy_referenced_locations<<<blocks, THREADS_PER_BLOCK, 0, stream>>>(
-	elems,
-	B_min_coord,
-	C_indptr.ptr(0),
+        elems,
+        B_min_coord,
+        C_indptr.ptr(0),
         B_crd.read_accessor<INDEX_TY, 1>().ptr(B_crd.domain().lo()),
-	C_pos.read_accessor<Rect<1>, 1>().ptr(C_pos.domain().lo())
-      );
+        C_pos.read_accessor<Rect<1>, 1>().ptr(C_pos.domain().lo()));
 
-      thrust::exclusive_scan(policy, C_indptr.ptr(0), C_indptr.ptr(0) + C_rows + 1, C_indptr.ptr(0), 0);
+      thrust::exclusive_scan(
+        policy, C_indptr.ptr(0), C_indptr.ptr(0) + C_rows + 1, C_indptr.ptr(0), 0);
     }
 
     DeferredBuffer<int32_t, 1> B_crd_int({0, B_crd.domain().get_volume() - 1}, Memory::GPU_FB_MEM);
@@ -166,17 +167,16 @@ struct SpGEMMCSRxCSRxCSRGPUImpl {
       auto elems  = dom.get_volume();
       auto blocks = get_num_blocks_1d(elems);
       double_indirection<<<blocks, THREADS_PER_BLOCK, 0, stream>>>(
-	elems,
-	B_crd.read_accessor<INDEX_TY, 1>().ptr(dom.lo()),
-	C_pos.read_accessor<Rect<1>, 1>(),
-	C_crd.read_accessor<INDEX_TY, 1>(),
-	C_crd_int.ptr(0),
-	C_crd.domain().lo()[0]
-      );
+        elems,
+        B_crd.read_accessor<INDEX_TY, 1>().ptr(dom.lo()),
+        C_pos.read_accessor<Rect<1>, 1>(),
+        C_crd.read_accessor<INDEX_TY, 1>(),
+        C_crd_int.ptr(0),
+        C_crd.domain().lo()[0]);
 
       // Remove the duplicates.
       auto end = thrust::remove(policy, C_crd_int.ptr(0), C_crd_int.ptr(0) + C_nnz, -1);
-      C_nnz = end - C_crd_int.ptr(0);
+      C_nnz    = end - C_crd_int.ptr(0);
     }
 
     // Initialize the cuSPARSE matrices.
