@@ -15,18 +15,22 @@
 from typing import Optional
 
 from legate.core import (
+    IndexPartition,
     Partition as LegionPartition,
     Point,
     Rect,
     Region,
     Transform,
+    legion,
 )
+from legate.core._legion import PartitionByPreimage, PartitionByPreimageRange
 from legate.core.launcher import TaskLauncher
 from legate.core.partition import (
     AffineProjection,
     Broadcast,
     DomainPartition,
     ImagePartition,
+    PreimagePartition,
 )
 from legate.core.runtime import runtime
 from legate.core.shape import Shape
@@ -200,3 +204,74 @@ class MinMaxImagePartition(ImagePartition):
 
     def __str__(self) -> str:
         return f"MinMaxImage({self._store}, {self._part}, range={self._range})"
+
+
+# DensePreimage is a wrapper around preimage partitioning
+# that densifies the tight preimages computed by Realm.
+# This is useful in cases where we just care about the bounds
+# computed by Realm, and can do our own checking within
+# kernels about the tight bounds of the preimages.
+class DensePreimage(PreimagePartition):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def construct(
+        self,
+        region: Region,
+        complete: bool = False,
+        color_shape: Optional[Shape] = None,
+        color_transform: Optional[Transform] = None,
+    ) -> Optional[LegionPartition]:
+        dest_part = self._part.construct(self._dest_region)
+        source_region = self._source.storage.region
+        source_field = self._source.storage.field.field_id
+        functorFn = (
+            PartitionByPreimageRange if self._range else PartitionByPreimage
+        )
+        functor = functorFn(
+            dest_part.index_partition,  # type: ignore
+            source_region,
+            source_region,
+            source_field,
+            mapper=self._mapper,
+        )
+        index_partition = runtime.partition_manager.find_index_partition(
+            region.index_space, self
+        )
+        if index_partition is None:
+            if self._disjoint and self._complete:
+                kind = legion.LEGION_DISJOINT_COMPLETE_KIND
+            elif self._disjoint and not self._complete:
+                kind = legion.LEGION_DISJOINT_INCOMPLETE_KIND
+            elif not self._disjoint and self._complete:
+                kind = legion.LEGION_ALIASED_COMPLETE_KIND  # type: ignore
+            else:
+                kind = legion.LEGION_ALIASED_INCOMPLETE_KIND  # type: ignore
+            # Discharge some typing errors.
+            assert dest_part is not None
+            index_partition = IndexPartition(
+                runtime.legion_context,
+                runtime.legion_runtime,
+                region.index_space,
+                dest_part.color_space,
+                functor=functor,
+                kind=kind,
+                keep=True,
+            )
+
+            # Now, densify the partitions created from the preimage.
+            dense = {}
+            for point in index_partition.color_space.get_bounds():
+                subspace = index_partition.get_child(point)
+                dense[point] = subspace.get_bounds()
+
+            result = DomainPartition(
+                Shape(ispace=region.index_space),
+                Shape(ispace=dest_part.color_space),
+                dense,
+            ).construct(region)
+            index_partition = result.index_partition
+            runtime.partition_manager.record_index_partition(
+                region.index_space, self, index_partition
+            )
+        return region.get_child(index_partition)

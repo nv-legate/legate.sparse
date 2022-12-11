@@ -122,9 +122,69 @@ struct CSRSpMVRowSplitImpl<VariantKind::GPU> {
   }
 };
 
+template <typename INDEX_TY, typename VAL_TY, typename ACC>
+__global__ void spmv_col_split_kernel(ACC y,
+                                      const AccessorRO<Rect<1>, 1>& A_pos,
+                                      const AccessorRO<INDEX_TY, 1>& A_crd,
+                                      const AccessorRO<VAL_TY, 1>& A_vals,
+                                      const AccessorRO<VAL_TY, 1>& x,
+                                      const Rect<1>& y_rect,
+                                      const Rect<1>& A_crd_rect,
+                                      const Rect<1>& x_rect, )
+{
+  auto idx = global_tid_1d();
+  if (idx >= y_rect.volume()) return;
+  auto i     = idx + y_rect.lo[0];
+  VAL_TY sum = 0.0;
+  for (size_t j_pos = A_pos[i].lo; j_pos < A_pos[i].hi + 1; j_pos++) {
+    // Because the columns have been partitioned, we take a preimage
+    // back into the coordinates, densify that, and then preimage again
+    // into pos. That means we may reference entries in pos that are
+    // are not meant to iterate over the entire rectangle, but just
+    // the coordinates covered in A_crd_rect.
+    if (A_crd_rect.contains(j_pos)) {
+      auto j = A_crd[j_pos];
+      // We also might get coordinates that aren't within the x partition.
+      if (x_rect.contains(j)) { sum += A_vals[j_pos] * x[j]; }
+    }
+  }
+  y[i] <<= sum;
+}
+
+// Trying to use cuSPARSE in this column split case is definitely tricky.
+// To make things a bit simpler for us, start with a simple CUDA kernel
+// for now, and we can move to a cuSPARSE kernel if necessary.
+template <LegateTypeCode INDEX_CODE, LegateTypeCode VAL_CODE, typename ACC>
+struct CSRSpMVColSplitImplBody<VariantKind::GPU, INDEX_CODE, VAL_CODE, ACC> {
+  using INDEX_TY = legate_type_of<INDEX_CODE>;
+  using VAL_TY   = legate_type_of<VAL_CODE>;
+
+  void operator()(ACC y,
+                  const AccessorRO<Rect<1>, 1>& A_pos,
+                  const AccessorRO<INDEX_TY, 1>& A_crd,
+                  const AccessorRO<VAL_TY, 1>& A_vals,
+                  const AccessorRO<VAL_TY, 1>& x,
+                  const Rect<1>& y_rect,
+                  const Rect<1>& A_crd_rect,
+                  const Rect<1>& x_rect, )
+  {
+    auto stream = get_cached_stream();
+    auto elems  = y_rect.volume();
+    auto blocks = get_num_blocks_1d(elems);
+    spmv_col_split_kernel<<<blocks, THREADS_PER_BLOCK, 0, stream>>>(
+      y, A_pos, A_crd, x, y_rect, A_crd_rect, x_rect);
+    CHECK_CUDA_STREAM(stream);
+  }
+};
+
 /*static*/ void CSRSpMVRowSplit::gpu_variant(TaskContext& context)
 {
   csr_spmv_row_split_template<VariantKind::GPU>(context);
+}
+
+/*static*/ void CSRSpMVColSplit::gpu_variant(TaskContext& context)
+{
+  csr_spmv_col_split_template<VariantKind::GPU>(context);
 }
 
 }  // namespace sparse
