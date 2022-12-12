@@ -123,14 +123,15 @@ struct CSRSpMVRowSplitImpl<VariantKind::GPU> {
 };
 
 template <typename INDEX_TY, typename VAL_TY>
-__global__ void spmv_col_split_kernel(const AccessorRD<SumReduction<VAL_TY>, true /* exclusive */, 1> y,
-                                      const AccessorRO<Rect<1>, 1> A_pos,
-                                      const AccessorRO<INDEX_TY, 1> A_crd,
-                                      const AccessorRO<VAL_TY, 1> A_vals,
-                                      const AccessorRO<VAL_TY, 1> x,
-                                      const Rect<1> y_rect,
-                                      const Rect<1> A_crd_rect,
-                                      const Rect<1> x_rect)
+__global__ void spmv_col_split_kernel(
+  const AccessorRD<SumReduction<VAL_TY>, true /* exclusive */, 1> y,
+  const AccessorRO<Rect<1>, 1> A_pos,
+  const AccessorRO<INDEX_TY, 1> A_crd,
+  const AccessorRO<VAL_TY, 1> A_vals,
+  const AccessorRO<VAL_TY, 1> x,
+  const Rect<1> y_rect,
+  const Rect<1> A_crd_rect,
+  const Rect<1> x_rect)
 {
   auto idx = global_tid_1d();
   if (idx >= y_rect.volume()) return;
