@@ -58,7 +58,7 @@ struct CSRSpMVColSplitImplBody<VariantKind::OMP, INDEX_CODE, VAL_CODE, ACC> {
                   const AccessorRO<VAL_TY, 1>& x,
                   const Rect<1>& y_rect,
                   const Rect<1>& A_crd_rect,
-                  const Rect<1>& x_rect, )
+                  const Rect<1>& x_rect)
   {
 #pragma omp parallel for schedule(monotonic : dynamic, 128)
     for (coord_t i = y_rect.lo[0]; i < y_rect.hi[0] + 1; i++) {

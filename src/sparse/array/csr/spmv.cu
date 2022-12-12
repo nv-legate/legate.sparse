@@ -122,15 +122,15 @@ struct CSRSpMVRowSplitImpl<VariantKind::GPU> {
   }
 };
 
-template <typename INDEX_TY, typename VAL_TY, typename ACC>
-__global__ void spmv_col_split_kernel(ACC y,
-                                      const AccessorRO<Rect<1>, 1>& A_pos,
-                                      const AccessorRO<INDEX_TY, 1>& A_crd,
-                                      const AccessorRO<VAL_TY, 1>& A_vals,
-                                      const AccessorRO<VAL_TY, 1>& x,
-                                      const Rect<1>& y_rect,
-                                      const Rect<1>& A_crd_rect,
-                                      const Rect<1>& x_rect, )
+template <typename INDEX_TY, typename VAL_TY>
+__global__ void spmv_col_split_kernel(const AccessorRD<SumReduction<VAL_TY>, true /* exclusive */, 1> y,
+                                      const AccessorRO<Rect<1>, 1> A_pos,
+                                      const AccessorRO<INDEX_TY, 1> A_crd,
+                                      const AccessorRO<VAL_TY, 1> A_vals,
+                                      const AccessorRO<VAL_TY, 1> x,
+                                      const Rect<1> y_rect,
+                                      const Rect<1> A_crd_rect,
+                                      const Rect<1> x_rect)
 {
   auto idx = global_tid_1d();
   if (idx >= y_rect.volume()) return;
@@ -166,13 +166,13 @@ struct CSRSpMVColSplitImplBody<VariantKind::GPU, INDEX_CODE, VAL_CODE, ACC> {
                   const AccessorRO<VAL_TY, 1>& x,
                   const Rect<1>& y_rect,
                   const Rect<1>& A_crd_rect,
-                  const Rect<1>& x_rect, )
+                  const Rect<1>& x_rect)
   {
     auto stream = get_cached_stream();
     auto elems  = y_rect.volume();
     auto blocks = get_num_blocks_1d(elems);
-    spmv_col_split_kernel<<<blocks, THREADS_PER_BLOCK, 0, stream>>>(
-      y, A_pos, A_crd, x, y_rect, A_crd_rect, x_rect);
+    spmv_col_split_kernel<INDEX_TY, VAL_TY><<<blocks, THREADS_PER_BLOCK, 0, stream>>>(
+      y, A_pos, A_crd, A_vals, x, y_rect, A_crd_rect, x_rect);
     CHECK_CUDA_STREAM(stream);
   }
 };
