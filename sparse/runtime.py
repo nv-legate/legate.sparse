@@ -48,17 +48,11 @@ class Runtime:
         self.legate_context = legate_context
         self.legate_runtime = get_legate_runtime()
 
-        self.num_procs = int(
-            self.legate_context.get_tunable(
-                SparseTunable.NUM_PROCS,
-                types.int32,
-            )
-        )
         if "LEGATE_SPARSE_NUM_PROCS" in os.environ:
             self.num_procs = int(os.environ["LEGATE_SPARSE_NUM_PROCS"])
             print(f"Overriding LEGATE_SPARSE_NUM_PROCS to {self.num_procs}")
 
-        self.num_gpus = int(
+        num_gpus = int(
             self.legate_context.get_tunable(
                 SparseTunable.NUM_GPUS,
                 types.int32,
@@ -86,13 +80,21 @@ class Runtime:
             self.legate_runtime.issue_execution_fence(block=True)
         # Also initialize NCCL eagerly since we will most likely use it when
         # converting objects from COO.
-        if self.num_gpus > 1:
+        if num_gpus > 1:
             self.legate_runtime.get_nccl_communicator().initialize(
                 self.num_gpus
             )
 
         # Parse legate.sparse specific command line arguments.
         self.args = parse_command_args("legate_sparse", ARGS)
+
+    @property
+    def num_procs(self):
+        return self.legate_runtime.machine.num_procs
+
+    @property
+    def num_gpus(self):
+        return self.legate_runtime.num_gpus
 
     def get_1d_to_2d_functor_id(self, xdim: int, ydim: int, rows: bool) -> int:
         key = (xdim, ydim, rows)
