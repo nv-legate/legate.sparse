@@ -66,16 +66,17 @@ def test_csr_conj(filename, copy):
 @pytest.mark.parametrize("filename", test_mtx_files)
 @pytest.mark.parametrize("mat_type", types)
 @pytest.mark.parametrize("vec_type", types)
-def test_csr_dot(filename, mat_type, vec_type):
+@pytest.mark.parametrize("col_split", [True, False])
+def test_csr_dot(filename, mat_type, vec_type, col_split):
     # Test vectors and n-1 matrices.
     arr = legate_io.mmread(filename).tocsr().astype(mat_type)
     s = sci_io.mmread(filename).tocsr().astype(mat_type)
     vec = np.random.random((arr.shape[0])).astype(vec_type)
     assert np.allclose(arr @ vec, s @ vec)
-    assert np.allclose(arr.dot(vec), s.dot(vec))
+    assert np.allclose(arr.dot(vec, spmv_domain_part=col_split), s.dot(vec))
     out_type = numpy.find_common_type([mat_type, vec_type], [])
     result_l = np.zeros((arr.shape[0]), dtype=out_type)
-    arr.dot(vec, out=result_l)
+    arr.dot(vec, spmv_domain_part=col_split, out=result_l)
     assert np.allclose(result_l, s.dot(vec))
     vec = np.random.random((arr.shape[0], 1)).astype(vec_type)
     assert np.allclose(arr @ vec, s @ vec)

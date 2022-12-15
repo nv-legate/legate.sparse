@@ -42,4 +42,24 @@ class CSRSpMVRowSplit : public SparseTask<CSRSpMVRowSplit> {
 #endif
 };
 
+struct CSRSpMVColSplitArgs {
+  const legate::Store& y;
+  const legate::Store& A_pos;
+  const legate::Store& A_crd;
+  const legate::Store& A_vals;
+  const legate::Store& x;
+};
+
+class CSRSpMVColSplit : public SparseTask<CSRSpMVColSplit> {
+ public:
+  static const int TASK_ID = LEGATE_SPARSE_CSR_SPMV_COL_SPLIT;
+  static void cpu_variant(legate::TaskContext& ctx);
+#ifdef LEGATE_USE_OPENMP
+  static void omp_variant(legate::TaskContext& ctx);
+#endif
+#ifdef LEGATE_USE_CUDA
+  static void gpu_variant(legate::TaskContext& context);
+#endif
+};
+
 }  // namespace sparse

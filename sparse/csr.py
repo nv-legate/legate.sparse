@@ -76,7 +76,11 @@ from .base import (
 )
 from .config import SparseOpCode, SparseProjectionFunctor, rect1
 from .coverage import clone_scipy_arr_kind
-from .partition import CompressedImagePartition, MinMaxImagePartition
+from .partition import (
+    CompressedImagePartition,
+    DensePreimage,
+    MinMaxImagePartition,
+)
 from .runtime import ctx, runtime
 from .types import coord_ty, nnz_ty
 from .utils import (
@@ -375,7 +379,7 @@ class csr_array(CompressedBase, DenseSparseBase):
             dtype=self.dtype,
         )
 
-    def dot(self, other, out=None):
+    def dot(self, other, out=None, spmv_domain_part=False):
         if out is not None:
             assert isinstance(out, cunumeric.ndarray)
         if isinstance(other, numpy.ndarray):
@@ -449,13 +453,19 @@ class csr_array(CompressedBase, DenseSparseBase):
                     )
                 if other_originally_2d:
                     assert out.shape == (self.shape[0], 1)
+                    assert not spmv_domain_part
                     out = out.squeeze(1)
                 else:
                     assert out.shape == (self.shape[0],)
                 y = out
 
+            # If we're going to end up reducing into the output, reset it
+            # to zero before launching tasks.
+            if spmv_domain_part:
+                y[:] = 0
+
             # Invoke the SpMV after the setup.
-            spmv(A, x, y)
+            spmv(A, x, y, domain_part=spmv_domain_part)
 
             output = y
             if other_originally_2d:
@@ -780,50 +790,112 @@ def scan_local_results_and_scale_pos(
 
 
 # spmv computes y = A @ x.
-def spmv(A: csr_array, x: cunumeric.ndarray, y: cunumeric.ndarray):
+def spmv(
+    A: csr_array, x: cunumeric.ndarray, y: cunumeric.ndarray, domain_part=False
+):
     x_store = get_store_from_cunumeric_array(x)
     y_store = get_store_from_cunumeric_array(y)
 
-    # An auto-parallelized version of the kernel.
-    task = ctx.create_task(SparseOpCode.CSR_SPMV_ROW_SPLIT)
-    task.add_output(y_store)
-    task.add_input(A.pos)
-    task.add_input(A.crd)
-    task.add_input(A.vals)
-    task.add_input(x_store)
-    task.add_alignment(y_store, A.pos)
-    task.add_image_constraint(
-        A.pos,
-        A.crd,
-        range=True,
-        functor=CompressedImagePartition,
-    )
-    task.add_alignment(A.crd, A.vals)
-    # TODO (rohany): Both adding an image constraint explicitly and an
-    #  alignment constraint between vals and crd works now. Adding the
-    #  image is explicit though, while adding the alignment is more in
-    #  line with the DISTAL way of doing things.
-    #
-    # task.add_image_constraint(self.pos, self.vals, range=True)
-    #
-    # An important optimization is to use an image operation to request
-    # only the necessary pieces of data from the x vector in y = Ax. We
-    # don't make an attempt to use a sparse instance, so we allocate
-    # the full vector x in each task, but by using the sparse instance
-    # we ensure that only the necessary pieces of data are
-    # communicated. In many common sparse matrix patterns, this can
-    # result in an asymptotic decrease in the amount of communication.
-    # The image of the selected coordinates into other vector is
-    # not complete or disjoint.
-    task.add_image_constraint(
-        A.crd,
-        x_store,
-        range=False,
-        disjoint=False,
-        complete=False,
-        functor=MinMaxImagePartition,
-    )
-    task.execute()
+    if domain_part:
+        # In this case, we use a partition of the column vector
+        # to create partitions of the rest of the matrix.
+        # We'll start with an equal partition of the domain vector,
+        # and take preimages all the way back out to the range vector,
+        # similar to LegionSolvers. Importantly we use DensePreimages,
+        # which densify the tight preimage computed by Realm, as our
+        # iteration methods like to iterate over data that might not
+        # be actually present in the tight partitions.
+        procs = runtime.num_procs
+        tile_shape = (x_store.shape[0] + procs - 1) // procs
+        x_tiling = Tiling(
+            Shape(
+                tile_shape,
+            ),
+            Shape(
+                procs,
+            ),
+        )
+        x_part = x_store.partition(x_tiling)
+        # Create the partition of crd from x. We'll also use
+        # this partition for vals.
+        crd_part = DensePreimage(
+            A.crd,
+            x_store,
+            x_part.partition,
+            ctx.mapper_id,
+            range=False,
+            disjoint=False,
+            complete=False,
+        )
+        # Preimage again up from crd into pos. We'll also use
+        # this partition for y.
+        pos_part = DensePreimage(
+            A.pos,
+            A.crd,
+            crd_part,
+            ctx.mapper_id,
+            range=True,
+            disjoint=False,
+            complete=False,
+        )
+        launch_domain = Rect(
+            hi=Shape(
+                procs,
+            )
+        )
+        # We're using a manual task right now. In the future,
+        # we can add preimage support to the solver so that
+        # this can fit nicer with the existing infra.
+        task = ctx.create_manual_task(
+            SparseOpCode.CSR_SPMV_COL_SPLIT, launch_domain=launch_domain
+        )
+        task.add_reduction(y_store.partition(pos_part), ReductionOp.ADD)
+        task.add_input(A.pos.partition(pos_part))
+        task.add_input(A.crd.partition(crd_part))
+        task.add_input(A.vals.partition(crd_part))
+        task.add_input(x_part)
+        task.execute()
+    else:
+        # An auto-parallelized version of the kernel.
+        task = ctx.create_task(SparseOpCode.CSR_SPMV_ROW_SPLIT)
+        task.add_output(y_store)
+        task.add_input(A.pos)
+        task.add_input(A.crd)
+        task.add_input(A.vals)
+        task.add_input(x_store)
+        task.add_alignment(y_store, A.pos)
+        task.add_image_constraint(
+            A.pos,
+            A.crd,
+            range=True,
+            functor=CompressedImagePartition,
+        )
+        task.add_alignment(A.crd, A.vals)
+        # TODO (rohany): Both adding an image constraint explicitly and an
+        #  alignment constraint between vals and crd works now. Adding the
+        #  image is explicit though, while adding the alignment is more in
+        #  line with the DISTAL way of doing things.
+        #
+        # task.add_image_constraint(self.pos, self.vals, range=True)
+        #
+        # An important optimization is to use an image operation to request
+        # only the necessary pieces of data from the x vector in y = Ax. We
+        # don't make an attempt to use a sparse instance, so we allocate
+        # the full vector x in each task, but by using the sparse instance
+        # we ensure that only the necessary pieces of data are
+        # communicated. In many common sparse matrix patterns, this can
+        # result in an asymptotic decrease in the amount of communication.
+        # The image of the selected coordinates into other vector is
+        # not complete or disjoint.
+        task.add_image_constraint(
+            A.crd,
+            x_store,
+            range=False,
+            disjoint=False,
+            complete=False,
+            functor=MinMaxImagePartition,
+        )
+        task.execute()
 
 
 # add computes A = B + C and returns A.
