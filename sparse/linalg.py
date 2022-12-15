@@ -522,50 +522,46 @@ def cg(
         else make_linear_operator(M)
     )
     x = np.zeros(n) if x0 is None else x0.copy()
-
     p = np.zeros(n)
-    Ap = A.matvec(p)
-    r = b - Ap
-    # Hold onto several temps to store allocations used in each iteration.
+
+    # This implementation is adapted from CuPy's CG solve:
+    # https://github.com/cupy/cupy/blob/master/cupyx/scipy/sparse/linalg/_iterative.py.
+    # # Hold onto several temps to store allocations used in each iteration.
+    r = b - A.matvec(x)
+    iters = 0
+    rho = 0
     z = None
-    info = 0
-    for i in range(maxiter):
-        info = i
-        if callback is not None:
-            callback(x)
+    q = None
+    while iters < maxiter:
         z = M.matvec(r, out=z)
-        if i == 0:
-            # Make sure not to take an alias to z here, since we modify p in
-            # place.
+        rho1 = rho
+        rho = r.dot(z)
+        if iters == 0:
+            # Make sure not to take an alias to z here, since we
+            # modify p in place.
             p[:] = z
-            rz = r.dot(z)
         else:
-            oldrtz = rz
-            rz = r.dot(z)
-            beta = rz / oldrtz
+            beta = rho / rho1
             # Utilize a fused vector addition with scalar multiplication
             # kernel. Computes p = p * beta + z.
             axpby(p, z, beta=beta)
-        A.matvec(p, out=Ap)
-        # Update pAp in place.
-        pAp = p.dot(Ap)
-        # Update alpha in place.
-        alpha = rz / pAp
+        q = A.matvec(p, out=q)
+        alpha = rho / p.dot(q)
         # Utilize fused vector adds here as well.
         # Computes x += alpha * p.
         axpby(x, p, alpha=alpha)
         # Computes r -= alpha * Ap.
-        axpby(r, Ap, alpha=-alpha)
-        if (i % conv_test_iters == 0 or i == (maxiter - 1)) and np.linalg.norm(
-            r
-        ) < tol:
+        axpby(r, q, alpha=-alpha)
+        iters += 1
+        if callback is not None:
+            callback(x)
+        if (
+            iters % conv_test_iters == 0 or iters == (maxiter - 1)
+        ) and np.linalg.norm(r) < tol:
             # Test convergence every conv_test_iters iterations.
             break
 
-    if callback is not None:
-        # If converged, callback has not been invoked with the solution.
-        callback(x)
-    return x, info
+    return x, iters
 
 
 # Implmentation taken from
