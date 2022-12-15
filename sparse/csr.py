@@ -462,7 +462,7 @@ class csr_array(CompressedBase, DenseSparseBase):
             # If we're going to end up reducing into the output, reset it
             # to zero before launching tasks.
             if spmv_domain_part:
-                y[:] = 0
+                y.fill(0)
 
             # Invoke the SpMV after the setup.
             spmv(A, x, y, domain_part=spmv_domain_part)
