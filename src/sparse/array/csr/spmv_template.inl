@@ -59,4 +59,40 @@ static void csr_spmv_row_split_template(TaskContext& context)
     args.A_crd.code(), args.y.code(), CSRSpMVRowSplitImpl<KIND>{}, args);
 }
 
+template <VariantKind KIND, LegateTypeCode INDEX_CODE, LegateTypeCode VAL_CODE, typename COMM>
+struct CSRSpMVRowSplitExplicitCollectiveImplBody;
+
+template <VariantKind KIND, typename COMM>
+struct CSRSpMVRowSplitExplicitCollectiveImpl {
+  template <LegateTypeCode INDEX_CODE, LegateTypeCode VAL_CODE>
+  void operator()(CSRSpMVRowSplitExplicitCollectiveArgs& args) const
+  {
+    using INDEX_TY = legate_type_of<INDEX_CODE>;
+    using VAL_TY   = legate_type_of<VAL_CODE>;
+
+    auto y      = args.y.write_accessor<VAL_TY, 1>();
+    auto A_pos  = args.A_pos.read_accessor<Rect<1>, 1>();
+    auto A_crd  = args.A_crd.read_accessor<INDEX_TY, 1>();
+    auto A_vals = args.A_vals.read_accessor<VAL_TY, 1>();
+    auto x      = args.x.read_accessor<VAL_TY, 1>();
+
+    assert(args.y.domain().dense());
+    if (args.y.domain().empty()) return;
+
+    assert (args.ctx.get_launch_domain().get_volume() > 1);
+
+    CSRSpMVRowSplitExplicitCollectiveImplBody<KIND, INDEX_CODE, VAL_CODE, COMM>()(
+      y, A_pos, A_crd, A_vals, x, args.y.shape<1>(), args.x.shape<1>(), args.ctx.communicators()[0].get<COMM>(), args.ctx.get_launch_domain().get_volume(), args.ctx.get_task_index()[0]);
+  }
+};
+
+template <VariantKind KIND, typename COMM>
+static void csr_spmv_row_split_explicit_collective_template(TaskContext& context)
+{
+  auto& inputs = context.inputs();
+  CSRSpMVRowSplitExplicitCollectiveArgs args{context.outputs()[0], inputs[0], inputs[1], inputs[2], inputs[3], context};
+  index_type_value_type_dispatch(
+    args.A_crd.code(), args.y.code(), CSRSpMVRowSplitExplicitCollectiveImpl<KIND, COMM>{}, args);
+}
+
 }  // namespace sparse

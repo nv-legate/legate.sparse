@@ -31,6 +31,17 @@ LegateSparseMapper::LegateSparseMapper(Legion::Runtime* rt,
   : BaseMapper(rt, m, ctx)
 {
 }
+ 
+void LegateSparseMapper::select_task_options(const Legion::Mapping::MapperContext ctx,
+		                             const Legion::Task& task,
+				             TaskOptions& options) {
+  BaseMapper::select_task_options(ctx, task, options);
+  if (context.get_local_task_id(task.task_id) == LEGATE_SPARSE_CSR_SPMV_ROW_SPLIT_COLLECTIVE) {
+    // std::cout << "Requesting a collective! " << std::string(task.get_task_name()) << std::endl;
+    options.check_collective_regions.insert(1);
+  }
+}
+
 
 TaskTarget LegateSparseMapper::task_target(const Task& task, const std::vector<TaskTarget>& options)
 {

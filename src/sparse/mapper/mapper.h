@@ -30,6 +30,9 @@ class LegateSparseMapper : public legate::mapping::BaseMapper {
  public:
   // Virtual mapping functions of BaseMapper that need to be overridden.
   virtual bool is_pure() const override { return true; }
+  virtual void select_task_options(const Legion::Mapping::MapperContext ctx,
+		                   const Legion::Task& task,
+				   TaskOptions& options) override;
   virtual legate::mapping::TaskTarget task_target(
     const legate::mapping::Task& task,
     const std::vector<legate::mapping::TaskTarget>& options) override;

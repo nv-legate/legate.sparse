@@ -375,7 +375,7 @@ class csr_array(CompressedBase, DenseSparseBase):
             dtype=self.dtype,
         )
 
-    def dot(self, other, out=None):
+    def dot(self, other, out=None, spmv_collective=False, spmv_explicit_collective=False):
         if out is not None:
             assert isinstance(out, cunumeric.ndarray)
         if isinstance(other, numpy.ndarray):
@@ -455,7 +455,7 @@ class csr_array(CompressedBase, DenseSparseBase):
                 y = out
 
             # Invoke the SpMV after the setup.
-            spmv(A, x, y)
+            spmv(A, x, y, collective=spmv_collective, explicit_collective=spmv_explicit_collective)
 
             output = y
             if other_originally_2d:
@@ -780,12 +780,34 @@ def scan_local_results_and_scale_pos(
 
 
 # spmv computes y = A @ x.
-def spmv(A: csr_array, x: cunumeric.ndarray, y: cunumeric.ndarray):
+def spmv(A: csr_array, x: cunumeric.ndarray, y: cunumeric.ndarray, collective=False, explicit_collective=False):
     x_store = get_store_from_cunumeric_array(x)
     y_store = get_store_from_cunumeric_array(y)
 
+    if explicit_collective:
+        task = ctx.create_task(SparseOpCode.CSR_SPMV_ROW_SPLIT_EXPLICIT_COLLECTIVE)
+        task.add_output(y_store)
+        task.add_input(A.pos)
+        task.add_input(A.crd)
+        task.add_input(A.vals)
+        task.add_input(x_store)
+        task.add_alignment(y_store, A.pos)
+        task.add_image_constraint(
+            A.pos,
+            A.crd,
+            range=True,
+            functor=CompressedImagePartition,
+        )
+        task.add_alignment(A.crd, A.vals)
+        task.add_alignment(y_store, x_store)
+        task.add_cpu_communicator()
+        task.execute()
+
     # An auto-parallelized version of the kernel.
-    task = ctx.create_task(SparseOpCode.CSR_SPMV_ROW_SPLIT)
+    if collective:
+      task = ctx.create_task(SparseOpCode.CSR_SPMV_ROW_SPLIT_COLLECTIVE)
+    else:
+      task = ctx.create_task(SparseOpCode.CSR_SPMV_ROW_SPLIT)
     task.add_output(y_store)
     task.add_input(A.pos)
     task.add_input(A.crd)
@@ -799,30 +821,33 @@ def spmv(A: csr_array, x: cunumeric.ndarray, y: cunumeric.ndarray):
         functor=CompressedImagePartition,
     )
     task.add_alignment(A.crd, A.vals)
-    # TODO (rohany): Both adding an image constraint explicitly and an
-    #  alignment constraint between vals and crd works now. Adding the
-    #  image is explicit though, while adding the alignment is more in
-    #  line with the DISTAL way of doing things.
-    #
-    # task.add_image_constraint(self.pos, self.vals, range=True)
-    #
-    # An important optimization is to use an image operation to request
-    # only the necessary pieces of data from the x vector in y = Ax. We
-    # don't make an attempt to use a sparse instance, so we allocate
-    # the full vector x in each task, but by using the sparse instance
-    # we ensure that only the necessary pieces of data are
-    # communicated. In many common sparse matrix patterns, this can
-    # result in an asymptotic decrease in the amount of communication.
-    # The image of the selected coordinates into other vector is
-    # not complete or disjoint.
-    task.add_image_constraint(
-        A.crd,
-        x_store,
-        range=False,
-        disjoint=False,
-        complete=False,
-        functor=MinMaxImagePartition,
-    )
+    if collective:
+        task.add_broadcast(x_store)
+    else:
+        # TODO (rohany): Both adding an image constraint explicitly and an
+        #  alignment constraint between vals and crd works now. Adding the
+        #  image is explicit though, while adding the alignment is more in
+        #  line with the DISTAL way of doing things.
+        #
+        # task.add_image_constraint(self.pos, self.vals, range=True)
+        #
+        # An important optimization is to use an image operation to request
+        # only the necessary pieces of data from the x vector in y = Ax. We
+        # don't make an attempt to use a sparse instance, so we allocate
+        # the full vector x in each task, but by using the sparse instance
+        # we ensure that only the necessary pieces of data are
+        # communicated. In many common sparse matrix patterns, this can
+        # result in an asymptotic decrease in the amount of communication.
+        # The image of the selected coordinates into other vector is
+        # not complete or disjoint.
+        task.add_image_constraint(
+            A.crd,
+            x_store,
+            range=False,
+            disjoint=False,
+            complete=False,
+            functor=MinMaxImagePartition,
+        )
     task.execute()
 
 

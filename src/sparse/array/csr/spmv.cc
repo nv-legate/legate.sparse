@@ -50,11 +50,20 @@ struct CSRSpMVRowSplitImplBody<VariantKind::CPU, INDEX_CODE, VAL_CODE> {
   csr_spmv_row_split_template<VariantKind::CPU>(context);
 }
 
+/*static*/ void CSRSpMVRowSplitExplicitCollective::cpu_variant(TaskContext& context)
+{
+  assert(false);
+}
+
 namespace  // unnamed
 {
 static void __attribute__((constructor)) register_tasks(void)
 {
   CSRSpMVRowSplit::register_variants();
+  CSRSpMVRowSplitCollective::register_variants();
+  auto options = legate::VariantOptions{}.with_concurrent(true);
+  CSRSpMVRowSplitExplicitCollective::register_variants(
+    {{LEGATE_CPU_VARIANT, options}, {LEGATE_OMP_VARIANT, options}});
 }
 }  // namespace
 

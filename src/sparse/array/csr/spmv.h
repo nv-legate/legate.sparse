@@ -38,8 +38,41 @@ class CSRSpMVRowSplit : public SparseTask<CSRSpMVRowSplit> {
   static void omp_variant(legate::TaskContext& ctx);
 #endif
 #ifdef LEGATE_USE_CUDA
-  static void gpu_variant(legate::TaskContext& context);
+  static void gpu_variant(legate::TaskContext& ctx);
 #endif
+};
+
+class CSRSpMVRowSplitCollective : public SparseTask<CSRSpMVRowSplitCollective> {
+ public:
+  static const int TASK_ID = LEGATE_SPARSE_CSR_SPMV_ROW_SPLIT_COLLECTIVE;
+  static void cpu_variant(legate::TaskContext& ctx) { CSRSpMVRowSplit::cpu_variant(ctx); }
+#ifdef LEGATE_USE_OPENMP
+  static void omp_variant(legate::TaskContext& ctx) { CSRSpMVRowSplit::omp_variant(ctx); }
+#endif
+#ifdef LEGATE_USE_CUDA
+  static void gpu_variant(legate::TaskContext& ctx) { CSRSpMVRowSplit::gpu_variant(ctx); }
+#endif
+};
+
+struct CSRSpMVRowSplitExplicitCollectiveArgs {
+  const legate::Store& y;
+  const legate::Store& A_pos;
+  const legate::Store& A_crd;
+  const legate::Store& A_vals;
+  const legate::Store& x;
+  legate::TaskContext& ctx;
+};
+
+class CSRSpMVRowSplitExplicitCollective : public SparseTask<CSRSpMVRowSplitExplicitCollective> {
+ public:
+  static const int TASK_ID = LEGATE_SPARSE_CSR_SPMV_ROW_SPLIT_EXPLICIT_COLLECTIVE;
+  static void cpu_variant(legate::TaskContext& ctx);
+#ifdef LEGATE_USE_OPENMP
+  static void omp_variant(legate::TaskContext& ctx);
+#endif
+// #ifdef LEGATE_USE_CUDA
+//   static void gpu_variant(legate::TaskContext& ctx);
+// #endif
 };
 
 }  // namespace sparse
