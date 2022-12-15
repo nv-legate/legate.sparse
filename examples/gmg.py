@@ -161,6 +161,7 @@ class GMG(object):
     def cycle(self, r):
         from legate.core import get_machine
         from legate.core.machine import ProcessorKind
+
         machine = get_machine().only(ProcessorKind.GPU)
         with machine:
             return self._cycle(self.A, r, 0, machine)
@@ -178,10 +179,13 @@ class GMG(object):
         coarse_r = R.dot(fine_r, spmv_domain_part=True)
         ratio = (fine_r.shape[0] // coarse_r.shape[0]) // 2
         from legate.core.machine import ProcessorKind
+
         num_procs = max(machine.count(ProcessorKind.GPU) // ratio, 1)
         with machine[:num_procs]:
             # Compute coarse solution.
-            coarse_x = self._cycle(coarse_A, coarse_r, level + 1, machine[:num_procs])
+            coarse_x = self._cycle(
+                coarse_A, coarse_r, level + 1, machine[:num_procs]
+            )
         fine_x = P @ coarse_x
         x_corrected = x + fine_x
         # Do one post-smoothing iteration.
@@ -387,8 +391,24 @@ def execute(N, data, smoother, gridop, levels, maxiter, tol, verbose, package):
     M = mg_solver.linear_operator()
 
     # Warm up the runtime.
-    float(np.linalg.norm(A.matvec(np.zeros(A.shape[1],))))
-    float(np.linalg.norm(M.matvec(np.zeros(M.shape[1],))))
+    float(
+        np.linalg.norm(
+            A.matvec(
+                np.zeros(
+                    A.shape[1],
+                )
+            )
+        )
+    )
+    float(
+        np.linalg.norm(
+            M.matvec(
+                np.zeros(
+                    M.shape[1],
+                )
+            )
+        )
+    )
     print(f"GMG init time: {(time() - start)/1000} ms")
 
     solve_start = time()
