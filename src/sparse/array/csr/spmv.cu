@@ -87,7 +87,7 @@ struct CSRSpMVRowSplitImpl<VariantKind::GPU> {
                                            &beta,
                                            cusparse_y,
                                            cusparseDataType<VAL_TY>(),
-#if (CUSPARSE_VER_MAJOR < 11 || CUSPARSE_VER_MINOR < 2)
+#if (CUSPARSE_VER_MAJOR < 11 || (CUSPARSE_VER_MAJOR == 11 && CUSPARSE_VER_MINOR < 2))
                                            CUSPARSE_MV_ALG_DEFAULT,
 #else
                                            CUSPARSE_SPMV_ALG_DEFAULT,
@@ -108,7 +108,7 @@ struct CSRSpMVRowSplitImpl<VariantKind::GPU> {
                                 &beta,
                                 cusparse_y,
                                 cusparseDataType<VAL_TY>(),
-#if (CUSPARSE_VER_MAJOR < 11 || CUSPARSE_VER_MINOR < 2)
+#if (CUSPARSE_VER_MAJOR < 11 || (CUSPARSE_VER_MAJOR == 11 && CUSPARSE_VER_MINOR < 2))
                                 CUSPARSE_MV_ALG_DEFAULT,
 #else
                                 CUSPARSE_SPMV_ALG_DEFAULT,
