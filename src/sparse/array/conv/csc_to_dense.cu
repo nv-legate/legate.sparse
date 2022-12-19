@@ -40,7 +40,7 @@ __global__ void CSCtoDenseKernel(size_t cols,
   }
   // Copy the non-zero values into place.
   for (INDEX_TY iB = B_pos[j].lo; iB < B_pos[j].hi + 1; iB++) {
-    INDEX_TY i     = B_crd[iB];
+    INDEX_TY j     = B_crd[iB];
     A_vals[{i, j}] = B_vals[iB];
   }
 }
