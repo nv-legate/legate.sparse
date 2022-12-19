@@ -40,7 +40,7 @@ __global__ void CSCtoDenseKernel(size_t cols,
   }
   // Copy the non-zero values into place.
   for (INDEX_TY iB = B_pos[j].lo; iB < B_pos[j].hi + 1; iB++) {
-    INDEX_TY j     = B_crd[iB];
+    INDEX_TY i     = B_crd[iB];
     A_vals[{i, j}] = B_vals[iB];
   }
 }
@@ -68,7 +68,7 @@ struct CSCToDenseImpl<VariantKind::GPU> {
     // a hand-written version.
     // #if (CUSPARSE_VER_MAJOR < 11 || CUSPARSE_VER_MINOR < 2)
     auto B_domain = B_pos.domain();
-    auto cols     = B_domain.hi()[1] - B_domain.lo()[1] + 1;
+    auto cols     = B_domain.hi()[0] - B_domain.lo()[0] + 1;
     auto blocks   = get_num_blocks_1d(cols);
     CSCtoDenseKernel<<<blocks, THREADS_PER_BLOCK, 0, stream>>>(cols,
                                                                A_vals.shape<2>(),
