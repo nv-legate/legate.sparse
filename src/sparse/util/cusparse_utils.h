@@ -161,7 +161,7 @@ cusparseSpMatDescr_t makeCuSparseCSC(const legate::Store& pos,
   convertGlobalPosToLocalIndPtr<<<blocks, THREADS_PER_BLOCK, 0, stream>>>(
     cols, pos_acc.ptr(pos_domain.lo()), indptr.ptr(0));
 
-#if (CUSPARSE_VER_MAJOR < 11 || CUSPARSE_VER_MINOR < 2)
+#if (CUSPARSE_VER_MAJOR < 11 || (CUSPARSE_VER_MAJOR == 11 && CUSPARSE_VER_MINOR < 2))
   assert(false && "cuSPARSE version too old! Try later than 11.1.");
 #else
   CHECK_CUSPARSE(
