@@ -294,6 +294,8 @@ struct AddCSRCSRImpl<VariantKind::GPU> {
       } else {
         return std::make_pair(cusparseZcsrgeam2_bufferSizeExt, cusparseZcsrgeam2);
       }
+      // Appease the compiler.
+      return std::make_pair(cusparseScsrgeam2_bufferSizeExt, cusparseScsrgeam2);
     }
     ();
 
