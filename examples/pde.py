@@ -101,14 +101,7 @@ b = np.sin(np.pi * X) * np.cos(np.pi * Y) + np.sin(5.0 * np.pi * X) * np.cos(
 
 # b is currently a 2D array. We need to convert it to a column-major
 # ordered 1D array. This is done with the flatten numpy function.
-# We use the parameter 'F' to specify that we want want column-major
-# ordering. The letter 'F' is used because this is the natural
-# ordering of the popular Fortran language. For row-major
-# ordering you can pass 'C' as paremeter, which is the natural
-# ordering for the C language.
-# More info
-# https://numpy.org/doc/stable/reference/generated/numpy.ndarray.flatten.html
-bflat = b[1:-1, 1:-1].flatten("F")
+bflat = b[1:-1, 1:-1].T.flatten()
 
 # Allocate array for the (full) solution, including boundary values
 p = np.empty((nx, ny))
