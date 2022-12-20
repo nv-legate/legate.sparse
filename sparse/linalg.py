@@ -481,11 +481,13 @@ def axpby(y, x, alpha=None, beta=None):
         alpha_store = get_store_from_cunumeric_array(alpha, allow_future=True)
         task.add_input(alpha_store)
         task.add_scalar_arg(True, bool)
+        task.add_broadcast(alpha_store)
     elif beta is not None:
         assert isinstance(beta, np.ndarray) and beta.size == 1
         beta_store = get_store_from_cunumeric_array(beta, allow_future=True)
         task.add_input(beta_store)
         task.add_scalar_arg(False, bool)
+        task.add_broadcast(beta_store)
     assert not (alpha is not None and beta is not None)
     task.add_input(y_store)
     task.add_alignment(y_store, x_store)
