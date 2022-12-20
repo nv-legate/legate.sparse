@@ -466,9 +466,9 @@ def make_linear_operator(A):
         return _SparseMatrixLinearOperator(A)
 
 
-# axpby computes y = alpha * x + beta * y in a single fused
-# computation for increased performance. When alpha and/or
-# beta are `None`, the value 1 is used instead.
+# axpby computes either y = alpha * x + y or y = x + beta * y
+# depending on whether alpha or beta is not none. The operation
+# is performed in a fused manner.
 @track_provenance(runtime.legate_context, nested=True)
 def axpby(y, x, alpha=None, beta=None):
     y_store = get_store_from_cunumeric_array(y)
@@ -476,20 +476,19 @@ def axpby(y, x, alpha=None, beta=None):
     task = ctx.create_task(SparseOpCode.AXPBY)
     task.add_output(y_store)
     task.add_input(x_store)
-    if alpha is None:
-        alpha = np.array(1.0, dtype=y.dtype)
-    if beta is None:
-        beta = np.array(1.0, dtype=y.dtype)
-    assert isinstance(alpha, np.ndarray) and alpha.size == 1
-    assert isinstance(beta, np.ndarray) and beta.size == 1
-    alpha_store = get_store_from_cunumeric_array(alpha, allow_future=True)
-    beta_store = get_store_from_cunumeric_array(beta, allow_future=True)
-    task.add_input(alpha_store)
-    task.add_input(beta_store)
+    if alpha is not None:
+        assert isinstance(alpha, np.ndarray) and alpha.size == 1
+        alpha_store = get_store_from_cunumeric_array(alpha, allow_future=True)
+        task.add_input(alpha_store)
+        task.add_scalar_arg(True, bool)
+    elif beta is not None:
+        assert isinstance(beta, np.ndarray) and beta.size == 1
+        beta_store = get_store_from_cunumeric_array(beta, allow_future=True)
+        task.add_input(beta_store)
+        task.add_scalar_arg(False, bool)
+    assert not (alpha is not None and beta is not None)
     task.add_input(y_store)
     task.add_alignment(y_store, x_store)
-    task.add_broadcast(alpha_store)
-    task.add_broadcast(beta_store)
     task.execute()
     return y
 

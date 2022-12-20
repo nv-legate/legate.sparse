@@ -25,7 +25,7 @@ namespace sparse {
 using namespace Legion;
 using namespace legate;
 
-template <VariantKind KIND, LegateTypeCode VAL_CODE>
+template <VariantKind KIND, LegateTypeCode VAL_CODE, bool IS_ALPHA>
 struct AXPBYImplBody;
 
 template <VariantKind KIND>
@@ -33,13 +33,16 @@ struct AXPBYImpl {
   template <LegateTypeCode VAL_CODE>
   void operator()(AXPBYArgs& args) const
   {
-    using VAL_TY = legate_type_of<VAL_CODE>;
-    auto y       = args.y.read_write_accessor<VAL_TY, 1>();
-    auto x       = args.x.read_accessor<VAL_TY, 1>();
-    auto alpha   = args.alpha.read_accessor<VAL_TY, 1>();
-    auto beta    = args.beta.read_accessor<VAL_TY, 1>();
+    using VAL_TY   = legate_type_of<VAL_CODE>;
+    auto y         = args.y.read_write_accessor<VAL_TY, 1>();
+    auto x         = args.x.read_accessor<VAL_TY, 1>();
+    auto alphabeta = args.alphabeta.read_accessor<VAL_TY, 1>();
     if (args.y.domain().empty()) return;
-    AXPBYImplBody<KIND, VAL_CODE>()(y, x, alpha, beta, args.y.shape<1>());
+    if (args.isalpha) {
+      AXPBYImplBody<KIND, VAL_CODE, true>()(y, x, alphabeta, args.y.shape<1>());
+    } else {
+      AXPBYImplBody<KIND, VAL_CODE, false>()(y, x, alphabeta, args.y.shape<1>());
+    }
   }
 };
 
@@ -51,7 +54,7 @@ static void axpby_template(TaskContext& context)
     context.outputs()[0],
     inputs[0],
     inputs[1],
-    inputs[2],
+    context.scalars()[0].value<bool>(),
   };
   value_type_dispatch(args.y.code(), AXPBYImpl<KIND>{}, args);
 }

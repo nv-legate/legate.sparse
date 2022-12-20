@@ -25,8 +25,8 @@ namespace sparse {
 struct AXPBYArgs {
   const legate::Store& y;
   const legate::Store& x;
-  const legate::Store& alpha;
-  const legate::Store& beta;
+  const legate::Store& alphabeta;
+  const bool isalpha;
 };
 
 class AXPBY : public SparseTask<AXPBY> {

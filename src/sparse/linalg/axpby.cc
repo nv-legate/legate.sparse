@@ -22,18 +22,21 @@ namespace sparse {
 using namespace Legion;
 using namespace legate;
 
-template <LegateTypeCode VAL_CODE>
-struct AXPBYImplBody<VariantKind::CPU, VAL_CODE> {
+template <LegateTypeCode VAL_CODE, bool IS_ALPHA>
+struct AXPBYImplBody<VariantKind::CPU, VAL_CODE, IS_ALPHA> {
   using VAL_TY = legate_type_of<VAL_CODE>;
 
   void operator()(const AccessorRW<VAL_TY, 1>& y,
                   const AccessorRO<VAL_TY, 1>& x,
-                  const AccessorRO<VAL_TY, 1>& alpha,
-                  const AccessorRO<VAL_TY, 1>& beta,
+                  const AccessorRO<VAL_TY, 1>& alphabeta,
                   const Rect<1>& rect)
   {
     for (coord_t i = rect.lo[0]; i < rect.hi[0] + 1; i++) {
-      y[i] = alpha[0] * x[i] + beta[0] * y[i];
+      if (IS_ALPHA) {
+        y[i] = alphabeta[0] * x[i] + y[i];
+      } else {
+        y[i] = x[i] + alphabeta[0] * y[i];
+      }
     }
   }
 };
