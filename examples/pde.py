@@ -39,6 +39,8 @@ if args.package == "legate":
     from legate.timing import time
 
     from sparse import diags, linalg
+
+    use_legate = True
 else:
     from time import perf_counter_ns
 
@@ -51,6 +53,7 @@ else:
     elif args.package == "scipy":
         import numpy as np
         from scipy.sparse import diags, linalg
+    use_legate = False
 
 
 # Grid parameters.
@@ -67,10 +70,27 @@ dy = ly / (ny - 1)  # grid spacing in the y direction
 # see notebook 02_02_Runge_Kutta for more details
 x = np.linspace(xmin, xmax, nx)
 y = np.linspace(ymin, ymax, ny)
-# We pass the argument `indexing='ij'` to np.meshgrid
-# as x and y should be associated respectively with the
-# rows and columns of X, Y.
-X, Y = np.meshgrid(x, y, indexing="ij")
+if use_legate:
+    # cuNumeric doesn't currently have meshgrid implemented,
+    # but it is in progress. To enable scaling to large
+    # datasets, explicitly perform the broadcasting
+    # that meshgrid does internally.
+    from sparse.utils import (
+        get_store_from_cunumeric_array,
+        store_to_cunumeric_array,
+    )
+
+    x_store = get_store_from_cunumeric_array(x)
+    y_store = get_store_from_cunumeric_array(y)
+    x_t = x_store.transpose((0,)).promote(1, ny)
+    y_t = y_store.promote(0, nx)
+    X = store_to_cunumeric_array(x_t)
+    Y = store_to_cunumeric_array(y_t)
+else:
+    # We pass the argument `indexing='ij'` to np.meshgrid
+    # as x and y should be associated respectively with the
+    # rows and columns of X, Y.
+    X, Y = np.meshgrid(x, y, indexing="ij")
 
 # Compute the rhs. Note that we non-dimensionalize the coordinates
 # x and y with the size of the domain in their respective dire-
