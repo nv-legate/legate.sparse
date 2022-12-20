@@ -101,7 +101,17 @@ b = np.sin(np.pi * X) * np.cos(np.pi * Y) + np.sin(5.0 * np.pi * X) * np.cos(
 
 # b is currently a 2D array. We need to convert it to a column-major
 # ordered 1D array. This is done with the flatten numpy function.
-bflat = b[1:-1, 1:-1].T.flatten()
+# For a physics-correct solution, b needs to be flattened in fortran
+# order. However, this is not implemented in cuNumeric right now.
+# Annoyingly, doing .T.flatten() raises an internal error in legate
+# when trying to invert the delinearize transform on certain processor
+# count combinations as well. So if we're just testing solve throughput,
+# we'll do .flatten(), which is incorrect for the physics, but won't
+# cause materialization onto a single memory.
+if args.throughput:
+    bflat = b[1:-1, 1:-1].flatten()
+else:
+    bflat = b[1:-1, 1:-1].flatten("F")
 
 # Allocate array for the (full) solution, including boundary values
 p = np.empty((nx, ny))
