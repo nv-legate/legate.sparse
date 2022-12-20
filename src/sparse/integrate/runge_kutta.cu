@@ -34,7 +34,7 @@ __global__ void rk_kernel(const size_t elems,
 {
   const auto tid = global_tid_1d();
   if (tid >= elems) return;
-  auto i   = tid + offset;
+  int64_t i   = tid + offset;
   K_TY acc = 0;
 #pragma unroll
   for (int32_t j = 0; j < s; j++) { acc += K[{j, i}] * a[j]; }
