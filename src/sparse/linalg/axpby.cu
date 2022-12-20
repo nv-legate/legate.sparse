@@ -53,7 +53,7 @@ struct AXPBYImplBody<VariantKind::GPU, VAL_CODE, IS_ALPHA> {
     auto blocks = get_num_blocks_1d(elems);
     auto stream = get_cached_stream();
     axpby_kernel<VAL_TY, IS_ALPHA>
-      <<<blocks, THREADS_PER_BLOCK, 0, stream>>>(elems, rect.lo[0], y, x, alpha);
+      <<<blocks, THREADS_PER_BLOCK, 0, stream>>>(elems, rect.lo[0], y, x, alphabeta);
     CHECK_CUDA_STREAM(stream);
   }
 };
