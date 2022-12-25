@@ -218,6 +218,8 @@ class csc_array(CompressedBase, DenseSparseBase):
         return cls((vals, crd, pos), shape=shape, dtype=dtype)
 
     def astype(self, dtype, casting="unsafe", copy=True):
+        if not copy and dtype == self.dtype:
+            return self
         pos = self.copy_pos() if copy else self.pos
         crd = (
             cunumeric.array(store_to_cunumeric_array(self.crd))

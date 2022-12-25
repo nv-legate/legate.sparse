@@ -273,6 +273,8 @@ class csr_array(CompressedBase, DenseSparseBase):
         return self.vals.shape[0]
 
     def astype(self, dtype, casting="unsafe", copy=True):
+        if not copy and dtype == self.dtype:
+            return self
         pos = self.copy_pos() if copy else self.pos
         crd = (
             cunumeric.array(store_to_cunumeric_array(self.crd))
