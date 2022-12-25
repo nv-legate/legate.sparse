@@ -170,6 +170,8 @@ class coo_array(CompressedBase):
         return "coo"
 
     def astype(self, dtype, casting="unsafe", copy=True):
+        if not copy and dtype == self.dtype:
+            return self
         row = self.row.copy() if copy else self.row
         col = self.col.copy() if copy else self.col
         data = self.data.astype(dtype, casting=casting, copy=copy)
