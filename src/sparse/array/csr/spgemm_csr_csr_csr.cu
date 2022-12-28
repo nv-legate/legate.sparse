@@ -48,7 +48,6 @@ struct SpGEMMCSRxCSRxCSRGPUImpl {
     auto& C_crd  = args.C_crd;
     auto& C_vals = args.C_vals;
     auto& A2_dim = args.A2_dim;
-    auto& C1_dim = args.C1_dim;
 
     // Due to limitations around the cuSPARSE SpGEMM API, we can't do the standard
     // symbolic and actual execution phases of SpGEMM. Instead, we'll have each GPU

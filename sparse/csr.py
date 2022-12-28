@@ -273,6 +273,8 @@ class csr_array(CompressedBase, DenseSparseBase):
         return self.vals.shape[0]
 
     def astype(self, dtype, casting="unsafe", copy=True):
+        if not copy and dtype == self.dtype:
+            return self
         pos = self.copy_pos() if copy else self.pos
         crd = (
             cunumeric.array(store_to_cunumeric_array(self.crd))
@@ -462,6 +464,10 @@ class csr_array(CompressedBase, DenseSparseBase):
             # If we're going to end up reducing into the output, reset it
             # to zero before launching tasks.
             if spmv_domain_part:
+                # Importantly, use a fill instead of y[:] = 0. This
+                # allows Legion to optimize the reduction by not
+                # contributing each write of 0 into the output, and
+                # instead can lazily apply the contribution of the fill.
                 y.fill(0)
 
             # Invoke the SpMV after the setup.

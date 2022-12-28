@@ -61,6 +61,8 @@ if args.package == "legate":
         solve_procs = all_devices.only(ProcessorKind.OMP)
     else:
         solve_procs = all_devices.only(ProcessorKind.CPU)
+
+    use_legate = True
 else:
     from time import perf_counter_ns
 
@@ -73,6 +75,7 @@ else:
     elif args.package == "scipy":
         import numpy as np
         from scipy.sparse import diags, linalg
+    use_legate = False
 
     # DummyScope is a class that is a no-op context
     # manager so that we can run both CuPy and SciPy
@@ -110,10 +113,27 @@ with build_procs:
     # see notebook 02_02_Runge_Kutta for more details
     x = np.linspace(xmin, xmax, nx)
     y = np.linspace(ymin, ymax, ny)
-    # We pass the argument `indexing='ij'` to np.meshgrid
-    # as x and y should be associated respectively with the
-    # rows and columns of X, Y.
-    X, Y = np.meshgrid(x, y, indexing="ij")
+    if use_legate:
+        # cuNumeric doesn't currently have meshgrid implemented,
+        # but it is in progress. To enable scaling to large
+        # datasets, explicitly perform the broadcasting
+        # that meshgrid does internally.
+        from sparse.utils import (
+            get_store_from_cunumeric_array,
+            store_to_cunumeric_array,
+        )
+
+        x_store = get_store_from_cunumeric_array(x)
+        y_store = get_store_from_cunumeric_array(y)
+        x_t = x_store.transpose((0,)).promote(1, ny)
+        y_t = y_store.promote(0, nx)
+        X = store_to_cunumeric_array(x_t)
+        Y = store_to_cunumeric_array(y_t)
+    else:
+        # We pass the argument `indexing='ij'` to np.meshgrid
+        # as x and y should be associated respectively with the
+        # rows and columns of X, Y.
+        X, Y = np.meshgrid(x, y, indexing="ij")
 
     # Compute the rhs. Note that we non-dimensionalize the coordinates
     # x and y with the size of the domain in their respective dire-
@@ -124,14 +144,17 @@ with build_procs:
 
     # b is currently a 2D array. We need to convert it to a column-major
     # ordered 1D array. This is done with the flatten numpy function.
-    # We use the parameter 'F' to specify that we want want column-major
-    # ordering. The letter 'F' is used because this is the natural
-    # ordering of the popular Fortran language. For row-major
-    # ordering you can pass 'C' as paremeter, which is the natural
-    # ordering for the C language.
-    # More info
-    # https://numpy.org/doc/stable/reference/generated/numpy.ndarray.flatten.html
-    bflat = b[1:-1, 1:-1].flatten("F")
+    # For a physics-correct solution, b needs to be flattened in fortran
+    # order. However, this is not implemented in cuNumeric right now.
+    # Annoyingly, doing .T.flatten() raises an internal error in legate
+    # when trying to invert the delinearize transform on certain processor
+    # count combinations as well. So if we're just testing solve throughput,
+    # we'll do .flatten(), which is incorrect for the physics, but won't
+    # cause materialization onto a single memory.
+    if args.throughput:
+        bflat = b[1:-1, 1:-1].flatten()
+    else:
+        bflat = b[1:-1, 1:-1].flatten("F")
 
     # Allocate array for the (full) solution, including boundary values
     p = np.empty((nx, ny))

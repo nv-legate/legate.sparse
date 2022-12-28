@@ -101,6 +101,8 @@ class dia_array(CompressedBase):
         return dia_array((data, offsets), shape=self.shape, dtype=self.dtype)
 
     def astype(self, dtype, casting="unsafe", copy=True):
+        if not copy and dtype == self.dtype:
+            return self
         data = self.data.copy() if copy else self.data
         offsets = self.offsets.astype(dtype, casting=casting, copy=copy)
         return dia_array((data, offsets), shape=self.shape, dtype=dtype)

@@ -22,19 +22,25 @@ namespace sparse {
 using namespace Legion;
 using namespace legate;
 
-template <LegateTypeCode VAL_CODE>
-struct AXPBYImplBody<VariantKind::OMP, VAL_CODE> {
+template <LegateTypeCode VAL_CODE, bool IS_ALPHA, bool NEGATE>
+struct AXPBYImplBody<VariantKind::OMP, VAL_CODE, IS_ALPHA, NEGATE> {
   using VAL_TY = legate_type_of<VAL_CODE>;
 
   void operator()(const AccessorRW<VAL_TY, 1>& y,
                   const AccessorRO<VAL_TY, 1>& x,
-                  const AccessorRO<VAL_TY, 1>& alpha,
-                  const AccessorRO<VAL_TY, 1>& beta,
+                  const AccessorRO<VAL_TY, 1>& a,
+                  const AccessorRO<VAL_TY, 1>& b,
                   const Rect<1>& rect)
   {
+    auto val = a[0] / b[0];
+    if (NEGATE) { val = static_cast<VAL_TY>(-1) * val; }
 #pragma omp parallel for schedule(static)
     for (coord_t i = rect.lo[0]; i < rect.hi[0] + 1; i++) {
-      y[i] = alpha[0] * x[i] + beta[0] * y[i];
+      if (IS_ALPHA) {
+        y[i] = val * x[i] + y[i];
+      } else {
+        y[i] = x[i] + val * y[i];
+      }
     }
   }
 };

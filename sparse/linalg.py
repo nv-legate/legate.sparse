@@ -466,30 +466,32 @@ def make_linear_operator(A):
         return _SparseMatrixLinearOperator(A)
 
 
-# axpby computes y = alpha * x + beta * y in a single fused
-# computation for increased performance. When alpha and/or
-# beta are `None`, the value 1 is used instead.
+# cg_axpby is a specialized implementation of the operation
+# y = alpha * x + beta * y for CG solvers in a Legion context.
+# Instead of explicitly providing alpha and beta, we accept
+# a and b futures, which will be fused into a computation of
+# a / b within the task, control over whether a/b should be
+# interpreted as alpha or beta, and finally whether a/b
+# should be negated. This allows for avoiding unnecessary
+# future operations to compute new futures, and avoids
+# allocating unnecessary futures.
 @track_provenance(runtime.legate_context, nested=True)
-def axpby(y, x, alpha=None, beta=None):
+def cg_axpby(y, x, a, b, isalpha=True, negate=False):
     y_store = get_store_from_cunumeric_array(y)
     x_store = get_store_from_cunumeric_array(x)
     task = ctx.create_task(SparseOpCode.AXPBY)
     task.add_output(y_store)
     task.add_input(x_store)
-    if alpha is None:
-        alpha = np.array(1.0, dtype=y.dtype)
-    if beta is None:
-        beta = np.array(1.0, dtype=y.dtype)
-    assert isinstance(alpha, np.ndarray) and alpha.size == 1
-    assert isinstance(beta, np.ndarray) and beta.size == 1
-    alpha_store = get_store_from_cunumeric_array(alpha, allow_future=True)
-    beta_store = get_store_from_cunumeric_array(beta, allow_future=True)
-    task.add_input(alpha_store)
-    task.add_input(beta_store)
+    a_store = get_store_from_cunumeric_array(a, allow_future=True)
+    b_store = get_store_from_cunumeric_array(b, allow_future=True)
+    task.add_input(a_store)
+    task.add_input(b_store)
+    task.add_broadcast(a_store)
+    task.add_broadcast(b_store)
+    task.add_scalar_arg(isalpha, bool)
+    task.add_scalar_arg(negate, bool)
     task.add_input(y_store)
     task.add_alignment(y_store, x_store)
-    task.add_broadcast(alpha_store)
-    task.add_broadcast(beta_store)
     task.execute()
     return y
 
@@ -541,17 +543,16 @@ def cg(
             # modify p in place.
             p[:] = z
         else:
-            beta = rho / rho1
             # Utilize a fused vector addition with scalar multiplication
-            # kernel. Computes p = p * beta + z.
-            axpby(p, z, beta=beta)
+            # kernel. Computes p = p * beta + z, where beta = rho / rho1.
+            cg_axpby(p, z, rho, rho1, isalpha=False, negate=False)
         q = A.matvec(p, out=q)
-        alpha = rho / p.dot(q)
+        pq = p.dot(q)
         # Utilize fused vector adds here as well.
-        # Computes x += alpha * p.
-        axpby(x, p, alpha=alpha)
+        # Computes x += alpha * p, where alpha = rho / pq.
+        cg_axpby(x, p, rho, pq, isalpha=True, negate=False)
         # Computes r -= alpha * Ap.
-        axpby(r, q, alpha=-alpha)
+        cg_axpby(r, q, rho, pq, isalpha=True, negate=True)
         iters += 1
         if callback is not None:
             callback(x)

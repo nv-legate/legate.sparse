@@ -64,7 +64,7 @@ struct CSRToDenseImpl<VariantKind::GPU> {
     // If we are running on an old cuSPARSE version, then we don't
     // have access to many cuSPARSE functions. In that case, use
     // a hand-written version.
-#if (CUSPARSE_VER_MAJOR < 11 || CUSPARSE_VER_MINOR < 2)
+#if (CUSPARSE_VER_MAJOR < 11 || (CUSPARSE_VER_MAJOR == 11 && CUSPARSE_VER_MINOR < 2))
     auto B_domain = B_pos.domain();
     auto rows     = B_domain.hi()[0] - B_domain.lo()[0] + 1;
     auto blocks   = get_num_blocks_1d(rows);

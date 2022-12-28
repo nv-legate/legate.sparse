@@ -54,7 +54,7 @@ struct DenseToCSCNNZImpl<VariantKind::GPU> {
 
     auto stream = get_cached_stream();
 
-#if (CUSPARSE_VER_MAJOR < 11 || CUSPARSE_VER_MINOR < 2)
+#if (CUSPARSE_VER_MAJOR < 11 || (CUSPARSE_VER_MAJOR == 11 && CUSPARSE_VER_MINOR < 2))
     auto B_domain = B_vals.domain();
     auto cols     = B_domain.hi()[1] - B_domain.lo()[1] + 1;
     auto blocks   = get_num_blocks_1d(cols);
