@@ -72,7 +72,7 @@ import warnings
 from math import sqrt
 
 import cunumeric as np
-from legate.core import track_provenance
+from legate.core import legion, track_provenance
 
 from .config import SparseOpCode
 from .runtime import ctx, runtime
@@ -526,43 +526,165 @@ def cg(
     x = np.zeros(n) if x0 is None else x0.copy()
     p = np.zeros(n)
 
+    print("STARTING CG SOLVE")
+
+    # TODO (rohany): TRACING NOTES:
+    # * Tracing can't have any tasks running in between the trace
+    #   ending and the next trace starting. In that way, bumping the
+    #   dots for the convergence check inside the trace and then blocking
+    #   on a future outside of the trace is OK.
+    # * Traces have to consume the full blast of input tasks before they
+    #   can start replaying. This leads to a large problem from the convergence
+    #   check occurring and then the pipeline flush, as legate needs to pump
+    #   out a bunch of tasks to start the trace again. if these overheads were
+    #   lowered, we could have larger trace batches and wait on the results of
+    #   a prior iteration (to give us lead time to execute ahead), but right now
+    #   it seems like a batch size of 1 is a small enough window to see the benefit
+    #   of tracing on an individual iteration but not stall too much at the convergence
+    #   check points.
+
     # This implementation is adapted from CuPy's CG solve:
     # https://github.com/cupy/cupy/blob/master/cupyx/scipy/sparse/linalg/_iterative.py.
     # # Hold onto several temps to store allocations used in each iteration.
     r = b - A.matvec(x)
     iters = 0
-    rho = 0
     z = None
     q = None
+    use_tracing = False
+    batch_size = 1
+
+    # Initial iteration.
+    z = M.matvec(r, out=z)
+    rho = r.dot(z)
+    # Make sure not to take an alias to z here, since we
+    # modify p in place.
+    p[:] = z
+    q = A.matvec(p, out=q)
+    pq = p.dot(q)
+    # Utilize fused vector adds here as well.
+    # Computes x += alpha * p, where alpha = rho / pq.
+    cg_axpby(x, p, rho, pq, isalpha=True, negate=False)
+    # Computes r -= alpha * Ap.
+    cg_axpby(r, q, rho, pq, isalpha=True, negate=True)
+    if callback is not None:
+        callback(x)
+
     while iters < maxiter:
-        z = M.matvec(r, out=z)
-        rho1 = rho
-        rho = r.dot(z)
-        if iters == 0:
-            # Make sure not to take an alias to z here, since we
-            # modify p in place.
-            p[:] = z
-        else:
+
+        if use_tracing:
+            legion.legion_runtime_begin_trace(
+                runtime.legate_runtime.legion_runtime,
+                runtime.legate_runtime.legion_context,
+                15210,
+                False,
+            )
+
+        # resids = []
+        resid = None
+        # Now compute iterations in batches.
+        for i in range(batch_size):
+            z = M.matvec(r, out=z)
+            rho1 = rho
+            rho = r.dot(z)
             # Utilize a fused vector addition with scalar multiplication
             # kernel. Computes p = p * beta + z, where beta = rho / rho1.
             cg_axpby(p, z, rho, rho1, isalpha=False, negate=False)
-        q = A.matvec(p, out=q)
-        pq = p.dot(q)
-        # Utilize fused vector adds here as well.
-        # Computes x += alpha * p, where alpha = rho / pq.
-        cg_axpby(x, p, rho, pq, isalpha=True, negate=False)
-        # Computes r -= alpha * Ap.
-        cg_axpby(r, q, rho, pq, isalpha=True, negate=True)
-        iters += 1
-        if callback is not None:
-            callback(x)
-        if (
-            iters % conv_test_iters == 0 or iters == (maxiter - 1)
-        ) and np.linalg.norm(r) < tol:
-            # Test convergence every conv_test_iters iterations.
-            break
+            q = A.matvec(p, out=q)
+            pq = p.dot(q)
+            # Utilize fused vector adds here as well.
+            # Computes x += alpha * p, where alpha = rho / pq.
+            cg_axpby(x, p, rho, pq, isalpha=True, negate=False)
+            # Computes r -= alpha * Ap.
+            cg_axpby(r, q, rho, pq, isalpha=True, negate=True)
+            if callback is not None:
+                callback(x)
+            iters += 1
+            # resids.append(np.linalg.norm(r))
+            resid = np.linalg.norm(r)
+
+        if use_tracing:
+            legion.legion_runtime_end_trace(
+                runtime.legate_runtime.legion_runtime,
+                runtime.legate_runtime.legion_context,
+                15210,
+            )
+
+        if iters % conv_test_iters == 0:
+            # resid = float(resids[max(len(resids) - 20, 0)])
+            resid = float(resid)
+            if resid < tol:
+                # Test convergence every conv_test_iters iterations.
+                break
+
+        # if (iters % conv_test_iters == 0) and np.linalg.norm(r) < tol:
+        #     break
 
     return x, iters
+
+    #
+    #
+    #
+    # offset = 1
+    # trace_iters = 25
+    # intrace = False
+    # started_trace_iter = None
+    # use_tracing = True
+    # # TODO (rohany): We can't break out and end the trace
+    # #  before it's actually supposed to end, or we'll get
+    # #  an internal error from the runtime.
+    # while iters < (maxiter + offset):
+    #     if iters >= offset and (iters - offset) % trace_iters == 0 and use_tracing:
+    #         # print("Starting trace at iter", iters)
+    #         intrace = True
+    #         legion.legion_runtime_begin_trace(runtime.legate_runtime.legion_runtime, runtime.legate_runtime.legion_context, 15210, False)
+    #         started_trace_iter = iters
+    #     z = M.matvec(r, out=z)
+    #     rho1 = rho
+    #     rho = r.dot(z)
+    #     if iters == 0:
+    #         # Make sure not to take an alias to z here, since we
+    #         # modify p in place.
+    #         p[:] = z
+    #     else:
+    #         # Utilize a fused vector addition with scalar multiplication
+    #         # kernel. Computes p = p * beta + z, where beta = rho / rho1.
+    #         cg_axpby(p, z, rho, rho1, isalpha=False, negate=False)
+    #     q = A.matvec(p, out=q)
+    #     pq = p.dot(q)
+    #     # Utilize fused vector adds here as well.
+    #     # Computes x += alpha * p, where alpha = rho / pq.
+    #     cg_axpby(x, p, rho, pq, isalpha=True, negate=False)
+    #     # Computes r -= alpha * Ap.
+    #     cg_axpby(r, q, rho, pq, isalpha=True, negate=True)
+    #     # print(iters, iters >= offset, (iters - offset) % trace_iters, started_trace_iter)
+    #     if iters >= offset and (iters + 1 - offset) % trace_iters == 0 and iters != started_trace_iter and use_tracing:
+    #         intrace = False
+    #         legion.legion_runtime_end_trace(runtime.legate_runtime.legion_runtime, runtime.legate_runtime.legion_context, 15210)
+    #         # print("Ending trace at iter", iters)
+    #
+    #     if callback is not None:
+    #         callback(x)
+    #
+    #     if (iters + 1 - offset) % conv_test_iters == 0 and intrace:
+    #         print("Will execute the dot inside a trace at iteration:", iters)
+    #
+    #     if (
+    #         (iters + 1 - offset) % conv_test_iters == 0 or (iters - offset) == (maxiter - 1)
+    #     ) and np.linalg.norm(r) < tol:
+    #         # Test convergence every conv_test_iters iterations.
+    #         break
+    #     iters += 1
+    #
+    # # If we made it here and are still in a trace, then we exited
+    # # batch of iterations early. Close the trace.
+    # if intrace and use_tracing:
+    #     print("Attempting to end the trace?", iters)
+    #     legion.legion_runtime_end_trace(runtime.legate_runtime.legion_runtime, runtime.legate_runtime.legion_context, 15210)
+    #     print("Ended the trace.")
+    #
+    # print("ENDED CG SOLVE")
+    #
+    # return x, iters
 
 
 # Implmentation taken from
