@@ -262,6 +262,9 @@ with solve_procs:
     # before timing. This makes sure that any deppart operations
     # using A are completed before timing.
     _ = A.dot(np.zeros((A.shape[1],)))
+    # Ensure bflat gets copied into the correct memory before
+    # starting the solve.
+    _ = bflat + 1.0
     start = time()
     # If we're testing throughput, run only the prescribed number
     # of iterations.
