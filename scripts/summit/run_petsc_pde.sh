@@ -17,8 +17,10 @@ weak_scale() {
 
 # CPU runs.
 if [[ -n $CPU_SOCKETS ]]; then
+  echo "CPU BENCHMARKS:"
 	for sockets in $CPU_SOCKETS; do
 		cmd="jsrun -n $(($sockets * 20)) -c 1 -b rs $PETSC_DIR/main -nx $(weak_scale $sockets) -ny $(weak_scale $sockets) $COMMON_ARGS $ARGS"
+		echo "CPU SOCKETS = $CPU_SOCKETS:"
 		echo $cmd
 		eval $cmd
 	done
@@ -27,8 +29,10 @@ fi
 # GPU runs.
 if [[ -n $GPUS ]]; then
 	GPU_ARGS="$COMMON_ARGS -vec_type cuda -mat_type aijcusparse"
+  echo "GPU BENCHMARKS:"
 	for gpus in $GPUS; do
 		cmd="jsrun -n $gpus -g 1 -c 1 -b rs --smpiargs=\"-gpu\" $PETSC_DIR/main $GPU_ARGS -nx $(weak_scale $gpus) -ny $(weak_scale $gpus) $ARGS"
+		echo "GPUS = $GPUS:"
 		echo $cmd
 		eval $cmd
 	done
