@@ -334,3 +334,156 @@ def is_sparse_matrix(o):
             isinstance(o, dia_array),
         )
     )
+
+
+def random(
+    m,
+    n,
+    density=0.01,
+    format="coo",
+    dtype=None,
+    random_state=None,
+    data_rvs=None,
+):
+    """Generate a sparse matrix of the given shape and density with randomly
+    distributed values.
+    This function is adapted from the implementation in scipy.sparse.
+    Parameters
+    ----------
+    m, n : int
+        shape of the matrix
+    density : real, optional
+        density of the generated matrix: density equal to one means a full
+        matrix, density of 0 means a matrix with no non-zero items.
+    format : str, optional
+        sparse matrix format.
+    dtype : dtype, optional
+        type of the returned matrix values.
+    random_state : {None, int, `numpy.random.Generator`,
+                    `numpy.random.RandomState`}, optional
+        If `seed` is None (or `np.random`), the `numpy.random.RandomState`
+        singleton is used.
+        If `seed` is an int, a new ``RandomState`` instance is used,
+        seeded with `seed`.
+        If `seed` is already a ``Generator`` or ``RandomState`` instance then
+        that instance is used.
+        This random state will be used
+        for sampling the sparsity structure, but not necessarily for sampling
+        the values of the structurally nonzero entries of the matrix.
+    data_rvs : callable, optional
+        Samples a requested number of random values.
+        This function should take a single argument specifying the length
+        of the ndarray that it will return. The structurally nonzero entries
+        of the sparse random matrix will be taken from the array sampled
+        by this function. By default, uniform [0, 1) random values will be
+        sampled using the same random state as is used for sampling
+        the sparsity structure.
+    Returns
+    -------
+    res : sparse matrix
+    Notes
+    -----
+    Only float types are supported for now.
+    Examples
+    --------
+    >>> from scipy.sparse import random
+    >>> from scipy import stats
+    >>> from numpy.random import default_rng
+    >>> rng = default_rng()
+    >>> rvs = stats.poisson(25, loc=10).rvs
+    >>> S = random(3, 4, density=0.25, random_state=rng, data_rvs=rvs)
+    >>> S.A
+    array([[ 36.,   0.,  33.,   0.],   # random
+           [  0.,   0.,   0.,   0.],
+           [  0.,   0.,  36.,   0.]])
+    >>> from scipy.sparse import random
+    >>> from scipy.stats import rv_continuous
+    >>> class CustomDistribution(rv_continuous):
+    ...     def _rvs(self,  size=None, random_state=None):
+    ...         return random_state.standard_normal(size)
+    >>> X = CustomDistribution(seed=rng)
+    >>> Y = X()  # get a frozen version of the distribution
+    >>> S = random(3, 4, density=0.25, random_state=rng, data_rvs=Y.rvs)
+    >>> S.A
+    array([[ 0.        ,  0.        ,  0.        ,  0.        ],   # random
+           [ 0.13569738,  1.9467163 , -0.81205367,  0.        ],
+           [ 0.        ,  0.        ,  0.        ,  0.        ]])
+    """
+    import cunumeric as np
+
+    if density < 0 or density > 1:
+        raise ValueError("density expected to be 0 <= density <= 1")
+    dtype = np.dtype(dtype)
+
+    mn = m * n
+
+    tp = np.intc
+    if mn > np.iinfo(tp).max:
+        tp = np.int64
+
+    if mn > np.iinfo(tp).max:
+        msg = """\
+Trying to generate a random sparse matrix such as the product of dimensions is
+greater than %d - this is not supported on this machine
+"""
+        raise ValueError(msg % np.iinfo(tp).max)
+
+    # Number of non zero values
+    k = int(round(density * m * n))
+
+    # We don't support setting of random_state right now.
+    assert random_state is None
+    # We also don't support setting of data_rvs right now.
+    assert data_rvs is None
+    ind = np.random.choice(mn, size=k, replace=False)
+    j = np.floor(ind * 1.0 / m).astype(tp, copy=False)
+    i = (ind - j * m).astype(tp, copy=False)
+    vals = np.random.rand(k).astype(dtype, copy=False)
+    return coo_array((vals, (i, j)), shape=(m, n)).asformat(format, copy=False)
+
+
+def rand(m, n, density=0.01, format="coo", dtype=None, random_state=None):
+    """Generate a sparse matrix of the given shape and density with uniformly
+    distributed values.
+    Parameters
+    ----------
+    m, n : int
+        shape of the matrix
+    density : real, optional
+        density of the generated matrix: density equal to one means a full
+        matrix, density of 0 means a matrix with no non-zero items.
+    format : str, optional
+        sparse matrix format.
+    dtype : dtype, optional
+        type of the returned matrix values.
+    random_state : {None, int, `numpy.random.Generator`,
+                    `numpy.random.RandomState`}, optional
+        If `seed` is None (or `np.random`), the `numpy.random.RandomState`
+        singleton is used.
+        If `seed` is an int, a new ``RandomState`` instance is used,
+        seeded with `seed`.
+        If `seed` is already a ``Generator`` or ``RandomState`` instance then
+        that instance is used.
+    Returns
+    -------
+    res : sparse matrix
+    Notes
+    -----
+    Only float types are supported for now.
+    See Also
+    --------
+    scipy.sparse.random : Similar function that allows a user-specified random
+        data source.
+    Examples
+    --------
+    >>> from scipy.sparse import rand
+    >>> matrix = rand(3, 4, density=0.25, format="csr", random_state=42)
+    >>> matrix
+    <3x4 sparse matrix of type '<class 'numpy.float64'>'
+       with 3 stored elements in Compressed Sparse Row format>
+    >>> matrix.toarray()
+    array([[0.05641158, 0.        , 0.        , 0.65088847],
+           [0.        , 0.        , 0.        , 0.14286682],
+           [0.        , 0.        , 0.        , 0.        ]])
+    """
+    return random(m, n, density, format, dtype, random_state)
