@@ -148,11 +148,13 @@ with build_procs:
     # order. However, this is not implemented in cuNumeric right now.
     # Annoyingly, doing .T.flatten() raises an internal error in legate
     # when trying to invert the delinearize transform on certain processor
-    # count combinations as well. So if we're just testing solve throughput,
-    # we'll do .flatten(), which is incorrect for the physics, but won't
-    # cause materialization onto a single memory.
+    # count combinations as well. Even more annoyingly, doing any sort
+    # of flatten results in some bad assignment of equivalence sets within
+    # Legion's dependence analysis. So if we're just testing solve
+    # throughput, use an array of all ones.
     if args.throughput:
-        bflat = b[1:-1, 1:-1].flatten()
+        n = b.shape[0] - 2
+        bflat = np.ones((n * n,))
     else:
         bflat = b[1:-1, 1:-1].flatten("F")
 
