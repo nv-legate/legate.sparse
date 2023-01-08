@@ -256,6 +256,18 @@ class csr_array(CompressedBase, DenseSparseBase):
 
     data = property(fget=get_data, fset=set_data)
 
+    # Enable direct operation on the indices array.
+    def get_indices(self):
+        return store_to_cunumeric_array(self.crd)
+
+    def set_indices(self, indices):
+        if isinstance(indices, numpy.ndarray):
+            indices = cunumeric.array(indices)
+        assert isinstance(indices, cunumeric.ndarray)
+        self.crd = get_store_from_cunumeric_array(indices)
+
+    indices = property(fget=get_indices, fset=set_indices)
+
     @classmethod
     def make_empty(cls, shape, dtype):
         M, N = shape
