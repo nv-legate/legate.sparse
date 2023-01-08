@@ -118,9 +118,7 @@ cusparseSpMatDescr_t makeCuSparseCSR(const legate::Store& pos,
 
   auto pos_acc = pos.read_accessor<Legion::Rect<1>, 1>();
   size_t rows  = pos_domain.get_volume();
-  // TODO (rohany): In the future, we could allow for control over what integer
-  //  type is used to represent the indptr array.
-  Legion::DeferredBuffer<int64_t, 1> indptr({0, rows}, Legion::Memory::GPU_FB_MEM);
+  Legion::DeferredBuffer<INDEX_TY, 1> indptr({0, rows}, Legion::Memory::GPU_FB_MEM);
   auto blocks = get_num_blocks_1d(rows);
   convertGlobalPosToLocalIndPtr<<<blocks, THREADS_PER_BLOCK, 0, stream>>>(
     rows, pos_acc.ptr(pos_domain.lo()), indptr.ptr(0));
@@ -133,7 +131,7 @@ cusparseSpMatDescr_t makeCuSparseCSR(const legate::Store& pos,
                       (void*)indptr.ptr(0),
                       crd_domain.empty() ? nullptr : getPtrFromStore<INDEX_TY, 1>(crd),
                       vals.domain().empty() ? nullptr : getPtrFromStore<VAL_TY, 1>(vals),
-                      cusparseIndexType<int64_t>(),
+                      cusparseIndexType<INDEX_TY>(),
                       cusparseIndexType<INDEX_TY>(),
                       index_base,
                       cusparseDataType<VAL_TY>()));
