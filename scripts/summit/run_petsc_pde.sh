@@ -31,7 +31,7 @@ if [[ -n $GPUS ]]; then
 	GPU_ARGS="$COMMON_ARGS -vec_type cuda -mat_type aijcusparse"
   echo "GPU BENCHMARKS:"
 	for gpus in $GPUS; do
-		cmd="jsrun -n $gpus -g 1 -c 1 -b rs --smpiargs=\"-gpu\" $PETSC_DIR/main $GPU_ARGS -nx $(weak_scale $gpus) -ny $(weak_scale $gpus) $ARGS"
+		cmd="jsrun -n $gpus -g 1 -c 4 -b rs --smpiargs=\"-gpu\" $PETSC_DIR/main $GPU_ARGS -nx $(weak_scale $gpus) -ny $(weak_scale $gpus) $ARGS"
 		echo "GPUS = $GPUS:"
 		echo $cmd
 		eval $cmd
