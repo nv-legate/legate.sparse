@@ -15,6 +15,7 @@
 import argparse
 
 import numpy
+from benchmark import parse_common_args
 
 
 def stencil_grid(S, grid, dtype=None, format=None):
@@ -349,8 +350,8 @@ def required_driver_memory(N):
     print("Max required driver memory for N=%d is %fMB" % (N, mb))
 
 
-def execute(N, data, smoother, gridop, levels, maxiter, tol, verbose, package):
-    start = time()
+def execute(N, data, smoother, gridop, levels, maxiter, tol, verbose, timer):
+    timer.start()
     if data == "poisson":
         A = poisson2D(N).tocsr()
         b = np.random.rand(N**2)
@@ -359,7 +360,7 @@ def execute(N, data, smoother, gridop, levels, maxiter, tol, verbose, package):
         b = np.random.rand(N**2)
     else:
         raise NotImplementedError(data)
-    print(f"Data creation time: {(time() - start)/1000} ms")
+    print(f"Data creation time: {timer.stop()} ms")
 
     assert smoother == "jacobi", "Only Jacobi smoother is currently supported."
 
@@ -372,14 +373,14 @@ def execute(N, data, smoother, gridop, levels, maxiter, tol, verbose, package):
         callback = None
 
     required_driver_memory(N)
-    start = time()
+    timer.start()
     mg_solver = GMG(
         A=A, shape=(N, N), levels=levels, smoother=smoother, gridop=gridop
     )
     M = mg_solver.linear_operator()
-    print(f"GMG init time: {(time() - start)/1000} ms")
+    print(f"GMG init time: {timer.stop()} ms")
 
-    solve_start = time()
+    timer.start()
     x, iters = linalg.cg(
         A, b, tol=tol, maxiter=maxiter, M=M, callback=callback
     )
@@ -387,10 +388,7 @@ def execute(N, data, smoother, gridop, levels, maxiter, tol, verbose, package):
         print("Converged in %d iterations" % iters)
     else:
         print("Failed to converge in %d iterations" % iters)
-    print(f"Solve Time: {(time() - solve_start)/1000} ms")
-    stop = time()
-    total = stop - start
-    print(f"Elapsed Time: {total/1000} ms")
+    print(f"Solve Time: {timer.stop()} ms")
 
 
 if __name__ == "__main__":
@@ -460,37 +458,7 @@ if __name__ == "__main__":
         dest="tol",
         help="convergence check threshold",
     )
-    parser.add_argument(
-        "-p",
-        "--package",
-        dest="package",
-        choices=["legate", "cupy", "scipy"],
-        type=str,
-        default="legate",
-    )
 
     args, _ = parser.parse_known_args()
-
-    # Load up the correct package.
-    if args.package == "legate":
-        import cunumeric as np
-        from legate.timing import time
-
-        import sparse as sparse
-        import sparse.linalg as linalg
-    else:
-        from time import perf_counter_ns
-
-        def time():
-            return perf_counter_ns() / 1000.0
-
-        if args.package == "cupy":
-            import cupy as np
-            import cupyx.scipy.sparse as sparse
-            import cupyx.scipy.sparse.linalg as linalg
-        else:
-            import numpy as np
-            import scipy.sparse as sparse
-            import scipy.sparse.linalg as linalg
-
-    execute(**vars(args))
+    _, timer, np, sparse, linalg, use_legate = parse_common_args()
+    execute(**vars(args), timer=timer)
