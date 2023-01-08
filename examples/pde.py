@@ -18,6 +18,8 @@
 import argparse
 import sys
 
+from benchmark import parse_common_args
+
 parser = argparse.ArgumentParser()
 parser.add_argument("-nx", type=int, default=101)
 parser.add_argument("-ny", type=int, default=101)
@@ -25,36 +27,11 @@ parser.add_argument("-plot", action="store_true")
 parser.add_argument("-plot_filename", default=None, type=str)
 parser.add_argument("-throughput", action="store_true")
 parser.add_argument("-max_iter", type=int, default=None)
-parser.add_argument(
-    "-package", type=str, default="legate", choices=["legate", "cupy", "scipy"]
-)
 args, _ = parser.parse_known_args()
+_, timer, np, sparse, linalg, use_legate = parse_common_args()
 if args.throughput and args.max_iter is None:
     print("Must provide -max_iter when using -throughput.")
     sys.exit(1)
-
-# Handle imports depending on what package we're supposed to use.
-if args.package == "legate":
-    import cunumeric as np
-    from legate.timing import time
-
-    from sparse import diags, linalg
-
-    use_legate = True
-else:
-    from time import perf_counter_ns
-
-    def time():
-        return perf_counter_ns() / 1000.0
-
-    if args.package == "cupy":
-        import cupy as np
-        from cupyx.scipy.sparse import diags, linalg
-    elif args.package == "scipy":
-        import numpy as np
-        from scipy.sparse import diags, linalg
-    use_legate = False
-
 
 # Grid parameters.
 nx = args.nx  # number of points in the x direction
@@ -180,7 +157,7 @@ def d2_mat_dirichlet_2d(nx, ny, dx, dy):
     #  of indirection copies. Since we know that this matrix is symmetric, we
     #  directly use the DIA->CSC conversion, and then take the transpose to get
     #  a CSR matrix back.
-    d2mat = diags(diagonals, offsets, dtype=np.float64).tocsc().T
+    d2mat = sparse.diags(diagonals, offsets, dtype=np.float64).tocsc().T
 
     # Return the final array
     return d2mat
@@ -219,15 +196,14 @@ A = d2_mat_dirichlet_2d(nx, ny, dx, dy)
 # before timing. This makes sure that any deppart operations
 # using A are completed before timing.
 _ = A.dot(np.zeros((A.shape[1],)))
-start = time()
+timer.start()
 # If we're testing throughput, run only the prescribed number of iterations.
 if args.throughput:
     p_sol, iters = linalg.cg(A, bflat, tol=1e-10, maxiter=args.max_iter)
 else:
     p_sol, iters = linalg.cg(A, bflat, tol=1e-10)
     assert np.allclose((A @ p_sol), bflat)
-stop = time()
-total = (stop - start) / 1000.0
+total = timer.stop()
 if args.throughput:
     print(f"Iterations / sec: {args.max_iter / (total / 1000.0)}")
     sys.exit(0)
