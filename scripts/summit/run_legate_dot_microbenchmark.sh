@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # Activate the correct conda env, just in case.
+source $(conda info --base)/etc/profile.d/conda.sh
 conda activate legate
 
 # Environment configuration.
