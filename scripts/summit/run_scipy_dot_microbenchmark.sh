@@ -1,6 +1,9 @@
 #!/bin/bash
 export PYTHONUNBUFFERED=1
 
+# Activate the correct conda env, just in case.
+conda activate cupy
+
 ITERS=100
 SIZE=10000000
 COMMON_ARGS="-i $ITERS"
