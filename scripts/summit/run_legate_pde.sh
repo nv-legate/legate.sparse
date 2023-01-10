@@ -1,15 +1,25 @@
 #!/bin/bash
 
+# Activate the correct conda env, just in case.
+source $(conda info --base)/etc/profile.d/conda.sh
+conda activate legate
+
 # Environment configuration.
 export LD_LIBRARY_PATH=$CONDA_PREFIX/lib/:$LD_LIBRARY_PATH
 export LEGATE_TEST=1
 export PYTHONUNBUFFERED=1
+EXP_ITERS=${EXP_ITERS:-1}
 
 ITERS=300
 SIZE=6000
 COMMON_ARGS="-throughput -max_iter $ITERS --launcher jsrun -lg:sched 256"
 
-weak_scale() {
+weak_scale_cpu() {
+    # We start scaling for CPUs at the problem size used for 3 GPUs to
+    # create comparable plots on Summit.
+    python3 -c "import math; print(int($SIZE * math.sqrt($1 * 3)))"
+}
+weak_scale_gpu() {
     python3 -c "import math; print(int($SIZE * math.sqrt($1)))"
 }
 
@@ -32,10 +42,12 @@ if [[ -n $CPU_SOCKETS ]]; then
     OMPTHREADS=18
     UTILITY=1
     for sockets in $CPU_SOCKETS; do
-        cmd="legate examples/pde.py --nodes $(nodes $sockets) --ranks-per-node $(ranks $sockets) -nx $(weak_scale $sockets) -ny $(weak_scale $sockets) --omps 1 --ompthreads $OMPTHREADS --cpus 1 --sysmem $SYS_MEM --utility $UTILITY $(bind_args $sockets) $COMMON_ARGS $ARGS"
-        echo "CPU SOCKETS = $sockets:"
-        echo $cmd
-        eval $cmd
+        cmd="legate examples/pde.py --nodes $(nodes $sockets) --ranks-per-node $(ranks $sockets) -nx $(weak_scale_cpu $sockets) -ny $(weak_scale_cpu $sockets) --omps 1 --ompthreads $OMPTHREADS --cpus 1 --sysmem $SYS_MEM --utility $UTILITY $(bind_args $sockets) $COMMON_ARGS $ARGS"
+        for iter in $(seq 1 $EXP_ITERS); do
+            echo "CPU SOCKETS = $sockets:"
+            echo $cmd
+            eval $cmd
+        done
     done
 fi
 
@@ -77,9 +89,11 @@ fi
 
 if [[ -n $GPUS ]]; then
     for gpus in $GPUS; do
-        cmd="legate examples/pde.py $GPU_ARGS --nodes $(nodes $gpus) --ranks-per-node $(ranks $gpus) --gpus $(gpus_per_node $gpus) $(bind_args $gpus) -nx $(weak_scale $gpus) -ny $(weak_scale $gpus) $ARGS"
-        echo "GPUS = $gpus:"
-        echo $cmd
-        eval $cmd
+        cmd="legate examples/pde.py $GPU_ARGS --nodes $(nodes $gpus) --ranks-per-node $(ranks $gpus) --gpus $(gpus_per_node $gpus) $(bind_args $gpus) -nx $(weak_scale_gpu $gpus) -ny $(weak_scale_gpu $gpus) $ARGS"
+        for iter in $(seq 1 $EXP_ITERS); do
+            echo "GPUS = $gpus:"
+            echo $cmd
+            eval $cmd
+        done
     done
 fi
