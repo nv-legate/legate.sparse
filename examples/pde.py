@@ -18,7 +18,7 @@
 import argparse
 import sys
 
-from benchmark import parse_common_args
+from benchmark import get_phase_procs, parse_common_args
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-nx", type=int, default=101)
@@ -30,53 +30,12 @@ parser.add_argument("-max_iter", type=int, default=None)
 parser.add_argument("-cpu_build", action="store_true")
 args, _ = parser.parse_known_args()
 _, timer, np, sparse, linalg, use_legate = parse_common_args()
+build_procs, solve_procs = get_phase_procs(use_legate)
+if not args.cpu_build:
+    build_procs = solve_procs
 if args.throughput and args.max_iter is None:
     print("Must provide -max_iter when using -throughput.")
     sys.exit(1)
-
-# Handle imports depending on what package we're supposed to use.
-if args.package == "legate":
-    from legate.core import get_machine
-    from legate.core.machine import ProcessorKind
-
-    all_devices = get_machine()
-    num_gpus = all_devices.count(ProcessorKind.GPU)
-    num_omps = all_devices.count(ProcessorKind.OMP)
-    num_cpus = all_devices.count(ProcessorKind.CPU)
-
-    if num_gpus > 0 and not args.cpu_build:
-        build_procs = all_devices.only(ProcessorKind.GPU)
-    elif num_omps > 0:
-        build_procs = all_devices.only(ProcessorKind.OMP)
-    else:
-        build_procs = all_devices.only(ProcessorKind.CPU)
-
-    if num_gpus > 0:
-        solve_procs = all_devices.only(ProcessorKind.GPU)
-    elif num_omps > 0:
-        solve_procs = all_devices.only(ProcessorKind.OMP)
-    else:
-        solve_procs = all_devices.only(ProcessorKind.CPU)
-else:
-    # DummyScope is a class that is a no-op context
-    # manager so that we can run both CuPy and SciPy
-    # programs with resource scoping.
-    class DummyScope:
-        def __init__(self):
-            ...
-
-        def __enter__(self):
-            ...
-
-        def __exit__(self, _, __, ___):
-            ...
-
-        def __getitem__(self, item):
-            return self
-
-    build_procs = DummyScope()
-    solve_procs = DummyScope()
-
 
 # Construct the input stencil matrix on the CPUs.
 with build_procs:
