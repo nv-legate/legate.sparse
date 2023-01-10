@@ -6,7 +6,7 @@ if [[ ! -n $PETSC_DIR ]]; then
 fi
 
 EXP_ITERS=${EXP_ITERS:-1}
-ITERS=200
+ITERS=100
 SIZE=10000000
 COMMON_ARGS="-i $ITERS -nnz-per-row 11"
 
@@ -18,7 +18,7 @@ weak_scale() {
 if [[ -n $CPU_SOCKETS ]]; then
     for sockets in $CPU_SOCKETS; do
         cmd="jsrun -n $(($sockets * 20)) -c 1 -b rs $PETSC_DIR/dot_microbenchmark -n $(weak_scale $sockets) $COMMON_ARGS $ARGS"
-        for iter in {1..$EXP_ITERS}; do
+        for iter in $(seq 1 $EXP_ITERS); do
             echo "CPU SOCKETS = $sockets:"
             echo $cmd
             eval $cmd
@@ -31,7 +31,7 @@ if [[ -n $GPUS ]]; then
     GPU_ARGS="$COMMON_ARGS -vec_type cuda -mat_type aijcusparse -gpu"
     for gpus in $GPUS; do
         cmd="jsrun -n $gpus -g 1 -c 4 -b rs --smpiargs=\"-gpu\" $PETSC_DIR/dot_microbenchmark $GPU_ARGS -n $(weak_scale $gpus) $ARGS"
-        for iter in {1..$EXP_ITERS}; do
+        for iter in $(seq 1 $EXP_ITERS); do
             echo "GPUS = $gpus:"
             echo $cmd
             eval $cmd

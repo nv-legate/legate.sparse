@@ -6,7 +6,7 @@ export LEGATE_TEST=1
 export PYTHONUNBUFFERED=1
 EXP_ITERS=${EXP_ITERS:-1}
 
-ITERS=25
+ITERS=100
 SIZE=10000000
 COMMON_ARGS="-i $ITERS --launcher jsrun -lg:sched 256 -nnz-per-row 11"
 
@@ -34,7 +34,7 @@ if [[ -n $CPU_SOCKETS ]]; then
     UTILITY=1
     for sockets in $CPU_SOCKETS; do
         cmd="legate examples/dot_microbenchmark.py --nodes $(nodes $sockets) --ranks-per-node $(ranks $sockets) --omps 1 --ompthreads $OMPTHREADS --cpus 1 --sysmem $SYS_MEM --utility $UTILITY $(bind_args $sockets) $COMMON_ARGS -n $(weak_scale $sockets) $ARGS"
-        for iter in {1..$EXP_ITERS}; do
+        for iter in $(seq 1 $EXP_ITERS); do
             echo "CPU SOCKETS = $sockets:"
             echo $cmd
             eval $cmd
@@ -67,7 +67,7 @@ GPU_ARGS="-cunumeric:preload-cudalibs $COMMON_ARGS --fbmem $GPU_MEM --omps 1 --o
 if [[ -n $GPUS ]]; then
     for gpus in $GPUS; do
         cmd="legate examples/dot_microbenchmark.py --launcher jsrun $GPU_ARGS --nodes $(nodes $gpus) --ranks-per-node $(ranks $gpus) --gpus $(gpus_per_node $gpus) $(bind_args $gpus) -n $(weak_scale $gpus) $ARGS"
-        for iter in {1..$EXP_ITERS}; do
+        for iter in $(seq 1 $EXP_ITERS); do
             echo "GPUS = $gpus:"
             echo $cmd
             eval $cmd
