@@ -33,7 +33,7 @@ if [[ -n $CPU_SOCKETS ]]; then
 	UTILITY=1
 	for sockets in $CPU_SOCKETS; do
 		cmd="legate examples/pde.py --nodes $(nodes $sockets) --ranks-per-node $(ranks $sockets) -nx $(weak_scale $sockets) -ny $(weak_scale $sockets) --omps 1 --ompthreads $OMPTHREADS --cpus 1 --sysmem $SYS_MEM --utility $UTILITY $(bind_args $sockets) $COMMON_ARGS $ARGS"
-		echo "CPU SOCKETS = $CPU_SOCKETS:"
+		echo "CPU SOCKETS = $sockets:"
 		echo $cmd
 		eval $cmd
 	done
@@ -78,7 +78,7 @@ fi
 if [[ -n $GPUS ]]; then
 	for gpus in $GPUS; do
 		cmd="legate examples/pde.py $GPU_ARGS --nodes $(nodes $gpus) --ranks-per-node $(ranks $gpus) --gpus $(gpus_per_node $gpus) $(bind_args $gpus) -nx $(weak_scale $gpus) -ny $(weak_scale $gpus) $ARGS"
-		echo "GPUS = $GPUS:"
+		echo "GPUS = $gpus:"
 		echo $cmd
 		eval $cmd
 	done

@@ -18,6 +18,8 @@
 import argparse
 import sys
 
+from benchmark import parse_common_args
+
 parser = argparse.ArgumentParser()
 parser.add_argument("-nx", type=int, default=101)
 parser.add_argument("-ny", type=int, default=101)
@@ -26,22 +28,16 @@ parser.add_argument("-plot_filename", default=None, type=str)
 parser.add_argument("-throughput", action="store_true")
 parser.add_argument("-max_iter", type=int, default=None)
 parser.add_argument("-cpu_build", action="store_true")
-parser.add_argument(
-    "-package", type=str, default="legate", choices=["legate", "cupy", "scipy"]
-)
 args, _ = parser.parse_known_args()
+_, timer, np, sparse, linalg, use_legate = parse_common_args()
 if args.throughput and args.max_iter is None:
     print("Must provide -max_iter when using -throughput.")
     sys.exit(1)
 
 # Handle imports depending on what package we're supposed to use.
 if args.package == "legate":
-    import cunumeric as np
     from legate.core import get_machine
     from legate.core.machine import ProcessorKind
-    from legate.timing import time
-
-    from sparse import diags, linalg
 
     all_devices = get_machine()
     num_gpus = all_devices.count(ProcessorKind.GPU)
@@ -61,22 +57,7 @@ if args.package == "legate":
         solve_procs = all_devices.only(ProcessorKind.OMP)
     else:
         solve_procs = all_devices.only(ProcessorKind.CPU)
-
-    use_legate = True
 else:
-    from time import perf_counter_ns
-
-    def time():
-        return perf_counter_ns() / 1000.0
-
-    if args.package == "cupy":
-        import cupy as np
-        from cupyx.scipy.sparse import diags, linalg
-    elif args.package == "scipy":
-        import numpy as np
-        from scipy.sparse import diags, linalg
-    use_legate = False
-
     # DummyScope is a class that is a no-op context
     # manager so that we can run both CuPy and SciPy
     # programs with resource scoping.
@@ -224,7 +205,7 @@ with build_procs:
         #  Since we know that this matrix is symmetric, we directly use the
         #  DIA->CSC conversion, and then take the transpose to get a
         #  CSR matrix back.
-        d2mat = diags(diagonals, offsets, dtype=np.float64).tocsc().T
+        d2mat = sparse.diags(diagonals, offsets, dtype=np.float64).tocsc().T
 
         # Return the final array
         return d2mat
@@ -267,7 +248,7 @@ with solve_procs:
     # Ensure bflat gets copied into the correct memory before
     # starting the solve.
     _ = bflat + 1.0
-    start = time()
+    timer.start()
     # If we're testing throughput, run only the prescribed number
     # of iterations.
     if args.throughput:
@@ -275,8 +256,7 @@ with solve_procs:
     else:
         p_sol, iters = linalg.cg(A, bflat, tol=1e-10)
         assert np.allclose((A @ p_sol), bflat)
-    stop = time()
-    total = (stop - start) / 1000.0
+    total = timer.stop()
     if args.throughput:
         print(f"Iterations / sec: {args.max_iter / (total / 1000.0)}")
         sys.exit(0)
