@@ -8,7 +8,7 @@ COMMON_ARGS="-i $ITERS"
 weak_scale() {
     # We start scaling for CPUs at the problem size used for 3 GPUs to
     # create comparable plots on Summit.
-    python3 -c "print($SIZE * $1)"
+    python3 -c "print($SIZE * $1 * 3)"
 }
 
 # Run the benchmark for SciPy.
