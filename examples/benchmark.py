@@ -95,13 +95,13 @@ def get_phase_procs(use_legate: bool):
         num_gpus = all_devices.count(ProcessorKind.GPU)
         num_omps = all_devices.count(ProcessorKind.OMP)
 
-        if num_gpus > 0:
-            build_procs = all_devices.only(ProcessorKind.GPU)
-        elif num_omps > 0:
+        # Prefer CPUs for the "build" phase of applications.
+        if num_omps > 0:
             build_procs = all_devices.only(ProcessorKind.OMP)
         else:
             build_procs = all_devices.only(ProcessorKind.CPU)
 
+        # Prefer GPUs for the "solve" phase of applications.
         if num_gpus > 0:
             solve_procs = all_devices.only(ProcessorKind.GPU)
         elif num_omps > 0:
