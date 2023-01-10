@@ -10,7 +10,12 @@ ITERS=100
 SIZE=10000000
 COMMON_ARGS="-i $ITERS --launcher jsrun -lg:sched 256 -nnz-per-row 11"
 
-weak_scale() {
+weak_scale_cpu() {
+    # We start scaling for CPUs at the problem size used for 3 GPUs to
+    # create comparable plots on Summit.
+    python3 -c "print($SIZE * $1 * 3)"
+}
+weak_scale_gpu() {
     python3 -c "print($SIZE * $1)"
 }
 
@@ -33,7 +38,7 @@ if [[ -n $CPU_SOCKETS ]]; then
     OMPTHREADS=18
     UTILITY=1
     for sockets in $CPU_SOCKETS; do
-        cmd="legate examples/dot_microbenchmark.py --nodes $(nodes $sockets) --ranks-per-node $(ranks $sockets) --omps 1 --ompthreads $OMPTHREADS --cpus 1 --sysmem $SYS_MEM --utility $UTILITY $(bind_args $sockets) $COMMON_ARGS -n $(weak_scale $sockets) $ARGS"
+        cmd="legate examples/dot_microbenchmark.py --nodes $(nodes $sockets) --ranks-per-node $(ranks $sockets) --omps 1 --ompthreads $OMPTHREADS --cpus 1 --sysmem $SYS_MEM --utility $UTILITY $(bind_args $sockets) $COMMON_ARGS -n $(weak_scale_cpu $sockets) $ARGS"
         for iter in $(seq 1 $EXP_ITERS); do
             echo "CPU SOCKETS = $sockets:"
             echo $cmd
@@ -66,7 +71,7 @@ GPU_ARGS="-cunumeric:preload-cudalibs $COMMON_ARGS --fbmem $GPU_MEM --omps 1 --o
 
 if [[ -n $GPUS ]]; then
     for gpus in $GPUS; do
-        cmd="legate examples/dot_microbenchmark.py --launcher jsrun $GPU_ARGS --nodes $(nodes $gpus) --ranks-per-node $(ranks $gpus) --gpus $(gpus_per_node $gpus) $(bind_args $gpus) -n $(weak_scale $gpus) $ARGS"
+        cmd="legate examples/dot_microbenchmark.py --launcher jsrun $GPU_ARGS --nodes $(nodes $gpus) --ranks-per-node $(ranks $gpus) --gpus $(gpus_per_node $gpus) $(bind_args $gpus) -n $(weak_scale_gpu $gpus) $ARGS"
         for iter in $(seq 1 $EXP_ITERS); do
             echo "GPUS = $gpus:"
             echo $cmd
