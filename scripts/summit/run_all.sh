@@ -5,7 +5,8 @@ if [[ $# -ge 1 && ( "$1" == "-h" || "$1" == "--help" ) ]]; then
     echo "Usage: $(basename "${BASH_SOURCE[0]}")"
     echo "Arguments read from the environment:"
     echo "  OUT_DIR : Directory to dump output to"
-    echo "  DOT : Run the dot microbenchmark (set to 1 to enable)"
+    echo "  DOT : Run the dot microbenchmark"
+    echo "  PDE : Run the PDE microbenchmark"
     echo "  LEGATE_CPU : Run Legate with CPUs"
     echo "  LEGATE_GPU : Run Legate with GPUs"
     echo "  PETSC_CPU : Run PETSc with CPUs"
@@ -45,7 +46,7 @@ if [[ -n $DOT ]]; then
         SCIPY_SOCKETS="1 2" ./scripts/summit/run_scipy_dot_microbenchmark.sh 2>&1 | tee $OUT_DIR/scipy_cpu_dot.out
     fi
     if [[ -n $CUPY ]]; then
-        CUPY=1 ./scripts/summit/run_scipy_dot_microbenchmark.sh 2>&1 | tee $OUT_DIR/cupy_gpu_dot.out
+        CUPY_GPUS=1 ./scripts/summit/run_scipy_dot_microbenchmark.sh 2>&1 | tee $OUT_DIR/cupy_gpu_dot.out
     fi
     if [[ -n $PETSC_CPU ]]; then
         CPU_SOCKETS="$EXP_SOCKETS" ./scripts/summit/run_petsc_dot_microbenchmark.sh 2>&1 | tee $OUT_DIR/petsc_cpu_dot.out
@@ -55,4 +56,26 @@ if [[ -n $DOT ]]; then
     fi
 fi
 
-# TODO (rohany): Add PDE, GMG, Quantum and SparseML.
+# Configurations for running the PDE benchmark.
+if [[ -n $PDE ]]; then
+    if [[ -n $LEGATE_CPU ]]; then
+        CPU_SOCKETS="$EXP_SOCKETS" ./scripts/summit/run_legate_pde.sh 2>&1 | tee $OUT_DIR/legate_cpu_pde.out
+    fi
+    if [[ -n $LEGATE_GPU ]]; then
+        GPUS="$EXP_GPUS" ./scripts/summit/run_legate_pde.sh 2>&1 | tee $OUT_DIR/legate_gpu_pde.out
+    fi
+    if [[ -n $SCIPY ]]; then
+        SCIPY_SOCKETS="1 2" ./scripts/summit/run_scipy_pde.sh 2>&1 | tee $OUT_DIR/scipy_cpu_pde.out
+    fi
+    if [[ -n $CUPY ]]; then
+        CUPY_GPUS=1 ./scripts/summit/run_scipy_pde.sh 2>&1 | tee $OUT_DIR/cupy_gpu_pde.out
+    fi
+    if [[ -n $PETSC_CPU ]]; then
+        CPU_SOCKETS="$EXP_SOCKETS" ./scripts/summit/run_petsc_pde.sh 2>&1 | tee $OUT_DIR/petsc_cpu_pde.out
+    fi
+    if [[ -n $PETSC_GPU ]]; then
+        GPUS="$EXP_GPUS" ./scripts/summit/run_petsc_pde.sh 2>&1 | tee $OUT_DIR/petsc_gpu_pde.out
+    fi
+fi
+
+# TODO (rohany): Add GMG, Quantum and SparseML.
