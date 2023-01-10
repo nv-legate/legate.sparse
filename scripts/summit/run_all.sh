@@ -35,24 +35,24 @@ export EXP_GPUS=${EXP_GPUS:"1 3 6 12 24 48 96 192"}
 
 # Configuration to run the DOT microbenchmark.
 if [[ -n $DOT ]]; then
-  if [[ -n $LEGATE_CPU ]]; then
-    CPU_SOCKETS="$EXP_SOCKETS" ./scripts/summit/run_legate_dot_microbenchmark.sh &> $OUT_DIR/legate_cpu_dot.out
-  fi
-  if [[ -n $LEGATE_GPU ]]; then
-    GPUS="$EXP_GPUS" ./scripts/summit/run_legate_dot_microbenchmark.sh &> $OUT_DIR/legate_gpu_dot.out
-  fi
-  if [[ -n $SCIPY ]]; then
-    SCIPY_SOCKETS="1 2" ./scripts/summit/run_scipy_dot_microbenchmark.sh &> $OUT_DIR/scipy_cpu_dot.out
-  fi
-  if [[ -n $CUPY ]]; then
-    CUPY=1 ./scripts/summit/run_scipy_dot_microbenchmark.sh &> $OUT_DIR/cupy_gpu_dot.out
-  fi
-  if [[ -n $PETSC_CPU ]]; then
-    CPU_SOCKETS="$EXP_SOCKETS" ./scripts/summit/run_petsc_dot_microbenchmark.sh &> $OUT_DIR/petsc_cpu_dot.out
-  fi
-  if [[ -n $PETSC_GPU ]]; then
-    GPUS="$EXP_GPUS" ./scripts/summit/run_petsc_dot_microbenchmark.sh &> $OUT_DIR/petsc_gpu_dot.out
-  fi
+    if [[ -n $LEGATE_CPU ]]; then
+        CPU_SOCKETS="$EXP_SOCKETS" ./scripts/summit/run_legate_dot_microbenchmark.sh &> $OUT_DIR/legate_cpu_dot.out
+    fi
+    if [[ -n $LEGATE_GPU ]]; then
+        GPUS="$EXP_GPUS" ./scripts/summit/run_legate_dot_microbenchmark.sh &> $OUT_DIR/legate_gpu_dot.out
+    fi
+    if [[ -n $SCIPY ]]; then
+        SCIPY_SOCKETS="1 2" ./scripts/summit/run_scipy_dot_microbenchmark.sh &> $OUT_DIR/scipy_cpu_dot.out
+    fi
+    if [[ -n $CUPY ]]; then
+        CUPY=1 ./scripts/summit/run_scipy_dot_microbenchmark.sh &> $OUT_DIR/cupy_gpu_dot.out
+    fi
+    if [[ -n $PETSC_CPU ]]; then
+        CPU_SOCKETS="$EXP_SOCKETS" ./scripts/summit/run_petsc_dot_microbenchmark.sh &> $OUT_DIR/petsc_cpu_dot.out
+    fi
+    if [[ -n $PETSC_GPU ]]; then
+        GPUS="$EXP_GPUS" ./scripts/summit/run_petsc_dot_microbenchmark.sh &> $OUT_DIR/petsc_gpu_dot.out
+    fi
 fi
 
 # TODO (rohany): Add PDE, GMG, Quantum and SparseML.

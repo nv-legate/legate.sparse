@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Activate the correct conda env, just in case.
+conda activate legate
+
 # Environment configuration.
 export LD_LIBRARY_PATH=$CONDA_PREFIX/lib/:$LD_LIBRARY_PATH
 export LEGATE_TEST=1
