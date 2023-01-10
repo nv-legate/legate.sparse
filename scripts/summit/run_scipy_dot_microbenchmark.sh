@@ -6,6 +6,8 @@ SIZE=10000000
 COMMON_ARGS="-i $ITERS"
 
 weak_scale() {
+    # We start scaling for CPUs at the problem size used for 3 GPUs to
+    # create comparable plots on Summit.
     python3 -c "print($SIZE * $1)"
 }
 
