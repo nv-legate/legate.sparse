@@ -160,9 +160,14 @@ class GMG(object):
         return operators
 
     def cycle(self, r):
-        return self._cycle(self.A, r, 0)
+        from legate.core import get_machine
+        from legate.core.machine import ProcessorKind
 
-    def _cycle(self, A, r, level):
+        machine = get_machine().only(ProcessorKind.GPU)
+        with machine:
+            return self._cycle(self.A, r, 0, machine)
+
+    def _cycle(self, A, r, level, machine):
         if level == self.levels - 1:
             return self.smoother.coarse(A, r, None, level=level)
         x = None
@@ -172,9 +177,16 @@ class GMG(object):
         # Compute the residual.
         fine_r = r - A.dot(x)
         # Restrict the residual.
-        coarse_r = R.dot(fine_r)
-        # Compute coarse solution.
-        coarse_x = self._cycle(coarse_A, coarse_r, level + 1)
+        coarse_r = R.dot(fine_r, spmv_domain_part=True)
+        ratio = (fine_r.shape[0] // coarse_r.shape[0]) // 2
+        from legate.core.machine import ProcessorKind
+
+        num_procs = max(machine.count(ProcessorKind.GPU) // ratio, 1)
+        with machine[:num_procs]:
+            # Compute coarse solution.
+            coarse_x = self._cycle(
+                coarse_A, coarse_r, level + 1, machine[:num_procs]
+            )
         fine_x = P @ coarse_x
         x_corrected = x + fine_x
         # Do one post-smoothing iteration.
@@ -378,6 +390,26 @@ def execute(N, data, smoother, gridop, levels, maxiter, tol, verbose, timer):
         A=A, shape=(N, N), levels=levels, smoother=smoother, gridop=gridop
     )
     M = mg_solver.linear_operator()
+
+    # Warm up the runtime.
+    float(
+        np.linalg.norm(
+            A.matvec(
+                np.zeros(
+                    A.shape[1],
+                )
+            )
+        )
+    )
+    float(
+        np.linalg.norm(
+            M.matvec(
+                np.zeros(
+                    M.shape[1],
+                )
+            )
+        )
+    )
     print(f"GMG init time: {timer.stop()} ms")
 
     timer.start()
