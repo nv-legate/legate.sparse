@@ -98,4 +98,20 @@ if [[ -n $GMG ]]; then
     fi
 fi
 
-# TODO (rohany): Add GMG, Quantum and SparseML.
+# Configuration for running the Quantum benchmark.
+if [[ -n $QUANTUM ]]; then
+    if [[ -n $LEGATE_CPU ]]; then
+        CPU_SOCKETS="$EXP_SOCKETS" ./scripts/summit/run_legate_quantum.sh 2>&1 | tee $OUT_DIR/legate_cpu_quantum.out
+    fi
+    if [[ -n $LEGATE_GPU ]]; then
+        GPUS="$EXP_GPUS" ./scripts/summit/run_legate_quantum.sh 2>&1 | tee $OUT_DIR/legate_gpu_quantum.out
+    fi
+    if [[ -n $SCIPY ]]; then
+        SCIPY_SOCKETS="1 2" ./scripts/summit/run_scipy_quantum.sh 2>&1 | tee $OUT_DIR/scipy_cpu_quantum.out
+    fi
+    if [[ -n $CUPY ]]; then
+        CUPY_GPUS=1 ./scripts/summit/run_scipy_quantum.sh 2>&1 | tee $OUT_DIR/cupy_gpu_quantum.out
+    fi
+fi
+
+# TODO (rohany): Add SparseML.

@@ -1,0 +1,54 @@
+CPU SOCKETS = 1:
+jsrun -n 1 -c 20 -b rs python3 ../rydberg-simulation/demo_integration.py -package scipy -iters 25 -l 9 -frac 0.425 -load-ham /gpfs/alpine/scratch/rohany/csc335//rydberg-hams-0.425.npz
+Loading input from disk.
+Beginning solve.
+Total time: 321031.772676ms.
+Iterations / sec: 0.07787391195460004
+CPU SOCKETS = 1:
+jsrun -n 1 -c 20 -b rs python3 ../rydberg-simulation/demo_integration.py -package scipy -iters 25 -l 9 -frac 0.425 -load-ham /gpfs/alpine/scratch/rohany/csc335//rydberg-hams-0.425.npz
+Loading input from disk.
+Beginning solve.
+Total time: 319694.89439399994ms.
+Iterations / sec: 0.07819955976271982
+CPU SOCKETS = 1:
+jsrun -n 1 -c 20 -b rs python3 ../rydberg-simulation/demo_integration.py -package scipy -iters 25 -l 9 -frac 0.425 -load-ham /gpfs/alpine/scratch/rohany/csc335//rydberg-hams-0.425.npz
+Loading input from disk.
+Beginning solve.
+Total time: 319560.43803799985ms.
+Iterations / sec: 0.0782324625460276
+CPU SOCKETS = 1:
+jsrun -n 1 -c 20 -b rs python3 ../rydberg-simulation/demo_integration.py -package scipy -iters 25 -l 9 -frac 0.425 -load-ham /gpfs/alpine/scratch/rohany/csc335//rydberg-hams-0.425.npz
+Loading input from disk.
+Beginning solve.
+Total time: 319720.073125ms.
+Iterations / sec: 0.07819340135777407
+CPU SOCKETS = 1:
+jsrun -n 1 -c 20 -b rs python3 ../rydberg-simulation/demo_integration.py -package scipy -iters 25 -l 9 -frac 0.425 -load-ham /gpfs/alpine/scratch/rohany/csc335//rydberg-hams-0.425.npz
+Loading input from disk.
+Beginning solve.
+Total time: 319943.21660699986ms.
+Iterations / sec: 0.07813886559347995
+CPU SOCKETS = 2:
+jsrun -n 1 -c 40 -b rs python3 ../rydberg-simulation/demo_integration.py -package scipy -iters 25 -l 9 -frac 0.45 -load-ham /gpfs/alpine/scratch/rohany/csc335//rydberg-hams-0.45.npz
+Loading input from disk.
+Beginning solve.
+Total time: 609419.3132612305ms.
+Iterations / sec: 0.04102265789086279
+CPU SOCKETS = 2:
+jsrun -n 1 -c 40 -b rs python3 ../rydberg-simulation/demo_integration.py -package scipy -iters 25 -l 9 -frac 0.45 -load-ham /gpfs/alpine/scratch/rohany/csc335//rydberg-hams-0.45.npz
+Loading input from disk.
+Beginning solve.
+Total time: 626132.1424672852ms.
+Iterations / sec: 0.03992767389562057
+CPU SOCKETS = 2:
+jsrun -n 1 -c 40 -b rs python3 ../rydberg-simulation/demo_integration.py -package scipy -iters 25 -l 9 -frac 0.45 -load-ham /gpfs/alpine/scratch/rohany/csc335//rydberg-hams-0.45.npz
+Loading input from disk.
+Beginning solve.
+Total time: 585744.2848608398ms.
+Iterations / sec: 0.04268074080473437
+CPU SOCKETS = 2:
+jsrun -n 1 -c 40 -b rs python3 ../rydberg-simulation/demo_integration.py -package scipy -iters 25 -l 9 -frac 0.45 -load-ham /gpfs/alpine/scratch/rohany/csc335//rydberg-hams-0.45.npz
+Loading input from disk.
+Beginning solve.
+Total time: 580560.934381836ms.
+Iterations / sec: 0.04306180199089568

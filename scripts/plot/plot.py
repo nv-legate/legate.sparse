@@ -19,14 +19,19 @@ LEGATE_CPU = "Legate-CPU"
 LEGATE_GPU = "Legate-GPU"
 PETSC_CPU = "PETSc-CPU"
 PETSC_GPU = "PETSc-GPU"
-SCIPY = "SciPy-CPU"
-CUPY = "CuPy-GPU"
+SCIPY = "SciPy"
+CUPY = "CuPy"
 DOT = "DOT"
 PDE = "PDE"
 GMG = "GMG"
 QUANTUM = "QUANTUM"
 SPARSEML = "SPARSEML"
 MARKER_SIZE = 10
+
+
+def is_system_gpu(system):
+    return system in [LEGATE_GPU, CUPY, PETSC_GPU]
+
 
 rawPalette = seaborn.color_palette()
 palette = {
@@ -105,6 +110,13 @@ def raw_gpu_data_to_df(sys_proc_iter_tuples):
     return pandas.DataFrame(data, columns=[SYSTEM_KEY, PROCS_KEY, THROUGHPUT])
 
 
+def direct_procs_to_df(sys_proc_iter_tuples):
+    data = [
+        (system, str(procs), tp) for system, procs, tp in sys_proc_iter_tuples
+    ]
+    return pandas.DataFrame(data, columns=[SYSTEM_KEY, PROCS_KEY, THROUGHPUT])
+
+
 def parse_standard_cpu_weakscaling_data(filename, system):
     return raw_cpu_data_to_df(
         project_system_name(
@@ -124,7 +136,7 @@ def parse_standard_gpu_weakscaling_data(filename, system):
 def standard_weak_scaling_plot(sys_to_file, title, outfile=None):
     systems_to_data = []
     for system, filename in sys_to_file:
-        if "gpu" in system.lower():
+        if is_system_gpu(system):
             systems_to_data.append(
                 (system, parse_standard_gpu_weakscaling_data(filename, system))
             )
@@ -135,9 +147,39 @@ def standard_weak_scaling_plot(sys_to_file, title, outfile=None):
     # Re-order the data so that the GPU points are first
     # (this makes the 1/1 point) for GPUs come first.
     systems_to_data = list(
-        filter(lambda x: "gpu" in x[0].lower(), systems_to_data)
-    ) + list(filter(lambda x: "gpu" not in x[0].lower(), systems_to_data))
+        filter(lambda x: is_system_gpu(x[0]), systems_to_data)
+    ) + list(filter(lambda x: not is_system_gpu(x[0]), systems_to_data))
     data = pandas.concat([data for _, data in systems_to_data])
+    ax = seaborn.lineplot(
+        data,
+        x=PROCS_KEY,
+        y=THROUGHPUT,
+        hue=SYSTEM_KEY,
+        style=SYSTEM_KEY,
+        palette=palette,
+        markers=markers,
+        markersize=MARKER_SIZE,
+    )
+    ax.set_yscale("log", base=10)
+    ax.set_title(title)
+    if outfile is None:
+        plt.show()
+    else:
+        plt.savefig(outfile)
+        plt.clf()
+
+
+def summit_quantum_weak_scaling_plot(sys_to_file, title, outfile=None):
+    frames = []
+    for system, filename in sys_to_file:
+        frames.append(
+            direct_procs_to_df(
+                project_system_name(
+                    clean_raw_data(parse_execution_logs(filename)), system
+                )
+            )
+        )
+    data = pandas.concat(frames)
     ax = seaborn.lineplot(
         data,
         x=PROCS_KEY,
@@ -167,8 +209,13 @@ result_dir = args.result_dir
 machine = args.machine
 
 
-def get_system_data_path_pair(system, bench, suffix=""):
+def get_system_data_path_pair(system, bench):
     cleaned_system = system.replace("-", "_").lower()
+    suffix = ""
+    if is_system_gpu(system) and "gpu" not in system.lower():
+        suffix = "gpu"
+    elif not is_system_gpu(system) and "cpu" not in system.lower():
+        suffix = "cpu"
     path = os.path.join(
         data_dir,
         machine,
@@ -216,3 +263,14 @@ standard_weak_scaling_plot(
 #     get_system_data_path_pair(SCIPY, PDE),
 #     get_system_data_path_pair(CUPY, PDE),
 # ], "Conjugate-Gradient Solver")
+
+# Quantum.
+summit_quantum_weak_scaling_plot(
+    [
+        get_system_data_path_pair(LEGATE_CPU, QUANTUM),
+        get_system_data_path_pair(LEGATE_GPU, QUANTUM),
+        get_system_data_path_pair(SCIPY, QUANTUM),
+        get_system_data_path_pair(CUPY, QUANTUM),
+    ],
+    "Quantum Simulation",
+)

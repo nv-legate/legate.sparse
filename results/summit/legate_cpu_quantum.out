@@ -1,0 +1,989 @@
+CPU SOCKETS = 1:
+legate ../rydberg-simulation/demo_integration.py --nodes 1 --ranks-per-node 1 -frac 0.425 --omps 1 --ompthreads 16 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83 --mem-bind 0 --nic-bind mlx5_0,mlx5_1 --launcher jsrun -iters 25 -l 9
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 36086.244ms.
+Iterations / sec: 0.6927847630803583
+CPU SOCKETS = 1:
+legate ../rydberg-simulation/demo_integration.py --nodes 1 --ranks-per-node 1 -frac 0.425 --omps 1 --ompthreads 16 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83 --mem-bind 0 --nic-bind mlx5_0,mlx5_1 --launcher jsrun -iters 25 -l 9
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 38677.097ms.
+Iterations / sec: 0.6463773638440341
+CPU SOCKETS = 1:
+legate ../rydberg-simulation/demo_integration.py --nodes 1 --ranks-per-node 1 -frac 0.425 --omps 1 --ompthreads 16 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83 --mem-bind 0 --nic-bind mlx5_0,mlx5_1 --launcher jsrun -iters 25 -l 9
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 36168.623ms.
+Iterations / sec: 0.6912068507556951
+CPU SOCKETS = 1:
+legate ../rydberg-simulation/demo_integration.py --nodes 1 --ranks-per-node 1 -frac 0.425 --omps 1 --ompthreads 16 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83 --mem-bind 0 --nic-bind mlx5_0,mlx5_1 --launcher jsrun -iters 25 -l 9
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 36458.388ms.
+Iterations / sec: 0.6857132575362356
+CPU SOCKETS = 1:
+legate ../rydberg-simulation/demo_integration.py --nodes 1 --ranks-per-node 1 -frac 0.425 --omps 1 --ompthreads 16 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83 --mem-bind 0 --nic-bind mlx5_0,mlx5_1 --launcher jsrun -iters 25 -l 9
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 38882.144ms.
+Iterations / sec: 0.6429686593414191
+CPU SOCKETS = 1:
+legate ../rydberg-simulation/demo_integration.py --nodes 1 --ranks-per-node 1 -frac 0.425 --omps 1 --ompthreads 16 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83 --mem-bind 0 --nic-bind mlx5_0,mlx5_1 --launcher jsrun -iters 25 -l 9
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 36497.86ms.
+Iterations / sec: 0.6849716668319731
+CPU SOCKETS = 1:
+legate ../rydberg-simulation/demo_integration.py --nodes 1 --ranks-per-node 1 -frac 0.425 --omps 1 --ompthreads 16 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83 --mem-bind 0 --nic-bind mlx5_0,mlx5_1 --launcher jsrun -iters 25 -l 9
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 38961.725ms.
+Iterations / sec: 0.6416553681850585
+CPU SOCKETS = 1:
+legate ../rydberg-simulation/demo_integration.py --nodes 1 --ranks-per-node 1 -frac 0.425 --omps 1 --ompthreads 16 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83 --mem-bind 0 --nic-bind mlx5_0,mlx5_1 --launcher jsrun -iters 25 -l 9
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 36390.834ms.
+Iterations / sec: 0.6869861789922154
+CPU SOCKETS = 1:
+legate ../rydberg-simulation/demo_integration.py --nodes 1 --ranks-per-node 1 -frac 0.425 --omps 1 --ompthreads 16 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83 --mem-bind 0 --nic-bind mlx5_0,mlx5_1 --launcher jsrun -iters 25 -l 9
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 38564.0ms.
+Iterations / sec: 0.6482730007260658
+CPU SOCKETS = 1:
+legate ../rydberg-simulation/demo_integration.py --nodes 1 --ranks-per-node 1 -frac 0.425 --omps 1 --ompthreads 16 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83 --mem-bind 0 --nic-bind mlx5_0,mlx5_1 --launcher jsrun -iters 25 -l 9
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 38534.864ms.
+Iterations / sec: 0.6487631563978012
+CPU SOCKETS = 1:
+legate ../rydberg-simulation/demo_integration.py --nodes 1 --ranks-per-node 1 -frac 0.425 --omps 1 --ompthreads 16 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83 --mem-bind 0 --nic-bind mlx5_0,mlx5_1 --launcher jsrun -iters 25 -l 9
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 38225.057ms.
+Iterations / sec: 0.6540212614987075
+CPU SOCKETS = 1:
+legate ../rydberg-simulation/demo_integration.py --nodes 1 --ranks-per-node 1 -frac 0.425 --omps 1 --ompthreads 16 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83 --mem-bind 0 --nic-bind mlx5_0,mlx5_1 --launcher jsrun -iters 25 -l 9
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 38313.016ms.
+Iterations / sec: 0.652519759864376
+CPU SOCKETS = 2:
+legate ../rydberg-simulation/demo_integration.py --nodes 1 --ranks-per-node 2 -frac 0.45 --omps 1 --ompthreads 16 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -iters 25 -l 9
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 40853.581ms.
+Iterations / sec: 0.6119414599175529
+CPU SOCKETS = 2:
+legate ../rydberg-simulation/demo_integration.py --nodes 1 --ranks-per-node 2 -frac 0.45 --omps 1 --ompthreads 16 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -iters 25 -l 9
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 41659.078ms.
+Iterations / sec: 0.6001092967059904
+CPU SOCKETS = 2:
+legate ../rydberg-simulation/demo_integration.py --nodes 1 --ranks-per-node 2 -frac 0.45 --omps 1 --ompthreads 16 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -iters 25 -l 9
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 40661.669ms.
+Iterations / sec: 0.6148296568938181
+CPU SOCKETS = 2:
+legate ../rydberg-simulation/demo_integration.py --nodes 1 --ranks-per-node 2 -frac 0.45 --omps 1 --ompthreads 16 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -iters 25 -l 9
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 40003.096ms.
+Iterations / sec: 0.6249516287439353
+CPU SOCKETS = 2:
+legate ../rydberg-simulation/demo_integration.py --nodes 1 --ranks-per-node 2 -frac 0.45 --omps 1 --ompthreads 16 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -iters 25 -l 9
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 40467.892ms.
+Iterations / sec: 0.6177737155174774
+CPU SOCKETS = 2:
+legate ../rydberg-simulation/demo_integration.py --nodes 1 --ranks-per-node 2 -frac 0.45 --omps 1 --ompthreads 16 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -iters 25 -l 9
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 41222.725ms.
+Iterations / sec: 0.6064616058254276
+CPU SOCKETS = 2:
+legate ../rydberg-simulation/demo_integration.py --nodes 1 --ranks-per-node 2 -frac 0.45 --omps 1 --ompthreads 16 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -iters 25 -l 9
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 40230.622ms.
+Iterations / sec: 0.6214171881309715
+CPU SOCKETS = 2:
+legate ../rydberg-simulation/demo_integration.py --nodes 1 --ranks-per-node 2 -frac 0.45 --omps 1 --ompthreads 16 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -iters 25 -l 9
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 40614.209ms.
+Iterations / sec: 0.6155481201172722
+CPU SOCKETS = 2:
+legate ../rydberg-simulation/demo_integration.py --nodes 1 --ranks-per-node 2 -frac 0.45 --omps 1 --ompthreads 16 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -iters 25 -l 9
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 40827.978ms.
+Iterations / sec: 0.6123252050346456
+CPU SOCKETS = 2:
+legate ../rydberg-simulation/demo_integration.py --nodes 1 --ranks-per-node 2 -frac 0.45 --omps 1 --ompthreads 16 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -iters 25 -l 9
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 40258.932ms.
+Iterations / sec: 0.6209802088142825
+CPU SOCKETS = 2:
+legate ../rydberg-simulation/demo_integration.py --nodes 1 --ranks-per-node 2 -frac 0.45 --omps 1 --ompthreads 16 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -iters 25 -l 9
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 41214.242ms.
+Iterations / sec: 0.606586431942628
+CPU SOCKETS = 2:
+legate ../rydberg-simulation/demo_integration.py --nodes 1 --ranks-per-node 2 -frac 0.45 --omps 1 --ompthreads 16 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -iters 25 -l 9
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 41177.704ms.
+Iterations / sec: 0.6071246711569931
+CPU SOCKETS = 4:
+legate ../rydberg-simulation/demo_integration.py --nodes 2 --ranks-per-node 2 -frac 0.50 --omps 1 --ompthreads 16 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -iters 25 -l 9
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 52895.354ms.
+Iterations / sec: 0.47263130141826826
+CPU SOCKETS = 4:
+legate ../rydberg-simulation/demo_integration.py --nodes 2 --ranks-per-node 2 -frac 0.50 --omps 1 --ompthreads 16 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -iters 25 -l 9
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 54483.193ms.
+Iterations / sec: 0.45885710112474504
+CPU SOCKETS = 4:
+legate ../rydberg-simulation/demo_integration.py --nodes 2 --ranks-per-node 2 -frac 0.50 --omps 1 --ompthreads 16 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -iters 25 -l 9
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 54590.259ms.
+Iterations / sec: 0.4579571604523804
+CPU SOCKETS = 4:
+legate ../rydberg-simulation/demo_integration.py --nodes 2 --ranks-per-node 2 -frac 0.50 --omps 1 --ompthreads 16 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -iters 25 -l 9
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 51729.532ms.
+Iterations / sec: 0.48328293401146566
+CPU SOCKETS = 4:
+legate ../rydberg-simulation/demo_integration.py --nodes 2 --ranks-per-node 2 -frac 0.50 --omps 1 --ompthreads 16 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -iters 25 -l 9
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 54444.374ms.
+Iterations / sec: 0.45918426759760333
+CPU SOCKETS = 4:
+legate ../rydberg-simulation/demo_integration.py --nodes 2 --ranks-per-node 2 -frac 0.50 --omps 1 --ompthreads 16 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -iters 25 -l 9
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 54218.455ms.
+Iterations / sec: 0.46109760966076957
+CPU SOCKETS = 4:
+legate ../rydberg-simulation/demo_integration.py --nodes 2 --ranks-per-node 2 -frac 0.50 --omps 1 --ompthreads 16 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -iters 25 -l 9
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 53108.962ms.
+Iterations / sec: 0.47073034490864274
+CPU SOCKETS = 4:
+legate ../rydberg-simulation/demo_integration.py --nodes 2 --ranks-per-node 2 -frac 0.50 --omps 1 --ompthreads 16 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -iters 25 -l 9
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 53583.171ms.
+Iterations / sec: 0.46656439948281525
+CPU SOCKETS = 4:
+legate ../rydberg-simulation/demo_integration.py --nodes 2 --ranks-per-node 2 -frac 0.50 --omps 1 --ompthreads 16 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -iters 25 -l 9
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 54525.419ms.
+Iterations / sec: 0.458501749431765
+CPU SOCKETS = 4:
+legate ../rydberg-simulation/demo_integration.py --nodes 2 --ranks-per-node 2 -frac 0.50 --omps 1 --ompthreads 16 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -iters 25 -l 9
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 54571.547ms.
+Iterations / sec: 0.45811418906632795
+CPU SOCKETS = 4:
+legate ../rydberg-simulation/demo_integration.py --nodes 2 --ranks-per-node 2 -frac 0.50 --omps 1 --ompthreads 16 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -iters 25 -l 9
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 54163.886ms.
+Iterations / sec: 0.4615621560092642
+CPU SOCKETS = 4:
+legate ../rydberg-simulation/demo_integration.py --nodes 2 --ranks-per-node 2 -frac 0.50 --omps 1 --ompthreads 16 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -iters 25 -l 9
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 54343.302ms.
+Iterations / sec: 0.4600382950598033
+CPU SOCKETS = 8:
+legate ../rydberg-simulation/demo_integration.py --nodes 4 --ranks-per-node 2 -frac 0.53 --omps 1 --ompthreads 16 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -iters 25 -l 9
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 69245.236ms.
+Iterations / sec: 0.3610356674934287
+CPU SOCKETS = 8:
+legate ../rydberg-simulation/demo_integration.py --nodes 4 --ranks-per-node 2 -frac 0.53 --omps 1 --ompthreads 16 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -iters 25 -l 9
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 65989.051ms.
+Iterations / sec: 0.37885072782756035
+CPU SOCKETS = 8:
+legate ../rydberg-simulation/demo_integration.py --nodes 4 --ranks-per-node 2 -frac 0.53 --omps 1 --ompthreads 16 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -iters 25 -l 9
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 69060.2ms.
+Iterations / sec: 0.36200300607296243
+CPU SOCKETS = 8:
+legate ../rydberg-simulation/demo_integration.py --nodes 4 --ranks-per-node 2 -frac 0.53 --omps 1 --ompthreads 16 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -iters 25 -l 9
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 68983.593ms.
+Iterations / sec: 0.3624050141893885
+CPU SOCKETS = 8:
+legate ../rydberg-simulation/demo_integration.py --nodes 4 --ranks-per-node 2 -frac 0.53 --omps 1 --ompthreads 16 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -iters 25 -l 9
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 66752.62ms.
+Iterations / sec: 0.37451713505777007
+CPU SOCKETS = 8:
+legate ../rydberg-simulation/demo_integration.py --nodes 4 --ranks-per-node 2 -frac 0.53 --omps 1 --ompthreads 16 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -iters 25 -l 9
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 70786.273ms.
+Iterations / sec: 0.3531758198372727
+CPU SOCKETS = 8:
+legate ../rydberg-simulation/demo_integration.py --nodes 4 --ranks-per-node 2 -frac 0.53 --omps 1 --ompthreads 16 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -iters 25 -l 9
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 70986.148ms.
+Iterations / sec: 0.3521813861487455
+CPU SOCKETS = 8:
+legate ../rydberg-simulation/demo_integration.py --nodes 4 --ranks-per-node 2 -frac 0.53 --omps 1 --ompthreads 16 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -iters 25 -l 9
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 69605.133ms.
+Iterations / sec: 0.35916891359147324
+CPU SOCKETS = 8:
+legate ../rydberg-simulation/demo_integration.py --nodes 4 --ranks-per-node 2 -frac 0.53 --omps 1 --ompthreads 16 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -iters 25 -l 9
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 70548.654ms.
+Iterations / sec: 0.3543653717333856
+CPU SOCKETS = 8:
+legate ../rydberg-simulation/demo_integration.py --nodes 4 --ranks-per-node 2 -frac 0.53 --omps 1 --ompthreads 16 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -iters 25 -l 9
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 67702.343ms.
+Iterations / sec: 0.36926343893297753
+CPU SOCKETS = 8:
+legate ../rydberg-simulation/demo_integration.py --nodes 4 --ranks-per-node 2 -frac 0.53 --omps 1 --ompthreads 16 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -iters 25 -l 9
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 70795.699ms.
+Iterations / sec: 0.3531287967083989
+CPU SOCKETS = 8:
+legate ../rydberg-simulation/demo_integration.py --nodes 4 --ranks-per-node 2 -frac 0.53 --omps 1 --ompthreads 16 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -iters 25 -l 9
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 71256.581ms.
+Iterations / sec: 0.35084478723445905
+CPU SOCKETS = 16:
+legate ../rydberg-simulation/demo_integration.py --nodes 8 --ranks-per-node 2 -frac 0.55 --omps 1 --ompthreads 16 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -iters 25 -l 9
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 86326.262ms.
+Iterations / sec: 0.2895990098586685
+CPU SOCKETS = 16:
+legate ../rydberg-simulation/demo_integration.py --nodes 8 --ranks-per-node 2 -frac 0.55 --omps 1 --ompthreads 16 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -iters 25 -l 9
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 86262.781ms.
+Iterations / sec: 0.28981212650679555
+CPU SOCKETS = 16:
+legate ../rydberg-simulation/demo_integration.py --nodes 8 --ranks-per-node 2 -frac 0.55 --omps 1 --ompthreads 16 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -iters 25 -l 9
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 84584.59ms.
+Iterations / sec: 0.2955621112545441
+CPU SOCKETS = 32:
+legate ../rydberg-simulation/demo_integration.py --nodes 16 --ranks-per-node 2 -frac 0.56 --omps 1 --ompthreads 16 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -iters 25 -l 9
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 126109.294ms.
+Iterations / sec: 0.19824074187585256
+CPU SOCKETS = 32:
+legate ../rydberg-simulation/demo_integration.py --nodes 16 --ranks-per-node 2 -frac 0.56 --omps 1 --ompthreads 16 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -iters 25 -l 9
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 125003.47ms.
+Iterations / sec: 0.19999444815411924
+CPU SOCKETS = 32:
+legate ../rydberg-simulation/demo_integration.py --nodes 16 --ranks-per-node 2 -frac 0.56 --omps 1 --ompthreads 16 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -iters 25 -l 9
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 122286.358ms.
+Iterations / sec: 0.204438176170068
+CPU SOCKETS = 32:
+legate ../rydberg-simulation/demo_integration.py --nodes 16 --ranks-per-node 2 -frac 0.56 --omps 1 --ompthreads 16 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -iters 25 -l 9
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 123787.939ms.
+Iterations / sec: 0.2019582860976464
+CPU SOCKETS = 32:
+legate ../rydberg-simulation/demo_integration.py --nodes 16 --ranks-per-node 2 -frac 0.56 --omps 1 --ompthreads 16 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -iters 25 -l 9
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 123326.964ms.
+Iterations / sec: 0.20271317146832543
+CPU SOCKETS = 32:
+legate ../rydberg-simulation/demo_integration.py --nodes 16 --ranks-per-node 2 -frac 0.56 --omps 1 --ompthreads 16 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -iters 25 -l 9
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 125231.591ms.
+Iterations / sec: 0.19963013965062537
+CPU SOCKETS = 32:
+legate ../rydberg-simulation/demo_integration.py --nodes 16 --ranks-per-node 2 -frac 0.56 --omps 1 --ompthreads 16 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -iters 25 -l 9
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 124285.122ms.
+Iterations / sec: 0.2011503838729788
+legate ../rydberg-simulation/demo_integration.py --nodes 16 --ranks-per-node 2 -frac 0.56 --omps 1 --ompthreads 16 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -iters 25 -l 9
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 123754.875ms.
+Iterations / sec: 0.20201224396210654
+CPU SOCKETS = 32:
+legate ../rydberg-simulation/demo_integration.py --nodes 16 --ranks-per-node 2 -frac 0.56 --omps 1 --ompthreads 16 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -iters 25 -l 9
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 123649.76ms.
+Iterations / sec: 0.20218397512457767
+CPU SOCKETS = 32:
+legate ../rydberg-simulation/demo_integration.py --nodes 16 --ranks-per-node 2 -frac 0.56 --omps 1 --ompthreads 16 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -iters 25 -l 9
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 123227.935ms.
+Iterations / sec: 0.2028760767597055
+CPU SOCKETS = 32:
+legate ../rydberg-simulation/demo_integration.py --nodes 16 --ranks-per-node 2 -frac 0.56 --omps 1 --ompthreads 16 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -iters 25 -l 9
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 125373.708ms.
+Iterations / sec: 0.19940384948971918
+CPU SOCKETS = 32:
+legate ../rydberg-simulation/demo_integration.py --nodes 16 --ranks-per-node 2 -frac 0.56 --omps 1 --ompthreads 16 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -iters 25 -l 9
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 125415.14ms.
+Iterations / sec: 0.19933797466557868
