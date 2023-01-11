@@ -12,6 +12,7 @@ conda activate legate
 # Environment configuration.
 export LD_LIBRARY_PATH=$CONDA_PREFIX/lib/:$LD_LIBRARY_PATH
 export LEGATE_TEST=1
+export LEGATE_FIELD_REUSE_FREQ=1
 export PYTHONUNBUFFERED=1
 EXP_ITERS=${EXP_ITERS:-1}
 

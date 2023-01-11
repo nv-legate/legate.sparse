@@ -35,7 +35,7 @@ fi
 # Run the benchmark for CuPy.
 if [[ -n $CUPY_GPUS ]]; then
     export CUPY_CACHE_DIR=/tmp/
-    cmd="jsrun -n 1 -c ALL_CPUS -g 1 -b rs python $QUANTUM_DIR/demo_integration.py -package cupy $COMMON_ARGS -frac $(weak_scale_frac $sockets) -load-ham $SCRATCH_DIR/rydberg-hams-$(weak_scale_frac $sockets).npz  $ARGS"
+    cmd="jsrun -n 1 -c ALL_CPUS -g 1 -b rs python $QUANTUM_DIR/demo_integration.py -package cupy $COMMON_ARGS -frac $(weak_scale_frac 1) -load-ham $SCRATCH_DIR/rydberg-hams-$(weak_scale_frac 1).npz  $ARGS"
     for iter in $(seq 1 $EXP_ITERS); do
         echo "GPUS = 1:"
         echo $cmd
