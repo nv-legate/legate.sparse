@@ -392,6 +392,7 @@ def execute(N, data, smoother, gridop, levels, maxiter, tol, verbose, timer):
         A=A, shape=(N, N), levels=levels, smoother=smoother, gridop=gridop
     )
     M = mg_solver.linear_operator()
+    print(f"GMG init time: {timer.stop()} ms")
 
     # Warm up the runtime.
     float(
@@ -412,7 +413,6 @@ def execute(N, data, smoother, gridop, levels, maxiter, tol, verbose, timer):
             )
         )
     )
-    print(f"GMG init time: {timer.stop()} ms")
 
     timer.start()
     x, iters = linalg.cg(
