@@ -1,0 +1,72 @@
+CPU SOCKETS = 1:
+jsrun -n 1 -c 20 -b rs python3 examples/dot_microbenchmark.py -package scipy -i 100 -n 30000000
+Iterations / sec: 2.252990805498429
+CPU SOCKETS = 1:
+jsrun -n 1 -c 20 -b rs python3 examples/dot_microbenchmark.py -package scipy -i 100 -n 30000000
+Iterations / sec: 2.252406571054069
+CPU SOCKETS = 1:
+jsrun -n 1 -c 20 -b rs python3 examples/dot_microbenchmark.py -package scipy -i 100 -n 30000000
+Iterations / sec: 2.237742782310086
+CPU SOCKETS = 1:
+jsrun -n 1 -c 20 -b rs python3 examples/dot_microbenchmark.py -package scipy -i 100 -n 30000000
+Iterations / sec: 2.254872447254782
+CPU SOCKETS = 1:
+jsrun -n 1 -c 20 -b rs python3 examples/dot_microbenchmark.py -package scipy -i 100 -n 30000000
+Iterations / sec: 2.254939299075626
+CPU SOCKETS = 1:
+jsrun -n 1 -c 20 -b rs python3 examples/dot_microbenchmark.py -package scipy -i 100 -n 30000000
+Iterations / sec: 2.257730211404991
+CPU SOCKETS = 1:
+jsrun -n 1 -c 20 -b rs python3 examples/dot_microbenchmark.py -package scipy -i 100 -n 30000000
+Iterations / sec: 2.259342737752678
+CPU SOCKETS = 1:
+jsrun -n 1 -c 20 -b rs python3 examples/dot_microbenchmark.py -package scipy -i 100 -n 30000000
+Iterations / sec: 2.2570865522591075
+CPU SOCKETS = 1:
+jsrun -n 1 -c 20 -b rs python3 examples/dot_microbenchmark.py -package scipy -i 100 -n 30000000
+Iterations / sec: 2.2611431342854047
+CPU SOCKETS = 1:
+jsrun -n 1 -c 20 -b rs python3 examples/dot_microbenchmark.py -package scipy -i 100 -n 30000000
+Iterations / sec: 2.25975869741664
+CPU SOCKETS = 1:
+jsrun -n 1 -c 20 -b rs python3 examples/dot_microbenchmark.py -package scipy -i 100 -n 30000000
+Iterations / sec: 2.2619992831144193
+CPU SOCKETS = 1:
+jsrun -n 1 -c 20 -b rs python3 examples/dot_microbenchmark.py -package scipy -i 100 -n 30000000
+Iterations / sec: 2.2599376190853535
+CPU SOCKETS = 2:
+jsrun -n 1 -c 40 -b rs python3 examples/dot_microbenchmark.py -package scipy -i 100 -n 60000000
+Iterations / sec: 1.1242285481466578
+CPU SOCKETS = 2:
+jsrun -n 1 -c 40 -b rs python3 examples/dot_microbenchmark.py -package scipy -i 100 -n 60000000
+Iterations / sec: 1.1242134865338627
+CPU SOCKETS = 2:
+jsrun -n 1 -c 40 -b rs python3 examples/dot_microbenchmark.py -package scipy -i 100 -n 60000000
+Iterations / sec: 1.126188680047186
+CPU SOCKETS = 2:
+jsrun -n 1 -c 40 -b rs python3 examples/dot_microbenchmark.py -package scipy -i 100 -n 60000000
+Iterations / sec: 1.1278597107588253
+CPU SOCKETS = 2:
+jsrun -n 1 -c 40 -b rs python3 examples/dot_microbenchmark.py -package scipy -i 100 -n 60000000
+Iterations / sec: 1.1263783487756545
+CPU SOCKETS = 2:
+jsrun -n 1 -c 40 -b rs python3 examples/dot_microbenchmark.py -package scipy -i 100 -n 60000000
+Iterations / sec: 1.1256485511917835
+CPU SOCKETS = 2:
+jsrun -n 1 -c 40 -b rs python3 examples/dot_microbenchmark.py -package scipy -i 100 -n 60000000
+Iterations / sec: 1.1274178683178286
+CPU SOCKETS = 2:
+jsrun -n 1 -c 40 -b rs python3 examples/dot_microbenchmark.py -package scipy -i 100 -n 60000000
+Iterations / sec: 1.1244342381006414
+CPU SOCKETS = 2:
+jsrun -n 1 -c 40 -b rs python3 examples/dot_microbenchmark.py -package scipy -i 100 -n 60000000
+Iterations / sec: 1.125184639678742
+CPU SOCKETS = 2:
+jsrun -n 1 -c 40 -b rs python3 examples/dot_microbenchmark.py -package scipy -i 100 -n 60000000
+Iterations / sec: 1.1268475572888315
+CPU SOCKETS = 2:
+jsrun -n 1 -c 40 -b rs python3 examples/dot_microbenchmark.py -package scipy -i 100 -n 60000000
+Iterations / sec: 1.1266945748576904
+CPU SOCKETS = 2:
+jsrun -n 1 -c 40 -b rs python3 examples/dot_microbenchmark.py -package scipy -i 100 -n 60000000
+Iterations / sec: 1.128003879541628

@@ -1,0 +1,288 @@
+GPUS = 1:
+jsrun -n 1 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -i 100 -nnz-per-row 11 -vec_type cuda -mat_type aijcusparse -gpu -n 10000000
+Iterations / sec: 385.036484 
+GPUS = 1:
+jsrun -n 1 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -i 100 -nnz-per-row 11 -vec_type cuda -mat_type aijcusparse -gpu -n 10000000
+Iterations / sec: 382.458013 
+GPUS = 1:
+jsrun -n 1 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -i 100 -nnz-per-row 11 -vec_type cuda -mat_type aijcusparse -gpu -n 10000000
+Iterations / sec: 394.381806 
+GPUS = 1:
+jsrun -n 1 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -i 100 -nnz-per-row 11 -vec_type cuda -mat_type aijcusparse -gpu -n 10000000
+Iterations / sec: 394.649283 
+GPUS = 1:
+jsrun -n 1 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -i 100 -nnz-per-row 11 -vec_type cuda -mat_type aijcusparse -gpu -n 10000000
+Iterations / sec: 391.878723 
+GPUS = 1:
+jsrun -n 1 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -i 100 -nnz-per-row 11 -vec_type cuda -mat_type aijcusparse -gpu -n 10000000
+Iterations / sec: 394.224566 
+GPUS = 1:
+jsrun -n 1 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -i 100 -nnz-per-row 11 -vec_type cuda -mat_type aijcusparse -gpu -n 10000000
+Iterations / sec: 394.461889 
+GPUS = 1:
+jsrun -n 1 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -i 100 -nnz-per-row 11 -vec_type cuda -mat_type aijcusparse -gpu -n 10000000
+Iterations / sec: 381.841916 
+GPUS = 1:
+jsrun -n 1 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -i 100 -nnz-per-row 11 -vec_type cuda -mat_type aijcusparse -gpu -n 10000000
+Iterations / sec: 394.153471 
+GPUS = 1:
+jsrun -n 1 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -i 100 -nnz-per-row 11 -vec_type cuda -mat_type aijcusparse -gpu -n 10000000
+Iterations / sec: 394.111410 
+GPUS = 1:
+jsrun -n 1 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -i 100 -nnz-per-row 11 -vec_type cuda -mat_type aijcusparse -gpu -n 10000000
+Iterations / sec: 394.419843 
+GPUS = 1:
+jsrun -n 1 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -i 100 -nnz-per-row 11 -vec_type cuda -mat_type aijcusparse -gpu -n 10000000
+Iterations / sec: 381.885781 
+GPUS = 3:
+jsrun -n 3 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -i 100 -nnz-per-row 11 -vec_type cuda -mat_type aijcusparse -gpu -n 30000000
+Iterations / sec: 404.473701 
+GPUS = 3:
+jsrun -n 3 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -i 100 -nnz-per-row 11 -vec_type cuda -mat_type aijcusparse -gpu -n 30000000
+Iterations / sec: 395.629275 
+GPUS = 3:
+jsrun -n 3 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -i 100 -nnz-per-row 11 -vec_type cuda -mat_type aijcusparse -gpu -n 30000000
+Iterations / sec: 395.745129 
+GPUS = 3:
+jsrun -n 3 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -i 100 -nnz-per-row 11 -vec_type cuda -mat_type aijcusparse -gpu -n 30000000
+Iterations / sec: 407.555156 
+GPUS = 3:
+jsrun -n 3 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -i 100 -nnz-per-row 11 -vec_type cuda -mat_type aijcusparse -gpu -n 30000000
+Iterations / sec: 397.067058 
+GPUS = 3:
+jsrun -n 3 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -i 100 -nnz-per-row 11 -vec_type cuda -mat_type aijcusparse -gpu -n 30000000
+Iterations / sec: 395.527730 
+GPUS = 3:
+jsrun -n 3 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -i 100 -nnz-per-row 11 -vec_type cuda -mat_type aijcusparse -gpu -n 30000000
+Iterations / sec: 405.078349 
+GPUS = 3:
+jsrun -n 3 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -i 100 -nnz-per-row 11 -vec_type cuda -mat_type aijcusparse -gpu -n 30000000
+Iterations / sec: 394.591162 
+GPUS = 3:
+jsrun -n 3 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -i 100 -nnz-per-row 11 -vec_type cuda -mat_type aijcusparse -gpu -n 30000000
+Iterations / sec: 395.560933 
+GPUS = 3:
+jsrun -n 3 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -i 100 -nnz-per-row 11 -vec_type cuda -mat_type aijcusparse -gpu -n 30000000
+Iterations / sec: 405.859578 
+GPUS = 3:
+jsrun -n 3 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -i 100 -nnz-per-row 11 -vec_type cuda -mat_type aijcusparse -gpu -n 30000000
+Iterations / sec: 391.943794 
+GPUS = 3:
+jsrun -n 3 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -i 100 -nnz-per-row 11 -vec_type cuda -mat_type aijcusparse -gpu -n 30000000
+Iterations / sec: 394.217063 
+GPUS = 6:
+jsrun -n 6 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -i 100 -nnz-per-row 11 -vec_type cuda -mat_type aijcusparse -gpu -n 60000000
+Iterations / sec: 404.723815 
+GPUS = 6:
+jsrun -n 6 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -i 100 -nnz-per-row 11 -vec_type cuda -mat_type aijcusparse -gpu -n 60000000
+Iterations / sec: 396.547678 
+GPUS = 6:
+jsrun -n 6 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -i 100 -nnz-per-row 11 -vec_type cuda -mat_type aijcusparse -gpu -n 60000000
+Iterations / sec: 396.583380 
+GPUS = 6:
+jsrun -n 6 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -i 100 -nnz-per-row 11 -vec_type cuda -mat_type aijcusparse -gpu -n 60000000
+Iterations / sec: 405.423003 
+GPUS = 6:
+jsrun -n 6 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -i 100 -nnz-per-row 11 -vec_type cuda -mat_type aijcusparse -gpu -n 60000000
+Iterations / sec: 396.199892 
+GPUS = 6:
+jsrun -n 6 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -i 100 -nnz-per-row 11 -vec_type cuda -mat_type aijcusparse -gpu -n 60000000
+Iterations / sec: 403.022389 
+GPUS = 6:
+jsrun -n 6 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -i 100 -nnz-per-row 11 -vec_type cuda -mat_type aijcusparse -gpu -n 60000000
+Iterations / sec: 406.590628 
+GPUS = 6:
+jsrun -n 6 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -i 100 -nnz-per-row 11 -vec_type cuda -mat_type aijcusparse -gpu -n 60000000
+Iterations / sec: 394.123401 
+GPUS = 6:
+jsrun -n 6 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -i 100 -nnz-per-row 11 -vec_type cuda -mat_type aijcusparse -gpu -n 60000000
+Iterations / sec: 390.830420 
+GPUS = 6:
+jsrun -n 6 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -i 100 -nnz-per-row 11 -vec_type cuda -mat_type aijcusparse -gpu -n 60000000
+Iterations / sec: 405.747063 
+GPUS = 6:
+jsrun -n 6 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -i 100 -nnz-per-row 11 -vec_type cuda -mat_type aijcusparse -gpu -n 60000000
+Iterations / sec: 395.363115 
+GPUS = 6:
+jsrun -n 6 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -i 100 -nnz-per-row 11 -vec_type cuda -mat_type aijcusparse -gpu -n 60000000
+Iterations / sec: 395.674549 
+GPUS = 12:
+jsrun -n 12 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -i 100 -nnz-per-row 11 -vec_type cuda -mat_type aijcusparse -gpu -n 120000000
+Iterations / sec: 339.845238 
+GPUS = 12:
+jsrun -n 12 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -i 100 -nnz-per-row 11 -vec_type cuda -mat_type aijcusparse -gpu -n 120000000
+Iterations / sec: 362.749515 
+GPUS = 12:
+jsrun -n 12 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -i 100 -nnz-per-row 11 -vec_type cuda -mat_type aijcusparse -gpu -n 120000000
+Iterations / sec: 387.466619 
+GPUS = 12:
+jsrun -n 12 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -i 100 -nnz-per-row 11 -vec_type cuda -mat_type aijcusparse -gpu -n 120000000
+Iterations / sec: 399.253933 
+GPUS = 12:
+jsrun -n 12 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -i 100 -nnz-per-row 11 -vec_type cuda -mat_type aijcusparse -gpu -n 120000000
+Iterations / sec: 391.974035 
+GPUS = 12:
+jsrun -n 12 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -i 100 -nnz-per-row 11 -vec_type cuda -mat_type aijcusparse -gpu -n 120000000
+Iterations / sec: 404.654848 
+GPUS = 12:
+jsrun -n 12 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -i 100 -nnz-per-row 11 -vec_type cuda -mat_type aijcusparse -gpu -n 120000000
+Iterations / sec: 374.225958 
+GPUS = 12:
+jsrun -n 12 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -i 100 -nnz-per-row 11 -vec_type cuda -mat_type aijcusparse -gpu -n 120000000
+Iterations / sec: 389.576897 
+GPUS = 12:
+jsrun -n 12 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -i 100 -nnz-per-row 11 -vec_type cuda -mat_type aijcusparse -gpu -n 120000000
+Iterations / sec: 372.662008 
+GPUS = 12:
+jsrun -n 12 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -i 100 -nnz-per-row 11 -vec_type cuda -mat_type aijcusparse -gpu -n 120000000
+Iterations / sec: 394.306122 
+GPUS = 12:
+jsrun -n 12 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -i 100 -nnz-per-row 11 -vec_type cuda -mat_type aijcusparse -gpu -n 120000000
+Iterations / sec: 393.964711 
+GPUS = 12:
+jsrun -n 12 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -i 100 -nnz-per-row 11 -vec_type cuda -mat_type aijcusparse -gpu -n 120000000
+Iterations / sec: 401.210640 
+GPUS = 24:
+jsrun -n 24 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -i 100 -nnz-per-row 11 -vec_type cuda -mat_type aijcusparse -gpu -n 240000000
+Iterations / sec: 377.856198 
+GPUS = 24:
+jsrun -n 24 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -i 100 -nnz-per-row 11 -vec_type cuda -mat_type aijcusparse -gpu -n 240000000
+Iterations / sec: 379.598170 
+GPUS = 24:
+jsrun -n 24 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -i 100 -nnz-per-row 11 -vec_type cuda -mat_type aijcusparse -gpu -n 240000000
+Iterations / sec: 398.111751 
+GPUS = 24:
+jsrun -n 24 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -i 100 -nnz-per-row 11 -vec_type cuda -mat_type aijcusparse -gpu -n 240000000
+Iterations / sec: 391.654557 
+GPUS = 24:
+jsrun -n 24 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -i 100 -nnz-per-row 11 -vec_type cuda -mat_type aijcusparse -gpu -n 240000000
+Iterations / sec: 399.182549 
+GPUS = 24:
+jsrun -n 24 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -i 100 -nnz-per-row 11 -vec_type cuda -mat_type aijcusparse -gpu -n 240000000
+Iterations / sec: 406.802574 
+GPUS = 24:
+jsrun -n 24 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -i 100 -nnz-per-row 11 -vec_type cuda -mat_type aijcusparse -gpu -n 240000000
+Iterations / sec: 379.662813 
+GPUS = 24:
+jsrun -n 24 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -i 100 -nnz-per-row 11 -vec_type cuda -mat_type aijcusparse -gpu -n 240000000
+Iterations / sec: 352.072815 
+GPUS = 24:
+jsrun -n 24 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -i 100 -nnz-per-row 11 -vec_type cuda -mat_type aijcusparse -gpu -n 240000000
+Iterations / sec: 403.630145 
+GPUS = 24:
+jsrun -n 24 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -i 100 -nnz-per-row 11 -vec_type cuda -mat_type aijcusparse -gpu -n 240000000
+Iterations / sec: 373.077435 
+GPUS = 24:
+jsrun -n 24 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -i 100 -nnz-per-row 11 -vec_type cuda -mat_type aijcusparse -gpu -n 240000000
+Iterations / sec: 392.821608 
+GPUS = 24:
+jsrun -n 24 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -i 100 -nnz-per-row 11 -vec_type cuda -mat_type aijcusparse -gpu -n 240000000
+Iterations / sec: 310.515019 
+GPUS = 48:
+jsrun -n 48 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -i 100 -nnz-per-row 11 -vec_type cuda -mat_type aijcusparse -gpu -n 480000000
+Iterations / sec: 375.505737 
+GPUS = 48:
+jsrun -n 48 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -i 100 -nnz-per-row 11 -vec_type cuda -mat_type aijcusparse -gpu -n 480000000
+Iterations / sec: 405.934616 
+GPUS = 48:
+jsrun -n 48 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -i 100 -nnz-per-row 11 -vec_type cuda -mat_type aijcusparse -gpu -n 480000000
+Iterations / sec: 380.549950 
+GPUS = 48:
+jsrun -n 48 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -i 100 -nnz-per-row 11 -vec_type cuda -mat_type aijcusparse -gpu -n 480000000
+Iterations / sec: 376.429110 
+GPUS = 48:
+jsrun -n 48 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -i 100 -nnz-per-row 11 -vec_type cuda -mat_type aijcusparse -gpu -n 480000000
+Iterations / sec: 402.299185 
+GPUS = 48:
+jsrun -n 48 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -i 100 -nnz-per-row 11 -vec_type cuda -mat_type aijcusparse -gpu -n 480000000
+Iterations / sec: 393.016800 
+GPUS = 48:
+jsrun -n 48 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -i 100 -nnz-per-row 11 -vec_type cuda -mat_type aijcusparse -gpu -n 480000000
+Iterations / sec: 393.794714 
+GPUS = 48:
+jsrun -n 48 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -i 100 -nnz-per-row 11 -vec_type cuda -mat_type aijcusparse -gpu -n 480000000
+Iterations / sec: 392.038215 
+GPUS = 48:
+jsrun -n 48 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -i 100 -nnz-per-row 11 -vec_type cuda -mat_type aijcusparse -gpu -n 480000000
+Iterations / sec: 389.755395 
+GPUS = 48:
+jsrun -n 48 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -i 100 -nnz-per-row 11 -vec_type cuda -mat_type aijcusparse -gpu -n 480000000
+Iterations / sec: 336.992638 
+GPUS = 48:
+jsrun -n 48 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -i 100 -nnz-per-row 11 -vec_type cuda -mat_type aijcusparse -gpu -n 480000000
+Iterations / sec: 393.974330 
+GPUS = 48:
+jsrun -n 48 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -i 100 -nnz-per-row 11 -vec_type cuda -mat_type aijcusparse -gpu -n 480000000
+Iterations / sec: 353.908337 
+GPUS = 96:
+jsrun -n 96 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -i 100 -nnz-per-row 11 -vec_type cuda -mat_type aijcusparse -gpu -n 960000000
+Iterations / sec: 359.001130 
+GPUS = 96:
+jsrun -n 96 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -i 100 -nnz-per-row 11 -vec_type cuda -mat_type aijcusparse -gpu -n 960000000
+Iterations / sec: 322.737067 
+GPUS = 96:
+jsrun -n 96 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -i 100 -nnz-per-row 11 -vec_type cuda -mat_type aijcusparse -gpu -n 960000000
+Iterations / sec: 392.763396 
+GPUS = 96:
+jsrun -n 96 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -i 100 -nnz-per-row 11 -vec_type cuda -mat_type aijcusparse -gpu -n 960000000
+Iterations / sec: 366.580732 
+GPUS = 96:
+jsrun -n 96 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -i 100 -nnz-per-row 11 -vec_type cuda -mat_type aijcusparse -gpu -n 960000000
+Iterations / sec: 406.868076 
+GPUS = 96:
+jsrun -n 96 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -i 100 -nnz-per-row 11 -vec_type cuda -mat_type aijcusparse -gpu -n 960000000
+Iterations / sec: 395.076223 
+GPUS = 96:
+jsrun -n 96 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -i 100 -nnz-per-row 11 -vec_type cuda -mat_type aijcusparse -gpu -n 960000000
+Iterations / sec: 351.842225 
+GPUS = 96:
+jsrun -n 96 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -i 100 -nnz-per-row 11 -vec_type cuda -mat_type aijcusparse -gpu -n 960000000
+Iterations / sec: 359.106731 
+GPUS = 96:
+jsrun -n 96 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -i 100 -nnz-per-row 11 -vec_type cuda -mat_type aijcusparse -gpu -n 960000000
+Iterations / sec: 393.243397 
+GPUS = 96:
+jsrun -n 96 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -i 100 -nnz-per-row 11 -vec_type cuda -mat_type aijcusparse -gpu -n 960000000
+Iterations / sec: 362.152079 
+GPUS = 96:
+jsrun -n 96 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -i 100 -nnz-per-row 11 -vec_type cuda -mat_type aijcusparse -gpu -n 960000000
+Iterations / sec: 405.155736 
+GPUS = 96:
+jsrun -n 96 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -i 100 -nnz-per-row 11 -vec_type cuda -mat_type aijcusparse -gpu -n 960000000
+Iterations / sec: 392.054679 
+GPUS = 192:
+jsrun -n 192 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -i 100 -nnz-per-row 11 -vec_type cuda -mat_type aijcusparse -gpu -n 1920000000
+Iterations / sec: 396.206886 
+GPUS = 192:
+jsrun -n 192 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -i 100 -nnz-per-row 11 -vec_type cuda -mat_type aijcusparse -gpu -n 1920000000
+Iterations / sec: 327.950279 
+GPUS = 192:
+jsrun -n 192 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -i 100 -nnz-per-row 11 -vec_type cuda -mat_type aijcusparse -gpu -n 1920000000
+Iterations / sec: 396.306000 
+GPUS = 192:
+jsrun -n 192 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -i 100 -nnz-per-row 11 -vec_type cuda -mat_type aijcusparse -gpu -n 1920000000
+Iterations / sec: 328.268738 
+GPUS = 192:
+jsrun -n 192 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -i 100 -nnz-per-row 11 -vec_type cuda -mat_type aijcusparse -gpu -n 1920000000
+Iterations / sec: 374.802745 
+GPUS = 192:
+jsrun -n 192 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -i 100 -nnz-per-row 11 -vec_type cuda -mat_type aijcusparse -gpu -n 1920000000
+Iterations / sec: 383.707895 
+GPUS = 192:
+jsrun -n 192 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -i 100 -nnz-per-row 11 -vec_type cuda -mat_type aijcusparse -gpu -n 1920000000
+Iterations / sec: 332.829230 
+GPUS = 192:
+jsrun -n 192 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -i 100 -nnz-per-row 11 -vec_type cuda -mat_type aijcusparse -gpu -n 1920000000
+Iterations / sec: 403.753858 
+GPUS = 192:
+jsrun -n 192 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -i 100 -nnz-per-row 11 -vec_type cuda -mat_type aijcusparse -gpu -n 1920000000
+Iterations / sec: 358.118313 
+GPUS = 192:
+jsrun -n 192 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -i 100 -nnz-per-row 11 -vec_type cuda -mat_type aijcusparse -gpu -n 1920000000
+Iterations / sec: 392.168737 
+GPUS = 192:
+jsrun -n 192 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -i 100 -nnz-per-row 11 -vec_type cuda -mat_type aijcusparse -gpu -n 1920000000
+Iterations / sec: 391.862964 
+GPUS = 192:
+jsrun -n 192 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -i 100 -nnz-per-row 11 -vec_type cuda -mat_type aijcusparse -gpu -n 1920000000
+Iterations / sec: 368.146248 
