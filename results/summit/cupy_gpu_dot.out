@@ -1,0 +1,36 @@
+GPUS = 1:
+jsrun -n 1 -c ALL_CPUS -g 1 -b rs python examples/dot_microbenchmark.py -package cupy -i 100 -n 10000000
+Iterations / sec: 381.05148020847594
+GPUS = 1:
+jsrun -n 1 -c ALL_CPUS -g 1 -b rs python examples/dot_microbenchmark.py -package cupy -i 100 -n 10000000
+Iterations / sec: 381.445906749467
+GPUS = 1:
+jsrun -n 1 -c ALL_CPUS -g 1 -b rs python examples/dot_microbenchmark.py -package cupy -i 100 -n 10000000
+Iterations / sec: 371.5892106677674
+GPUS = 1:
+jsrun -n 1 -c ALL_CPUS -g 1 -b rs python examples/dot_microbenchmark.py -package cupy -i 100 -n 10000000
+Iterations / sec: 381.2746310648998
+GPUS = 1:
+jsrun -n 1 -c ALL_CPUS -g 1 -b rs python examples/dot_microbenchmark.py -package cupy -i 100 -n 10000000
+Iterations / sec: 381.1005394582343
+GPUS = 1:
+jsrun -n 1 -c ALL_CPUS -g 1 -b rs python examples/dot_microbenchmark.py -package cupy -i 100 -n 10000000
+Iterations / sec: 381.46970844366115
+GPUS = 1:
+jsrun -n 1 -c ALL_CPUS -g 1 -b rs python examples/dot_microbenchmark.py -package cupy -i 100 -n 10000000
+Iterations / sec: 381.0678318882418
+GPUS = 1:
+jsrun -n 1 -c ALL_CPUS -g 1 -b rs python examples/dot_microbenchmark.py -package cupy -i 100 -n 10000000
+Iterations / sec: 381.3416317344015
+GPUS = 1:
+jsrun -n 1 -c ALL_CPUS -g 1 -b rs python examples/dot_microbenchmark.py -package cupy -i 100 -n 10000000
+Iterations / sec: 381.0975698400723
+GPUS = 1:
+jsrun -n 1 -c ALL_CPUS -g 1 -b rs python examples/dot_microbenchmark.py -package cupy -i 100 -n 10000000
+Iterations / sec: 381.34757862675303
+GPUS = 1:
+jsrun -n 1 -c ALL_CPUS -g 1 -b rs python examples/dot_microbenchmark.py -package cupy -i 100 -n 10000000
+Iterations / sec: 381.06632517070534
+GPUS = 1:
+jsrun -n 1 -c ALL_CPUS -g 1 -b rs python examples/dot_microbenchmark.py -package cupy -i 100 -n 10000000
+Iterations / sec: 381.3877915868423

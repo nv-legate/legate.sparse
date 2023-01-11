@@ -1,0 +1,252 @@
+CPU SOCKETS = 1:
+jsrun -n 20 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -n 30000000 -i 100 -nnz-per-row 11
+Iterations / sec: 24.412903 
+CPU SOCKETS = 1:
+jsrun -n 20 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -n 30000000 -i 100 -nnz-per-row 11
+Iterations / sec: 24.468722 
+CPU SOCKETS = 1:
+jsrun -n 20 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -n 30000000 -i 100 -nnz-per-row 11
+Iterations / sec: 24.477841 
+CPU SOCKETS = 1:
+jsrun -n 20 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -n 30000000 -i 100 -nnz-per-row 11
+Iterations / sec: 24.492154 
+CPU SOCKETS = 1:
+jsrun -n 20 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -n 30000000 -i 100 -nnz-per-row 11
+Iterations / sec: 24.477725 
+CPU SOCKETS = 1:
+jsrun -n 20 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -n 30000000 -i 100 -nnz-per-row 11
+Iterations / sec: 24.473209 
+CPU SOCKETS = 1:
+jsrun -n 20 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -n 30000000 -i 100 -nnz-per-row 11
+Iterations / sec: 24.511494 
+CPU SOCKETS = 1:
+jsrun -n 20 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -n 30000000 -i 100 -nnz-per-row 11
+Iterations / sec: 24.514766 
+CPU SOCKETS = 1:
+jsrun -n 20 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -n 30000000 -i 100 -nnz-per-row 11
+Iterations / sec: 24.494723 
+CPU SOCKETS = 1:
+jsrun -n 20 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -n 30000000 -i 100 -nnz-per-row 11
+Iterations / sec: 24.501382 
+CPU SOCKETS = 1:
+jsrun -n 20 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -n 30000000 -i 100 -nnz-per-row 11
+Iterations / sec: 24.475650 
+CPU SOCKETS = 1:
+jsrun -n 20 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -n 30000000 -i 100 -nnz-per-row 11
+Iterations / sec: 24.467656 
+CPU SOCKETS = 2:
+jsrun -n 40 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -n 60000000 -i 100 -nnz-per-row 11
+Iterations / sec: 23.372864 
+CPU SOCKETS = 2:
+jsrun -n 40 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -n 60000000 -i 100 -nnz-per-row 11
+Iterations / sec: 23.315987 
+CPU SOCKETS = 2:
+jsrun -n 40 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -n 60000000 -i 100 -nnz-per-row 11
+Iterations / sec: 23.380186 
+CPU SOCKETS = 2:
+jsrun -n 40 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -n 60000000 -i 100 -nnz-per-row 11
+Iterations / sec: 23.350451 
+CPU SOCKETS = 2:
+jsrun -n 40 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -n 60000000 -i 100 -nnz-per-row 11
+Iterations / sec: 23.405739 
+CPU SOCKETS = 2:
+jsrun -n 40 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -n 60000000 -i 100 -nnz-per-row 11
+Iterations / sec: 23.462381 
+CPU SOCKETS = 2:
+jsrun -n 40 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -n 60000000 -i 100 -nnz-per-row 11
+Iterations / sec: 23.480679 
+CPU SOCKETS = 2:
+jsrun -n 40 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -n 60000000 -i 100 -nnz-per-row 11
+Iterations / sec: 23.496034 
+CPU SOCKETS = 2:
+jsrun -n 40 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -n 60000000 -i 100 -nnz-per-row 11
+Iterations / sec: 23.515637 
+CPU SOCKETS = 2:
+jsrun -n 40 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -n 60000000 -i 100 -nnz-per-row 11
+Iterations / sec: 23.555907 
+CPU SOCKETS = 2:
+jsrun -n 40 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -n 60000000 -i 100 -nnz-per-row 11
+Iterations / sec: 23.467685 
+CPU SOCKETS = 2:
+jsrun -n 40 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -n 60000000 -i 100 -nnz-per-row 11
+Iterations / sec: 23.465382 
+CPU SOCKETS = 4:
+jsrun -n 80 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -n 120000000 -i 100 -nnz-per-row 11
+Iterations / sec: 23.418377 
+CPU SOCKETS = 4:
+jsrun -n 80 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -n 120000000 -i 100 -nnz-per-row 11
+Iterations / sec: 23.449815 
+CPU SOCKETS = 4:
+jsrun -n 80 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -n 120000000 -i 100 -nnz-per-row 11
+Iterations / sec: 23.426289 
+CPU SOCKETS = 4:
+jsrun -n 80 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -n 120000000 -i 100 -nnz-per-row 11
+Iterations / sec: 23.474562 
+CPU SOCKETS = 4:
+jsrun -n 80 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -n 120000000 -i 100 -nnz-per-row 11
+Iterations / sec: 23.465416 
+CPU SOCKETS = 4:
+jsrun -n 80 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -n 120000000 -i 100 -nnz-per-row 11
+Iterations / sec: 23.392762 
+CPU SOCKETS = 4:
+jsrun -n 80 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -n 120000000 -i 100 -nnz-per-row 11
+Iterations / sec: 23.366779 
+CPU SOCKETS = 4:
+jsrun -n 80 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -n 120000000 -i 100 -nnz-per-row 11
+Iterations / sec: 23.289245 
+CPU SOCKETS = 4:
+jsrun -n 80 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -n 120000000 -i 100 -nnz-per-row 11
+Iterations / sec: 23.354456 
+CPU SOCKETS = 4:
+jsrun -n 80 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -n 120000000 -i 100 -nnz-per-row 11
+Iterations / sec: 23.344540 
+CPU SOCKETS = 4:
+jsrun -n 80 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -n 120000000 -i 100 -nnz-per-row 11
+Iterations / sec: 23.380441 
+CPU SOCKETS = 4:
+jsrun -n 80 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -n 120000000 -i 100 -nnz-per-row 11
+Iterations / sec: 23.316224 
+CPU SOCKETS = 8:
+jsrun -n 160 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -n 240000000 -i 100 -nnz-per-row 11
+Iterations / sec: 23.283409 
+CPU SOCKETS = 8:
+jsrun -n 160 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -n 240000000 -i 100 -nnz-per-row 11
+Iterations / sec: 23.301057 
+CPU SOCKETS = 8:
+jsrun -n 160 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -n 240000000 -i 100 -nnz-per-row 11
+Iterations / sec: 23.217050 
+CPU SOCKETS = 8:
+jsrun -n 160 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -n 240000000 -i 100 -nnz-per-row 11
+Iterations / sec: 23.226677 
+CPU SOCKETS = 8:
+jsrun -n 160 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -n 240000000 -i 100 -nnz-per-row 11
+Iterations / sec: 23.206410 
+CPU SOCKETS = 8:
+jsrun -n 160 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -n 240000000 -i 100 -nnz-per-row 11
+Iterations / sec: 23.179003 
+CPU SOCKETS = 8:
+jsrun -n 160 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -n 240000000 -i 100 -nnz-per-row 11
+Iterations / sec: 23.199686 
+CPU SOCKETS = 8:
+jsrun -n 160 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -n 240000000 -i 100 -nnz-per-row 11
+Iterations / sec: 23.220044 
+CPU SOCKETS = 8:
+jsrun -n 160 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -n 240000000 -i 100 -nnz-per-row 11
+Iterations / sec: 23.183096 
+CPU SOCKETS = 8:
+jsrun -n 160 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -n 240000000 -i 100 -nnz-per-row 11
+Iterations / sec: 23.219770 
+CPU SOCKETS = 8:
+jsrun -n 160 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -n 240000000 -i 100 -nnz-per-row 11
+Iterations / sec: 23.187700 
+CPU SOCKETS = 8:
+jsrun -n 160 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -n 240000000 -i 100 -nnz-per-row 11
+Iterations / sec: 23.214607 
+CPU SOCKETS = 16:
+jsrun -n 320 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -n 480000000 -i 100 -nnz-per-row 11
+Iterations / sec: 23.172236 
+CPU SOCKETS = 16:
+jsrun -n 320 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -n 480000000 -i 100 -nnz-per-row 11
+Iterations / sec: 23.206400 
+CPU SOCKETS = 16:
+jsrun -n 320 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -n 480000000 -i 100 -nnz-per-row 11
+Iterations / sec: 23.180503 
+CPU SOCKETS = 16:
+jsrun -n 320 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -n 480000000 -i 100 -nnz-per-row 11
+Iterations / sec: 23.218820 
+CPU SOCKETS = 16:
+jsrun -n 320 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -n 480000000 -i 100 -nnz-per-row 11
+Iterations / sec: 23.262410 
+CPU SOCKETS = 16:
+jsrun -n 320 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -n 480000000 -i 100 -nnz-per-row 11
+Iterations / sec: 23.240385 
+CPU SOCKETS = 16:
+jsrun -n 320 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -n 480000000 -i 100 -nnz-per-row 11
+Iterations / sec: 23.245894 
+CPU SOCKETS = 16:
+jsrun -n 320 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -n 480000000 -i 100 -nnz-per-row 11
+Iterations / sec: 23.256067 
+CPU SOCKETS = 16:
+jsrun -n 320 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -n 480000000 -i 100 -nnz-per-row 11
+Iterations / sec: 23.312839 
+CPU SOCKETS = 16:
+jsrun -n 320 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -n 480000000 -i 100 -nnz-per-row 11
+Iterations / sec: 23.263957 
+CPU SOCKETS = 16:
+jsrun -n 320 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -n 480000000 -i 100 -nnz-per-row 11
+Iterations / sec: 23.307119 
+CPU SOCKETS = 16:
+jsrun -n 320 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -n 480000000 -i 100 -nnz-per-row 11
+Iterations / sec: 23.245516 
+CPU SOCKETS = 32:
+jsrun -n 640 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -n 960000000 -i 100 -nnz-per-row 11
+Iterations / sec: 23.343888 
+CPU SOCKETS = 32:
+jsrun -n 640 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -n 960000000 -i 100 -nnz-per-row 11
+Iterations / sec: 23.359925 
+CPU SOCKETS = 32:
+jsrun -n 640 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -n 960000000 -i 100 -nnz-per-row 11
+Iterations / sec: 23.396344 
+CPU SOCKETS = 32:
+jsrun -n 640 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -n 960000000 -i 100 -nnz-per-row 11
+Iterations / sec: 23.229341 
+CPU SOCKETS = 32:
+jsrun -n 640 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -n 960000000 -i 100 -nnz-per-row 11
+Iterations / sec: 23.206695 
+CPU SOCKETS = 32:
+jsrun -n 640 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -n 960000000 -i 100 -nnz-per-row 11
+Iterations / sec: 23.178690 
+CPU SOCKETS = 32:
+jsrun -n 640 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -n 960000000 -i 100 -nnz-per-row 11
+Iterations / sec: 23.199622 
+CPU SOCKETS = 32:
+jsrun -n 640 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -n 960000000 -i 100 -nnz-per-row 11
+Iterations / sec: 23.222306 
+CPU SOCKETS = 32:
+jsrun -n 640 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -n 960000000 -i 100 -nnz-per-row 11
+Iterations / sec: 23.224357 
+CPU SOCKETS = 32:
+jsrun -n 640 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -n 960000000 -i 100 -nnz-per-row 11
+Iterations / sec: 23.222751 
+CPU SOCKETS = 32:
+jsrun -n 640 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -n 960000000 -i 100 -nnz-per-row 11
+Iterations / sec: 23.217633 
+CPU SOCKETS = 32:
+jsrun -n 640 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -n 960000000 -i 100 -nnz-per-row 11
+Iterations / sec: 23.234397 
+CPU SOCKETS = 64:
+jsrun -n 1280 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -n 1920000000 -i 100 -nnz-per-row 11
+Iterations / sec: 23.218999 
+CPU SOCKETS = 64:
+jsrun -n 1280 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -n 1920000000 -i 100 -nnz-per-row 11
+Iterations / sec: 23.187338 
+CPU SOCKETS = 64:
+jsrun -n 1280 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -n 1920000000 -i 100 -nnz-per-row 11
+Iterations / sec: 23.173353 
+CPU SOCKETS = 64:
+jsrun -n 1280 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -n 1920000000 -i 100 -nnz-per-row 11
+Iterations / sec: 23.174997 
+CPU SOCKETS = 64:
+jsrun -n 1280 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -n 1920000000 -i 100 -nnz-per-row 11
+Iterations / sec: 23.159973 
+CPU SOCKETS = 64:
+jsrun -n 1280 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -n 1920000000 -i 100 -nnz-per-row 11
+Iterations / sec: 23.178145 
+CPU SOCKETS = 64:
+jsrun -n 1280 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -n 1920000000 -i 100 -nnz-per-row 11
+Iterations / sec: 23.198454 
+CPU SOCKETS = 64:
+jsrun -n 1280 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -n 1920000000 -i 100 -nnz-per-row 11
+Iterations / sec: 23.150872 
+CPU SOCKETS = 64:
+jsrun -n 1280 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -n 1920000000 -i 100 -nnz-per-row 11
+Iterations / sec: 23.189830 
+CPU SOCKETS = 64:
+jsrun -n 1280 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -n 1920000000 -i 100 -nnz-per-row 11
+Iterations / sec: 23.182233 
+CPU SOCKETS = 64:
+jsrun -n 1280 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -n 1920000000 -i 100 -nnz-per-row 11
+Iterations / sec: 23.215200 
+CPU SOCKETS = 64:
+jsrun -n 1280 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/dot_microbenchmark -n 1920000000 -i 100 -nnz-per-row 11
+Iterations / sec: 23.250504 
