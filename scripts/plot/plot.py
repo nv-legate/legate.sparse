@@ -1,0 +1,218 @@
+#!/usr/bin/env python3
+
+import argparse
+import os
+from collections import defaultdict
+
+import matplotlib.pyplot as plt
+import numpy
+import pandas
+import seaborn
+from parse import parse
+
+# Constants for machine description and labels.
+GPUS_PER_SOCKET = 3
+SYSTEM_KEY = "System"
+PROCS_KEY = "Sockets/GPUs"
+THROUGHPUT = "Throughput"
+LEGATE_CPU = "Legate-CPU"
+LEGATE_GPU = "Legate-GPU"
+PETSC_CPU = "PETSc-CPU"
+PETSC_GPU = "PETSc-GPU"
+SCIPY = "SciPy-CPU"
+CUPY = "CuPy-GPU"
+DOT = "DOT"
+PDE = "PDE"
+GMG = "GMG"
+QUANTUM = "QUANTUM"
+SPARSEML = "SPARSEML"
+MARKER_SIZE = 10
+
+rawPalette = seaborn.color_palette()
+palette = {
+    LEGATE_CPU: rawPalette[0],
+    LEGATE_GPU: rawPalette[1],
+    PETSC_CPU: rawPalette[2],
+    PETSC_GPU: rawPalette[3],
+    SCIPY: rawPalette[4],
+    CUPY: rawPalette[5],
+}
+markers = {
+    LEGATE_CPU: "v",
+    LEGATE_GPU: "^",
+    PETSC_CPU: "<",
+    PETSC_GPU: ">",
+    SCIPY: "o",
+    CUPY: "s",
+}
+
+
+def parse_execution_logs(filename):
+    data = defaultdict(lambda: [])
+    with open(filename, "r") as f:
+        procs = None
+        for line in f.readlines():
+            line = line.strip()
+            if "CPU SOCKETS = " in line or "GPUS = " in line:
+                # Parse the number of processors.
+                if "CPU SOCKETS" in line:
+                    procs = int(parse("CPU SOCKETS = {:d}:", line)[0])
+                else:
+                    procs = int(parse("GPUS = {:d}:", line)[0])
+            if "iterations / sec:" in line.lower():
+                # Parse the iterations / second.
+                assert procs is not None
+                iterpersec = float(
+                    parse("iterations / sec: {:f}", line.lower())[0]
+                )
+                data[procs].append(iterpersec)
+    return data
+
+
+def clean_raw_data(proc_to_iter_list):
+    # Here we drop the fastest and slowest times, and then average the
+    # remaining runs to get the result.
+    result = []
+    for procs, iters in proc_to_iter_list.items():
+        iters.remove(min(iters))
+        iters.remove(max(iters))
+        avg = numpy.mean(iters)
+        result.append((procs, avg))
+
+    # Return the resulting sorted list.
+    return sorted(result)
+
+
+def project_system_name(proc_iter_pairs, system):
+    return [(system, p, t) for p, t in proc_iter_pairs]
+
+
+def raw_cpu_data_to_df(sys_proc_iter_tuples):
+    # Convert each CPU socket to the number of GPUs.
+    data = [
+        (system, f"{procs}/{procs * GPUS_PER_SOCKET}", tp)
+        for system, procs, tp in sys_proc_iter_tuples
+    ]
+    return pandas.DataFrame(data, columns=[SYSTEM_KEY, PROCS_KEY, THROUGHPUT])
+
+
+def raw_gpu_data_to_df(sys_proc_iter_tuples):
+    # Convert each GPU count to the number of CPU sockets.
+    data = [
+        (system, f"{max(1, procs // GPUS_PER_SOCKET)}/{procs}", tp)
+        for system, procs, tp in sys_proc_iter_tuples
+    ]
+    return pandas.DataFrame(data, columns=[SYSTEM_KEY, PROCS_KEY, THROUGHPUT])
+
+
+def parse_standard_cpu_weakscaling_data(filename, system):
+    return raw_cpu_data_to_df(
+        project_system_name(
+            clean_raw_data(parse_execution_logs(filename)), system
+        )
+    )
+
+
+def parse_standard_gpu_weakscaling_data(filename, system):
+    return raw_gpu_data_to_df(
+        project_system_name(
+            clean_raw_data(parse_execution_logs(filename)), system
+        )
+    )
+
+
+def standard_weak_scaling_plot(sys_to_file, title, outfile=None):
+    systems_to_data = []
+    for system, filename in sys_to_file:
+        if "gpu" in system.lower():
+            systems_to_data.append(
+                (system, parse_standard_gpu_weakscaling_data(filename, system))
+            )
+        else:
+            systems_to_data.append(
+                (system, parse_standard_cpu_weakscaling_data(filename, system))
+            )
+    # Re-order the data so that the GPU points are first
+    # (this makes the 1/1 point) for GPUs come first.
+    systems_to_data = list(
+        filter(lambda x: "gpu" in x[0].lower(), systems_to_data)
+    ) + list(filter(lambda x: "gpu" not in x[0].lower(), systems_to_data))
+    data = pandas.concat([data for _, data in systems_to_data])
+    ax = seaborn.lineplot(
+        data,
+        x=PROCS_KEY,
+        y=THROUGHPUT,
+        hue=SYSTEM_KEY,
+        style=SYSTEM_KEY,
+        palette=palette,
+        markers=markers,
+        markersize=MARKER_SIZE,
+    )
+    ax.set_yscale("log", base=10)
+    ax.set_title(title)
+    if outfile is None:
+        plt.show()
+    else:
+        plt.savefig(outfile)
+        plt.clf()
+
+
+parser = argparse.ArgumentParser()
+parser.add_argument("data_dir", type=str)
+parser.add_argument("result_dir", type=str)
+parser.add_argument("-machine", type=str, default="summit")
+args = parser.parse_args()
+data_dir = args.data_dir
+result_dir = args.result_dir
+machine = args.machine
+
+
+def get_system_data_path_pair(system, bench, suffix=""):
+    cleaned_system = system.replace("-", "_").lower()
+    path = os.path.join(
+        data_dir,
+        machine,
+        cleaned_system
+        + (("_" + suffix) if suffix != "" else "")
+        + "_"
+        + bench.lower()
+        + ".out",
+    )
+    return (system, path)
+
+
+# Generate the SpMV Dot Microbenchmark Plot.
+standard_weak_scaling_plot(
+    [
+        get_system_data_path_pair(LEGATE_CPU, DOT),
+        get_system_data_path_pair(LEGATE_GPU, DOT),
+        get_system_data_path_pair(SCIPY, DOT),
+        get_system_data_path_pair(CUPY, DOT),
+        get_system_data_path_pair(PETSC_CPU, DOT),
+        get_system_data_path_pair(PETSC_GPU, DOT),
+    ],
+    "SpMV Microbenchmark",
+    os.path.join(result_dir, "spmv-microbenchmark.pdf"),
+)
+
+# PDE.
+standard_weak_scaling_plot(
+    [
+        get_system_data_path_pair(LEGATE_CPU, PDE),
+        get_system_data_path_pair(LEGATE_GPU, PDE),
+        get_system_data_path_pair(SCIPY, PDE),
+        get_system_data_path_pair(CUPY, PDE),
+        get_system_data_path_pair(PETSC_CPU, PDE),
+        get_system_data_path_pair(PETSC_GPU, PDE),
+    ],
+    "Conjugate Gradient Solver",
+    os.path.join(result_dir, "pde.pdf"),
+)
+
+# GMG.
+# standard_weak_scaling_plot([
+#     get_system_data_path_pair(LEGATE_CPU, PDE),
+#     get_system_data_path_pair(LEGATE_GPU, PDE),
+#     get_system_data_path_pair(SCIPY, PDE),
+#     get_system_data_path_pair(CUPY, PDE),
+# ], "Conjugate-Gradient Solver")
