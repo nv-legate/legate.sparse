@@ -1,0 +1,337 @@
+CPU BENCHMARKS:
+CPU SOCKETS = 1:
+jsrun -n 20 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -nx 10392 -ny 10392 -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10
+iterations / sec: 5.099979
+Iters: 300
+CPU SOCKETS = 1:
+jsrun -n 20 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -nx 10392 -ny 10392 -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10
+iterations / sec: 5.097095
+Iters: 300
+CPU SOCKETS = 1:
+jsrun -n 20 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -nx 10392 -ny 10392 -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10
+iterations / sec: 5.091081
+Iters: 300
+CPU SOCKETS = 1:
+jsrun -n 20 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -nx 10392 -ny 10392 -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10
+iterations / sec: 5.096166
+Iters: 300
+CPU SOCKETS = 1:
+jsrun -n 20 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -nx 10392 -ny 10392 -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10
+iterations / sec: 5.094661
+Iters: 300
+CPU SOCKETS = 1:
+jsrun -n 20 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -nx 10392 -ny 10392 -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10
+iterations / sec: 5.097111
+Iters: 300
+CPU SOCKETS = 1:
+jsrun -n 20 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -nx 10392 -ny 10392 -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10
+iterations / sec: 5.094515
+Iters: 300
+CPU SOCKETS = 1:
+jsrun -n 20 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -nx 10392 -ny 10392 -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10
+iterations / sec: 5.092666
+Iters: 300
+CPU SOCKETS = 1:
+jsrun -n 20 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -nx 10392 -ny 10392 -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10
+iterations / sec: 5.093297
+Iters: 300
+CPU SOCKETS = 1:
+jsrun -n 20 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -nx 10392 -ny 10392 -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10
+iterations / sec: 5.092686
+Iters: 300
+CPU SOCKETS = 1:
+jsrun -n 20 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -nx 10392 -ny 10392 -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10
+iterations / sec: 5.090854
+Iters: 300
+CPU SOCKETS = 1:
+jsrun -n 20 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -nx 10392 -ny 10392 -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10
+iterations / sec: 5.086852
+Iters: 300
+CPU SOCKETS = 2:
+jsrun -n 40 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -nx 14696 -ny 14696 -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10
+iterations / sec: 4.851426
+Iters: 300
+CPU SOCKETS = 2:
+jsrun -n 40 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -nx 14696 -ny 14696 -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10
+iterations / sec: 4.847740
+Iters: 300
+CPU SOCKETS = 2:
+jsrun -n 40 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -nx 14696 -ny 14696 -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10
+iterations / sec: 4.847032
+Iters: 300
+CPU SOCKETS = 2:
+jsrun -n 40 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -nx 14696 -ny 14696 -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10
+iterations / sec: 4.844631
+Iters: 300
+CPU SOCKETS = 2:
+jsrun -n 40 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -nx 14696 -ny 14696 -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10
+iterations / sec: 4.846825
+Iters: 300
+CPU SOCKETS = 2:
+jsrun -n 40 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -nx 14696 -ny 14696 -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10
+iterations / sec: 4.841107
+Iters: 300
+CPU SOCKETS = 2:
+jsrun -n 40 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -nx 14696 -ny 14696 -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10
+iterations / sec: 4.837603
+Iters: 300
+CPU SOCKETS = 2:
+jsrun -n 40 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -nx 14696 -ny 14696 -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10
+iterations / sec: 4.841681
+Iters: 300
+CPU SOCKETS = 2:
+jsrun -n 40 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -nx 14696 -ny 14696 -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10
+iterations / sec: 4.843359
+Iters: 300
+CPU SOCKETS = 2:
+jsrun -n 40 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -nx 14696 -ny 14696 -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10
+iterations / sec: 4.840121
+Iters: 300
+CPU SOCKETS = 2:
+jsrun -n 40 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -nx 14696 -ny 14696 -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10
+iterations / sec: 4.837767
+Iters: 300
+CPU SOCKETS = 2:
+jsrun -n 40 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -nx 14696 -ny 14696 -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10
+iterations / sec: 4.840192
+Iters: 300
+CPU SOCKETS = 4:
+jsrun -n 80 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -nx 20784 -ny 20784 -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10
+iterations / sec: 4.806408
+Iters: 300
+CPU SOCKETS = 4:
+jsrun -n 80 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -nx 20784 -ny 20784 -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10
+iterations / sec: 4.801466
+Iters: 300
+CPU SOCKETS = 4:
+jsrun -n 80 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -nx 20784 -ny 20784 -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10
+iterations / sec: 4.800628
+Iters: 300
+CPU SOCKETS = 4:
+jsrun -n 80 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -nx 20784 -ny 20784 -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10
+iterations / sec: 4.797602
+Iters: 300
+CPU SOCKETS = 4:
+jsrun -n 80 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -nx 20784 -ny 20784 -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10
+iterations / sec: 4.797580
+Iters: 300
+CPU SOCKETS = 4:
+jsrun -n 80 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -nx 20784 -ny 20784 -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10
+iterations / sec: 4.800965
+Iters: 300
+CPU SOCKETS = 4:
+jsrun -n 80 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -nx 20784 -ny 20784 -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10
+iterations / sec: 4.797705
+Iters: 300
+CPU SOCKETS = 4:
+jsrun -n 80 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -nx 20784 -ny 20784 -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10
+iterations / sec: 4.796087
+Iters: 300
+CPU SOCKETS = 4:
+jsrun -n 80 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -nx 20784 -ny 20784 -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10
+iterations / sec: 4.797214
+Iters: 300
+CPU SOCKETS = 4:
+jsrun -n 80 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -nx 20784 -ny 20784 -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10
+iterations / sec: 4.796021
+Iters: 300
+CPU SOCKETS = 4:
+jsrun -n 80 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -nx 20784 -ny 20784 -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10
+iterations / sec: 4.794618
+Iters: 300
+CPU SOCKETS = 4:
+jsrun -n 80 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -nx 20784 -ny 20784 -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10
+iterations / sec: 4.794642
+Iters: 300
+CPU SOCKETS = 8:
+jsrun -n 160 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -nx 29393 -ny 29393 -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10
+iterations / sec: 4.704786
+Iters: 300
+CPU SOCKETS = 8:
+jsrun -n 160 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -nx 29393 -ny 29393 -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10
+iterations / sec: 4.705093
+Iters: 300
+CPU SOCKETS = 8:
+jsrun -n 160 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -nx 29393 -ny 29393 -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10
+iterations / sec: 4.704537
+Iters: 300
+CPU SOCKETS = 8:
+jsrun -n 160 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -nx 29393 -ny 29393 -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10
+iterations / sec: 4.710503
+Iters: 300
+CPU SOCKETS = 8:
+jsrun -n 160 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -nx 29393 -ny 29393 -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10
+iterations / sec: 4.708436
+Iters: 300
+CPU SOCKETS = 8:
+jsrun -n 160 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -nx 29393 -ny 29393 -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10
+iterations / sec: 4.712553
+Iters: 300
+CPU SOCKETS = 8:
+jsrun -n 160 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -nx 29393 -ny 29393 -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10
+iterations / sec: 4.704047
+Iters: 300
+CPU SOCKETS = 8:
+jsrun -n 160 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -nx 29393 -ny 29393 -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10
+iterations / sec: 4.715939
+Iters: 300
+CPU SOCKETS = 8:
+jsrun -n 160 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -nx 29393 -ny 29393 -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10
+iterations / sec: 4.713848
+Iters: 300
+CPU SOCKETS = 8:
+jsrun -n 160 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -nx 29393 -ny 29393 -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10
+iterations / sec: 4.705610
+Iters: 300
+CPU SOCKETS = 8:
+jsrun -n 160 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -nx 29393 -ny 29393 -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10
+iterations / sec: 4.701870
+Iters: 300
+CPU SOCKETS = 8:
+jsrun -n 160 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -nx 29393 -ny 29393 -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10
+iterations / sec: 4.700536
+Iters: 300
+CPU SOCKETS = 16:
+jsrun -n 320 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -nx 41569 -ny 41569 -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10
+iterations / sec: 4.675926
+Iters: 300
+CPU SOCKETS = 16:
+jsrun -n 320 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -nx 41569 -ny 41569 -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10
+iterations / sec: 4.672171
+Iters: 300
+CPU SOCKETS = 16:
+jsrun -n 320 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -nx 41569 -ny 41569 -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10
+iterations / sec: 4.675831
+Iters: 300
+CPU SOCKETS = 16:
+jsrun -n 320 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -nx 41569 -ny 41569 -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10
+iterations / sec: 4.671791
+Iters: 300
+CPU SOCKETS = 16:
+jsrun -n 320 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -nx 41569 -ny 41569 -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10
+iterations / sec: 4.670428
+Iters: 300
+CPU SOCKETS = 16:
+jsrun -n 320 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -nx 41569 -ny 41569 -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10
+iterations / sec: 4.666074
+Iters: 300
+CPU SOCKETS = 16:
+jsrun -n 320 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -nx 41569 -ny 41569 -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10
+iterations / sec: 4.668218
+Iters: 300
+CPU SOCKETS = 16:
+jsrun -n 320 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -nx 41569 -ny 41569 -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10
+iterations / sec: 4.663888
+Iters: 300
+CPU SOCKETS = 16:
+jsrun -n 320 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -nx 41569 -ny 41569 -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10
+iterations / sec: 4.662714
+Iters: 300
+CPU SOCKETS = 16:
+jsrun -n 320 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -nx 41569 -ny 41569 -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10
+iterations / sec: 4.663034
+Iters: 300
+CPU SOCKETS = 16:
+jsrun -n 320 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -nx 41569 -ny 41569 -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10
+iterations / sec: 4.665999
+Iters: 300
+CPU SOCKETS = 16:
+jsrun -n 320 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -nx 41569 -ny 41569 -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10
+iterations / sec: 4.667790
+Iters: 300
+CPU SOCKETS = 32:
+jsrun -n 640 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -nx 58787 -ny 58787 -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10
+iterations / sec: 4.609280
+Iters: 300
+CPU SOCKETS = 32:
+jsrun -n 640 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -nx 58787 -ny 58787 -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10
+iterations / sec: 4.611607
+Iters: 300
+CPU SOCKETS = 32:
+jsrun -n 640 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -nx 58787 -ny 58787 -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10
+iterations / sec: 4.610177
+Iters: 300
+CPU SOCKETS = 32:
+jsrun -n 640 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -nx 58787 -ny 58787 -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10
+iterations / sec: 4.617188
+Iters: 300
+CPU SOCKETS = 32:
+jsrun -n 640 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -nx 58787 -ny 58787 -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10
+iterations / sec: 4.615502
+Iters: 300
+CPU SOCKETS = 32:
+jsrun -n 640 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -nx 58787 -ny 58787 -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10
+iterations / sec: 4.612704
+Iters: 300
+CPU SOCKETS = 32:
+jsrun -n 640 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -nx 58787 -ny 58787 -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10
+iterations / sec: 4.608817
+Iters: 300
+CPU SOCKETS = 32:
+jsrun -n 640 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -nx 58787 -ny 58787 -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10
+iterations / sec: 4.612671
+Iters: 300
+CPU SOCKETS = 32:
+jsrun -n 640 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -nx 58787 -ny 58787 -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10
+iterations / sec: 4.612617
+Iters: 300
+CPU SOCKETS = 32:
+jsrun -n 640 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -nx 58787 -ny 58787 -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10
+iterations / sec: 4.609765
+Iters: 300
+CPU SOCKETS = 32:
+jsrun -n 640 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -nx 58787 -ny 58787 -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10
+iterations / sec: 4.612584
+Iters: 300
+CPU SOCKETS = 32:
+jsrun -n 640 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -nx 58787 -ny 58787 -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10
+iterations / sec: 4.609418
+Iters: 300
+CPU SOCKETS = 64:
+jsrun -n 1280 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -nx 83138 -ny 83138 -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10
+iterations / sec: 4.541877
+Iters: 300
+CPU SOCKETS = 64:
+jsrun -n 1280 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -nx 83138 -ny 83138 -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10
+iterations / sec: 4.542532
+Iters: 300
+CPU SOCKETS = 64:
+jsrun -n 1280 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -nx 83138 -ny 83138 -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10
+iterations / sec: 4.540259
+Iters: 300
+CPU SOCKETS = 64:
+jsrun -n 1280 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -nx 83138 -ny 83138 -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10
+iterations / sec: 4.536900
+Iters: 300
+CPU SOCKETS = 64:
+jsrun -n 1280 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -nx 83138 -ny 83138 -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10
+iterations / sec: 4.534647
+Iters: 300
+CPU SOCKETS = 64:
+jsrun -n 1280 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -nx 83138 -ny 83138 -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10
+iterations / sec: 4.533016
+Iters: 300
+CPU SOCKETS = 64:
+jsrun -n 1280 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -nx 83138 -ny 83138 -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10
+iterations / sec: 4.533222
+Iters: 300
+CPU SOCKETS = 64:
+jsrun -n 1280 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -nx 83138 -ny 83138 -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10
+iterations / sec: 4.534306
+Iters: 300
+CPU SOCKETS = 64:
+jsrun -n 1280 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -nx 83138 -ny 83138 -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10
+iterations / sec: 4.539144
+Iters: 300
+CPU SOCKETS = 64:
+jsrun -n 1280 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -nx 83138 -ny 83138 -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10
+iterations / sec: 4.524216
+Iters: 300
+CPU SOCKETS = 64:
+jsrun -n 1280 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -nx 83138 -ny 83138 -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10
+iterations / sec: 4.538098
+Iters: 300
+CPU SOCKETS = 64:
+jsrun -n 1280 -c 1 -b rs /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -nx 83138 -ny 83138 -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10
+iterations / sec: 4.523698
+Iters: 300
