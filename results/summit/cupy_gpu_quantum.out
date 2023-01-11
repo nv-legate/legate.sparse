@@ -1,0 +1,70 @@
+GPUS = 1:
+jsrun -n 1 -c ALL_CPUS -g 1 -b rs python ../rydberg-simulation/demo_integration.py -package cupy -iters 25 -l 9 -frac 0.425 -load-ham /gpfs/alpine/scratch/rohany/csc335//rydberg-hams-0.425.npz
+Loading input from disk.
+Beginning solve.
+Total time: 29566.34375ms.
+Iterations / sec: 0.8455560217857508
+ERROR:  One or more process (first noticed rank 0) terminated with signal 11
+GPUS = 1:
+jsrun -n 1 -c ALL_CPUS -g 1 -b rs python ../rydberg-simulation/demo_integration.py -package cupy -iters 25 -l 9 -frac 0.425 -load-ham /gpfs/alpine/scratch/rohany/csc335//rydberg-hams-0.425.npz
+Loading input from disk.
+Beginning solve.
+Total time: 9816.35546875ms.
+Iterations / sec: 2.5467700390013954
+ERROR:  One or more process (first noticed rank 0) terminated with signal 11
+GPUS = 1:
+jsrun -n 1 -c ALL_CPUS -g 1 -b rs python ../rydberg-simulation/demo_integration.py -package cupy -iters 25 -l 9 -frac 0.425 -load-ham /gpfs/alpine/scratch/rohany/csc335//rydberg-hams-0.425.npz
+Loading input from disk.
+Beginning solve.
+Total time: 9817.92578125ms.
+Iterations / sec: 2.5463626999242854
+ERROR:  One or more process (first noticed rank 0) terminated with signal 11
+GPUS = 1:
+jsrun -n 1 -c ALL_CPUS -g 1 -b rs python ../rydberg-simulation/demo_integration.py -package cupy -iters 25 -l 9 -frac 0.425 -load-ham /gpfs/alpine/scratch/rohany/csc335//rydberg-hams-0.425.npz
+Loading input from disk.
+Beginning solve.
+Total time: 9838.3525390625ms.
+Iterations / sec: 2.5410758458531775
+GPUS = 1:
+jsrun -n 1 -c ALL_CPUS -g 1 -b rs python ../rydberg-simulation/demo_integration.py -package cupy -iters 25 -l 9 -frac 0.425 -load-ham /gpfs/alpine/scratch/rohany/csc335//rydberg-hams-0.425.npz
+Loading input from disk.
+Beginning solve.
+Total time: 9826.142578125ms.
+Iterations / sec: 2.544233385708763
+ERROR:  One or more process (first noticed rank 0) terminated with signal 11
+GPUS = 1:
+jsrun -n 1 -c ALL_CPUS -g 1 -b rs python ../rydberg-simulation/demo_integration.py -package cupy -iters 25 -l 9 -frac 0.425 -load-ham /gpfs/alpine/scratch/rohany/csc335//rydberg-hams-0.425.npz
+Loading input from disk.
+Beginning solve.
+Total time: 9815.171875ms.
+Iterations / sec: 2.5470771493749313
+free(): invalid pointer
+ERROR:  One or more process (first noticed rank 0) terminated with signal 6
+GPUS = 1:
+jsrun -n 1 -c ALL_CPUS -g 1 -b rs python ../rydberg-simulation/demo_integration.py -package cupy -iters 25 -l 9 -frac 0.425 -load-ham /gpfs/alpine/scratch/rohany/csc335//rydberg-hams-0.425.npz
+Loading input from disk.
+Beginning solve.
+Total time: 9839.1533203125ms.
+Iterations / sec: 2.5408690347764575
+ERROR:  One or more process (first noticed rank 0) terminated with signal 11
+GPUS = 1:
+jsrun -n 1 -c ALL_CPUS -g 1 -b rs python ../rydberg-simulation/demo_integration.py -package cupy -iters 25 -l 9 -frac 0.425 -load-ham /gpfs/alpine/scratch/rohany/csc335//rydberg-hams-0.425.npz
+Loading input from disk.
+Beginning solve.
+Total time: 9883.291015625ms.
+Iterations / sec: 2.529521791929047
+ERROR:  One or more process (first noticed rank 0) terminated with signal 11
+GPUS = 1:
+jsrun -n 1 -c ALL_CPUS -g 1 -b rs python ../rydberg-simulation/demo_integration.py -package cupy -iters 25 -l 9 -frac 0.425 -load-ham /gpfs/alpine/scratch/rohany/csc335//rydberg-hams-0.425.npz
+Loading input from disk.
+Beginning solve.
+Total time: 9824.228515625ms.
+Iterations / sec: 2.544729080786202
+ERROR:  One or more process (first noticed rank 0) terminated with signal 11
+GPUS = 1:
+jsrun -n 1 -c ALL_CPUS -g 1 -b rs python ../rydberg-simulation/demo_integration.py -package cupy -iters 25 -l 9 -frac 0.425 -load-ham /gpfs/alpine/scratch/rohany/csc335//rydberg-hams-0.425.npz
+Loading input from disk.
+Beginning solve.
+Total time: 9826.5712890625ms.
+Iterations / sec: 2.544122386597484
+ERROR:  One or more process (first noticed rank 0) terminated with signal 11

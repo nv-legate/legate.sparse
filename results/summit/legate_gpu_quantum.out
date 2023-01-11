@@ -1,0 +1,288 @@
+GPUS = 1:
+legate ../rydberg-simulation/demo_integration.py -cunumeric:preload-cudalibs --launcher jsrun -iters 25 -l 9 --fbmem 14000 --cpus 1 --sysmem 150000 -lg:eager_alloc_percentage 5 -lg:eager_alloc_percentage_override system_mem=50 --utility 2 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 1 --ompthreads 8 --nodes 1 --ranks-per-node 1 --gpus 1 --cpu-bind 0-83 --mem-bind 0 --gpu-bind 0,1,2 --nic-bind mlx5_0,mlx5_1 -frac 0.425
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 13730.519ms.
+Iterations / sec: 1.8207614730368167
+GPUS = 1:
+legate ../rydberg-simulation/demo_integration.py -cunumeric:preload-cudalibs --launcher jsrun -iters 25 -l 9 --fbmem 14000 --cpus 1 --sysmem 150000 -lg:eager_alloc_percentage 5 -lg:eager_alloc_percentage_override system_mem=50 --utility 2 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 1 --ompthreads 8 --nodes 1 --ranks-per-node 1 --gpus 1 --cpu-bind 0-83 --mem-bind 0 --gpu-bind 0,1,2 --nic-bind mlx5_0,mlx5_1 -frac 0.425
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 13377.396ms.
+Iterations / sec: 1.868824097006622
+GPUS = 1:
+legate ../rydberg-simulation/demo_integration.py -cunumeric:preload-cudalibs --launcher jsrun -iters 25 -l 9 --fbmem 14000 --cpus 1 --sysmem 150000 -lg:eager_alloc_percentage 5 -lg:eager_alloc_percentage_override system_mem=50 --utility 2 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 1 --ompthreads 8 --nodes 1 --ranks-per-node 1 --gpus 1 --cpu-bind 0-83 --mem-bind 0 --gpu-bind 0,1,2 --nic-bind mlx5_0,mlx5_1 -frac 0.425
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 13783.463ms.
+Iterations / sec: 1.8137677011938147
+GPUS = 1:
+legate ../rydberg-simulation/demo_integration.py -cunumeric:preload-cudalibs --launcher jsrun -iters 25 -l 9 --fbmem 14000 --cpus 1 --sysmem 150000 -lg:eager_alloc_percentage 5 -lg:eager_alloc_percentage_override system_mem=50 --utility 2 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 1 --ompthreads 8 --nodes 1 --ranks-per-node 1 --gpus 1 --cpu-bind 0-83 --mem-bind 0 --gpu-bind 0,1,2 --nic-bind mlx5_0,mlx5_1 -frac 0.425
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 13459.183ms.
+Iterations / sec: 1.857467871563972
+GPUS = 1:
+legate ../rydberg-simulation/demo_integration.py -cunumeric:preload-cudalibs --launcher jsrun -iters 25 -l 9 --fbmem 14000 --cpus 1 --sysmem 150000 -lg:eager_alloc_percentage 5 -lg:eager_alloc_percentage_override system_mem=50 --utility 2 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 1 --ompthreads 8 --nodes 1 --ranks-per-node 1 --gpus 1 --cpu-bind 0-83 --mem-bind 0 --gpu-bind 0,1,2 --nic-bind mlx5_0,mlx5_1 -frac 0.425
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 13485.716ms.
+Iterations / sec: 1.8538133236677978
+GPUS = 1:
+legate ../rydberg-simulation/demo_integration.py -cunumeric:preload-cudalibs --launcher jsrun -iters 25 -l 9 --fbmem 14000 --cpus 1 --sysmem 150000 -lg:eager_alloc_percentage 5 -lg:eager_alloc_percentage_override system_mem=50 --utility 2 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 1 --ompthreads 8 --nodes 1 --ranks-per-node 1 --gpus 1 --cpu-bind 0-83 --mem-bind 0 --gpu-bind 0,1,2 --nic-bind mlx5_0,mlx5_1 -frac 0.425
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 13456.376ms.
+Iterations / sec: 1.8578553393573425
+GPUS = 1:
+legate ../rydberg-simulation/demo_integration.py -cunumeric:preload-cudalibs --launcher jsrun -iters 25 -l 9 --fbmem 14000 --cpus 1 --sysmem 150000 -lg:eager_alloc_percentage 5 -lg:eager_alloc_percentage_override system_mem=50 --utility 2 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 1 --ompthreads 8 --nodes 1 --ranks-per-node 1 --gpus 1 --cpu-bind 0-83 --mem-bind 0 --gpu-bind 0,1,2 --nic-bind mlx5_0,mlx5_1 -frac 0.425
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 13496.862ms.
+Iterations / sec: 1.852282404606345
+GPUS = 1:
+legate ../rydberg-simulation/demo_integration.py -cunumeric:preload-cudalibs --launcher jsrun -iters 25 -l 9 --fbmem 14000 --cpus 1 --sysmem 150000 -lg:eager_alloc_percentage 5 -lg:eager_alloc_percentage_override system_mem=50 --utility 2 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 1 --ompthreads 8 --nodes 1 --ranks-per-node 1 --gpus 1 --cpu-bind 0-83 --mem-bind 0 --gpu-bind 0,1,2 --nic-bind mlx5_0,mlx5_1 -frac 0.425
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 13431.863ms.
+Iterations / sec: 1.8612459046075738
+GPUS = 1:
+legate ../rydberg-simulation/demo_integration.py -cunumeric:preload-cudalibs --launcher jsrun -iters 25 -l 9 --fbmem 14000 --cpus 1 --sysmem 150000 -lg:eager_alloc_percentage 5 -lg:eager_alloc_percentage_override system_mem=50 --utility 2 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 1 --ompthreads 8 --nodes 1 --ranks-per-node 1 --gpus 1 --cpu-bind 0-83 --mem-bind 0 --gpu-bind 0,1,2 --nic-bind mlx5_0,mlx5_1 -frac 0.425
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 13467.638ms.
+Iterations / sec: 1.8563017509083626
+GPUS = 1:
+legate ../rydberg-simulation/demo_integration.py -cunumeric:preload-cudalibs --launcher jsrun -iters 25 -l 9 --fbmem 14000 --cpus 1 --sysmem 150000 -lg:eager_alloc_percentage 5 -lg:eager_alloc_percentage_override system_mem=50 --utility 2 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 1 --ompthreads 8 --nodes 1 --ranks-per-node 1 --gpus 1 --cpu-bind 0-83 --mem-bind 0 --gpu-bind 0,1,2 --nic-bind mlx5_0,mlx5_1 -frac 0.425
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 13449.022ms.
+Iterations / sec: 1.8588712249857273
+GPUS = 1:
+legate ../rydberg-simulation/demo_integration.py -cunumeric:preload-cudalibs --launcher jsrun -iters 25 -l 9 --fbmem 14000 --cpus 1 --sysmem 150000 -lg:eager_alloc_percentage 5 -lg:eager_alloc_percentage_override system_mem=50 --utility 2 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 1 --ompthreads 8 --nodes 1 --ranks-per-node 1 --gpus 1 --cpu-bind 0-83 --mem-bind 0 --gpu-bind 0,1,2 --nic-bind mlx5_0,mlx5_1 -frac 0.425
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 13433.41ms.
+Iterations / sec: 1.8610315623508848
+GPUS = 1:
+legate ../rydberg-simulation/demo_integration.py -cunumeric:preload-cudalibs --launcher jsrun -iters 25 -l 9 --fbmem 14000 --cpus 1 --sysmem 150000 -lg:eager_alloc_percentage 5 -lg:eager_alloc_percentage_override system_mem=50 --utility 2 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 1 --ompthreads 8 --nodes 1 --ranks-per-node 1 --gpus 1 --cpu-bind 0-83 --mem-bind 0 --gpu-bind 0,1,2 --nic-bind mlx5_0,mlx5_1 -frac 0.425
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 13475.137ms.
+Iterations / sec: 1.8552687071010854
+GPUS = 2:
+legate ../rydberg-simulation/demo_integration.py -cunumeric:preload-cudalibs --launcher jsrun -iters 25 -l 9 --fbmem 14000 --cpus 1 --sysmem 150000 -lg:eager_alloc_percentage 5 -lg:eager_alloc_percentage_override system_mem=50 --utility 2 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 1 --ompthreads 8 --nodes 1 --ranks-per-node 1 --gpus 2 --cpu-bind 0-83 --mem-bind 0 --gpu-bind 0,1,2 --nic-bind mlx5_0,mlx5_1 -frac 0.45
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 14417.933ms.
+Iterations / sec: 1.7339517391293189
+GPUS = 2:
+legate ../rydberg-simulation/demo_integration.py -cunumeric:preload-cudalibs --launcher jsrun -iters 25 -l 9 --fbmem 14000 --cpus 1 --sysmem 150000 -lg:eager_alloc_percentage 5 -lg:eager_alloc_percentage_override system_mem=50 --utility 2 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 1 --ompthreads 8 --nodes 1 --ranks-per-node 1 --gpus 2 --cpu-bind 0-83 --mem-bind 0 --gpu-bind 0,1,2 --nic-bind mlx5_0,mlx5_1 -frac 0.45
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 14499.379ms.
+Iterations / sec: 1.7242117748629096
+GPUS = 2:
+legate ../rydberg-simulation/demo_integration.py -cunumeric:preload-cudalibs --launcher jsrun -iters 25 -l 9 --fbmem 14000 --cpus 1 --sysmem 150000 -lg:eager_alloc_percentage 5 -lg:eager_alloc_percentage_override system_mem=50 --utility 2 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 1 --ompthreads 8 --nodes 1 --ranks-per-node 1 --gpus 2 --cpu-bind 0-83 --mem-bind 0 --gpu-bind 0,1,2 --nic-bind mlx5_0,mlx5_1 -frac 0.45
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 14431.884ms.
+Iterations / sec: 1.7322755642991587
+GPUS = 2:
+legate ../rydberg-simulation/demo_integration.py -cunumeric:preload-cudalibs --launcher jsrun -iters 25 -l 9 --fbmem 14000 --cpus 1 --sysmem 150000 -lg:eager_alloc_percentage 5 -lg:eager_alloc_percentage_override system_mem=50 --utility 2 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 1 --ompthreads 8 --nodes 1 --ranks-per-node 1 --gpus 2 --cpu-bind 0-83 --mem-bind 0 --gpu-bind 0,1,2 --nic-bind mlx5_0,mlx5_1 -frac 0.45
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 14481.079ms.
+Iterations / sec: 1.7263906922957883
+GPUS = 2:
+legate ../rydberg-simulation/demo_integration.py -cunumeric:preload-cudalibs --launcher jsrun -iters 25 -l 9 --fbmem 14000 --cpus 1 --sysmem 150000 -lg:eager_alloc_percentage 5 -lg:eager_alloc_percentage_override system_mem=50 --utility 2 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 1 --ompthreads 8 --nodes 1 --ranks-per-node 1 --gpus 2 --cpu-bind 0-83 --mem-bind 0 --gpu-bind 0,1,2 --nic-bind mlx5_0,mlx5_1 -frac 0.45
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 14417.128ms.
+Iterations / sec: 1.7340485566889605
+GPUS = 2:
+legate ../rydberg-simulation/demo_integration.py -cunumeric:preload-cudalibs --launcher jsrun -iters 25 -l 9 --fbmem 14000 --cpus 1 --sysmem 150000 -lg:eager_alloc_percentage 5 -lg:eager_alloc_percentage_override system_mem=50 --utility 2 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 1 --ompthreads 8 --nodes 1 --ranks-per-node 1 --gpus 2 --cpu-bind 0-83 --mem-bind 0 --gpu-bind 0,1,2 --nic-bind mlx5_0,mlx5_1 -frac 0.45
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 14285.368ms.
+Iterations / sec: 1.7500424210282857
+GPUS = 2:
+legate ../rydberg-simulation/demo_integration.py -cunumeric:preload-cudalibs --launcher jsrun -iters 25 -l 9 --fbmem 14000 --cpus 1 --sysmem 150000 -lg:eager_alloc_percentage 5 -lg:eager_alloc_percentage_override system_mem=50 --utility 2 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 1 --ompthreads 8 --nodes 1 --ranks-per-node 1 --gpus 2 --cpu-bind 0-83 --mem-bind 0 --gpu-bind 0,1,2 --nic-bind mlx5_0,mlx5_1 -frac 0.45
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 14311.42ms.
+Iterations / sec: 1.746856706043146
+GPUS = 2:
+legate ../rydberg-simulation/demo_integration.py -cunumeric:preload-cudalibs --launcher jsrun -iters 25 -l 9 --fbmem 14000 --cpus 1 --sysmem 150000 -lg:eager_alloc_percentage 5 -lg:eager_alloc_percentage_override system_mem=50 --utility 2 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 1 --ompthreads 8 --nodes 1 --ranks-per-node 1 --gpus 2 --cpu-bind 0-83 --mem-bind 0 --gpu-bind 0,1,2 --nic-bind mlx5_0,mlx5_1 -frac 0.45
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 14373.573ms.
+Iterations / sec: 1.7393030946445953
+GPUS = 2:
+legate ../rydberg-simulation/demo_integration.py -cunumeric:preload-cudalibs --launcher jsrun -iters 25 -l 9 --fbmem 14000 --cpus 1 --sysmem 150000 -lg:eager_alloc_percentage 5 -lg:eager_alloc_percentage_override system_mem=50 --utility 2 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 1 --ompthreads 8 --nodes 1 --ranks-per-node 1 --gpus 2 --cpu-bind 0-83 --mem-bind 0 --gpu-bind 0,1,2 --nic-bind mlx5_0,mlx5_1 -frac 0.45
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 14383.026ms.
+Iterations / sec: 1.7381599671724157
+GPUS = 2:
+legate ../rydberg-simulation/demo_integration.py -cunumeric:preload-cudalibs --launcher jsrun -iters 25 -l 9 --fbmem 14000 --cpus 1 --sysmem 150000 -lg:eager_alloc_percentage 5 -lg:eager_alloc_percentage_override system_mem=50 --utility 2 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 1 --ompthreads 8 --nodes 1 --ranks-per-node 1 --gpus 2 --cpu-bind 0-83 --mem-bind 0 --gpu-bind 0,1,2 --nic-bind mlx5_0,mlx5_1 -frac 0.45
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 14410.443ms.
+Iterations / sec: 1.7348529812719846
+GPUS = 2:
+legate ../rydberg-simulation/demo_integration.py -cunumeric:preload-cudalibs --launcher jsrun -iters 25 -l 9 --fbmem 14000 --cpus 1 --sysmem 150000 -lg:eager_alloc_percentage 5 -lg:eager_alloc_percentage_override system_mem=50 --utility 2 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 1 --ompthreads 8 --nodes 1 --ranks-per-node 1 --gpus 2 --cpu-bind 0-83 --mem-bind 0 --gpu-bind 0,1,2 --nic-bind mlx5_0,mlx5_1 -frac 0.45
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 14360.372ms.
+Iterations / sec: 1.7409019766340315
+GPUS = 2:
+legate ../rydberg-simulation/demo_integration.py -cunumeric:preload-cudalibs --launcher jsrun -iters 25 -l 9 --fbmem 14000 --cpus 1 --sysmem 150000 -lg:eager_alloc_percentage 5 -lg:eager_alloc_percentage_override system_mem=50 --utility 2 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 1 --ompthreads 8 --nodes 1 --ranks-per-node 1 --gpus 2 --cpu-bind 0-83 --mem-bind 0 --gpu-bind 0,1,2 --nic-bind mlx5_0,mlx5_1 -frac 0.45
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 14428.786ms.
+Iterations / sec: 1.732647500628258
+GPUS = 4:
+legate ../rydberg-simulation/demo_integration.py -cunumeric:preload-cudalibs --launcher jsrun -iters 25 -l 9 --fbmem 14000 --cpus 1 --sysmem 150000 -lg:eager_alloc_percentage 5 -lg:eager_alloc_percentage_override system_mem=50 --utility 2 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 1 --ompthreads 8 --nodes 1 --ranks-per-node 2 --gpus 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --gpu-bind 0,1,2/3,4,5 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 -frac 0.50
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 14958.788ms.
+Iterations / sec: 1.6712583933939034
+GPUS = 4:
+legate ../rydberg-simulation/demo_integration.py -cunumeric:preload-cudalibs --launcher jsrun -iters 25 -l 9 --fbmem 14000 --cpus 1 --sysmem 150000 -lg:eager_alloc_percentage 5 -lg:eager_alloc_percentage_override system_mem=50 --utility 2 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 1 --ompthreads 8 --nodes 1 --ranks-per-node 2 --gpus 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --gpu-bind 0,1,2/3,4,5 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 -frac 0.50
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 14928.311ms.
+Iterations / sec: 1.6746703629097761
+GPUS = 4:
+legate ../rydberg-simulation/demo_integration.py -cunumeric:preload-cudalibs --launcher jsrun -iters 25 -l 9 --fbmem 14000 --cpus 1 --sysmem 150000 -lg:eager_alloc_percentage 5 -lg:eager_alloc_percentage_override system_mem=50 --utility 2 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 1 --ompthreads 8 --nodes 1 --ranks-per-node 2 --gpus 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --gpu-bind 0,1,2/3,4,5 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 -frac 0.50
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 14932.243ms.
+Iterations / sec: 1.6742293840248916
+GPUS = 4:
+legate ../rydberg-simulation/demo_integration.py -cunumeric:preload-cudalibs --launcher jsrun -iters 25 -l 9 --fbmem 14000 --cpus 1 --sysmem 150000 -lg:eager_alloc_percentage 5 -lg:eager_alloc_percentage_override system_mem=50 --utility 2 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 1 --ompthreads 8 --nodes 1 --ranks-per-node 2 --gpus 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --gpu-bind 0,1,2/3,4,5 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 -frac 0.50
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 15014.396ms.
+Iterations / sec: 1.6650686447859773
+GPUS = 4:
+legate ../rydberg-simulation/demo_integration.py -cunumeric:preload-cudalibs --launcher jsrun -iters 25 -l 9 --fbmem 14000 --cpus 1 --sysmem 150000 -lg:eager_alloc_percentage 5 -lg:eager_alloc_percentage_override system_mem=50 --utility 2 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 1 --ompthreads 8 --nodes 1 --ranks-per-node 2 --gpus 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --gpu-bind 0,1,2/3,4,5 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 -frac 0.50
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 14980.949ms.
+Iterations / sec: 1.668786136312192
+GPUS = 4:
+legate ../rydberg-simulation/demo_integration.py -cunumeric:preload-cudalibs --launcher jsrun -iters 25 -l 9 --fbmem 14000 --cpus 1 --sysmem 150000 -lg:eager_alloc_percentage 5 -lg:eager_alloc_percentage_override system_mem=50 --utility 2 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 1 --ompthreads 8 --nodes 1 --ranks-per-node 2 --gpus 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --gpu-bind 0,1,2/3,4,5 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 -frac 0.50
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 14909.703ms.
+Iterations / sec: 1.6767604290977494
+GPUS = 4:
+legate ../rydberg-simulation/demo_integration.py -cunumeric:preload-cudalibs --launcher jsrun -iters 25 -l 9 --fbmem 14000 --cpus 1 --sysmem 150000 -lg:eager_alloc_percentage 5 -lg:eager_alloc_percentage_override system_mem=50 --utility 2 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 1 --ompthreads 8 --nodes 1 --ranks-per-node 2 --gpus 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --gpu-bind 0,1,2/3,4,5 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 -frac 0.50
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 14943.662ms.
+Iterations / sec: 1.672950043971819
+GPUS = 4:
+legate ../rydberg-simulation/demo_integration.py -cunumeric:preload-cudalibs --launcher jsrun -iters 25 -l 9 --fbmem 14000 --cpus 1 --sysmem 150000 -lg:eager_alloc_percentage 5 -lg:eager_alloc_percentage_override system_mem=50 --utility 2 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 1 --ompthreads 8 --nodes 1 --ranks-per-node 2 --gpus 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --gpu-bind 0,1,2/3,4,5 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 -frac 0.50
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 14926.015ms.
+Iterations / sec: 1.6749279697226622
+GPUS = 4:
+legate ../rydberg-simulation/demo_integration.py -cunumeric:preload-cudalibs --launcher jsrun -iters 25 -l 9 --fbmem 14000 --cpus 1 --sysmem 150000 -lg:eager_alloc_percentage 5 -lg:eager_alloc_percentage_override system_mem=50 --utility 2 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 1 --ompthreads 8 --nodes 1 --ranks-per-node 2 --gpus 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --gpu-bind 0,1,2/3,4,5 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 -frac 0.50
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 14985.618ms.
+Iterations / sec: 1.6682662002995137
+GPUS = 4:
+legate ../rydberg-simulation/demo_integration.py -cunumeric:preload-cudalibs --launcher jsrun -iters 25 -l 9 --fbmem 14000 --cpus 1 --sysmem 150000 -lg:eager_alloc_percentage 5 -lg:eager_alloc_percentage_override system_mem=50 --utility 2 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 1 --ompthreads 8 --nodes 1 --ranks-per-node 2 --gpus 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --gpu-bind 0,1,2/3,4,5 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 -frac 0.50
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 14959.38ms.
+Iterations / sec: 1.6711922552940028
+GPUS = 4:
+legate ../rydberg-simulation/demo_integration.py -cunumeric:preload-cudalibs --launcher jsrun -iters 25 -l 9 --fbmem 14000 --cpus 1 --sysmem 150000 -lg:eager_alloc_percentage 5 -lg:eager_alloc_percentage_override system_mem=50 --utility 2 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 1 --ompthreads 8 --nodes 1 --ranks-per-node 2 --gpus 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --gpu-bind 0,1,2/3,4,5 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 -frac 0.50
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 14935.234ms.
+Iterations / sec: 1.6738940949971053
+GPUS = 4:
+legate ../rydberg-simulation/demo_integration.py -cunumeric:preload-cudalibs --launcher jsrun -iters 25 -l 9 --fbmem 14000 --cpus 1 --sysmem 150000 -lg:eager_alloc_percentage 5 -lg:eager_alloc_percentage_override system_mem=50 --utility 2 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 1 --ompthreads 8 --nodes 1 --ranks-per-node 2 --gpus 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --gpu-bind 0,1,2/3,4,5 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 -frac 0.50
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Constructing input.
+Beginning solve.
+Total time: 14910.645ms.
+Iterations / sec: 1.6766544975083237

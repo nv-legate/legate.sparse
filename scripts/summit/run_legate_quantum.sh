@@ -73,7 +73,7 @@ gpus_per_node() {
 bind_args() {
     python3 -c "print('$BIND_ARGS2' if $1 > 2 else '$BIND_ARGS1')"
 }
-GPU_ARGS="-cunumeric:preload-cudalibs $COMMON_ARGS --fbmem $GPU_MEM --cpus 1 --sysmem $SYS_MEM -lg:eager_alloc_percentage 5 -lg:eager_alloc_percentage_override system_mem=50 --utility 4 --launcher-extra=\"--smpiargs='-disable_gpu_hooks'\""
+GPU_ARGS="-cunumeric:preload-cudalibs $COMMON_ARGS --fbmem $GPU_MEM --cpus 1 --sysmem $SYS_MEM -lg:eager_alloc_percentage 5 -lg:eager_alloc_percentage_override system_mem=50 --utility 2 --launcher-extra=\"--smpiargs='-disable_gpu_hooks'\" --omps 1 --ompthreads 8"
 
 if [[ -n $GPUS ]]; then
     for gpus in $GPUS; do
