@@ -26,7 +26,7 @@ if [[ -n $CPU_SOCKETS ]]; then
     for sockets in $CPU_SOCKETS; do
         cmd="jsrun -n $(($sockets * 20)) -c 1 -b rs $PETSC_DIR/main -nx $(weak_scale_cpu $sockets) -ny $(weak_scale_cpu $sockets) $COMMON_ARGS $ARGS"
         for iter in $(seq 1 $EXP_ITERS); do
-            echo "CPU SOCKETS = $CPU_SOCKETS:"
+            echo "CPU SOCKETS = $sockets:"
             echo $cmd
             eval $cmd
         done
@@ -40,7 +40,7 @@ if [[ -n $GPUS ]]; then
     for gpus in $GPUS; do
         cmd="jsrun -n $gpus -g 1 -c 4 -b rs --smpiargs=\"-gpu\" $PETSC_DIR/main $GPU_ARGS -nx $(weak_scale_gpu $gpus) -ny $(weak_scale_gpu $gpus) $ARGS"
         for iter in $(seq 1 $EXP_ITERS); do
-            echo "GPUS = $GPUS:"
+            echo "GPUS = $gpus:"
             echo $cmd
             eval $cmd
         done
