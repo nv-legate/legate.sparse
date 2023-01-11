@@ -177,7 +177,10 @@ class GMG(object):
         # Compute the residual.
         fine_r = r - A.dot(x)
         # Restrict the residual.
-        coarse_r = R.dot(fine_r, spmv_domain_part=True)
+        if use_legate:
+            coarse_r = R.dot(fine_r, spmv_domain_part=True)
+        else:
+            coarse_r = R.dot(fine_r)
         ratio = (fine_r.shape[0] // coarse_r.shape[0]) // 2
 
         num_procs = max(machine.count(self.proc_kind) // ratio, 1)
@@ -393,7 +396,7 @@ def execute(N, data, smoother, gridop, levels, maxiter, tol, verbose, timer):
     # Warm up the runtime.
     float(
         np.linalg.norm(
-            A.matvec(
+            A.dot(
                 np.zeros(
                     A.shape[1],
                 )
