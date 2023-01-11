@@ -384,11 +384,13 @@ def execute(N, data, smoother, gridop, levels, maxiter, tol, verbose, timer):
     x, iters = linalg.cg(
         A, b, tol=tol, maxiter=maxiter, M=M, callback=callback
     )
+    total = timer.start()
     if tol <= np.linalg.norm(x):
         print("Converged in %d iterations" % iters)
     else:
         print("Failed to converge in %d iterations" % iters)
     print(f"Solve Time: {timer.stop()} ms")
+    print(f"Iterations / sec: {iters / (total / 1000.0)}")
 
 
 if __name__ == "__main__":

@@ -6,13 +6,17 @@ if [[ $# -ge 1 && ( "$1" == "-h" || "$1" == "--help" ) ]]; then
     echo "Arguments read from the environment:"
     echo "  OUT_DIR : Directory to dump output to"
     echo "  DOT : Run the dot microbenchmark"
-    echo "  PDE : Run the PDE microbenchmark"
+    echo "  PDE : Run the PDE benchmark"
+    echo "  GMG : Run the GMG benchmark"
     echo "  LEGATE_CPU : Run Legate with CPUs"
     echo "  LEGATE_GPU : Run Legate with GPUs"
     echo "  PETSC_CPU : Run PETSc with CPUs"
     echo "  PETSC_GPU : Run PETSc with GPUs"
     echo "  SCIPY : Run SciPy"
     echo "  CUPY : Run CuPy"
+    echo "  EXP_ITERS: Number of iterations to run each experiment"
+    echo "  EXP_SOCKETS: List of sockets to run the experiments with"
+    echo "  EXP_GPUS: List of GPUs to run the experiments with"
     exit
 fi
 
@@ -75,6 +79,22 @@ if [[ -n $PDE ]]; then
     fi
     if [[ -n $PETSC_GPU ]]; then
         GPUS="$EXP_GPUS" ./scripts/summit/run_petsc_pde.sh 2>&1 | tee $OUT_DIR/petsc_gpu_pde.out
+    fi
+fi
+
+# Configurations for running the GMG benchmark.
+if [[ -n $GMG ]]; then
+    if [[ -n $LEGATE_CPU ]]; then
+        CPU_SOCKETS="$EXP_SOCKETS" ./scripts/summit/run_legate_gmg.sh 2>&1 | tee $OUT_DIR/legate_cpu_gmg.out
+    fi
+    if [[ -n $LEGATE_GPU ]]; then
+        GPUS="$EXP_GPUS" ./scripts/summit/run_legate_gmg.sh 2>&1 | tee $OUT_DIR/legate_gpu_gmg.out
+    fi
+    if [[ -n $SCIPY ]]; then
+        SCIPY_SOCKETS="1 2" ./scripts/summit/run_scipy_gmg.sh 2>&1 | tee $OUT_DIR/scipy_cpu_gmg.out
+    fi
+    if [[ -n $CUPY ]]; then
+        CUPY_GPUS=1 ./scripts/summit/run_scipy_gmg.sh 2>&1 | tee $OUT_DIR/cupy_gpu_gmg.out
     fi
 fi
 
