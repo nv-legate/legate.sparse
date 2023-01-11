@@ -67,6 +67,8 @@ struct CSRSpMVColSplitImpl {
     auto A_vals = args.A_vals.read_accessor<VAL_TY, 1>();
     auto x      = args.x.read_accessor<VAL_TY, 1>();
 
+    if (args.y.domain().empty()) return;
+
     CSRSpMVColSplitImplBody<KIND, INDEX_CODE, VAL_CODE, decltype(y)>()(
       y, A_pos, A_crd, A_vals, x, args.y.shape<1>(), args.A_crd.shape<1>(), args.x.shape<1>());
   }

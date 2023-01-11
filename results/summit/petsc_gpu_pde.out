@@ -1,0 +1,385 @@
+GPU BENCHMARKS:
+GPUS = 1:
+jsrun -n 1 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10 -vec_type cuda -mat_type aijcusparse -nx 6000 -ny 6000
+iterations / sec: 89.621130
+Iters: 300
+GPUS = 1:
+jsrun -n 1 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10 -vec_type cuda -mat_type aijcusparse -nx 6000 -ny 6000
+iterations / sec: 89.670007
+Iters: 300
+GPUS = 1:
+jsrun -n 1 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10 -vec_type cuda -mat_type aijcusparse -nx 6000 -ny 6000
+iterations / sec: 89.682699
+Iters: 300
+GPUS = 1:
+jsrun -n 1 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10 -vec_type cuda -mat_type aijcusparse -nx 6000 -ny 6000
+iterations / sec: 89.691269
+Iters: 300
+GPUS = 1:
+jsrun -n 1 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10 -vec_type cuda -mat_type aijcusparse -nx 6000 -ny 6000
+iterations / sec: 89.669619
+Iters: 300
+GPUS = 1:
+jsrun -n 1 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10 -vec_type cuda -mat_type aijcusparse -nx 6000 -ny 6000
+iterations / sec: 89.725153
+Iters: 300
+GPUS = 1:
+jsrun -n 1 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10 -vec_type cuda -mat_type aijcusparse -nx 6000 -ny 6000
+iterations / sec: 89.830435
+Iters: 300
+GPUS = 1:
+jsrun -n 1 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10 -vec_type cuda -mat_type aijcusparse -nx 6000 -ny 6000
+iterations / sec: 89.627008
+Iters: 300
+GPUS = 1:
+jsrun -n 1 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10 -vec_type cuda -mat_type aijcusparse -nx 6000 -ny 6000
+iterations / sec: 89.827541
+Iters: 300
+GPUS = 1:
+jsrun -n 1 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10 -vec_type cuda -mat_type aijcusparse -nx 6000 -ny 6000
+iterations / sec: 89.666450
+Iters: 300
+GPUS = 1:
+jsrun -n 1 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10 -vec_type cuda -mat_type aijcusparse -nx 6000 -ny 6000
+iterations / sec: 89.685400
+Iters: 300
+GPUS = 1:
+jsrun -n 1 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10 -vec_type cuda -mat_type aijcusparse -nx 6000 -ny 6000
+iterations / sec: 89.688919
+Iters: 300
+GPUS = 3:
+jsrun -n 3 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10 -vec_type cuda -mat_type aijcusparse -nx 10392 -ny 10392
+iterations / sec: 88.573804
+Iters: 300
+GPUS = 3:
+jsrun -n 3 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10 -vec_type cuda -mat_type aijcusparse -nx 10392 -ny 10392
+iterations / sec: 88.608838
+Iters: 300
+GPUS = 3:
+jsrun -n 3 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10 -vec_type cuda -mat_type aijcusparse -nx 10392 -ny 10392
+iterations / sec: 88.555700
+Iters: 300
+GPUS = 3:
+jsrun -n 3 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10 -vec_type cuda -mat_type aijcusparse -nx 10392 -ny 10392
+iterations / sec: 88.654180
+Iters: 300
+GPUS = 3:
+jsrun -n 3 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10 -vec_type cuda -mat_type aijcusparse -nx 10392 -ny 10392
+iterations / sec: 88.760308
+Iters: 300
+GPUS = 3:
+jsrun -n 3 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10 -vec_type cuda -mat_type aijcusparse -nx 10392 -ny 10392
+iterations / sec: 88.373895
+Iters: 300
+GPUS = 3:
+jsrun -n 3 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10 -vec_type cuda -mat_type aijcusparse -nx 10392 -ny 10392
+iterations / sec: 88.670535
+Iters: 300
+GPUS = 3:
+jsrun -n 3 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10 -vec_type cuda -mat_type aijcusparse -nx 10392 -ny 10392
+iterations / sec: 88.649319
+Iters: 300
+GPUS = 3:
+jsrun -n 3 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10 -vec_type cuda -mat_type aijcusparse -nx 10392 -ny 10392
+iterations / sec: 88.679863
+Iters: 300
+GPUS = 3:
+jsrun -n 3 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10 -vec_type cuda -mat_type aijcusparse -nx 10392 -ny 10392
+iterations / sec: 88.763444
+Iters: 300
+GPUS = 3:
+jsrun -n 3 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10 -vec_type cuda -mat_type aijcusparse -nx 10392 -ny 10392
+iterations / sec: 88.586827
+Iters: 300
+GPUS = 3:
+jsrun -n 3 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10 -vec_type cuda -mat_type aijcusparse -nx 10392 -ny 10392
+iterations / sec: 88.693907
+Iters: 300
+GPUS = 6:
+jsrun -n 6 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10 -vec_type cuda -mat_type aijcusparse -nx 14696 -ny 14696
+iterations / sec: 87.376697
+Iters: 300
+GPUS = 6:
+jsrun -n 6 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10 -vec_type cuda -mat_type aijcusparse -nx 14696 -ny 14696
+iterations / sec: 87.214075
+Iters: 300
+GPUS = 6:
+jsrun -n 6 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10 -vec_type cuda -mat_type aijcusparse -nx 14696 -ny 14696
+iterations / sec: 86.521658
+Iters: 300
+GPUS = 6:
+jsrun -n 6 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10 -vec_type cuda -mat_type aijcusparse -nx 14696 -ny 14696
+iterations / sec: 87.300892
+Iters: 300
+GPUS = 6:
+jsrun -n 6 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10 -vec_type cuda -mat_type aijcusparse -nx 14696 -ny 14696
+iterations / sec: 87.470883
+Iters: 300
+GPUS = 6:
+jsrun -n 6 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10 -vec_type cuda -mat_type aijcusparse -nx 14696 -ny 14696
+iterations / sec: 87.288682
+Iters: 300
+GPUS = 6:
+jsrun -n 6 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10 -vec_type cuda -mat_type aijcusparse -nx 14696 -ny 14696
+iterations / sec: 87.303515
+Iters: 300
+GPUS = 6:
+jsrun -n 6 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10 -vec_type cuda -mat_type aijcusparse -nx 14696 -ny 14696
+iterations / sec: 87.481666
+Iters: 300
+GPUS = 6:
+jsrun -n 6 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10 -vec_type cuda -mat_type aijcusparse -nx 14696 -ny 14696
+iterations / sec: 87.311080
+Iters: 300
+GPUS = 6:
+jsrun -n 6 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10 -vec_type cuda -mat_type aijcusparse -nx 14696 -ny 14696
+iterations / sec: 87.309862
+Iters: 300
+GPUS = 6:
+jsrun -n 6 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10 -vec_type cuda -mat_type aijcusparse -nx 14696 -ny 14696
+iterations / sec: 87.480812
+Iters: 300
+GPUS = 6:
+jsrun -n 6 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10 -vec_type cuda -mat_type aijcusparse -nx 14696 -ny 14696
+iterations / sec: 87.299752
+Iters: 300
+GPUS = 12:
+jsrun -n 12 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10 -vec_type cuda -mat_type aijcusparse -nx 20784 -ny 20784
+iterations / sec: 86.973555
+Iters: 300
+GPUS = 12:
+jsrun -n 12 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10 -vec_type cuda -mat_type aijcusparse -nx 20784 -ny 20784
+iterations / sec: 86.422194
+Iters: 300
+GPUS = 12:
+jsrun -n 12 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10 -vec_type cuda -mat_type aijcusparse -nx 20784 -ny 20784
+iterations / sec: 87.180979
+Iters: 300
+GPUS = 12:
+jsrun -n 12 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10 -vec_type cuda -mat_type aijcusparse -nx 20784 -ny 20784
+iterations / sec: 87.206470
+Iters: 300
+GPUS = 12:
+jsrun -n 12 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10 -vec_type cuda -mat_type aijcusparse -nx 20784 -ny 20784
+iterations / sec: 87.318474
+Iters: 300
+GPUS = 12:
+jsrun -n 12 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10 -vec_type cuda -mat_type aijcusparse -nx 20784 -ny 20784
+iterations / sec: 87.209327
+Iters: 300
+GPUS = 12:
+jsrun -n 12 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10 -vec_type cuda -mat_type aijcusparse -nx 20784 -ny 20784
+iterations / sec: 87.187855
+Iters: 300
+GPUS = 12:
+jsrun -n 12 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10 -vec_type cuda -mat_type aijcusparse -nx 20784 -ny 20784
+iterations / sec: 87.334098
+Iters: 300
+GPUS = 12:
+jsrun -n 12 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10 -vec_type cuda -mat_type aijcusparse -nx 20784 -ny 20784
+iterations / sec: 87.179584
+Iters: 300
+GPUS = 12:
+jsrun -n 12 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10 -vec_type cuda -mat_type aijcusparse -nx 20784 -ny 20784
+iterations / sec: 87.187610
+Iters: 300
+GPUS = 12:
+jsrun -n 12 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10 -vec_type cuda -mat_type aijcusparse -nx 20784 -ny 20784
+iterations / sec: 87.185395
+Iters: 300
+GPUS = 12:
+jsrun -n 12 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10 -vec_type cuda -mat_type aijcusparse -nx 20784 -ny 20784
+iterations / sec: 87.172203
+Iters: 300
+GPUS = 24:
+jsrun -n 24 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10 -vec_type cuda -mat_type aijcusparse -nx 29393 -ny 29393
+iterations / sec: 86.771233
+Iters: 300
+GPUS = 24:
+jsrun -n 24 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10 -vec_type cuda -mat_type aijcusparse -nx 29393 -ny 29393
+iterations / sec: 87.032109
+Iters: 300
+GPUS = 24:
+jsrun -n 24 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10 -vec_type cuda -mat_type aijcusparse -nx 29393 -ny 29393
+iterations / sec: 86.592012
+Iters: 300
+GPUS = 24:
+jsrun -n 24 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10 -vec_type cuda -mat_type aijcusparse -nx 29393 -ny 29393
+iterations / sec: 87.022069
+Iters: 300
+GPUS = 24:
+jsrun -n 24 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10 -vec_type cuda -mat_type aijcusparse -nx 29393 -ny 29393
+iterations / sec: 86.268759
+Iters: 300
+GPUS = 24:
+jsrun -n 24 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10 -vec_type cuda -mat_type aijcusparse -nx 29393 -ny 29393
+iterations / sec: 87.027098
+Iters: 300
+GPUS = 24:
+jsrun -n 24 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10 -vec_type cuda -mat_type aijcusparse -nx 29393 -ny 29393
+iterations / sec: 86.807194
+Iters: 300
+GPUS = 24:
+jsrun -n 24 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10 -vec_type cuda -mat_type aijcusparse -nx 29393 -ny 29393
+iterations / sec: 86.464753
+Iters: 300
+GPUS = 24:
+jsrun -n 24 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10 -vec_type cuda -mat_type aijcusparse -nx 29393 -ny 29393
+iterations / sec: 86.379114
+Iters: 300
+GPUS = 24:
+jsrun -n 24 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10 -vec_type cuda -mat_type aijcusparse -nx 29393 -ny 29393
+iterations / sec: 86.855851
+Iters: 300
+GPUS = 24:
+jsrun -n 24 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10 -vec_type cuda -mat_type aijcusparse -nx 29393 -ny 29393
+iterations / sec: 86.662626
+Iters: 300
+GPUS = 24:
+jsrun -n 24 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10 -vec_type cuda -mat_type aijcusparse -nx 29393 -ny 29393
+iterations / sec: 86.935247
+Iters: 300
+GPUS = 48:
+jsrun -n 48 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10 -vec_type cuda -mat_type aijcusparse -nx 41569 -ny 41569
+iterations / sec: 85.865173
+Iters: 300
+GPUS = 48:
+jsrun -n 48 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10 -vec_type cuda -mat_type aijcusparse -nx 41569 -ny 41569
+iterations / sec: 86.856255
+Iters: 300
+GPUS = 48:
+jsrun -n 48 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10 -vec_type cuda -mat_type aijcusparse -nx 41569 -ny 41569
+iterations / sec: 86.419127
+Iters: 300
+GPUS = 48:
+jsrun -n 48 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10 -vec_type cuda -mat_type aijcusparse -nx 41569 -ny 41569
+iterations / sec: 85.504585
+Iters: 300
+GPUS = 48:
+jsrun -n 48 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10 -vec_type cuda -mat_type aijcusparse -nx 41569 -ny 41569
+iterations / sec: 86.761568
+Iters: 300
+GPUS = 48:
+jsrun -n 48 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10 -vec_type cuda -mat_type aijcusparse -nx 41569 -ny 41569
+iterations / sec: 86.847919
+Iters: 300
+GPUS = 48:
+jsrun -n 48 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10 -vec_type cuda -mat_type aijcusparse -nx 41569 -ny 41569
+iterations / sec: 86.215485
+Iters: 300
+GPUS = 48:
+jsrun -n 48 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10 -vec_type cuda -mat_type aijcusparse -nx 41569 -ny 41569
+iterations / sec: 86.098387
+Iters: 300
+GPUS = 48:
+jsrun -n 48 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10 -vec_type cuda -mat_type aijcusparse -nx 41569 -ny 41569
+iterations / sec: 85.415596
+Iters: 300
+GPUS = 48:
+jsrun -n 48 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10 -vec_type cuda -mat_type aijcusparse -nx 41569 -ny 41569
+iterations / sec: 86.452899
+Iters: 300
+GPUS = 48:
+jsrun -n 48 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10 -vec_type cuda -mat_type aijcusparse -nx 41569 -ny 41569
+iterations / sec: 85.850576
+Iters: 300
+GPUS = 48:
+jsrun -n 48 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10 -vec_type cuda -mat_type aijcusparse -nx 41569 -ny 41569
+iterations / sec: 86.278413
+Iters: 300
+GPUS = 96:
+jsrun -n 96 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10 -vec_type cuda -mat_type aijcusparse -nx 58787 -ny 58787
+iterations / sec: 85.380558
+Iters: 300
+GPUS = 96:
+jsrun -n 96 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10 -vec_type cuda -mat_type aijcusparse -nx 58787 -ny 58787
+iterations / sec: 84.153448
+Iters: 300
+GPUS = 96:
+jsrun -n 96 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10 -vec_type cuda -mat_type aijcusparse -nx 58787 -ny 58787
+iterations / sec: 85.054838
+Iters: 300
+GPUS = 96:
+jsrun -n 96 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10 -vec_type cuda -mat_type aijcusparse -nx 58787 -ny 58787
+iterations / sec: 85.588147
+Iters: 300
+GPUS = 96:
+jsrun -n 96 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10 -vec_type cuda -mat_type aijcusparse -nx 58787 -ny 58787
+iterations / sec: 85.271699
+Iters: 300
+GPUS = 96:
+jsrun -n 96 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10 -vec_type cuda -mat_type aijcusparse -nx 58787 -ny 58787
+iterations / sec: 85.169510
+Iters: 300
+GPUS = 96:
+jsrun -n 96 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10 -vec_type cuda -mat_type aijcusparse -nx 58787 -ny 58787
+iterations / sec: 85.234170
+Iters: 300
+GPUS = 96:
+jsrun -n 96 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10 -vec_type cuda -mat_type aijcusparse -nx 58787 -ny 58787
+iterations / sec: 84.719302
+Iters: 300
+GPUS = 96:
+jsrun -n 96 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10 -vec_type cuda -mat_type aijcusparse -nx 58787 -ny 58787
+iterations / sec: 85.452511
+Iters: 300
+GPUS = 96:
+jsrun -n 96 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10 -vec_type cuda -mat_type aijcusparse -nx 58787 -ny 58787
+iterations / sec: 83.600387
+Iters: 300
+GPUS = 96:
+jsrun -n 96 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10 -vec_type cuda -mat_type aijcusparse -nx 58787 -ny 58787
+iterations / sec: 85.127528
+Iters: 300
+GPUS = 96:
+jsrun -n 96 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10 -vec_type cuda -mat_type aijcusparse -nx 58787 -ny 58787
+iterations / sec: 84.738368
+Iters: 300
+GPUS = 192:
+jsrun -n 192 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10 -vec_type cuda -mat_type aijcusparse -nx 83138 -ny 83138
+iterations / sec: 81.318832
+Iters: 300
+GPUS = 192:
+jsrun -n 192 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10 -vec_type cuda -mat_type aijcusparse -nx 83138 -ny 83138
+iterations / sec: 80.910208
+Iters: 300
+GPUS = 192:
+jsrun -n 192 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10 -vec_type cuda -mat_type aijcusparse -nx 83138 -ny 83138
+iterations / sec: 81.575713
+Iters: 300
+GPUS = 192:
+jsrun -n 192 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10 -vec_type cuda -mat_type aijcusparse -nx 83138 -ny 83138
+iterations / sec: 81.600733
+Iters: 300
+GPUS = 192:
+jsrun -n 192 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10 -vec_type cuda -mat_type aijcusparse -nx 83138 -ny 83138
+iterations / sec: 80.215807
+Iters: 300
+GPUS = 192:
+jsrun -n 192 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10 -vec_type cuda -mat_type aijcusparse -nx 83138 -ny 83138
+iterations / sec: 80.922012
+Iters: 300
+GPUS = 192:
+jsrun -n 192 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10 -vec_type cuda -mat_type aijcusparse -nx 83138 -ny 83138
+iterations / sec: 82.041488
+Iters: 300
+GPUS = 192:
+jsrun -n 192 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10 -vec_type cuda -mat_type aijcusparse -nx 83138 -ny 83138
+iterations / sec: 82.101328
+Iters: 300
+GPUS = 192:
+jsrun -n 192 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10 -vec_type cuda -mat_type aijcusparse -nx 83138 -ny 83138
+iterations / sec: 79.545208
+Iters: 300
+GPUS = 192:
+jsrun -n 192 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10 -vec_type cuda -mat_type aijcusparse -nx 83138 -ny 83138
+iterations / sec: 81.338080
+Iters: 300
+GPUS = 192:
+jsrun -n 192 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10 -vec_type cuda -mat_type aijcusparse -nx 83138 -ny 83138
+iterations / sec: 80.302104
+Iters: 300
+GPUS = 192:
+jsrun -n 192 -g 1 -c 4 -b rs --smpiargs="-gpu" /gpfs/alpine/scratch/rohany/csc335//petsc-pde-benchmark/main -ksp_max_it 300 -ksp_type cg -pc_type none -ksp_norm_type unpreconditioned -ksp_atol 1e-10 -ksp_rtol 1e-10 -vec_type cuda -mat_type aijcusparse -nx 83138 -ny 83138
+iterations / sec: 82.359735
+Iters: 300

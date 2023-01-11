@@ -1,0 +1,30 @@
+CPU SOCKETS = 1:
+jsrun -n 1 -c 20 -b rs python3 examples/pde.py -package scipy -throughput -max_iter 25 -nx 10392 -ny 10392
+Iterations / sec: 0.6149585106252118
+CPU SOCKETS = 1:
+jsrun -n 1 -c 20 -b rs python3 examples/pde.py -package scipy -throughput -max_iter 25 -nx 10392 -ny 10392
+Iterations / sec: 0.609591321936883
+CPU SOCKETS = 1:
+jsrun -n 1 -c 20 -b rs python3 examples/pde.py -package scipy -throughput -max_iter 25 -nx 10392 -ny 10392
+Iterations / sec: 0.61255721029436
+CPU SOCKETS = 1:
+jsrun -n 1 -c 20 -b rs python3 examples/pde.py -package scipy -throughput -max_iter 25 -nx 10392 -ny 10392
+Iterations / sec: 0.6103317928283081
+CPU SOCKETS = 1:
+jsrun -n 1 -c 20 -b rs python3 examples/pde.py -package scipy -throughput -max_iter 25 -nx 10392 -ny 10392
+Iterations / sec: 0.6104584050266777
+CPU SOCKETS = 2:
+jsrun -n 1 -c 40 -b rs python3 examples/pde.py -package scipy -throughput -max_iter 25 -nx 14696 -ny 14696
+Iterations / sec: 0.2553714018311146
+CPU SOCKETS = 2:
+jsrun -n 1 -c 40 -b rs python3 examples/pde.py -package scipy -throughput -max_iter 25 -nx 14696 -ny 14696
+Iterations / sec: 0.2674033513818815
+CPU SOCKETS = 2:
+jsrun -n 1 -c 40 -b rs python3 examples/pde.py -package scipy -throughput -max_iter 25 -nx 14696 -ny 14696
+Iterations / sec: 0.22331091351463875
+CPU SOCKETS = 2:
+jsrun -n 1 -c 40 -b rs python3 examples/pde.py -package scipy -throughput -max_iter 25 -nx 14696 -ny 14696
+Iterations / sec: 0.2587281445543734
+CPU SOCKETS = 2:
+jsrun -n 1 -c 40 -b rs python3 examples/pde.py -package scipy -throughput -max_iter 25 -nx 14696 -ny 14696
+Iterations / sec: 0.2555839036593165

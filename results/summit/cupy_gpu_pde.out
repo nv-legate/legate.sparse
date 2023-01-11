@@ -1,0 +1,48 @@
+GPUS = 1:
+jsrun -n 1 -c ALL_CPUS -g 1 -b rs python examples/pde.py -package cupy -throughput -max_iter 300 -nx 6000 -ny 6000
+Iterations / sec: 73.73355508604018
+ERROR:  One or more process (first noticed rank 0) terminated with signal 11
+GPUS = 1:
+jsrun -n 1 -c ALL_CPUS -g 1 -b rs python examples/pde.py -package cupy -throughput -max_iter 300 -nx 6000 -ny 6000
+Iterations / sec: 73.73176326919726
+ERROR:  One or more process (first noticed rank 0) terminated with signal 11
+GPUS = 1:
+jsrun -n 1 -c ALL_CPUS -g 1 -b rs python examples/pde.py -package cupy -throughput -max_iter 300 -nx 6000 -ny 6000
+Iterations / sec: 73.77747960447152
+ERROR:  One or more process (first noticed rank 0) terminated with signal 11
+GPUS = 1:
+jsrun -n 1 -c ALL_CPUS -g 1 -b rs python examples/pde.py -package cupy -throughput -max_iter 300 -nx 6000 -ny 6000
+Iterations / sec: 73.63604330911558
+ERROR:  One or more process (first noticed rank 0) terminated with signal 11
+GPUS = 1:
+jsrun -n 1 -c ALL_CPUS -g 1 -b rs python examples/pde.py -package cupy -throughput -max_iter 300 -nx 6000 -ny 6000
+Iterations / sec: 73.55608912186972
+ERROR:  One or more process (first noticed rank 0) terminated with signal 11
+GPUS = 1:
+jsrun -n 1 -c ALL_CPUS -g 1 -b rs python examples/pde.py -package cupy -throughput -max_iter 300 -nx 6000 -ny 6000
+Iterations / sec: 73.64042533338502
+GPUS = 1:
+jsrun -n 1 -c ALL_CPUS -g 1 -b rs python examples/pde.py -package cupy -throughput -max_iter 300 -nx 6000 -ny 6000
+Iterations / sec: 73.67448874533449
+ERROR:  One or more process (first noticed rank 0) terminated with signal 11
+GPUS = 1:
+jsrun -n 1 -c ALL_CPUS -g 1 -b rs python examples/pde.py -package cupy -throughput -max_iter 300 -nx 6000 -ny 6000
+Iterations / sec: 73.66909124787456
+ERROR:  One or more process (first noticed rank 0) terminated with signal 11
+GPUS = 1:
+jsrun -n 1 -c ALL_CPUS -g 1 -b rs python examples/pde.py -package cupy -throughput -max_iter 300 -nx 6000 -ny 6000
+Iterations / sec: 73.23477550454099
+free(): invalid pointer
+ERROR:  One or more process (first noticed rank 0) terminated with signal 6
+GPUS = 1:
+jsrun -n 1 -c ALL_CPUS -g 1 -b rs python examples/pde.py -package cupy -throughput -max_iter 300 -nx 6000 -ny 6000
+Iterations / sec: 73.75571002025461
+ERROR:  One or more process (first noticed rank 0) terminated with signal 11
+GPUS = 1:
+jsrun -n 1 -c ALL_CPUS -g 1 -b rs python examples/pde.py -package cupy -throughput -max_iter 300 -nx 6000 -ny 6000
+Iterations / sec: 73.7248534232559
+ERROR:  One or more process (first noticed rank 0) terminated with signal 11
+GPUS = 1:
+jsrun -n 1 -c ALL_CPUS -g 1 -b rs python examples/pde.py -package cupy -throughput -max_iter 300 -nx 6000 -ny 6000
+Iterations / sec: 73.68893602123642
+ERROR:  One or more process (first noticed rank 0) terminated with signal 11
