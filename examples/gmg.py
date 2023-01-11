@@ -15,7 +15,7 @@
 import argparse
 
 import numpy
-from benchmark import parse_common_args
+from benchmark import get_phase_procs, parse_common_args
 
 
 def stencil_grid(S, grid, dtype=None, format=None):
@@ -144,6 +144,9 @@ class GMG(object):
         self.smoother = {"symgs": SYMGS, "jacobi": WeightedJacobi}[smoother]()
         self.operators = self.compute_operators(A)
         self.temp = None
+        _, procs = get_phase_procs(use_legate)
+        self.machine = procs
+        self.proc_kind = procs.preferred_kind
 
     def compute_operators(self, A):
         operators = []
@@ -160,12 +163,9 @@ class GMG(object):
         return operators
 
     def cycle(self, r):
-        from legate.core import get_machine
-        from legate.core.machine import ProcessorKind
-
-        machine = get_machine().only(ProcessorKind.GPU)
-        with machine:
-            return self._cycle(self.A, r, 0, machine)
+        # Kick off the cycle with the top-level machine.
+        with self.machine:
+            return self._cycle(self.A, r, 0, self.machine)
 
     def _cycle(self, A, r, level, machine):
         if level == self.levels - 1:
@@ -179,11 +179,10 @@ class GMG(object):
         # Restrict the residual.
         coarse_r = R.dot(fine_r, spmv_domain_part=True)
         ratio = (fine_r.shape[0] // coarse_r.shape[0]) // 2
-        from legate.core.machine import ProcessorKind
 
-        num_procs = max(machine.count(ProcessorKind.GPU) // ratio, 1)
+        num_procs = max(machine.count(self.proc_kind) // ratio, 1)
         with machine[:num_procs]:
-            # Compute coarse solution.
+            # Compute coarse solution using a subset of the machine.
             coarse_x = self._cycle(
                 coarse_A, coarse_r, level + 1, machine[:num_procs]
             )

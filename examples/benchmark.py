@@ -85,6 +85,10 @@ class DummyScope:
     def count(self, _):
         return 1
 
+    @property
+    def preferred_kind(self):
+        return None
+
 
 def get_phase_procs(use_legate: bool):
     if use_legate:
