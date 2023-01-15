@@ -682,7 +682,7 @@ class csr_array(CompressedBase, DenseSparseBase):
         # At this point, we have objects that we might not understand. Case to
         # try and figure out what they are.
         if isinstance(other, numpy.ndarray):
-            other = cunumeric.ndarray(other)
+            other = cunumeric.array(other)
         if cunumeric.ndim(other) == 0:
             # If we have a scalar, then do an element-wise multiply on the
             # values array.
