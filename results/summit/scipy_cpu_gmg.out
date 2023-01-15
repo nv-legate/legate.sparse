@@ -1,0 +1,80 @@
+CPU SOCKETS = 1:
+jsrun -n 1 -c 20 -b rs python3 examples/gmg.py -package scipy -m 25 -n 5196
+Data creation time: 4093.6866370010375 ms
+Max required driver memory for N=5196 is 539.968328MB
+GMG init time: 13513.21237599945 ms
+Converged in 25 iterations
+Solve Time: 45171.76799699974 ms
+Iterations / sec: 0.5534430266634787
+CPU SOCKETS = 1:
+jsrun -n 1 -c 20 -b rs python3 examples/gmg.py -package scipy -m 25 -n 5196
+Data creation time: 4141.019583000183 ms
+Max required driver memory for N=5196 is 539.968328MB
+GMG init time: 13561.13976599884 ms
+Converged in 25 iterations
+Solve Time: 45297.785722000124 ms
+Iterations / sec: 0.5519033568975991
+CPU SOCKETS = 1:
+jsrun -n 1 -c 20 -b rs python3 examples/gmg.py -package scipy -m 25 -n 5196
+Data creation time: 4135.9553859996795 ms
+Max required driver memory for N=5196 is 539.968328MB
+GMG init time: 13519.351572000503 ms
+Converged in 25 iterations
+Solve Time: 45213.06431800079 ms
+Iterations / sec: 0.5529375276173593
+CPU SOCKETS = 1:
+jsrun -n 1 -c 20 -b rs python3 examples/gmg.py -package scipy -m 25 -n 5196
+Data creation time: 4062.281614999771 ms
+Max required driver memory for N=5196 is 539.968328MB
+GMG init time: 13508.898010000228 ms
+Converged in 25 iterations
+Solve Time: 45006.258185998915 ms
+Iterations / sec: 0.5554783047433456
+CPU SOCKETS = 1:
+jsrun -n 1 -c 20 -b rs python3 examples/gmg.py -package scipy -m 25 -n 5196
+Data creation time: 4076.005698999405 ms
+Max required driver memory for N=5196 is 539.968328MB
+GMG init time: 13500.794647001267 ms
+Converged in 25 iterations
+Solve Time: 44876.12540999985 ms
+Iterations / sec: 0.5570890929551862
+CPU SOCKETS = 2:
+jsrun -n 1 -c 40 -b rs python3 examples/gmg.py -package scipy -m 25 -n 7348
+Data creation time: 8059.406763999939 ms
+Max required driver memory for N=7348 is 1079.862088MB
+GMG init time: 20754.654056001662 ms
+Converged in 25 iterations
+Solve Time: 65034.43962100029 ms
+Iterations / sec: 0.3844117077919319
+CPU SOCKETS = 2:
+jsrun -n 1 -c 40 -b rs python3 examples/gmg.py -package scipy -m 25 -n 7348
+Data creation time: 8758.819527999878 ms
+Max required driver memory for N=7348 is 1079.862088MB
+GMG init time: 21814.023380998613 ms
+Converged in 25 iterations
+Solve Time: 66171.8715039997 ms
+Iterations / sec: 0.37780403412783775
+CPU SOCKETS = 2:
+jsrun -n 1 -c 40 -b rs python3 examples/gmg.py -package scipy -m 25 -n 7348
+Data creation time: 8987.106298999786 ms
+Max required driver memory for N=7348 is 1079.862088MB
+GMG init time: 21926.43264900017 ms
+Converged in 25 iterations
+Solve Time: 66977.44406699944 ms
+Iterations / sec: 0.3732599884670396
+CPU SOCKETS = 2:
+jsrun -n 1 -c 40 -b rs python3 examples/gmg.py -package scipy -m 25 -n 7348
+Data creation time: 8953.510162000655 ms
+Max required driver memory for N=7348 is 1079.862088MB
+GMG init time: 22038.52850200081 ms
+Converged in 25 iterations
+Solve Time: 67159.30167399978 ms
+Iterations / sec: 0.3722492547845917
+CPU SOCKETS = 2:
+jsrun -n 1 -c 40 -b rs python3 examples/gmg.py -package scipy -m 25 -n 7348
+Data creation time: 9004.839194999695 ms
+Max required driver memory for N=7348 is 1079.862088MB
+GMG init time: 22108.56686899948 ms
+Converged in 25 iterations
+Solve Time: 66741.58249900055 ms
+Iterations / sec: 0.374579071456305

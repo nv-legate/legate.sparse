@@ -1,0 +1,264 @@
+GPUS = 1:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 14000 --cpus 1 --sysmem 150000 --eager-alloc-percentage 45 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --nodes 1 --ranks-per-node 1 --gpus 1 --cpu-bind 0-83 --mem-bind 0 --gpu-bind 0,1,2 --nic-bind mlx5_0,mlx5_1 -n 3000
+<jemalloc>: Unsupported system page size
+Data creation time: 2538.034 ms
+Max required driver memory for N=3000 is 180.000008MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 685.789 ms
+Converged in 200 iterations
+Solve Time: 5486.087 ms
+Iterations / sec: 36.45585642371329
+GPUS = 1:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 14000 --cpus 1 --sysmem 150000 --eager-alloc-percentage 45 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --nodes 1 --ranks-per-node 1 --gpus 1 --cpu-bind 0-83 --mem-bind 0 --gpu-bind 0,1,2 --nic-bind mlx5_0,mlx5_1 -n 3000
+<jemalloc>: Unsupported system page size
+Data creation time: 2529.544 ms
+Max required driver memory for N=3000 is 180.000008MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 684.448 ms
+Converged in 200 iterations
+Solve Time: 5485.201 ms
+Iterations / sec: 36.4617449752525
+GPUS = 1:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 14000 --cpus 1 --sysmem 150000 --eager-alloc-percentage 45 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --nodes 1 --ranks-per-node 1 --gpus 1 --cpu-bind 0-83 --mem-bind 0 --gpu-bind 0,1,2 --nic-bind mlx5_0,mlx5_1 -n 3000
+<jemalloc>: Unsupported system page size
+Data creation time: 2538.412 ms
+Max required driver memory for N=3000 is 180.000008MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 682.183 ms
+Converged in 200 iterations
+Solve Time: 5450.688 ms
+Iterations / sec: 36.692615684478724
+GPUS = 1:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 14000 --cpus 1 --sysmem 150000 --eager-alloc-percentage 45 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --nodes 1 --ranks-per-node 1 --gpus 1 --cpu-bind 0-83 --mem-bind 0 --gpu-bind 0,1,2 --nic-bind mlx5_0,mlx5_1 -n 3000
+<jemalloc>: Unsupported system page size
+Data creation time: 2544.59 ms
+Max required driver memory for N=3000 is 180.000008MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 688.582 ms
+Converged in 200 iterations
+Solve Time: 5524.671 ms
+Iterations / sec: 36.20125071701102
+GPUS = 1:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 14000 --cpus 1 --sysmem 150000 --eager-alloc-percentage 45 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --nodes 1 --ranks-per-node 1 --gpus 1 --cpu-bind 0-83 --mem-bind 0 --gpu-bind 0,1,2 --nic-bind mlx5_0,mlx5_1 -n 3000
+<jemalloc>: Unsupported system page size
+Data creation time: 2538.963 ms
+Max required driver memory for N=3000 is 180.000008MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 686.383 ms
+Converged in 200 iterations
+Solve Time: 5508.133 ms
+Iterations / sec: 36.309943859380304
+GPUS = 1:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 14000 --cpus 1 --sysmem 150000 --eager-alloc-percentage 45 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --nodes 1 --ranks-per-node 1 --gpus 1 --cpu-bind 0-83 --mem-bind 0 --gpu-bind 0,1,2 --nic-bind mlx5_0,mlx5_1 -n 3000
+<jemalloc>: Unsupported system page size
+Data creation time: 2543.563 ms
+Max required driver memory for N=3000 is 180.000008MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 684.698 ms
+Converged in 200 iterations
+Solve Time: 5492.036 ms
+Iterations / sec: 36.41636726343382
+GPUS = 1:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 14000 --cpus 1 --sysmem 150000 --eager-alloc-percentage 45 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --nodes 1 --ranks-per-node 1 --gpus 1 --cpu-bind 0-83 --mem-bind 0 --gpu-bind 0,1,2 --nic-bind mlx5_0,mlx5_1 -n 3000
+<jemalloc>: Unsupported system page size
+Data creation time: 2561.512 ms
+Max required driver memory for N=3000 is 180.000008MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 687.636 ms
+Converged in 200 iterations
+Solve Time: 5485.021 ms
+Iterations / sec: 36.46294152748003
+GPUS = 1:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 14000 --cpus 1 --sysmem 150000 --eager-alloc-percentage 45 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --nodes 1 --ranks-per-node 1 --gpus 1 --cpu-bind 0-83 --mem-bind 0 --gpu-bind 0,1,2 --nic-bind mlx5_0,mlx5_1 -n 3000
+<jemalloc>: Unsupported system page size
+Data creation time: 2529.423 ms
+Max required driver memory for N=3000 is 180.000008MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 684.889 ms
+Converged in 200 iterations
+Solve Time: 5499.493 ms
+Iterations / sec: 36.3669887387801
+GPUS = 1:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 14000 --cpus 1 --sysmem 150000 --eager-alloc-percentage 45 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --nodes 1 --ranks-per-node 1 --gpus 1 --cpu-bind 0-83 --mem-bind 0 --gpu-bind 0,1,2 --nic-bind mlx5_0,mlx5_1 -n 3000
+<jemalloc>: Unsupported system page size
+Data creation time: 2536.277 ms
+Max required driver memory for N=3000 is 180.000008MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 683.981 ms
+Converged in 200 iterations
+Solve Time: 5485.812 ms
+Iterations / sec: 36.457683930838314
+GPUS = 1:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 14000 --cpus 1 --sysmem 150000 --eager-alloc-percentage 45 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --nodes 1 --ranks-per-node 1 --gpus 1 --cpu-bind 0-83 --mem-bind 0 --gpu-bind 0,1,2 --nic-bind mlx5_0,mlx5_1 -n 3000
+<jemalloc>: Unsupported system page size
+Data creation time: 2543.716 ms
+Max required driver memory for N=3000 is 180.000008MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 686.945 ms
+Converged in 200 iterations
+Solve Time: 5519.792 ms
+Iterations / sec: 36.23324936881679
+GPUS = 1:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 14000 --cpus 1 --sysmem 150000 --eager-alloc-percentage 45 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --nodes 1 --ranks-per-node 1 --gpus 1 --cpu-bind 0-83 --mem-bind 0 --gpu-bind 0,1,2 --nic-bind mlx5_0,mlx5_1 -n 3000
+<jemalloc>: Unsupported system page size
+Data creation time: 2543.565 ms
+Max required driver memory for N=3000 is 180.000008MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 687.503 ms
+Converged in 200 iterations
+Solve Time: 5511.719 ms
+Iterations / sec: 36.28632011174735
+GPUS = 1:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 14000 --cpus 1 --sysmem 150000 --eager-alloc-percentage 45 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --nodes 1 --ranks-per-node 1 --gpus 1 --cpu-bind 0-83 --mem-bind 0 --gpu-bind 0,1,2 --nic-bind mlx5_0,mlx5_1 -n 3000
+<jemalloc>: Unsupported system page size
+Data creation time: 2534.226 ms
+Max required driver memory for N=3000 is 180.000008MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 688.027 ms
+Converged in 200 iterations
+Solve Time: 5520.771 ms
+Iterations / sec: 36.22682411568964
+GPUS = 3:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 14000 --cpus 1 --sysmem 150000 --eager-alloc-percentage 45 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --nodes 1 --ranks-per-node 1 --gpus 3 --cpu-bind 0-83 --mem-bind 0 --gpu-bind 0,1,2 --nic-bind mlx5_0,mlx5_1 -n 5196
+<jemalloc>: Unsupported system page size
+Data creation time: 4205.22 ms
+Max required driver memory for N=5196 is 539.968328MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 817.813 ms
+Converged in 200 iterations
+Solve Time: 6135.574 ms
+Iterations / sec: 32.59678719546044
+GPUS = 3:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 14000 --cpus 1 --sysmem 150000 --eager-alloc-percentage 45 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --nodes 1 --ranks-per-node 1 --gpus 3 --cpu-bind 0-83 --mem-bind 0 --gpu-bind 0,1,2 --nic-bind mlx5_0,mlx5_1 -n 5196
+<jemalloc>: Unsupported system page size
+Data creation time: 4106.291 ms
+Max required driver memory for N=5196 is 539.968328MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 822.743 ms
+Converged in 200 iterations
+Solve Time: 6087.198 ms
+Iterations / sec: 32.85583941905619
+GPUS = 3:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 14000 --cpus 1 --sysmem 150000 --eager-alloc-percentage 45 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --nodes 1 --ranks-per-node 1 --gpus 3 --cpu-bind 0-83 --mem-bind 0 --gpu-bind 0,1,2 --nic-bind mlx5_0,mlx5_1 -n 5196
+<jemalloc>: Unsupported system page size
+Data creation time: 4104.973 ms
+Max required driver memory for N=5196 is 539.968328MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 819.686 ms
+Converged in 200 iterations
+Solve Time: 6127.627 ms
+Iterations / sec: 32.63906239723795
+GPUS = 3:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 14000 --cpus 1 --sysmem 150000 --eager-alloc-percentage 45 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --nodes 1 --ranks-per-node 1 --gpus 3 --cpu-bind 0-83 --mem-bind 0 --gpu-bind 0,1,2 --nic-bind mlx5_0,mlx5_1 -n 5196
+<jemalloc>: Unsupported system page size
+Data creation time: 4138.031 ms
+Max required driver memory for N=5196 is 539.968328MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 818.764 ms
+Converged in 200 iterations
+Solve Time: 6118.641 ms
+Iterations / sec: 32.686996998189635
+GPUS = 3:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 14000 --cpus 1 --sysmem 150000 --eager-alloc-percentage 45 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --nodes 1 --ranks-per-node 1 --gpus 3 --cpu-bind 0-83 --mem-bind 0 --gpu-bind 0,1,2 --nic-bind mlx5_0,mlx5_1 -n 5196
+<jemalloc>: Unsupported system page size
+Data creation time: 4198.289 ms
+Max required driver memory for N=5196 is 539.968328MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 822.245 ms
+Converged in 200 iterations
+Solve Time: 6108.446 ms
+Iterations / sec: 32.74155161558275
+GPUS = 3:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 14000 --cpus 1 --sysmem 150000 --eager-alloc-percentage 45 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --nodes 1 --ranks-per-node 1 --gpus 3 --cpu-bind 0-83 --mem-bind 0 --gpu-bind 0,1,2 --nic-bind mlx5_0,mlx5_1 -n 5196
+<jemalloc>: Unsupported system page size
+Data creation time: 4159.341 ms
+Max required driver memory for N=5196 is 539.968328MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 814.751 ms
+Converged in 200 iterations
+Solve Time: 6085.505 ms
+Iterations / sec: 32.86497998111907
+GPUS = 3:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 14000 --cpus 1 --sysmem 150000 --eager-alloc-percentage 45 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --nodes 1 --ranks-per-node 1 --gpus 3 --cpu-bind 0-83 --mem-bind 0 --gpu-bind 0,1,2 --nic-bind mlx5_0,mlx5_1 -n 5196
+<jemalloc>: Unsupported system page size
+Data creation time: 4314.672 ms
+Max required driver memory for N=5196 is 539.968328MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 818.711 ms
+Converged in 200 iterations
+Solve Time: 6111.618 ms
+Iterations / sec: 32.724558373903605
+GPUS = 3:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 14000 --cpus 1 --sysmem 150000 --eager-alloc-percentage 45 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --nodes 1 --ranks-per-node 1 --gpus 3 --cpu-bind 0-83 --mem-bind 0 --gpu-bind 0,1,2 --nic-bind mlx5_0,mlx5_1 -n 5196
+<jemalloc>: Unsupported system page size
+Data creation time: 4132.324 ms
+Max required driver memory for N=5196 is 539.968328MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 821.696 ms
+Converged in 200 iterations
+Solve Time: 6128.262 ms
+Iterations / sec: 32.6356803935602
+GPUS = 3:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 14000 --cpus 1 --sysmem 150000 --eager-alloc-percentage 45 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --nodes 1 --ranks-per-node 1 --gpus 3 --cpu-bind 0-83 --mem-bind 0 --gpu-bind 0,1,2 --nic-bind mlx5_0,mlx5_1 -n 5196
+<jemalloc>: Unsupported system page size
+Data creation time: 4193.891 ms
+Max required driver memory for N=5196 is 539.968328MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 823.543 ms
+Converged in 200 iterations
+Solve Time: 6154.023 ms
+Iterations / sec: 32.499066058089156
+GPUS = 3:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 14000 --cpus 1 --sysmem 150000 --eager-alloc-percentage 45 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --nodes 1 --ranks-per-node 1 --gpus 3 --cpu-bind 0-83 --mem-bind 0 --gpu-bind 0,1,2 --nic-bind mlx5_0,mlx5_1 -n 5196
+<jemalloc>: Unsupported system page size
+Data creation time: 4325.68 ms
+Max required driver memory for N=5196 is 539.968328MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 820.992 ms
+Converged in 200 iterations
+Solve Time: 6097.85 ms
+Iterations / sec: 32.798445353690234
+GPUS = 3:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 14000 --cpus 1 --sysmem 150000 --eager-alloc-percentage 45 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --nodes 1 --ranks-per-node 1 --gpus 3 --cpu-bind 0-83 --mem-bind 0 --gpu-bind 0,1,2 --nic-bind mlx5_0,mlx5_1 -n 5196
+<jemalloc>: Unsupported system page size
+Data creation time: 4166.128 ms
+Max required driver memory for N=5196 is 539.968328MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 817.331 ms
+Converged in 200 iterations
+Solve Time: 6091.373 ms
+Iterations / sec: 32.833320172644164
+GPUS = 3:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 14000 --cpus 1 --sysmem 150000 --eager-alloc-percentage 45 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --nodes 1 --ranks-per-node 1 --gpus 3 --cpu-bind 0-83 --mem-bind 0 --gpu-bind 0,1,2 --nic-bind mlx5_0,mlx5_1 -n 5196
+<jemalloc>: Unsupported system page size
+Data creation time: 4193.378 ms
+Max required driver memory for N=5196 is 539.968328MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 826.651 ms
+Converged in 200 iterations
+Solve Time: 6087.949 ms
+Iterations / sec: 32.85178637337468
