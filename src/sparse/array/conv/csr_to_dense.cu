@@ -35,7 +35,9 @@ __global__ void CSRtoDenseKernel(size_t rows,
   if (idx >= rows) return;
   INDEX_TY i = idx + bounds.lo[0];
   // Initialize the row with all zeros.
-  for (INDEX_TY j = bounds.lo[1]; j < bounds.hi[1] + 1; j++) { A_vals[{i, j}] = static_cast<VAL_TY>(0); }
+  for (INDEX_TY j = bounds.lo[1]; j < bounds.hi[1] + 1; j++) {
+    A_vals[{i, j}] = static_cast<VAL_TY>(0);
+  }
   // Copy the non-zero values into place.
   for (INDEX_TY j_pos = B_pos[i].lo; j_pos < B_pos[i].hi + 1; j_pos++) {
     INDEX_TY j     = B_crd[j_pos];

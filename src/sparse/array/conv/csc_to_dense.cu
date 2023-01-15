@@ -35,7 +35,9 @@ __global__ void CSCtoDenseKernel(size_t cols,
   if (idx >= cols) return;
   INDEX_TY j = idx + bounds.lo[1];
   // Initialize the row with all zeros.
-  for (INDEX_TY i = bounds.lo[0]; i < bounds.hi[0] + 1; i++) { A_vals[{i, j}] = static_cast<VAL_TY>(0); }
+  for (INDEX_TY i = bounds.lo[0]; i < bounds.hi[0] + 1; i++) {
+    A_vals[{i, j}] = static_cast<VAL_TY>(0);
+  }
   // Copy the non-zero values into place.
   for (INDEX_TY iB = B_pos[j].lo; iB < B_pos[j].hi + 1; iB++) {
     INDEX_TY i     = B_crd[iB];

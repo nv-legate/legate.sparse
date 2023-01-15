@@ -309,7 +309,6 @@ struct SpGEMMCSRxCSRxCSCLocalTilesImplCuSparse {
   }
 };
 
-
 template <>
 struct SpGEMMCSRxCSRxCSCLocalTilesImpl<VariantKind::GPU> {
   template <LegateTypeCode INDEX_CODE, LegateTypeCode VAL_CODE>
@@ -318,7 +317,7 @@ struct SpGEMMCSRxCSRxCSCLocalTilesImpl<VariantKind::GPU> {
     if constexpr (cusparseSupportsType<legate_type_of<VAL_CODE>>()) {
       SpGEMMCSRxCSRxCSCLocalTilesImplCuSparse{}.template operator()<INDEX_CODE, VAL_CODE>(args);
     } else {
-      assert (false && "Type currently unsupported for GPU execution.");
+      assert(false && "Type currently unsupported for GPU execution.");
     }
   }
 };

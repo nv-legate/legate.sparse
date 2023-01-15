@@ -46,7 +46,7 @@ struct AddCSRCSRNNZImpl {
     auto C_crd = args.C_crd.read_accessor<INDEX_TY, 1>();
 
     if (args.nnz.domain().empty()) return;
-    
+
     AddCSRCSRNNZImplBody<KIND, INDEX_CODE>()(nnz, B_pos, B_crd, C_pos, C_crd, args.nnz.shape<1>());
   }
 };

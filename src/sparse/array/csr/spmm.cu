@@ -117,7 +117,7 @@ struct SpMMCSRImpl<VariantKind::GPU> {
   template <LegateTypeCode INDEX_CODE, LegateTypeCode VAL_CODE>
   void operator()(SpMMCSRArgs& args) const
   {
-    if constexpr(cusparseSupportsType<legate_type_of<VAL_CODE>>()) {
+    if constexpr (cusparseSupportsType<legate_type_of<VAL_CODE>>()) {
       SpMMCSRImplCuSparse{}.template operator()<INDEX_CODE, VAL_CODE>(args);
     } else {
       assert(false && "Type currently unsupported for GPU execution.");

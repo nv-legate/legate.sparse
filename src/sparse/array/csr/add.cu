@@ -372,7 +372,7 @@ struct AddCSRCSRImpl<VariantKind::GPU> {
   template <LegateTypeCode INDEX_CODE, LegateTypeCode VAL_CODE>
   void operator()(AddCSRCSRArgs& args) const
   {
-    if constexpr(cusparseSupportsType<legate_type_of<VAL_CODE>>()) {
+    if constexpr (cusparseSupportsType<legate_type_of<VAL_CODE>>()) {
       AddCSRCSRImplCuSparse{}.template operator()<INDEX_CODE, VAL_CODE>(args);
     } else {
       assert(false && "currently unsupported datatype for GPU execution.");
