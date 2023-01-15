@@ -27,6 +27,42 @@ constexpr decltype(auto) value_type_dispatch_from_index(legate::LegateTypeCode v
 {
   // Dispatch on the supported value types, conditioned on the index types.
   switch (value_type) {
+    case legate::LegateTypeCode::BOOL_LT: {
+      return f.template operator()<INDEX_TY_CODE, legate::LegateTypeCode::BOOL_LT>(
+        std::forward<Fnargs>(args)...);
+    }
+    case legate::LegateTypeCode::INT8_LT: {
+      return f.template operator()<INDEX_TY_CODE, legate::LegateTypeCode::INT8_LT>(
+        std::forward<Fnargs>(args)...);
+    }
+    case legate::LegateTypeCode::INT16_LT: {
+      return f.template operator()<INDEX_TY_CODE, legate::LegateTypeCode::INT16_LT>(
+        std::forward<Fnargs>(args)...);
+    }
+    case legate::LegateTypeCode::INT32_LT: {
+      return f.template operator()<INDEX_TY_CODE, legate::LegateTypeCode::INT32_LT>(
+        std::forward<Fnargs>(args)...);
+    }
+    case legate::LegateTypeCode::INT64_LT: {
+      return f.template operator()<INDEX_TY_CODE, legate::LegateTypeCode::INT64_LT>(
+        std::forward<Fnargs>(args)...);
+    }
+    case legate::LegateTypeCode::UINT8_LT: {
+      return f.template operator()<INDEX_TY_CODE, legate::LegateTypeCode::UINT8_LT>(
+        std::forward<Fnargs>(args)...);
+    }
+    case legate::LegateTypeCode::UINT16_LT: {
+      return f.template operator()<INDEX_TY_CODE, legate::LegateTypeCode::UINT16_LT>(
+        std::forward<Fnargs>(args)...);
+    }
+    case legate::LegateTypeCode::UINT32_LT: {
+      return f.template operator()<INDEX_TY_CODE, legate::LegateTypeCode::UINT32_LT>(
+        std::forward<Fnargs>(args)...);
+    }
+    case legate::LegateTypeCode::UINT64_LT: {
+      return f.template operator()<INDEX_TY_CODE, legate::LegateTypeCode::UINT32_LT>(
+        std::forward<Fnargs>(args)...);
+    }
     case legate::LegateTypeCode::FLOAT_LT: {
       return f.template operator()<INDEX_TY_CODE, legate::LegateTypeCode::FLOAT_LT>(
         std::forward<Fnargs>(args)...);

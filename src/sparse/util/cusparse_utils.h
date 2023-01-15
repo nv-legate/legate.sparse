@@ -86,6 +86,37 @@ inline cudaDataType cusparseDataType<complex<double>>()
   return CUDA_C_64F;
 }
 
+// Template dispatch to enable cuSPARSE task variants.
+template <typename VAL_TY>
+constexpr inline bool cusparseSupportsType()
+{
+  return false;
+}
+
+template <>
+constexpr inline bool cusparseSupportsType<float>()
+{
+  return true;
+}
+
+template <>
+constexpr inline bool cusparseSupportsType<double>()
+{
+  return true;
+}
+
+template <>
+constexpr inline bool cusparseSupportsType<complex<float>>()
+{
+  return true;
+}
+
+template <>
+constexpr inline bool cusparseSupportsType<complex<double>>()
+{
+  return true;
+}
+
 // Template dispatch for the index type.
 template <typename INDEX_TY>
 cusparseIndexType_t cusparseIndexType();
