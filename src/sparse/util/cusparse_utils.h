@@ -60,7 +60,7 @@ void* getPtrFromStore(const legate::Store& store)
 
 // Template dispatch for value type.
 template <typename VAL_TY>
-cudaDataType cusparseDataType();
+cudaDataType cusparseDataType() = delete;
 
 template <>
 inline cudaDataType cusparseDataType<float>()

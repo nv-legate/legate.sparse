@@ -35,8 +35,7 @@ __global__ void offset_coordinates_to_global(size_t elems, coord_t offset, INDEX
   coords[idx] += offset;
 }
 
-template <>
-struct SpGEMMCSRxCSRxCSCLocalTilesImpl<VariantKind::GPU> {
+struct SpGEMMCSRxCSRxCSCLocalTilesImplCuSparse {
   template <LegateTypeCode INDEX_CODE, LegateTypeCode VAL_CODE>
   void operator()(SpGEMMCSRxCSRxCSCLocalTilesArgs& args) const
   {
@@ -307,6 +306,20 @@ struct SpGEMMCSRxCSRxCSCLocalTilesImpl<VariantKind::GPU> {
         A_nnz, C_pos.domain().lo()[0], A_crd_int.ptr(0));
     }
     CHECK_CUDA_STREAM(stream);
+  }
+};
+
+
+template <>
+struct SpGEMMCSRxCSRxCSCLocalTilesImpl<VariantKind::GPU> {
+  template <LegateTypeCode INDEX_CODE, LegateTypeCode VAL_CODE>
+  void operator()(SpGEMMCSRxCSRxCSCLocalTilesArgs& args) const
+  {
+    if constexpr (cusparseSupportsType<legate_type_of<VAL_CODE>>()) {
+      SpGEMMCSRxCSRxCSCLocalTilesImplCuSparse{}.template operator()<INDEX_CODE, VAL_CODE>(args);
+    } else {
+      assert (false && "Type currently unsupported for GPU execution.");
+    }
   }
 };
 

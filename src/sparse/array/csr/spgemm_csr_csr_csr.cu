@@ -31,7 +31,7 @@ __global__ void cast_and_offset(size_t elems, DST* dst, const SRC* src, int64_t 
   dst[idx] = static_cast<DST>(src[idx] - offset);
 }
 
-struct SpGEMMCSRxCSRxCSRGPUImpl {
+struct SpGEMMCSRxCSRxCSRGPUImplCuSparse {
   template <LegateTypeCode INDEX_CODE, LegateTypeCode VAL_CODE>
   void operator()(SpGEMMCSRxCSRxCSRGPUArgs& args) const
   {
@@ -269,6 +269,18 @@ struct SpGEMMCSRxCSRxCSRGPUImpl {
     CHECK_CUSPARSE(cusparseDestroySpMat(cusparse_B));
     CHECK_CUSPARSE(cusparseDestroySpMat(cusparse_C));
     CHECK_CUDA_STREAM(stream);
+  }
+};
+
+struct SpGEMMCSRxCSRxCSRGPUImpl {
+  template <LegateTypeCode INDEX_CODE, LegateTypeCode VAL_CODE>
+  void operator()(SpGEMMCSRxCSRxCSRGPUArgs& args) const
+  {
+    if constexpr (cusparseSupportsType<legate_type_of<VAL_CODE>>()) {
+      SpGEMMCSRxCSRxCSRGPUImplCuSparse{}.template operator()<INDEX_CODE, VAL_CODE>(args);
+    } else {
+      assert(false && "Type unsupported for GPU execution.");
+    }
   }
 };
 
