@@ -1224,7 +1224,24 @@ def sddmm_impl(
         range=True,
         functor=CompressedImagePartition,
     )
-    task.add_broadcast(D_store)
+
+    # In order to do the image from the coordinates into the corresponding
+    # columns of D, we have to apply an AffineProjection from the
+    # coordinates to cast them up to reference columns of D, rather than
+    # single points. The API for this is a bit restrictive, so we have to
+    # pass a staged MinMaxImagePartition functor through to the image
+    # constraint.
+    def partFunc(*args, **kwargs):
+        return MinMaxImagePartition(*args, proj_dims=[1], **kwargs)
+
+    task.add_image_constraint(
+        B.crd,
+        D_store,
+        range=False,
+        disjoint=False,
+        complete=False,
+        functor=partFunc,
+    )
     task.execute()
     return csr_array.make_with_same_nnz_structure(
         B, (result_vals, B.crd, B.pos)
