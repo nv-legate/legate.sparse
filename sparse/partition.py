@@ -31,6 +31,7 @@ from legate.core.partition import (
     DomainPartition,
     ImagePartition,
     PreimagePartition,
+    _mapper_argument,
 )
 from legate.core.runtime import runtime
 from legate.core.shape import Shape
@@ -234,6 +235,7 @@ class DensePreimage(PreimagePartition):
             source_region,
             source_field,
             mapper=self._mapper,
+            mapper_arg=_mapper_argument(),
         )
         index_partition = runtime.partition_manager.find_index_partition(
             region.index_space, self
