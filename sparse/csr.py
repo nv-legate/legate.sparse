@@ -84,6 +84,7 @@ from .partition import (
 from .runtime import ctx, runtime
 from .types import coord_ty, nnz_ty
 from .utils import (
+    broadcast_store,
     cast_arr,
     cast_to_common_type,
     cast_to_store,
@@ -315,6 +316,20 @@ class csr_array(CompressedBase, DenseSparseBase):
                 self.pos,
             ),
         )
+
+    def power(self, n, dtype=None):
+        if not numpy.isscalar(n):
+            raise NotImplementedError("Input is not a scalar")
+        data = self.data
+        if dtype is not None:
+            data = data.astype(dtype)
+        data = data**n
+        return csr_array.make_with_same_nnz_structure(
+            self, (get_store_from_cunumeric_array(data), self.crd, self.pos)
+        )
+
+    def __neg__(self):
+        return self * -1
 
     @track_provenance(runtime.legate_context, nested=True)
     def tropical_spmv(self, other, out=None):
@@ -692,7 +707,6 @@ class csr_array(CompressedBase, DenseSparseBase):
                 (get_store_from_cunumeric_array(new_vals), self.crd, self.pos),
             )
         elif isinstance(other, cunumeric.ndarray):
-            assert self.shape == other.shape
             return mult_dense(*cast_to_common_type(self, other))
         else:
             raise NotImplementedError
@@ -1048,6 +1062,14 @@ def mult_dense(B: csr_array, C: cunumeric.ndarray) -> csr_array:
     # the output, so we'll just allocate a new store of values for
     # the output matrix and share the existing pos and crd arrays.
     C_store = get_store_from_cunumeric_array(C)
+
+    # First handle broadcasting, if necessary.
+    out_shape = numpy.broadcast_shapes(B.shape, C.shape)
+    # The sparse matrix can't be broadcasted.
+    assert out_shape == B.shape
+    if out_shape != C.shape:
+        C_store = broadcast_store(C_store, out_shape)
+
     result_vals = ctx.create_store(B.dtype, shape=B.vals.shape)
     promoted_pos = B.pos.promote(1, B.shape[1])
     task = ctx.create_task(SparseOpCode.ELEM_MULT_CSR_DENSE)

@@ -14,6 +14,7 @@
 
 import math
 import traceback
+from typing import Any
 
 import cunumeric
 import numpy
@@ -198,3 +199,20 @@ def factor_int(n):
         val -= 1
         val2 = int(n / val)
     return val, val2
+
+
+# broadcast_store broadcasts a store to the desired input shape,
+# or throws an error if the broadcast is not possible.
+def broadcast_store(store: Store, shape: Any) -> Store:
+    diff = len(shape) - store.ndim
+    for dim in range(diff):
+        store = store.promote(dim, shape[dim])
+    for dim in range(len(shape)):
+        if store.shape[dim] != shape[dim]:
+            if store.shape[dim] != 1:
+                raise ValueError(
+                    f"Shape did not match along dimension {dim} "
+                    "and the value is not equal to 1"
+                )
+            store = store.project(dim, 0).promote(dim, shape[dim])
+    return store
