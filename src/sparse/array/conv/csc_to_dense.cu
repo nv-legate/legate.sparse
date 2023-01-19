@@ -16,7 +16,7 @@
 
 #include "sparse/array/conv/csc_to_dense.h"
 #include "sparse/array/conv/csc_to_dense_template.inl"
-#include "sparse/util/cusparse_utils.h"
+#include "sparse/util/cuda_help.h"
 
 namespace sparse {
 
@@ -35,7 +35,9 @@ __global__ void CSCtoDenseKernel(size_t cols,
   if (idx >= cols) return;
   INDEX_TY j = idx + bounds.lo[1];
   // Initialize the row with all zeros.
-  for (INDEX_TY i = bounds.lo[0]; i < bounds.hi[0] + 1; i++) { A_vals[{i, j}] = 0.0; }
+  for (INDEX_TY i = bounds.lo[0]; i < bounds.hi[0] + 1; i++) {
+    A_vals[{i, j}] = static_cast<VAL_TY>(0);
+  }
   // Copy the non-zero values into place.
   for (INDEX_TY iB = B_pos[j].lo; iB < B_pos[j].hi + 1; iB++) {
     INDEX_TY i     = B_crd[iB];
@@ -61,10 +63,6 @@ struct CSCToDenseImpl<VariantKind::GPU> {
 
     auto stream = get_cached_stream();
 
-    // If we are running on an old cuSPARSE version, then we don't
-    // have access to many cuSPARSE functions. In that case, use
-    // a hand-written version.
-#if (CUSPARSE_VER_MAJOR < 11 || (CUSPARSE_VER_MAJOR == 11 && CUSPARSE_VER_MINOR < 2))
     auto B_domain = B_pos.domain();
     auto cols     = B_domain.hi()[0] - B_domain.lo()[0] + 1;
     auto blocks   = get_num_blocks_1d(cols);
@@ -74,34 +72,6 @@ struct CSCToDenseImpl<VariantKind::GPU> {
                                                                B_pos.read_accessor<Rect<1>, 1>(),
                                                                B_crd.read_accessor<INDEX_TY, 1>(),
                                                                B_vals.read_accessor<VAL_TY, 1>());
-#else
-    // Get context sensitive objects.
-    auto handle = get_cusparse();
-    CHECK_CUSPARSE(cusparseSetStream(handle, stream));
-
-    // Construct our cuSPARSE matrices.
-    auto A_domain   = A_vals.domain();
-    auto cusparse_A = makeCuSparseDenseMat<VAL_TY>(A_vals);
-    auto cusparse_B = makeCuSparseCSC<INDEX_TY, VAL_TY>(
-      B_pos, B_crd, B_vals, A_domain.hi()[0] - A_domain.lo()[0] + 1 /* rows */);
-
-    // Finally make the cuSPARSE calls.
-    size_t bufSize = 0;
-    CHECK_CUSPARSE(cusparseSparseToDense_bufferSize(
-      handle, cusparse_B, cusparse_A, CUSPARSE_SPARSETODENSE_ALG_DEFAULT, &bufSize));
-    // Allocate a buffer if we need to.
-    void* workspacePtr = nullptr;
-    if (bufSize > 0) {
-      DeferredBuffer<char, 1> buf({0, bufSize - 1}, Memory::GPU_FB_MEM);
-      workspacePtr = buf.ptr(0);
-    }
-    // Finally do the conversion.
-    CHECK_CUSPARSE(cusparseSparseToDense(
-      handle, cusparse_B, cusparse_A, CUSPARSE_SPARSETODENSE_ALG_DEFAULT, workspacePtr));
-    // Destroy the created objects.
-    CHECK_CUSPARSE(cusparseDestroyDnMat(cusparse_A));
-    CHECK_CUSPARSE(cusparseDestroySpMat(cusparse_B));
-#endif
 
     CHECK_CUDA_STREAM(stream);
   }

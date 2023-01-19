@@ -184,8 +184,7 @@ struct OldCuSparseTypeOf<LegateTypeCode::COMPLEX128_LT> {
 template <LegateTypeCode CODE>
 using old_cusparse_type_of = typename OldCuSparseTypeOf<CODE>::type;
 
-template <>
-struct AddCSRCSRImpl<VariantKind::GPU> {
+struct AddCSRCSRImplCuSparse {
   template <LegateTypeCode INDEX_CODE, LegateTypeCode VAL_CODE>
   void operator()(AddCSRCSRArgs& args) const
   {
@@ -365,6 +364,19 @@ struct AddCSRCSRImpl<VariantKind::GPU> {
         <<<blocks, THREADS_PER_BLOCK, 0, stream>>>(elems, A_crd.ptr(A_crd_domain.lo()), A_crd_int);
     }
     CHECK_CUDA_STREAM(stream);
+  }
+};
+
+template <>
+struct AddCSRCSRImpl<VariantKind::GPU> {
+  template <LegateTypeCode INDEX_CODE, LegateTypeCode VAL_CODE>
+  void operator()(AddCSRCSRArgs& args) const
+  {
+    if constexpr (cusparseSupportsType<legate_type_of<VAL_CODE>>()) {
+      AddCSRCSRImplCuSparse{}.template operator()<INDEX_CODE, VAL_CODE>(args);
+    } else {
+      assert(false && "currently unsupported datatype for GPU execution.");
+    }
   }
 };
 

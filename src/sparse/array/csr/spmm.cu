@@ -24,8 +24,7 @@ namespace sparse {
 using namespace Legion;
 using namespace legate;
 
-template <>
-struct SpMMCSRImpl<VariantKind::GPU> {
+struct SpMMCSRImplCuSparse {
   template <LegateTypeCode INDEX_CODE, LegateTypeCode VAL_CODE>
   void operator()(SpMMCSRArgs& args) const
   {
@@ -110,6 +109,19 @@ struct SpMMCSRImpl<VariantKind::GPU> {
     CHECK_CUSPARSE(cusparseDestroySpMat(cusparse_B));
     CHECK_CUSPARSE(cusparseDestroyDnMat(cusparse_C));
     CHECK_CUDA_STREAM(stream);
+  }
+};
+
+template <>
+struct SpMMCSRImpl<VariantKind::GPU> {
+  template <LegateTypeCode INDEX_CODE, LegateTypeCode VAL_CODE>
+  void operator()(SpMMCSRArgs& args) const
+  {
+    if constexpr (cusparseSupportsType<legate_type_of<VAL_CODE>>()) {
+      SpMMCSRImplCuSparse{}.template operator()<INDEX_CODE, VAL_CODE>(args);
+    } else {
+      assert(false && "Type currently unsupported for GPU execution.");
+    }
   }
 };
 

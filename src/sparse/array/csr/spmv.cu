@@ -21,8 +21,7 @@
 
 namespace sparse {
 
-template <>
-struct CSRSpMVRowSplitImpl<VariantKind::GPU> {
+struct CSRSpMVRowSplitImplCuSparse {
   template <LegateTypeCode INDEX_CODE, LegateTypeCode VAL_CODE>
   void operator()(CSRSpMVRowSplitArgs& args) const
   {
@@ -119,6 +118,19 @@ struct CSRSpMVRowSplitImpl<VariantKind::GPU> {
     CHECK_CUSPARSE(cusparseDestroyDnVec(cusparse_x));
     CHECK_CUSPARSE(cusparseDestroySpMat(cusparse_A));
     CHECK_CUDA_STREAM(stream);
+  }
+};
+
+template <>
+struct CSRSpMVRowSplitImpl<VariantKind::GPU> {
+  template <LegateTypeCode INDEX_CODE, LegateTypeCode VAL_CODE>
+  void operator()(CSRSpMVRowSplitArgs& args) const
+  {
+    if constexpr (cusparseSupportsType<legate_type_of<VAL_CODE>>()) {
+      CSRSpMVRowSplitImplCuSparse{}.template operator()<INDEX_CODE, VAL_CODE>(args);
+    } else {
+      assert(false && "Type currently unsupported for GPU execution.");
+    }
   }
 };
 
