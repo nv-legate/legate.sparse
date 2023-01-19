@@ -40,7 +40,7 @@ struct BoundsFromPartitionedCoordinatesImplBody<VariantKind::GPU, INDEX_CODE> {
 #ifdef LEGATE_NO_FUTURES_ON_FB
       *ptr = result;
 #else
-      cudaMemcpy(ptr, &result, sizeof(Domain), cudaMemcpyHostToDevice);
+      CHECK_CUDA(cudaMemcpyAsync(ptr, &result, sizeof(Domain), cudaMemcpyHostToDevice, stream));
 #endif
     } else {
       ThrustAllocator alloc(Memory::GPU_FB_MEM);
@@ -48,14 +48,18 @@ struct BoundsFromPartitionedCoordinatesImplBody<VariantKind::GPU, INDEX_CODE> {
       auto ptr    = input.ptr(dom.lo());
       auto result = thrust::minmax_element(policy, ptr, ptr + dom.get_volume());
       INDEX_TY lo, hi;
-      cudaMemcpy(&lo, result.first, sizeof(INDEX_TY), cudaMemcpyDeviceToHost);
-      cudaMemcpy(&hi, result.second, sizeof(INDEX_TY), cudaMemcpyDeviceToHost);
+      CHECK_CUDA(
+        cudaMemcpyAsync(&lo, result.first, sizeof(INDEX_TY), cudaMemcpyDeviceToHost, stream));
+      CHECK_CUDA(
+        cudaMemcpyAsync(&hi, result.second, sizeof(INDEX_TY), cudaMemcpyDeviceToHost, stream));
+      CHECK_CUDA(cudaStreamSynchronize(stream));
       Domain output_dom({lo, hi});
       auto output_ptr = output.ptr(0);
 #ifdef LEGATE_NO_FUTURES_ON_FB
       *output_ptr = output_dom;
 #else
-      cudaMemcpy(output_ptr, &output_dom, sizeof(Domain), cudaMemcpyHostToDevice);
+      CHECK_CUDA(
+        cudaMemcpyAsync(output_ptr, &output_dom, sizeof(Domain), cudaMemcpyHostToDevice, stream));
 #endif
     }
     CHECK_CUDA_STREAM(stream);
