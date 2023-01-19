@@ -48,8 +48,10 @@ struct BoundsFromPartitionedCoordinatesImplBody<VariantKind::GPU, INDEX_CODE> {
       auto ptr    = input.ptr(dom.lo());
       auto result = thrust::minmax_element(policy, ptr, ptr + dom.get_volume());
       INDEX_TY lo, hi;
-      CHECK_CUDA(cudaMemcpy(&lo, result.first, sizeof(INDEX_TY), cudaMemcpyDeviceToHost, stream));
-      CHECK_CUDA(cudaMemcpy(&hi, result.second, sizeof(INDEX_TY), cudaMemcpyDeviceToHost, stream));
+      CHECK_CUDA(
+        cudaMemcpyAsync(&lo, result.first, sizeof(INDEX_TY), cudaMemcpyDeviceToHost, stream));
+      CHECK_CUDA(
+        cudaMemcpyAsync(&hi, result.second, sizeof(INDEX_TY), cudaMemcpyDeviceToHost, stream));
       CHECK_CUDA(cudaStreamSynchronize(stream));
       Domain output_dom({lo, hi});
       auto output_ptr = output.ptr(0);
