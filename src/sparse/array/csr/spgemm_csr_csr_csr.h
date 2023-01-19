@@ -28,7 +28,6 @@ struct SpGEMMCSRxCSRxCSRNNZArgs {
   const legate::Store& B_crd;
   const legate::Store& C_pos;
   const legate::Store& C_crd;
-  const uint64_t A2_dim;
 };
 
 class SpGEMMCSRxCSRxCSRNNZ : public SparseTask<SpGEMMCSRxCSRxCSRNNZ> {
@@ -50,7 +49,6 @@ struct SpGEMMCSRxCSRxCSRArgs {
   const legate::Store& C_pos;
   const legate::Store& C_crd;
   const legate::Store& C_vals;
-  const uint64_t A2_dim;
 };
 
 class SpGEMMCSRxCSRxCSR : public SparseTask<SpGEMMCSRxCSRxCSR> {

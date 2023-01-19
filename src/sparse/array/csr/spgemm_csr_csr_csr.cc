@@ -17,6 +17,8 @@
 #include "sparse/array/csr/spgemm_csr_csr_csr.h"
 #include "sparse/array/csr/spgemm_csr_csr_csr_template.inl"
 
+#include <thrust/extrema.h>
+
 namespace sparse {
 
 using namespace Legion;
@@ -31,13 +33,30 @@ struct SpGEMMCSRxCSRxCSRNNZImplBody<VariantKind::CPU, INDEX_CODE> {
                   const AccessorRO<INDEX_TY, 1>& B_crd,
                   const AccessorRO<Rect<1>, 1>& C_pos,
                   const AccessorRO<INDEX_TY, 1>& C_crd,
-                  const uint64_t A2_dim,
-                  const Rect<1>& rect)
+                  const Rect<1>& rect,
+                  const Rect<1>& C_crd_bounds)
   {
-    INDEX_TY initCoord = static_cast<INDEX_TY>(0);
-    bool initBool      = false;
-    DeferredBuffer<INDEX_TY, 1> index_list(Memory::SYSTEM_MEM, Rect<1>{0, A2_dim - 1}, &initCoord);
-    DeferredBuffer<bool, 1> already_set(Memory::SYSTEM_MEM, Rect<1>{0, A2_dim - 1}, &initBool);
+    // Calculate A2_dim by looking at the min and max coordinates in
+    // the provided partition of C.
+    auto C_crd_ptr = C_crd.ptr(C_crd_bounds.lo);
+    auto result =
+      thrust::minmax_element(thrust::host, C_crd_ptr, C_crd_ptr + C_crd_bounds.volume());
+    INDEX_TY min    = *result.first;
+    INDEX_TY max    = *result.second;
+    INDEX_TY A2_dim = max - min + 1;
+
+    // Next, initialize the deferred buffers ourselves, instead of using
+    // Realm fills (which tend to be slower).
+    DeferredBuffer<INDEX_TY, 1> index_list_buf(Memory::SYSTEM_MEM, Rect<1>{0, A2_dim - 1});
+    DeferredBuffer<bool, 1> already_set_buf(Memory::SYSTEM_MEM, Rect<1>{0, A2_dim - 1});
+    for (INDEX_TY i = 0; i < A2_dim; i++) {
+      index_list_buf[i]  = 0;
+      already_set_buf[i] = false;
+    }
+    // Finally, offset the pointers by the min element.
+    auto index_list  = index_list_buf.ptr(0) - min;
+    auto already_set = already_set_buf.ptr(0) - min;
+
     for (auto i = rect.lo[0]; i < rect.hi[0] + 1; i++) {
       size_t index_list_size = 0;
       for (size_t kB = B_pos[i].lo; kB < B_pos[i].hi + 1; kB++) {
@@ -76,15 +95,33 @@ struct SpGEMMCSRxCSRxCSRImplBody<VariantKind::CPU, INDEX_CODE, VAL_CODE> {
                   const AccessorRO<Rect<1>, 1>& C_pos,
                   const AccessorRO<INDEX_TY, 1>& C_crd,
                   const AccessorRO<VAL_TY, 1>& C_vals,
-                  const uint64_t A2_dim,
-                  const Rect<1>& rect)
+                  const Rect<1>& rect,
+                  const Rect<1>& C_crd_bounds)
   {
-    INDEX_TY initCoord = static_cast<INDEX_TY>(0);
-    bool initBool      = false;
-    VAL_TY initVal     = static_cast<VAL_TY>(0);
-    DeferredBuffer<INDEX_TY, 1> index_list(Memory::SYSTEM_MEM, Rect<1>{0, A2_dim - 1}, &initCoord);
-    DeferredBuffer<bool, 1> already_set(Memory::SYSTEM_MEM, Rect<1>{0, A2_dim - 1}, &initBool);
-    DeferredBuffer<VAL_TY, 1> workspace(Memory::SYSTEM_MEM, Rect<1>{0, A2_dim - 1}, &initVal);
+    // Calculate A2_dim by looking at the min and max coordinates in
+    // the provided partition of C.
+    auto C_crd_ptr = C_crd.ptr(C_crd_bounds.lo);
+    auto result =
+      thrust::minmax_element(thrust::host, C_crd_ptr, C_crd_ptr + C_crd_bounds.volume());
+    INDEX_TY min    = *result.first;
+    INDEX_TY max    = *result.second;
+    INDEX_TY A2_dim = max - min + 1;
+
+    // Next, initialize the deferred buffers ourselves, instead of using
+    // Realm fills (which tend to be slower).
+    DeferredBuffer<INDEX_TY, 1> index_list_buf(Memory::SYSTEM_MEM, Rect<1>{0, A2_dim - 1});
+    DeferredBuffer<bool, 1> already_set_buf(Memory::SYSTEM_MEM, Rect<1>{0, A2_dim - 1});
+    DeferredBuffer<VAL_TY, 1> workspace_buf(Memory::SYSTEM_MEM, Rect<1>{0, A2_dim - 1});
+    for (INDEX_TY i = 0; i < A2_dim; i++) {
+      index_list_buf[i]  = 0;
+      already_set_buf[i] = false;
+      workspace_buf[i]   = 0;
+    }
+    // Finally, offset the pointers by the min element.
+    auto index_list  = index_list_buf.ptr(0) - min;
+    auto already_set = already_set_buf.ptr(0) - min;
+    auto workspace   = workspace_buf.ptr(0) - min;
+
     for (auto i = rect.lo[0]; i < rect.hi[0] + 1; i++) {
       size_t index_list_size = 0;
       for (size_t kB = B_pos[i].lo; kB < B_pos[i].hi + 1; kB++) {
