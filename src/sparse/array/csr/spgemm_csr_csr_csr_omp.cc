@@ -18,6 +18,7 @@
 #include "sparse/array/csr/spgemm_csr_csr_csr_template.inl"
 
 #include <omp.h>
+#include <thrust/extrema.h>
 
 namespace sparse {
 
