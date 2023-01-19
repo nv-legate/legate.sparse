@@ -38,7 +38,7 @@ struct SortedCoordsToCountsImpl {
     auto input     = args.input.read_accessor<INDEX_TY, 1>();
     if (args.output.domain().empty() || args.input.domain().empty()) return;
     SortedCoordsToCountsImplBody<KIND, INDEX_CODE, decltype(output)>()(
-      output, input, args.max_vals, args.input.domain());
+      output, input, args.input.domain());
   }
 };
 
@@ -48,7 +48,6 @@ static void sorted_coords_to_counts_template(TaskContext& context)
   SortedCoordsToCountsArgs args{
     context.reductions()[0],
     context.inputs()[0],
-    context.scalars()[0].value<int64_t>(),
   };
   index_type_dispatch(args.input.code(), SortedCoordsToCountsImpl<KIND>{}, args);
 }

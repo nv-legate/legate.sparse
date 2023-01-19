@@ -18,6 +18,7 @@
 #include "sparse/array/conv/sorted_coords_to_counts_template.inl"
 
 #include <thrust/execution_policy.h>
+#include <thrust/extrema.h>
 #include <thrust/iterator/constant_iterator.h>
 #include <thrust/reduce.h>
 
@@ -29,18 +30,24 @@ using namespace legate;
 template <LegateTypeCode INDEX_CODE, typename ACC>
 struct SortedCoordsToCountsImplBody<VariantKind::OMP, INDEX_CODE, ACC> {
   using INDEX_TY = legate_type_of<INDEX_CODE>;
-  void operator()(ACC out, AccessorRO<INDEX_TY, 1> in, int64_t max_vals, const Domain& dom)
+  void operator()(ACC out, AccessorRO<INDEX_TY, 1> in, const Domain& dom)
   {
-    // TODO (rohany): We could make a call to unique before this to avoid allocating
-    //  O(rows/cols) space. For now this shouldn't be too much of a problem. Unfortunately
-    //  unique counting has just recently landed, and I'm not sure when our thrust version
-    //  will pick up the change: https://github.com/NVIDIA/thrust/issues/1612.
     auto kind = Sparse::has_numamem ? Memory::SOCKET_MEM : Memory::SYSTEM_MEM;
+    // Estimate the maximum space we'll need to store the unique elements in the
+    // reduce-by-key operation. To get an estimate here, we take the difference
+    // between the min and max coordinate in the input region. In the future,
+    // we could do this with a unique count, but that functionality has not yet
+    // made it into the thrust repository yet.
+    auto in_ptr       = in.ptr(dom.lo());
+    auto minmax       = thrust::minmax_element(thrust::omp::par, in_ptr, in_ptr + dom.get_volume());
+    INDEX_TY min      = *minmax.first;
+    INDEX_TY max      = *minmax.second;
+    INDEX_TY max_vals = max - min + 1;
     DeferredBuffer<INDEX_TY, 1> keys({0, max_vals - 1}, kind);
     DeferredBuffer<uint64_t, 1> counts({0, max_vals - 1}, kind);
     auto result = thrust::reduce_by_key(thrust::omp::par,
-                                        in.ptr(dom.lo()),
-                                        in.ptr(dom.lo()) + dom.get_volume(),
+                                        in_ptr,
+                                        in_ptr + dom.get_volume(),
                                         thrust::make_constant_iterator(1),
                                         keys.ptr(0),
                                         counts.ptr(0));

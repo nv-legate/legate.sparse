@@ -25,7 +25,6 @@ namespace sparse {
 struct SortedCoordsToCountsArgs {
   const legate::Store& output;
   const legate::Store& input;
-  const int64_t max_vals;
 };
 
 class SortedCoordsToCounts : public SparseTask<SortedCoordsToCounts> {

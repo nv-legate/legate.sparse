@@ -48,7 +48,7 @@
 import cunumeric
 import numpy
 import scipy
-from legate.core import Rect, types
+from legate.core import Rect
 from legate.core.launcher import TaskLauncher
 from legate.core.partition import Broadcast, DomainPartition, Tiling
 from legate.core.shape import Shape
@@ -317,7 +317,6 @@ class coo_array(CompressedBase):
             ),
             ReductionOp.ADD,
         )
-        task.add_scalar_arg(self.shape[0], types.int64)
         task.execute()
         # TODO (rohany): On small inputs, it appears that I get a
         #  non-deterministic failure, which appears either as a segfault or an
@@ -432,7 +431,6 @@ class coo_array(CompressedBase):
             ),
             ReductionOp.ADD,
         )
-        task.add_scalar_arg(self.shape[1], types.int64)
         task.execute()
 
         pos, _ = self.nnz_to_pos(q_nnz)
