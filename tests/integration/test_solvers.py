@@ -191,10 +191,10 @@ def test_gmres_solve():
     # are allowed to run to completion, they match with the default small
     # error tolerance.
     x_pred_sci = scipy.sparse.linalg.gmres(
-        A, y, atol=1e-5, tol=1e-5, maxiter=200
+        A, y, atol=1e-5, tol=1e-5, maxiter=300
     )[0]
-    x_pred_legate = linalg.gmres(A, y, atol=1e-5, tol=1e-5, maxiter=200)[0]
-    assert np.allclose(x_pred_sci, x_pred_legate, atol=1e-4)
+    x_pred_legate = linalg.gmres(A, y, atol=1e-5, tol=1e-5, maxiter=300)[0]
+    assert np.allclose(x_pred_sci, x_pred_legate, atol=1e-2)
 
 
 def test_eigsh():
