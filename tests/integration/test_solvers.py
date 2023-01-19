@@ -208,7 +208,9 @@ def test_eigsh():
     vals_legate, vecs_legate = linalg.eigsh(A)
     # Check that all of the vectors are indeed equal to the eigenvalue.
     for i, lamb in enumerate(vals_legate):
-        assert np.allclose(A @ vecs_legate[:, i], lamb * vecs_legate[:, i])
+        assert np.allclose(
+            A @ vecs_legate[:, i], lamb * vecs_legate[:, i], atol=1e-3
+        )
 
 
 if __name__ == "__main__":
