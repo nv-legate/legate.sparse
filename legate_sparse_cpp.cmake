@@ -212,7 +212,7 @@ list(APPEND legate_sparse_SOURCES
   src/sparse/sparse.cc
 )
 
-if(NOT CMAKE_BUILD_TYPE STREQUAL "Release")
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
   list(APPEND legate_sparse_CXX_DEFS DEBUG_LEGATE_SPARSE)
   list(APPEND legate_sparse_CUDA_DEFS DEBUG_LEGATE_SPARSE)
 endif()
