@@ -334,6 +334,32 @@ def test_csr_sddmm_balanced():
     assert np.allclose(res.todense(), s.multiply(numpy.array(C @ D)).todense())
 
 
+def test_csr_power():
+    filename = "testdata/test.mtx"
+    arr = legate_io.mmread(filename).tocsr()
+    s = sci_io.mmread(filename).tocsr()
+    assert np.allclose(arr.power(2).todense(), s.power(2).todense())
+
+
+def test_csr_neg():
+    filename = "testdata/test.mtx"
+    arr = legate_io.mmread(filename).tocsr()
+    s = sci_io.mmread(filename).tocsr()
+    assert np.allclose((-arr).todense(), (-s).todense())
+
+
+def test_mult_dense_broadcast():
+    filename = "testdata/test.mtx"
+    arr = legate_io.mmread(filename).tocsr()
+    s = sci_io.mmread(filename).tocsr()
+    x = np.ones(arr.shape[0])
+    # TODO (rohany): I don't know why I need to cast
+    #  x into a numpy array from a cunumeric array.
+    assert np.allclose(
+        arr.multiply(x).todense(), s.multiply(numpy.array(x)).todense()
+    )
+
+
 if __name__ == "__main__":
     import sys
 
