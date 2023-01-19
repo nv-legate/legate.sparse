@@ -36,18 +36,21 @@ struct FastImageRangeImplBody<VariantKind::GPU> {
 #ifdef LEGATE_NO_FUTURES_ON_FB
       *ptr = result;
 #else
-      cudaMemcpy(ptr, &result, sizeof(Domain), cudaMemcpyHostToDevice);
+      CHECK_CUDA(cudaMemcpyAsync(ptr, &result, sizeof(Domain), cudaMemcpyHostToDevice, stream));
 #endif
     } else {
       Rect<1> lo, hi;
-      cudaMemcpy(&lo, in.ptr(dom.lo()), sizeof(Rect<1>), cudaMemcpyDeviceToHost);
-      cudaMemcpy(&hi, in.ptr(dom.hi()), sizeof(Rect<1>), cudaMemcpyDeviceToHost);
+      CHECK_CUDA(
+        cudaMemcpyAsync(&lo, in.ptr(dom.lo()), sizeof(Rect<1>), cudaMemcpyDeviceToHost, stream));
+      CHECK_CUDA(
+        cudaMemcpyAsync(&hi, in.ptr(dom.hi()), sizeof(Rect<1>), cudaMemcpyDeviceToHost, stream));
+      CHECK_CUDA(cudaStreamSynchronize(stream));
       Domain result{Rect<1>{lo.lo, hi.hi}};
       auto ptr = out.ptr(0);
 #ifdef LEGATE_NO_FUTURES_ON_FB
       *ptr = result;
 #else
-      cudaMemcpy(ptr, &result, sizeof(Domain), cudaMemcpyHostToDevice);
+      CHECK_CUDA(cudaMemcpyAsync(ptr, &result, sizeof(Domain), cudaMemcpyHostToDevice, stream));
 #endif
     }
     CHECK_CUDA_STREAM(stream);
