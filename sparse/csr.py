@@ -1354,7 +1354,6 @@ def spgemm_csr_csr_csr(B: csr_array, C: csr_array) -> csr_array:
             disjoint=False,
             complete=False,
         )
-        task.add_scalar_arg(C.shape[1], types.uint64)
         task.execute()
 
         pos, nnz = CompressedBase.nnz_to_pos_cls(q_nnz)
@@ -1389,7 +1388,6 @@ def spgemm_csr_csr_csr(B: csr_array, C: csr_array) -> csr_array:
         # Add pos to the inputs as well so that we get READ_WRITE
         # privileges.
         task.add_input(pos)
-        task.add_scalar_arg(C.shape[1], types.uint64)
         task.execute()
         return csr_array(
             (vals, crd, pos),
