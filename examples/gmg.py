@@ -39,7 +39,12 @@ def stencil_grid(S, grid, dtype=None, format=None):
     indices = np.vstack(indices).T
 
     # zero boundary connections
-    for index, diag in zip(indices, data):
+    for idx in range(indices.shape[0]):
+        # We do this instead of
+        #  for index, diag in zip(indices, data):
+        # to avoid unnecessary materialization into numpy arrays.
+        index = indices[idx, :]
+        diag = data[idx, :]
         diag = diag.reshape(grid)
         for n, i in enumerate(index):
             if i > 0:
@@ -214,7 +219,9 @@ class WeightedJacobi(object):
         # diagonal of A. sparse.eye doesn't have this nob, but we can take
         # the output of sparse.eye and mess with it to get the matrix
         # that we want.
-        D_inv_mat = sparse.eye(A.shape[0], n=A.shape[1], dtype=A.dtype).tocsr()
+        D_inv_mat = sparse.eye(
+            A.shape[0], n=A.shape[1], dtype=A.dtype, format="csr"
+        )
         D_inv_mat.data = 1.0 / D_inv
         spectral_radius = max_eigenvalue(A @ D_inv_mat)
         omega = self._init_omega / spectral_radius
