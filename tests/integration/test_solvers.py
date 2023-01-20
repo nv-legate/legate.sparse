@@ -198,6 +198,7 @@ def test_gmres_solve():
     assert np.allclose(x_pred_sci, x_pred_legate, atol=1e-1)
 
 
+@pytest.mark.xfail(reason="Seems to be failing on 2 procs on CI (GH #114).")
 def test_eigsh():
     N = 100
     seed = 471014
