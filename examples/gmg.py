@@ -386,6 +386,10 @@ def execute(N, data, smoother, gridop, levels, maxiter, tol, verbose, timer):
     else:
         callback = None
 
+    # Make a call to the random API to ensure it is warmed up
+    # before we utilize it during the build process.
+    float(np.linalg.norm(np.random.rand(b.shape[0])))
+
     required_driver_memory(N)
     timer.start()
     mg_solver = GMG(
