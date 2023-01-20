@@ -62,8 +62,10 @@ struct SpGEMMCSRxCSRxCSRNNZImplBody<VariantKind::OMP, INDEX_CODE> {
 #pragma omp parallel for schedule(monotonic : dynamic, 128)
     for (auto i = rect.lo[0]; i < rect.hi[0] + 1; i++) {
       auto thread_id = omp_get_thread_num();
-      // Offset each accessed array by the min coordinate.
-      auto index_list        = index_list_all.ptr(thread_id * A2_dim) - min;
+      // Offset each accessed array by the min coordinate. Importantly,
+      // index_list is not offset by min, because it isn't accessed
+      // by C's coordinates.
+      auto index_list        = index_list_all.ptr(thread_id * A2_dim);
       auto already_set       = already_set_all.ptr(thread_id * A2_dim) - min;
       size_t index_list_size = 0;
       for (size_t kB = B_pos[i].lo; kB < B_pos[i].hi + 1; kB++) {
@@ -133,8 +135,9 @@ struct SpGEMMCSRxCSRxCSRImplBody<VariantKind::OMP, INDEX_CODE, VAL_CODE> {
 #pragma omp parallel for schedule(monotonic : dynamic, 128)
     for (auto i = rect.lo[0]; i < rect.hi[0] + 1; i++) {
       auto thread_id = omp_get_thread_num();
-      // Back offset each of the pointers by the min element.
-      auto index_list        = index_list_all.ptr(thread_id * A2_dim) - min;
+      // Back offset each of the pointers by the min element. Importantly,
+      // index_list is not offset by min, because it is not accessed by j.
+      auto index_list        = index_list_all.ptr(thread_id * A2_dim);
       auto already_set       = already_set_all.ptr(thread_id * A2_dim) - min;
       auto workspace         = workspace_all.ptr(thread_id * A2_dim) - min;
       size_t index_list_size = 0;

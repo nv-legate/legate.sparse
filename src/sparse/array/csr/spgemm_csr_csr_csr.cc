@@ -53,8 +53,10 @@ struct SpGEMMCSRxCSRxCSRNNZImplBody<VariantKind::CPU, INDEX_CODE> {
       index_list_buf[i]  = 0;
       already_set_buf[i] = false;
     }
-    // Finally, offset the pointers by the min element.
-    auto index_list  = index_list_buf.ptr(0) - min;
+    // Finally, offset the pointers by the min element. Importantly,
+    // index_list does not need to be offset because it is not accessed
+    // by coordinates.
+    auto index_list  = index_list_buf.ptr(0);
     auto already_set = already_set_buf.ptr(0) - min;
 
     for (auto i = rect.lo[0]; i < rect.hi[0] + 1; i++) {
@@ -117,8 +119,10 @@ struct SpGEMMCSRxCSRxCSRImplBody<VariantKind::CPU, INDEX_CODE, VAL_CODE> {
       already_set_buf[i] = false;
       workspace_buf[i]   = 0;
     }
-    // Finally, offset the pointers by the min element.
-    auto index_list  = index_list_buf.ptr(0) - min;
+    // Finally, offset the pointers by the min element. Importantly,
+    // index_list does not need to be offset because it is not accessed
+    // by coordinates.
+    auto index_list  = index_list_buf.ptr(0);
     auto already_set = already_set_buf.ptr(0) - min;
     auto workspace   = workspace_buf.ptr(0) - min;
 
