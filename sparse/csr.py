@@ -538,6 +538,13 @@ class csr_array(CompressedBase, DenseSparseBase):
                     )
                 assert out.shape == (self.shape[0], other.shape[1])
                 C = out
+            # Our partitioning system can't really handle dependent
+            # partitioning operations on transformed stores. Unfortunately,
+            # we'll have to make a copy of the matrix here to get a version
+            # of the matrix without transforms.
+            B_store = get_store_from_cunumeric_array(B)
+            if B_store.transformed:
+                B = cunumeric.array(B)
             spmm(A, B, C)
             return C
         else:
