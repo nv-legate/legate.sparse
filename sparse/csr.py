@@ -98,6 +98,8 @@ from .utils import (
 @clone_scipy_arr_kind(scipy.sparse.csr_array)
 class csr_array(CompressedBase, DenseSparseBase):
     def __init__(self, arg, shape=None, dtype=None, copy=False):
+        from .module import is_sparse_matrix
+
         self.ndim = 2
         super().__init__()
 
@@ -199,6 +201,18 @@ class csr_array(CompressedBase, DenseSparseBase):
                 self.vals = cast_to_store(data)
             else:
                 raise AssertionError
+        elif is_sparse_matrix(arg):
+            # Convert the input into CSR, and copy the fields over.
+            csr = arg.tocsr()
+            if copy:
+                csr = csr.copy()
+            self.pos = csr.pos
+            self.crd = csr.crd
+            self.vals = csr.vals
+            dtype = csr.dtype
+            shape = csr.shape
+            # TODO (rohany): Should we copy over the balanced
+            #  partition metadata?
         else:
             raise NotImplementedError
 
