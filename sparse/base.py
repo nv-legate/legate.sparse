@@ -19,7 +19,7 @@ from legate.core.shape import Shape
 
 from .config import SparseOpCode, rect1
 from .runtime import ctx, runtime
-from .types import int64, nnz_ty
+from .types import int64
 from .utils import get_store_from_cunumeric_array, store_to_cunumeric_array
 
 
@@ -28,9 +28,10 @@ from .utils import get_store_from_cunumeric_array, store_to_cunumeric_array
 class CompressedBase:
     @classmethod
     def nnz_to_pos_cls(cls, q_nnz: Store):
-        cs = cunumeric.array(cunumeric.cumsum(store_to_cunumeric_array(q_nnz)))
+        q_nnz_arr = store_to_cunumeric_array(q_nnz)
+        cs = cunumeric.cumsum(q_nnz_arr)
+        cs_shifted = cs - q_nnz_arr
         cs_store = get_store_from_cunumeric_array(cs)
-        cs_shifted = cunumeric.append(cunumeric.array([0], nnz_ty), cs[:-1])
         cs_shifted_store = get_store_from_cunumeric_array(cs_shifted)
         # Zip the scan result into a rect1 region for the pos.
         pos = ctx.create_store(
