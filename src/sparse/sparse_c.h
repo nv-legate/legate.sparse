@@ -51,6 +51,7 @@ enum LegateSparseOpCode {
 
   // Sparse-Dense matmul.
   LEGATE_SPARSE_SPMM_CSR_DENSE,
+  LEGATE_SPARSE_SPMM_CSC_DENSE,
   // Dense-Sparse matmul.
   LEGATE_SPARSE_SPMM_DENSE_CSR,
 

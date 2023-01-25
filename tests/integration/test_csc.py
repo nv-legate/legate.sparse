@@ -83,6 +83,23 @@ def test_csc_conj(filename, copy):
 
 
 @pytest.mark.parametrize("filename", test_mtx_files)
+@pytest.mark.parametrize("b_type", types)
+@pytest.mark.parametrize("c_type", types)
+def test_csc_spmm(filename, b_type, c_type):
+    arr = legate_io.mmread(filename).tocsc().astype(b_type)
+    s = sci_io.mmread(filename).tocsc().astype(b_type)
+    c = arr.todense().astype(c_type)
+    res_legate = arr @ c
+    res_sci = s @ c
+    assert np.allclose(res_legate, res_sci)
+    result = np.zeros(
+        arr.shape, dtype=numpy.find_common_type([b_type, c_type], [])
+    )
+    arr.dot(c, out=result)
+    assert np.allclose(res_legate, res_sci)
+
+
+@pytest.mark.parametrize("filename", test_mtx_files)
 @pytest.mark.parametrize("mat_type", types)
 @pytest.mark.parametrize("vec_type", types)
 def test_csc_dot(filename, mat_type, vec_type):
