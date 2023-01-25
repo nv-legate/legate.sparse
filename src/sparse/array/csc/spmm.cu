@@ -45,7 +45,7 @@ __global__ void spmm_csc_kernel(const size_t nnzs,
   auto p_end   = block_starts[block + 1];
   auto k       = taco_binarySearchBefore(B_pos, p_start, p_end, nnz_idx);
   auto i       = B_crd[nnz_idx];
-  for (int64_t j = A_rect.lo[1]; i < A_rect.hi[1] + 1; j++) {
+  for (int64_t j = A_rect.lo[1]; j < A_rect.hi[1] + 1; j++) {
     A_vals[{i, j}] <<= B_vals[nnz_idx] * C_vals[{k, j}];
   }
 }
