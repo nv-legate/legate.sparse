@@ -97,6 +97,8 @@ class csc_array(CompressedBase, DenseSparseBase):
             task.execute()
             # Assemble the output CSC array using the non-zeros per column.
             self.pos, nnz = self.nnz_to_pos(q_nnz)
+            # Block and convert the nnz future into an int.
+            nnz = int(nnz)
             self.crd = ctx.create_store(coord_ty, shape=(nnz))
             self.vals = ctx.create_store(arg.dtype, shape=(nnz))
             promoted_pos = self.pos.promote(0, shape[0])

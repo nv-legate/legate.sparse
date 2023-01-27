@@ -44,7 +44,8 @@ class CompressedBase:
         task.add_alignment(pos, cs_shifted_store)
         task.add_alignment(cs_shifted_store, cs_store)
         task.execute()
-        return pos, int(cs[-1])
+        # Don't convert cs[-1] to an int to avoid blocking.
+        return pos, cs[-1]
 
     def nnz_to_pos(self, q_nnz: Store):
         return CompressedBase.nnz_to_pos_cls(q_nnz)

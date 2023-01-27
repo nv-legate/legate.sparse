@@ -123,6 +123,8 @@ class csr_array(CompressedBase, DenseSparseBase):
 
             # Assemble the output CSR array using the non-zeros per row.
             self.pos, nnz = self.nnz_to_pos(q_nnz)
+            # Block and convert the nnz future into an int.
+            nnz = int(nnz)
             self.crd = ctx.create_store(coord_ty, shape=(nnz))
             self.vals = ctx.create_store(arg.dtype, shape=(nnz))
             task = ctx.create_task(SparseOpCode.DENSE_TO_CSR)
@@ -975,6 +977,8 @@ def add(B: csr_array, C: csr_array) -> csr_array:
     task.execute()
 
     pos, nnz = CompressedBase.nnz_to_pos_cls(q_nnz)
+    # Block and convert the nnz future into an int.
+    nnz = int(nnz)
     crd = ctx.create_store(coord_ty, shape=(nnz,))
     vals = ctx.create_store(B.dtype, shape=(nnz,))
 
@@ -1037,6 +1041,8 @@ def mult(B: csr_array, C: csr_array) -> csr_array:
     task.execute()
 
     pos, nnz = CompressedBase.nnz_to_pos_cls(q_nnz)
+    # Block and convert the nnz future into an int.
+    nnz = int(nnz)
     crd = ctx.create_store(coord_ty, shape=(nnz))
     vals = ctx.create_store(B.dtype, shape=(nnz))
 
@@ -1417,6 +1423,8 @@ def spgemm_csr_csr_csr(B: csr_array, C: csr_array) -> csr_array:
         task.execute()
 
         pos, nnz = CompressedBase.nnz_to_pos_cls(q_nnz)
+        # Block and convert the nnz future into an int.
+        nnz = int(nnz)
         crd = ctx.create_store(coord_ty, shape=(nnz))
         vals = ctx.create_store(B.dtype, shape=(nnz))
 
