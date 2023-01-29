@@ -1430,6 +1430,9 @@ def spgemm_csr_csr_csr(B: csr_array, C: csr_array) -> csr_array:
         task.add_input(C.pos)
         task.add_input(C.crd)
         task.add_input(C.vals)
+        # Add pos to the inputs as well so that we get READ_WRITE
+        # privileges.
+        task.add_input(pos)
         task.add_alignment(B.pos, pos)
         task.add_image_constraint(
             B.pos,
@@ -1442,12 +1445,21 @@ def spgemm_csr_csr_csr(B: csr_array, C: csr_array) -> csr_array:
             pos, crd, range=True, functor=CompressedImagePartition
         )
         task.add_alignment(crd, vals)
-        task.add_broadcast(C.pos)
-        task.add_broadcast(C.crd)
-        task.add_broadcast(C.vals)
-        # Add pos to the inputs as well so that we get READ_WRITE
-        # privileges.
-        task.add_input(pos)
+        # Similarly to above, take images through to the C regions.
+        task.add_image_constraint(
+            B.crd,
+            C.pos,
+            range=False,
+            disjoint=False,
+            complete=False,
+            functor=MinMaxImagePartition,
+        )
+        task.add_image_constraint(
+            C.pos, C.crd, range=True, disjoint=False, complete=False
+        )
+        task.add_image_constraint(
+            C.pos, C.vals, range=True, disjoint=False, complete=False
+        )
         task.execute()
         return csr_array(
             (vals, crd, pos),
