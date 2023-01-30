@@ -48,7 +48,7 @@
 import cunumeric
 import numpy
 import scipy
-from legate.core import Store
+from legate.core import Store, types
 from legate.core.shape import Shape
 from legate.core.types import ReductionOp
 
@@ -97,6 +97,8 @@ class csc_array(CompressedBase, DenseSparseBase):
             task.execute()
             # Assemble the output CSC array using the non-zeros per column.
             self.pos, nnz = self.nnz_to_pos(q_nnz)
+            # Block and convert the nnz future into an int.
+            nnz = int(nnz)
             self.crd = ctx.create_store(coord_ty, shape=(nnz))
             self.vals = ctx.create_store(arg.dtype, shape=(nnz))
             promoted_pos = self.pos.promote(0, shape[0])
@@ -404,6 +406,33 @@ class csc_array(CompressedBase, DenseSparseBase):
                     y = out
                 y = y.reshape((-1, 1))
             return y
+        elif isinstance(other, cunumeric.ndarray):
+            # Dispatch to SpMM here.
+            assert self.shape[1] == other.shape[0]
+            A, B = cast_to_common_type(self, other)
+            if out is None:
+                C = store_to_cunumeric_array(
+                    ctx.create_store(
+                        A.dtype, shape=(self.shape[0], other.shape[1])
+                    )
+                )
+            else:
+                if out.dtype != A.dtype:
+                    raise ValueError(
+                        f"Output type {out.dtype} is not consistent "
+                        f"with resolved dtype {A.dtype}"
+                    )
+                assert out.shape == (self.shape[0], other.shape[1])
+                C = out
+            # Our partitioning system can't really handle dependent
+            # partitioning operations on transformed stores. Unfortunately,
+            # we'll have to make a copy of the matrix here to get a version
+            # of the matrix without transforms.
+            B_store = get_store_from_cunumeric_array(B)
+            if B_store.transformed:
+                B = cunumeric.array(B)
+            spmm(A, B, C)
+            return C
         else:
             return self.tocsr().dot(other, out=out)
 
@@ -536,7 +565,8 @@ def sddmm_impl(
     task.add_input(B.vals)
     task.add_input(C_store)
     task.add_input(D_store)
-    # Partition the rows of the sparse matrix and C.
+    # Partition the rows of the sparse matrix and the
+    # columns of D.
     task.add_broadcast(promoted_pos, 0)
     task.add_alignment(promoted_pos, D_store)
     task.add_image_constraint(
@@ -557,11 +587,81 @@ def sddmm_impl(
         range=True,
         functor=CompressedImagePartition,
     )
-    task.add_broadcast(C_store)
+
+    # In order to do the image from the coordinates into the corresponding
+    # rows of C, we have to apply an AffineProjection from the
+    # coordinates to cast them up to reference rows of C, rather than
+    # single points. The API for this is a bit restrictive, so we have to
+    # pass a staged MinMaxImagePartition functor through to the image
+    # constraint.
+    def partFunc(*args, **kwargs):
+        return MinMaxImagePartition(*args, proj_dims=[0], **kwargs)
+
+    task.add_image_constraint(
+        B.crd,
+        C_store,
+        range=False,
+        disjoint=False,
+        complete=False,
+        functor=partFunc,
+    )
     task.execute()
     return csc_array.make_with_same_nnz_structure(
         B, (result_vals, B.crd, B.pos)
     )
+
+
+# spmm computes C = A @ B.
+def spmm(A: csc_array, B: cunumeric.ndarray, C: cunumeric.ndarray) -> None:
+    # We're going to reduce into C, so fill it with 0.
+    C.fill(0)
+
+    B_store = get_store_from_cunumeric_array(B)
+    C_store = get_store_from_cunumeric_array(C)
+
+    # This partitioning strategy follows from the CSR SpMM implementation.
+    promoted_pos = A.pos.promote(1, B_store.shape[1])
+    task = ctx.create_task(SparseOpCode.SPMM_CSC_DENSE)
+    task.add_reduction(C_store, ReductionOp.ADD)
+    task.add_input(promoted_pos)
+    task.add_input(A.crd)
+    task.add_input(A.vals)
+    task.add_input(B_store)
+    # Partitioning.
+    task.add_broadcast(promoted_pos, 1)
+    task.add_alignment(B_store, promoted_pos)
+    task.add_image_constraint(
+        promoted_pos,
+        A.crd,
+        range=True,
+        functor=CompressedImagePartition,
+    )
+    task.add_image_constraint(
+        promoted_pos,
+        A.vals,
+        range=True,
+        functor=CompressedImagePartition,
+    )
+
+    # In order to do the image from the coordinates into the
+    # corresponding rows of other, we have to apply an AffineProjection
+    # from the coordinates to cast them up to reference rows of other,
+    # rather than single points. The API for this is a bit restrictive,
+    # so we have to pass a staged MinMaxImagePartition functor through
+    # to the image constraint.
+    def partFunc(*args, **kwargs):
+        return MinMaxImagePartition(*args, proj_dims=[0], **kwargs)
+
+    task.add_image_constraint(
+        A.crd,
+        C_store,
+        range=False,
+        disjoint=False,
+        complete=False,
+        functor=partFunc,
+    )
+    task.add_scalar_arg(A.shape[0], types.int64)
+    task.execute()
 
 
 csc_matrix = csc_array

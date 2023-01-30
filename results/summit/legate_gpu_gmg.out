@@ -1,0 +1,2546 @@
+GPUS = 1:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 13500 --cpus 1 --sysmem 200000 --eager-alloc-percentage 45 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 3 --ompthreads 3 -lg:eager_alloc_percentage 10 -lg:eager_alloc_percentage_override system_mem=50 --nodes 1 --ranks-per-node 1 --gpus 1 --cpu-bind 0-83 --mem-bind 0 --gpu-bind 0,1,2 --nic-bind mlx5_0,mlx5_1 -n 4500
+<jemalloc>: Unsupported system page size
+Data creation time: 1168.003 ms
+Max required driver memory for N=4500 is 405.000008MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 3744.932 ms
+Converged in 200 iterations
+Solve Time: 5319.107 ms
+Iterations / sec: 37.60029644073714
+GPUS = 1:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 13500 --cpus 1 --sysmem 200000 --eager-alloc-percentage 45 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 3 --ompthreads 3 -lg:eager_alloc_percentage 10 -lg:eager_alloc_percentage_override system_mem=50 --nodes 1 --ranks-per-node 1 --gpus 1 --cpu-bind 0-83 --mem-bind 0 --gpu-bind 0,1,2 --nic-bind mlx5_0,mlx5_1 -n 4500
+<jemalloc>: Unsupported system page size
+Data creation time: 1083.348 ms
+Max required driver memory for N=4500 is 405.000008MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 3396.257 ms
+Converged in 200 iterations
+Solve Time: 5366.936 ms
+Iterations / sec: 37.265210540986516
+GPUS = 1:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 13500 --cpus 1 --sysmem 200000 --eager-alloc-percentage 45 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 3 --ompthreads 3 -lg:eager_alloc_percentage 10 -lg:eager_alloc_percentage_override system_mem=50 --nodes 1 --ranks-per-node 1 --gpus 1 --cpu-bind 0-83 --mem-bind 0 --gpu-bind 0,1,2 --nic-bind mlx5_0,mlx5_1 -n 4500
+<jemalloc>: Unsupported system page size
+Data creation time: 1079.61 ms
+Max required driver memory for N=4500 is 405.000008MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 3420.545 ms
+Converged in 200 iterations
+Solve Time: 5279.256 ms
+Iterations / sec: 37.88412609655603
+GPUS = 1:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 13500 --cpus 1 --sysmem 200000 --eager-alloc-percentage 45 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 3 --ompthreads 3 -lg:eager_alloc_percentage 10 -lg:eager_alloc_percentage_override system_mem=50 --nodes 1 --ranks-per-node 1 --gpus 1 --cpu-bind 0-83 --mem-bind 0 --gpu-bind 0,1,2 --nic-bind mlx5_0,mlx5_1 -n 4500
+<jemalloc>: Unsupported system page size
+Data creation time: 1050.514 ms
+Max required driver memory for N=4500 is 405.000008MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 3398.13 ms
+Converged in 200 iterations
+Solve Time: 5324.8 ms
+Iterations / sec: 37.56009615384615
+GPUS = 1:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 13500 --cpus 1 --sysmem 200000 --eager-alloc-percentage 45 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 3 --ompthreads 3 -lg:eager_alloc_percentage 10 -lg:eager_alloc_percentage_override system_mem=50 --nodes 1 --ranks-per-node 1 --gpus 1 --cpu-bind 0-83 --mem-bind 0 --gpu-bind 0,1,2 --nic-bind mlx5_0,mlx5_1 -n 4500
+<jemalloc>: Unsupported system page size
+Data creation time: 1098.778 ms
+Max required driver memory for N=4500 is 405.000008MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 3368.703 ms
+Converged in 200 iterations
+Solve Time: 5337.569 ms
+Iterations / sec: 37.47024160249732
+GPUS = 1:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 13500 --cpus 1 --sysmem 200000 --eager-alloc-percentage 45 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 3 --ompthreads 3 -lg:eager_alloc_percentage 10 -lg:eager_alloc_percentage_override system_mem=50 --nodes 1 --ranks-per-node 1 --gpus 1 --cpu-bind 0-83 --mem-bind 0 --gpu-bind 0,1,2 --nic-bind mlx5_0,mlx5_1 -n 4500
+<jemalloc>: Unsupported system page size
+Data creation time: 1104.136 ms
+Max required driver memory for N=4500 is 405.000008MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 3370.443 ms
+Converged in 200 iterations
+Solve Time: 5297.433 ms
+Iterations / sec: 37.75413488004473
+GPUS = 1:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 13500 --cpus 1 --sysmem 200000 --eager-alloc-percentage 45 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 3 --ompthreads 3 -lg:eager_alloc_percentage 10 -lg:eager_alloc_percentage_override system_mem=50 --nodes 1 --ranks-per-node 1 --gpus 1 --cpu-bind 0-83 --mem-bind 0 --gpu-bind 0,1,2 --nic-bind mlx5_0,mlx5_1 -n 4500
+<jemalloc>: Unsupported system page size
+Data creation time: 1086.223 ms
+Max required driver memory for N=4500 is 405.000008MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 3418.03 ms
+Converged in 200 iterations
+Solve Time: 5529.374 ms
+Iterations / sec: 36.17045980250206
+GPUS = 1:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 13500 --cpus 1 --sysmem 200000 --eager-alloc-percentage 45 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 3 --ompthreads 3 -lg:eager_alloc_percentage 10 -lg:eager_alloc_percentage_override system_mem=50 --nodes 1 --ranks-per-node 1 --gpus 1 --cpu-bind 0-83 --mem-bind 0 --gpu-bind 0,1,2 --nic-bind mlx5_0,mlx5_1 -n 4500
+<jemalloc>: Unsupported system page size
+Data creation time: 1070.191 ms
+Max required driver memory for N=4500 is 405.000008MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 3352.859 ms
+Converged in 200 iterations
+Solve Time: 5504.795 ms
+Iterations / sec: 36.3319614990204
+GPUS = 1:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 13500 --cpus 1 --sysmem 200000 --eager-alloc-percentage 45 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 3 --ompthreads 3 -lg:eager_alloc_percentage 10 -lg:eager_alloc_percentage_override system_mem=50 --nodes 1 --ranks-per-node 1 --gpus 1 --cpu-bind 0-83 --mem-bind 0 --gpu-bind 0,1,2 --nic-bind mlx5_0,mlx5_1 -n 4500
+<jemalloc>: Unsupported system page size
+Data creation time: 1091.543 ms
+Max required driver memory for N=4500 is 405.000008MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 3446.931 ms
+Converged in 200 iterations
+Solve Time: 5492.331 ms
+Iterations / sec: 36.41441129458512
+GPUS = 1:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 13500 --cpus 1 --sysmem 200000 --eager-alloc-percentage 45 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 3 --ompthreads 3 -lg:eager_alloc_percentage 10 -lg:eager_alloc_percentage_override system_mem=50 --nodes 1 --ranks-per-node 1 --gpus 1 --cpu-bind 0-83 --mem-bind 0 --gpu-bind 0,1,2 --nic-bind mlx5_0,mlx5_1 -n 4500
+<jemalloc>: Unsupported system page size
+Data creation time: 1107.048 ms
+Max required driver memory for N=4500 is 405.000008MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 3367.264 ms
+Converged in 200 iterations
+Solve Time: 5443.006 ms
+Iterations / sec: 36.74440189850976
+GPUS = 1:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 13500 --cpus 1 --sysmem 200000 --eager-alloc-percentage 45 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 3 --ompthreads 3 -lg:eager_alloc_percentage 10 -lg:eager_alloc_percentage_override system_mem=50 --nodes 1 --ranks-per-node 1 --gpus 1 --cpu-bind 0-83 --mem-bind 0 --gpu-bind 0,1,2 --nic-bind mlx5_0,mlx5_1 -n 4500
+<jemalloc>: Unsupported system page size
+Data creation time: 1115.202 ms
+Max required driver memory for N=4500 is 405.000008MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 3419.706 ms
+Converged in 200 iterations
+Solve Time: 5295.76 ms
+Iterations / sec: 37.76606190612868
+GPUS = 1:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 13500 --cpus 1 --sysmem 200000 --eager-alloc-percentage 45 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 3 --ompthreads 3 -lg:eager_alloc_percentage 10 -lg:eager_alloc_percentage_override system_mem=50 --nodes 1 --ranks-per-node 1 --gpus 1 --cpu-bind 0-83 --mem-bind 0 --gpu-bind 0,1,2 --nic-bind mlx5_0,mlx5_1 -n 4500
+<jemalloc>: Unsupported system page size
+Data creation time: 1105.005 ms
+Max required driver memory for N=4500 is 405.000008MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 3405.757 ms
+Converged in 200 iterations
+Solve Time: 5331.146 ms
+Iterations / sec: 37.5153859976823
+GPUS = 3:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 13500 --cpus 1 --sysmem 200000 --eager-alloc-percentage 45 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 3 --ompthreads 3 -lg:eager_alloc_percentage 10 -lg:eager_alloc_percentage_override system_mem=50 --nodes 1 --ranks-per-node 1 --gpus 3 --cpu-bind 0-83 --mem-bind 0 --gpu-bind 0,1,2 --nic-bind mlx5_0,mlx5_1 -n 7794
+<jemalloc>: Unsupported system page size
+Data creation time: 2386.63 ms
+Max required driver memory for N=7794 is 1214.928728MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 9250.27 ms
+Converged in 200 iterations
+Solve Time: 6364.378 ms
+Iterations / sec: 31.424909079881807
+GPUS = 3:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 13500 --cpus 1 --sysmem 200000 --eager-alloc-percentage 45 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 3 --ompthreads 3 -lg:eager_alloc_percentage 10 -lg:eager_alloc_percentage_override system_mem=50 --nodes 1 --ranks-per-node 1 --gpus 3 --cpu-bind 0-83 --mem-bind 0 --gpu-bind 0,1,2 --nic-bind mlx5_0,mlx5_1 -n 7794
+<jemalloc>: Unsupported system page size
+Data creation time: 2368.562 ms
+Max required driver memory for N=7794 is 1214.928728MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 9275.937 ms
+Converged in 200 iterations
+Solve Time: 6282.285 ms
+Iterations / sec: 31.83555028146606
+GPUS = 3:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 13500 --cpus 1 --sysmem 200000 --eager-alloc-percentage 45 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 3 --ompthreads 3 -lg:eager_alloc_percentage 10 -lg:eager_alloc_percentage_override system_mem=50 --nodes 1 --ranks-per-node 1 --gpus 3 --cpu-bind 0-83 --mem-bind 0 --gpu-bind 0,1,2 --nic-bind mlx5_0,mlx5_1 -n 7794
+<jemalloc>: Unsupported system page size
+Data creation time: 2384.502 ms
+Max required driver memory for N=7794 is 1214.928728MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 9263.307 ms
+Converged in 200 iterations
+Solve Time: 6241.421 ms
+Iterations / sec: 32.04398485537188
+GPUS = 3:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 13500 --cpus 1 --sysmem 200000 --eager-alloc-percentage 45 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 3 --ompthreads 3 -lg:eager_alloc_percentage 10 -lg:eager_alloc_percentage_override system_mem=50 --nodes 1 --ranks-per-node 1 --gpus 3 --cpu-bind 0-83 --mem-bind 0 --gpu-bind 0,1,2 --nic-bind mlx5_0,mlx5_1 -n 7794
+<jemalloc>: Unsupported system page size
+Data creation time: 2280.911 ms
+Max required driver memory for N=7794 is 1214.928728MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 9211.125 ms
+Converged in 200 iterations
+Solve Time: 6495.785 ms
+Iterations / sec: 30.789196378882615
+GPUS = 3:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 13500 --cpus 1 --sysmem 200000 --eager-alloc-percentage 45 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 3 --ompthreads 3 -lg:eager_alloc_percentage 10 -lg:eager_alloc_percentage_override system_mem=50 --nodes 1 --ranks-per-node 1 --gpus 3 --cpu-bind 0-83 --mem-bind 0 --gpu-bind 0,1,2 --nic-bind mlx5_0,mlx5_1 -n 7794
+<jemalloc>: Unsupported system page size
+Data creation time: 2377.42 ms
+Max required driver memory for N=7794 is 1214.928728MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 9346.326 ms
+Converged in 200 iterations
+Solve Time: 6261.312 ms
+Iterations / sec: 31.94218719654922
+GPUS = 3:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 13500 --cpus 1 --sysmem 200000 --eager-alloc-percentage 45 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 3 --ompthreads 3 -lg:eager_alloc_percentage 10 -lg:eager_alloc_percentage_override system_mem=50 --nodes 1 --ranks-per-node 1 --gpus 3 --cpu-bind 0-83 --mem-bind 0 --gpu-bind 0,1,2 --nic-bind mlx5_0,mlx5_1 -n 7794
+<jemalloc>: Unsupported system page size
+Data creation time: 2397.771 ms
+Max required driver memory for N=7794 is 1214.928728MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 9222.97 ms
+Converged in 200 iterations
+Solve Time: 6396.912 ms
+Iterations / sec: 31.265085403707285
+GPUS = 3:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 13500 --cpus 1 --sysmem 200000 --eager-alloc-percentage 45 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 3 --ompthreads 3 -lg:eager_alloc_percentage 10 -lg:eager_alloc_percentage_override system_mem=50 --nodes 1 --ranks-per-node 1 --gpus 3 --cpu-bind 0-83 --mem-bind 0 --gpu-bind 0,1,2 --nic-bind mlx5_0,mlx5_1 -n 7794
+<jemalloc>: Unsupported system page size
+Data creation time: 2381.229 ms
+Max required driver memory for N=7794 is 1214.928728MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 9274.25 ms
+Converged in 200 iterations
+Solve Time: 6315.415 ms
+Iterations / sec: 31.668544347441934
+GPUS = 3:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 13500 --cpus 1 --sysmem 200000 --eager-alloc-percentage 45 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 3 --ompthreads 3 -lg:eager_alloc_percentage 10 -lg:eager_alloc_percentage_override system_mem=50 --nodes 1 --ranks-per-node 1 --gpus 3 --cpu-bind 0-83 --mem-bind 0 --gpu-bind 0,1,2 --nic-bind mlx5_0,mlx5_1 -n 7794
+<jemalloc>: Unsupported system page size
+Data creation time: 2364.764 ms
+Max required driver memory for N=7794 is 1214.928728MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 9320.392 ms
+Converged in 200 iterations
+Solve Time: 6268.443 ms
+Iterations / sec: 31.9058496663366
+GPUS = 3:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 13500 --cpus 1 --sysmem 200000 --eager-alloc-percentage 45 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 3 --ompthreads 3 -lg:eager_alloc_percentage 10 -lg:eager_alloc_percentage_override system_mem=50 --nodes 1 --ranks-per-node 1 --gpus 3 --cpu-bind 0-83 --mem-bind 0 --gpu-bind 0,1,2 --nic-bind mlx5_0,mlx5_1 -n 7794
+<jemalloc>: Unsupported system page size
+Data creation time: 2365.619 ms
+Max required driver memory for N=7794 is 1214.928728MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 9187.113 ms
+Converged in 200 iterations
+Solve Time: 6221.951 ms
+Iterations / sec: 32.144258288115736
+GPUS = 3:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 13500 --cpus 1 --sysmem 200000 --eager-alloc-percentage 45 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 3 --ompthreads 3 -lg:eager_alloc_percentage 10 -lg:eager_alloc_percentage_override system_mem=50 --nodes 1 --ranks-per-node 1 --gpus 3 --cpu-bind 0-83 --mem-bind 0 --gpu-bind 0,1,2 --nic-bind mlx5_0,mlx5_1 -n 7794
+<jemalloc>: Unsupported system page size
+Data creation time: 2278.139 ms
+Max required driver memory for N=7794 is 1214.928728MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 9351.785 ms
+Converged in 200 iterations
+Solve Time: 6423.205 ms
+Iterations / sec: 31.137103673321963
+GPUS = 3:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 13500 --cpus 1 --sysmem 200000 --eager-alloc-percentage 45 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 3 --ompthreads 3 -lg:eager_alloc_percentage 10 -lg:eager_alloc_percentage_override system_mem=50 --nodes 1 --ranks-per-node 1 --gpus 3 --cpu-bind 0-83 --mem-bind 0 --gpu-bind 0,1,2 --nic-bind mlx5_0,mlx5_1 -n 7794
+<jemalloc>: Unsupported system page size
+Data creation time: 2376.704 ms
+Max required driver memory for N=7794 is 1214.928728MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 9229.819 ms
+Converged in 200 iterations
+Solve Time: 6305.47 ms
+Iterations / sec: 31.71849203945146
+GPUS = 3:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 13500 --cpus 1 --sysmem 200000 --eager-alloc-percentage 45 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 3 --ompthreads 3 -lg:eager_alloc_percentage 10 -lg:eager_alloc_percentage_override system_mem=50 --nodes 1 --ranks-per-node 1 --gpus 3 --cpu-bind 0-83 --mem-bind 0 --gpu-bind 0,1,2 --nic-bind mlx5_0,mlx5_1 -n 7794
+<jemalloc>: Unsupported system page size
+Data creation time: 2384.714 ms
+Max required driver memory for N=7794 is 1214.928728MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 9281.8 ms
+Converged in 200 iterations
+Solve Time: 6368.308 ms
+Iterations / sec: 31.405516190485763
+GPUS = 6:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 13500 --cpus 1 --sysmem 200000 --eager-alloc-percentage 45 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 3 --ompthreads 3 -lg:eager_alloc_percentage 10 -lg:eager_alloc_percentage_override system_mem=50 --nodes 1 --ranks-per-node 2 --gpus 3 --cpu-bind 0-83/88-171 --mem-bind 0/8 --gpu-bind 0,1,2/3,4,5 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 -n 11022
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2449.376 ms
+Max required driver memory for N=11022 is 2429.689688MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 10177.468 ms
+Converged in 200 iterations
+Solve Time: 7054.556 ms
+Iterations / sec: 28.350473084344358
+GPUS = 6:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 13500 --cpus 1 --sysmem 200000 --eager-alloc-percentage 45 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 3 --ompthreads 3 -lg:eager_alloc_percentage 10 -lg:eager_alloc_percentage_override system_mem=50 --nodes 1 --ranks-per-node 2 --gpus 3 --cpu-bind 0-83/88-171 --mem-bind 0/8 --gpu-bind 0,1,2/3,4,5 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 -n 11022
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2249.942 ms
+Max required driver memory for N=11022 is 2429.689688MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 9652.799 ms
+Converged in 200 iterations
+Solve Time: 7070.103 ms
+Iterations / sec: 28.28813102157069
+GPUS = 6:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 13500 --cpus 1 --sysmem 200000 --eager-alloc-percentage 45 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 3 --ompthreads 3 -lg:eager_alloc_percentage 10 -lg:eager_alloc_percentage_override system_mem=50 --nodes 1 --ranks-per-node 2 --gpus 3 --cpu-bind 0-83/88-171 --mem-bind 0/8 --gpu-bind 0,1,2/3,4,5 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 -n 11022
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2297.1 ms
+Max required driver memory for N=11022 is 2429.689688MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 10541.449 ms
+Converged in 200 iterations
+Solve Time: 7216.916 ms
+Iterations / sec: 27.712668402957718
+GPUS = 6:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 13500 --cpus 1 --sysmem 200000 --eager-alloc-percentage 45 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 3 --ompthreads 3 -lg:eager_alloc_percentage 10 -lg:eager_alloc_percentage_override system_mem=50 --nodes 1 --ranks-per-node 2 --gpus 3 --cpu-bind 0-83/88-171 --mem-bind 0/8 --gpu-bind 0,1,2/3,4,5 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 -n 11022
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2246.346 ms
+Max required driver memory for N=11022 is 2429.689688MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 9580.464 ms
+Converged in 200 iterations
+Solve Time: 7105.545 ms
+Iterations / sec: 28.14703164922606
+GPUS = 6:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 13500 --cpus 1 --sysmem 200000 --eager-alloc-percentage 45 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 3 --ompthreads 3 -lg:eager_alloc_percentage 10 -lg:eager_alloc_percentage_override system_mem=50 --nodes 1 --ranks-per-node 2 --gpus 3 --cpu-bind 0-83/88-171 --mem-bind 0/8 --gpu-bind 0,1,2/3,4,5 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 -n 11022
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2278.614 ms
+Max required driver memory for N=11022 is 2429.689688MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 9607.258 ms
+Converged in 200 iterations
+Solve Time: 7223.574 ms
+Iterations / sec: 27.687125514322968
+GPUS = 6:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 13500 --cpus 1 --sysmem 200000 --eager-alloc-percentage 45 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 3 --ompthreads 3 -lg:eager_alloc_percentage 10 -lg:eager_alloc_percentage_override system_mem=50 --nodes 1 --ranks-per-node 2 --gpus 3 --cpu-bind 0-83/88-171 --mem-bind 0/8 --gpu-bind 0,1,2/3,4,5 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 -n 11022
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2267.74 ms
+Max required driver memory for N=11022 is 2429.689688MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 9666.017 ms
+Converged in 200 iterations
+Solve Time: 7091.42 ms
+Iterations / sec: 28.203096135893798
+GPUS = 6:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 13500 --cpus 1 --sysmem 200000 --eager-alloc-percentage 45 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 3 --ompthreads 3 -lg:eager_alloc_percentage 10 -lg:eager_alloc_percentage_override system_mem=50 --nodes 1 --ranks-per-node 2 --gpus 3 --cpu-bind 0-83/88-171 --mem-bind 0/8 --gpu-bind 0,1,2/3,4,5 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 -n 11022
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2293.489 ms
+Max required driver memory for N=11022 is 2429.689688MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 9585.192 ms
+Converged in 200 iterations
+Solve Time: 7164.566 ms
+Iterations / sec: 27.91515913176039
+GPUS = 6:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 13500 --cpus 1 --sysmem 200000 --eager-alloc-percentage 45 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 3 --ompthreads 3 -lg:eager_alloc_percentage 10 -lg:eager_alloc_percentage_override system_mem=50 --nodes 1 --ranks-per-node 2 --gpus 3 --cpu-bind 0-83/88-171 --mem-bind 0/8 --gpu-bind 0,1,2/3,4,5 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 -n 11022
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2245.303 ms
+Max required driver memory for N=11022 is 2429.689688MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 9681.765 ms
+Converged in 200 iterations
+Solve Time: 7229.758 ms
+Iterations / sec: 27.663443230050024
+GPUS = 6:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 13500 --cpus 1 --sysmem 200000 --eager-alloc-percentage 45 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 3 --ompthreads 3 -lg:eager_alloc_percentage 10 -lg:eager_alloc_percentage_override system_mem=50 --nodes 1 --ranks-per-node 2 --gpus 3 --cpu-bind 0-83/88-171 --mem-bind 0/8 --gpu-bind 0,1,2/3,4,5 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 -n 11022
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2279.389 ms
+Max required driver memory for N=11022 is 2429.689688MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 9706.592 ms
+Converged in 200 iterations
+Solve Time: 7222.965 ms
+Iterations / sec: 27.689459937851005
+GPUS = 6:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 13500 --cpus 1 --sysmem 200000 --eager-alloc-percentage 45 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 3 --ompthreads 3 -lg:eager_alloc_percentage 10 -lg:eager_alloc_percentage_override system_mem=50 --nodes 1 --ranks-per-node 2 --gpus 3 --cpu-bind 0-83/88-171 --mem-bind 0/8 --gpu-bind 0,1,2/3,4,5 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 -n 11022
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2284.182 ms
+Max required driver memory for N=11022 is 2429.689688MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 9860.929 ms
+Converged in 200 iterations
+Solve Time: 7171.252 ms
+Iterations / sec: 27.88913288781373
+GPUS = 6:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 13500 --cpus 1 --sysmem 200000 --eager-alloc-percentage 45 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 3 --ompthreads 3 -lg:eager_alloc_percentage 10 -lg:eager_alloc_percentage_override system_mem=50 --nodes 1 --ranks-per-node 2 --gpus 3 --cpu-bind 0-83/88-171 --mem-bind 0/8 --gpu-bind 0,1,2/3,4,5 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 -n 11022
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2311.096 ms
+Max required driver memory for N=11022 is 2429.689688MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 9630.217 ms
+Converged in 200 iterations
+Solve Time: 7193.436 ms
+Iterations / sec: 27.80312496003301
+GPUS = 6:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 13500 --cpus 1 --sysmem 200000 --eager-alloc-percentage 45 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 3 --ompthreads 3 -lg:eager_alloc_percentage 10 -lg:eager_alloc_percentage_override system_mem=50 --nodes 1 --ranks-per-node 2 --gpus 3 --cpu-bind 0-83/88-171 --mem-bind 0/8 --gpu-bind 0,1,2/3,4,5 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 -n 11022
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2244.818 ms
+Max required driver memory for N=11022 is 2429.689688MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 9671.967 ms
+Converged in 200 iterations
+Solve Time: 7136.474 ms
+Iterations / sec: 28.025044300588778
+GPUS = 12:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 13500 --cpus 1 --sysmem 200000 --eager-alloc-percentage 45 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 3 --ompthreads 3 -lg:eager_alloc_percentage 10 -lg:eager_alloc_percentage_override system_mem=50 --nodes 2 --ranks-per-node 2 --gpus 3 --cpu-bind 0-83/88-171 --mem-bind 0/8 --gpu-bind 0,1,2/3,4,5 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 -n 15588
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2319.752 ms
+Max required driver memory for N=15588 is 4859.714888MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 11117.646 ms
+Converged in 200 iterations
+Solve Time: 7094.963 ms
+Iterations / sec: 28.189012402178843
+GPUS = 12:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 13500 --cpus 1 --sysmem 200000 --eager-alloc-percentage 45 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 3 --ompthreads 3 -lg:eager_alloc_percentage 10 -lg:eager_alloc_percentage_override system_mem=50 --nodes 2 --ranks-per-node 2 --gpus 3 --cpu-bind 0-83/88-171 --mem-bind 0/8 --gpu-bind 0,1,2/3,4,5 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 -n 15588
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2424.802 ms
+Max required driver memory for N=15588 is 4859.714888MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 11088.77 ms
+Converged in 200 iterations
+Solve Time: 7230.556 ms
+Iterations / sec: 27.660390155335218
+GPUS = 12:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 13500 --cpus 1 --sysmem 200000 --eager-alloc-percentage 45 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 3 --ompthreads 3 -lg:eager_alloc_percentage 10 -lg:eager_alloc_percentage_override system_mem=50 --nodes 2 --ranks-per-node 2 --gpus 3 --cpu-bind 0-83/88-171 --mem-bind 0/8 --gpu-bind 0,1,2/3,4,5 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 -n 15588
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2310.795 ms
+Max required driver memory for N=15588 is 4859.714888MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 10957.898 ms
+Converged in 200 iterations
+Solve Time: 7169.492 ms
+Iterations / sec: 27.89597924092809
+GPUS = 12:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 13500 --cpus 1 --sysmem 200000 --eager-alloc-percentage 45 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 3 --ompthreads 3 -lg:eager_alloc_percentage 10 -lg:eager_alloc_percentage_override system_mem=50 --nodes 2 --ranks-per-node 2 --gpus 3 --cpu-bind 0-83/88-171 --mem-bind 0/8 --gpu-bind 0,1,2/3,4,5 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 -n 15588
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2421.189 ms
+Max required driver memory for N=15588 is 4859.714888MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 11195.074 ms
+Converged in 200 iterations
+Solve Time: 7209.901 ms
+Iterations / sec: 27.739631931145798
+GPUS = 12:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 13500 --cpus 1 --sysmem 200000 --eager-alloc-percentage 45 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 3 --ompthreads 3 -lg:eager_alloc_percentage 10 -lg:eager_alloc_percentage_override system_mem=50 --nodes 2 --ranks-per-node 2 --gpus 3 --cpu-bind 0-83/88-171 --mem-bind 0/8 --gpu-bind 0,1,2/3,4,5 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 -n 15588
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2301.827 ms
+Max required driver memory for N=15588 is 4859.714888MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 10966.279 ms
+Converged in 200 iterations
+Solve Time: 7203.547 ms
+Iterations / sec: 27.76410010235236
+GPUS = 12:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 13500 --cpus 1 --sysmem 200000 --eager-alloc-percentage 45 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 3 --ompthreads 3 -lg:eager_alloc_percentage 10 -lg:eager_alloc_percentage_override system_mem=50 --nodes 2 --ranks-per-node 2 --gpus 3 --cpu-bind 0-83/88-171 --mem-bind 0/8 --gpu-bind 0,1,2/3,4,5 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 -n 15588
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2438.761 ms
+Max required driver memory for N=15588 is 4859.714888MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 11169.454 ms
+Converged in 200 iterations
+Solve Time: 7241.644 ms
+Iterations / sec: 27.61803811399732
+GPUS = 12:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 13500 --cpus 1 --sysmem 200000 --eager-alloc-percentage 45 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 3 --ompthreads 3 -lg:eager_alloc_percentage 10 -lg:eager_alloc_percentage_override system_mem=50 --nodes 2 --ranks-per-node 2 --gpus 3 --cpu-bind 0-83/88-171 --mem-bind 0/8 --gpu-bind 0,1,2/3,4,5 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 -n 15588
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2348.113 ms
+Max required driver memory for N=15588 is 4859.714888MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 11166.236 ms
+Converged in 200 iterations
+Solve Time: 7170.863 ms
+Iterations / sec: 27.890645798141726
+GPUS = 12:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 13500 --cpus 1 --sysmem 200000 --eager-alloc-percentage 45 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 3 --ompthreads 3 -lg:eager_alloc_percentage 10 -lg:eager_alloc_percentage_override system_mem=50 --nodes 2 --ranks-per-node 2 --gpus 3 --cpu-bind 0-83/88-171 --mem-bind 0/8 --gpu-bind 0,1,2/3,4,5 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 -n 15588
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2322.033 ms
+Max required driver memory for N=15588 is 4859.714888MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 11471.596 ms
+Converged in 200 iterations
+Solve Time: 7292.905 ms
+Iterations / sec: 27.423914064422892
+GPUS = 12:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 13500 --cpus 1 --sysmem 200000 --eager-alloc-percentage 45 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 3 --ompthreads 3 -lg:eager_alloc_percentage 10 -lg:eager_alloc_percentage_override system_mem=50 --nodes 2 --ranks-per-node 2 --gpus 3 --cpu-bind 0-83/88-171 --mem-bind 0/8 --gpu-bind 0,1,2/3,4,5 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 -n 15588
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2334.708 ms
+Max required driver memory for N=15588 is 4859.714888MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 11423.689 ms
+Converged in 200 iterations
+Solve Time: 7203.082 ms
+Iterations / sec: 27.76589243326676
+GPUS = 12:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 13500 --cpus 1 --sysmem 200000 --eager-alloc-percentage 45 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 3 --ompthreads 3 -lg:eager_alloc_percentage 10 -lg:eager_alloc_percentage_override system_mem=50 --nodes 2 --ranks-per-node 2 --gpus 3 --cpu-bind 0-83/88-171 --mem-bind 0/8 --gpu-bind 0,1,2/3,4,5 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 -n 15588
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2343.215 ms
+Max required driver memory for N=15588 is 4859.714888MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 11038.971 ms
+Converged in 200 iterations
+Solve Time: 7176.689 ms
+Iterations / sec: 27.868004312294985
+GPUS = 12:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 13500 --cpus 1 --sysmem 200000 --eager-alloc-percentage 45 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 3 --ompthreads 3 -lg:eager_alloc_percentage 10 -lg:eager_alloc_percentage_override system_mem=50 --nodes 2 --ranks-per-node 2 --gpus 3 --cpu-bind 0-83/88-171 --mem-bind 0/8 --gpu-bind 0,1,2/3,4,5 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 -n 15588
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2357.831 ms
+Max required driver memory for N=15588 is 4859.714888MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 11512.476 ms
+Converged in 200 iterations
+Solve Time: 7201.945 ms
+Iterations / sec: 27.770275946289512
+GPUS = 12:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 13500 --cpus 1 --sysmem 200000 --eager-alloc-percentage 45 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 3 --ompthreads 3 -lg:eager_alloc_percentage 10 -lg:eager_alloc_percentage_override system_mem=50 --nodes 2 --ranks-per-node 2 --gpus 3 --cpu-bind 0-83/88-171 --mem-bind 0/8 --gpu-bind 0,1,2/3,4,5 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 -n 15588
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2389.957 ms
+Max required driver memory for N=15588 is 4859.714888MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 11001.519 ms
+Converged in 200 iterations
+Solve Time: 7233.556 ms
+Iterations / sec: 27.64891845725671
+GPUS = 24:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 13500 --cpus 1 --sysmem 200000 --eager-alloc-percentage 45 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 3 --ompthreads 3 -lg:eager_alloc_percentage 10 -lg:eager_alloc_percentage_override system_mem=50 --nodes 4 --ranks-per-node 2 --gpus 3 --cpu-bind 0-83/88-171 --mem-bind 0/8 --gpu-bind 0,1,2/3,4,5 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 -n 22045
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2796.59 ms
+Max required driver memory for N=22045 is 9718.758728MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 13501.441 ms
+Converged in 200 iterations
+Solve Time: 8156.144 ms
+Iterations / sec: 24.52139148107243
+GPUS = 24:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 13500 --cpus 1 --sysmem 200000 --eager-alloc-percentage 45 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 3 --ompthreads 3 -lg:eager_alloc_percentage 10 -lg:eager_alloc_percentage_override system_mem=50 --nodes 4 --ranks-per-node 2 --gpus 3 --cpu-bind 0-83/88-171 --mem-bind 0/8 --gpu-bind 0,1,2/3,4,5 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 -n 22045
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2405.237 ms
+Max required driver memory for N=22045 is 9718.758728MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 13474.734 ms
+Converged in 200 iterations
+Solve Time: 8021.15 ms
+Iterations / sec: 24.93408052461305
+GPUS = 24:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 13500 --cpus 1 --sysmem 200000 --eager-alloc-percentage 45 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 3 --ompthreads 3 -lg:eager_alloc_percentage 10 -lg:eager_alloc_percentage_override system_mem=50 --nodes 4 --ranks-per-node 2 --gpus 3 --cpu-bind 0-83/88-171 --mem-bind 0/8 --gpu-bind 0,1,2/3,4,5 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 -n 22045
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2516.923 ms
+Max required driver memory for N=22045 is 9718.758728MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+Signal Signal Signal 11 received by node 11 received by node 5115 received by node , process 5, process , process 685348 (thread a75242000473cf890 (thread ) - obtaining backtrace
+2000475ff890) - obtaining backtrace
+a7524 (thread 20004787f890) - obtaining backtrace
+Signal 11 received by process 685348 (thread 2000473cf890) at: stack trace: 6 frames
+  [0] = linux-vdso64.so.1(__kernel_sigtramp_rt64+0) [0x2000000504d8]
+  [1] = /autofs/nccs-svm1_home1/rohany/nvidia/legate.sparse/build/lib/liblegate_sparse.so(+0x2b636c) [0x201f1b14636c]
+  [2] = /autofs/nccs-svm1_home1/rohany/nvidia/legate.core/_skbuild/linux-ppc64le-3.8/cmake-build/_deps/legion-build/lib/librealm.so.1(+0x6c3be4) [0x200001f63be4]Signal
+11 received by process 685348  [3 (thread 2000475ff890] = ) at: /autofs/nccs-svm1_home1/rohany/nvidia/legate.core/_skbuild/linux-ppc64le-3.8/cmake-build/_deps/legion-build/lib/librealm.so.1(+0x67acc0) [0x200001f1acc0]stack trace:
+6 frames
+  [  [04] = ] = linux-vdso64.so.1(__kernel_sigtramp_rt64+0) [0x2000000504d8]
+  [1] = /lib64/power9/libpthread.so.0(+0x8ae0) [0x200004518ae0]/autofs/nccs-svm1_home1/rohany/nvidia/legate.sparse/build/lib/liblegate_sparse.so(+0x2b636c) [0x201f1b14636c]
+
+  [2] =   [5] = /autofs/nccs-svm1_home1/rohany/nvidia/legate.core/_skbuild/linux-ppc64le-3.8/cmake-build/_deps/legion-build/lib/librealm.so.1(+0x6c3be4) [0x200001f63be4]
+  [3/lib64/power9/libc.so.6(clone+0x74) [0x200004c5e7c8]] =
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/_skbuild/linux-ppc64le-3.8/cmake-build/_deps/legion-build/lib/librealm.so.1(+0x67acc0) [0x200001f1acc0]
+  [4] = /lib64/power9/libpthread.so.0(+0x8ae0) [0x200004518ae0]
+  [5] = /lib64/power9/libc.so.6(clone+0x74) [0x200004c5e7c8]
+Signal 11 received by process 685348 (thread 20004787f890) at: stack trace: 12 frames
+  [0] = linux-vdso64.so.1(__kernel_sigtramp_rt64+0) [0x2000000504d8]
+  [1] = /autofs/nccs-svm1_home1/rohany/nvidia/legate.sparse/build/lib/liblegate_sparse.so(+0x2b636c) [0x201f1b14636c]
+  [2] = /autofs/nccs-svm1_home1/rohany/nvidia/legate.core/_skbuild/linux-ppc64le-3.8/cmake-build/_deps/legion-build/lib/librealm.so.1(GOMP_parallel+0x40) [0x200001f6c5e0]
+  [3] = /autofs/nccs-svm1_home1/rohany/nvidia/legate.sparse/build/lib/liblegate_sparse.so(sparse::SpGEMMCSRxCSRxCSR::omp_variant(legate::TaskContext&)+0x4d0) [0x201f1b147800]
+  [4] = /autofs/nccs-svm1_home1/rohany/nvidia/legate.sparse/build/lib/liblegate_sparse.so(void legate::LegateTask<sparse::SpGEMMCSRxCSRxCSR>::legate_task_wrapper<&sparse::SpGEMMCSRxCSRxCSR::omp_variant>(void const*, unsigned long, void const*, unsigned long, Realm::Processor)+0x13c) [0x201f1b0542dc]
+  [5] = /autofs/nccs-svm1_home1/rohany/nvidia/legate.core/_skbuild/linux-ppc64le-3.8/cmake-build/_deps/legion-build/lib/librealm.so.1(+0x615f50) [0x200001eb5f50]
+  [6] = /autofs/nccs-svm1_home1/rohany/nvidia/legate.core/_skbuild/linux-ppc64le-3.8/cmake-build/_deps/legion-build/lib/librealm.so.1(+0x673bd0) [0x200001f13bd0]
+  [7] = /autofs/nccs-svm1_home1/rohany/nvidia/legate.core/_skbuild/linux-ppc64le-3.8/cmake-build/_deps/legion-build/lib/librealm.so.1(+0x673d94) [0x200001f13d94]
+  [8] = /autofs/nccs-svm1_home1/rohany/nvidia/legate.core/_skbuild/linux-ppc64le-3.8/cmake-build/_deps/legion-build/lib/librealm.so.1(+0x676de4) [0x200001f16de4]
+  [9] = /autofs/nccs-svm1_home1/rohany/nvidia/legate.core/_skbuild/linux-ppc64le-3.8/cmake-build/_deps/legion-build/lib/librealm.so.1(+0x680540) [0x200001f20540]
+  [10] = /lib64/power9/libc.so.6(makecontext+0xd8) [0x200004b87ffc]
+  [11] = /autofs/nccs-svm1_home1/rohany/nvidia/legate.core/_skbuild/linux-ppc64le-3.8/cmake-build/_deps/legion-build/lib/librealm.so.1(+0x681f48) [0x200001f21f48]
+GPUS = 24:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 13500 --cpus 1 --sysmem 200000 --eager-alloc-percentage 45 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 3 --ompthreads 3 -lg:eager_alloc_percentage 10 -lg:eager_alloc_percentage_override system_mem=50 --nodes 4 --ranks-per-node 2 --gpus 3 --cpu-bind 0-83/88-171 --mem-bind 0/8 --gpu-bind 0,1,2/3,4,5 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 -n 22045
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2469.768 ms
+Max required driver memory for N=22045 is 9718.758728MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 13171.247 ms
+Converged in 200 iterations
+Solve Time: 7973.098 ms
+Iterations / sec: 25.084352406053455
+GPUS = 24:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 13500 --cpus 1 --sysmem 200000 --eager-alloc-percentage 45 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 3 --ompthreads 3 -lg:eager_alloc_percentage 10 -lg:eager_alloc_percentage_override system_mem=50 --nodes 4 --ranks-per-node 2 --gpus 3 --cpu-bind 0-83/88-171 --mem-bind 0/8 --gpu-bind 0,1,2/3,4,5 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 -n 22045
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2495.899 ms
+Max required driver memory for N=22045 is 9718.758728MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 13693.358 ms
+legion_python: /autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legion/runtime/realm/runtime_impl.cc:2556: Realm::SparsityMapImplWrapper* Realm::RuntimeImpl::get_sparsity_impl(Realm::ID): Assertion `0 && "invalid index space sparsity handle"' failed.
+Signal 6 received by node 1, process [1 - 2000476ef890]   37.068175 {6}{realm}: invalid index space sparsity handle: id=200004b88060
+703833 (thread 2000476ef890) - obtaining backtrace
+Signal 6 received by process 703833 (thread 2000476ef890) at: stack trace: 23 frames
+  [0] = linux-vdso64.so.1(__kernel_sigtramp_rt64+0) [0x2000000504d8]
+  [1] = /lib64/power9/libc.so.6(gsignal+0xd8) [0x200004b73618]
+  [2] = /lib64/power9/libc.so.6(abort+0x164) [0x200004b53a2c]
+  [3] = /lib64/power9/libc.so.6(+0x36f70) [0x200004b66f70]
+  [4] = /lib64/power9/libc.so.6(__assert_fail+0x64) [0x200004b67014]
+  [5] = /autofs/nccs-svm1_home1/rohany/nvidia/legate.core/_skbuild/linux-ppc64le-3.8/cmake-build/_deps/legion-build/lib/librealm.so.1(+0x642c78) [0x200001ee2c78]
+  [6] = /autofs/nccs-svm1_home1/rohany/nvidia/legate.core/_skbuild/linux-ppc64le-3.8/cmake-build/_deps/legion-build/lib/librealm.so.1(Realm::SparsityMap<1, long long>::impl() const+0x38) [0x200001d566e8]
+  [7] = /autofs/nccs-svm1_home1/rohany/nvidia/legate.core/_skbuild/linux-ppc64le-3.8/cmake-build/_deps/legion-build/lib/liblegion.so.1(Legion::Internal::IndexSpaceOperationT<1, long long>::get_volume()+0xb8) [0x200000d417d8]
+  [8] = /autofs/nccs-svm1_home1/rohany/nvidia/legate.core/_skbuild/linux-ppc64le-3.8/cmake-build/_deps/legion-build/lib/liblegion.so.1(Legion::Internal::EquivalenceSet::record_partial_valid_instance(Legion::Internal::LogicalView*, Legion::Internal::IndexSpaceExpression*, PPCTLBitMask<256u>, bool)+0x4e8) [0x2000006da1f8]
+  [9] = /autofs/nccs-svm1_home1/rohany/nvidia/legate.core/_skbuild/linux-ppc64le-3.8/cmake-build/_deps/legion-build/lib/liblegion.so.1(void Legion::Internal::EquivalenceSet::record_instances<Legion::Internal::LogicalView>(Legion::Internal::IndexSpaceExpression*, bool, PPCTLBitMask<256u> const&, Legion::Internal::FieldMaskSet<Legion::Internal::LogicalView, (Legion::Internal::AllocationType)108, false> const&)+0x1a0) [0x200000728f00]
+  [10] = /autofs/nccs-svm1_home1/rohany/nvidia/legate.core/_skbuild/linux-ppc64le-3.8/cmake-build/_deps/legion-build/lib/liblegion.so.1(Legion::Internal::EquivalenceSet::overwrite_set(Legion::Internal::OverwriteAnalysis&, Legion::Internal::IndexSpaceExpression*, bool, PPCTLBitMask<256u> const&, std::set<Legion::Internal::RtEvent, std::less<Legion::Internal::RtEvent>, std::allocator<Legion::Internal::RtEvent> >&, std::set<Legion::Internal::RtEvent, std::less<Legion::Internal::RtEvent>, std::allocator<Legion::Internal::RtEvent> >&, bool)+0x4c4) [0x2000006fdba4]
+  [11] = /autofs/nccs-svm1_home1/rohany/nvidia/legate.core/_skbuild/linux-ppc64le-3.8/cmake-build/_deps/legion-build/lib/liblegion.so.1(Legion::Internal::OverwriteAnalysis::perform_analysis(Legion::Internal::EquivalenceSet*, Legion::Internal::IndexSpaceExpression*, bool, PPCTLBitMask<256u> const&, std::set<Legion::Internal::RtEvent, std::less<Legion::Internal::RtEvent>, std::allocator<Legion::Internal::RtEvent> >&, std::set<Legion::Internal::RtEvent, std::less<Legion::Internal::RtEvent>, std::allocator<Legion::Internal::RtEvent> >&, bool)+0x24) [0x2000006fe1e4]
+  [12] = /autofs/nccs-svm1_home1/rohany/nvidia/legate.core/_skbuild/linux-ppc64le-3.8/cmake-build/_deps/legion-build/lib/liblegion.so.1(Legion::Internal::EquivalenceSet::analyze(Legion::Internal::PhysicalAnalysis&, Legion::Internal::IndexSpaceExpression*, bool, PPCTLBitMask<256u>, std::set<Legion::Internal::RtEvent, std::less<Legion::Internal::RtEvent>, std::allocator<Legion::Internal::RtEvent> >&, std::set<Legion::Internal::RtEvent, std::less<Legion::Internal::RtEvent>, std::allocator<Legion::Internal::RtEvent> >&, bool)+0x1b0) [0x2000006e6a00]
+  [13] = /autofs/nccs-svm1_home1/rohany/nvidia/legate.core/_skbuild/linux-ppc64le-3.8/cmake-build/_deps/legion-build/lib/liblegion.so.1(Legion::Internal::PhysicalAnalysis::analyze(Legion::Internal::EquivalenceSet*, PPCTLBitMask<256u> const&, std::set<Legion::Internal::RtEvent, std::less<Legion::Internal::RtEvent>, std::allocator<Legion::Internal::RtEvent> >&, std::set<Legion::Internal::RtEvent, std::less<Legion::Internal::RtEvent>, std::allocator<Legion::Internal::RtEvent> >&, Legion::Internal::RtEvent, bool)+0x3bc) [0x2000006e6e8c]
+  [14] = /autofs/nccs-svm1_home1/rohany/nvidia/legate.core/_skbuild/linux-ppc64le-3.8/cmake-build/_deps/legion-build/lib/liblegion.so.1(Legion::Internal::PhysicalAnalysis::handle_deferred_analysis(void const*)+0x9c) [0x2000006e800c]
+  [15] = /autofs/nccs-svm1_home1/rohany/nvidia/legate.core/_skbuild/linux-ppc64le-3.8/cmake-build/_deps/legion-build/lib/liblegion.so.1(Legion::Internal::Runtime::legion_runtime_task(void const*, unsigned long, void const*, unsigned long, Realm::Processor)+0x564) [0x200000ca64e4]
+  [16] = /autofs/nccs-svm1_home1/rohany/nvidia/legate.core/_skbuild/linux-ppc64le-3.8/cmake-build/_deps/legion-build/lib/librealm.so.1(+0x615f50) [0x200001eb5f50]
+  [17] = /autofs/nccs-svm1_home1/rohany/nvidia/legate.core/_skbuild/linux-ppc64le-3.8/cmake-build/_deps/legion-build/lib/librealm.so.1(+0x673bd0) [0x200001f13bd0]
+  [18] = /autofs/nccs-svm1_home1/rohany/nvidia/legate.core/_skbuild/linux-ppc64le-3.8/cmake-build/_deps/legion-build/lib/librealm.so.1(+0x673d94) [0x200001f13d94]
+  [19] = /autofs/nccs-svm1_home1/rohany/nvidia/legate.core/_skbuild/linux-ppc64le-3.8/cmake-build/_deps/legion-build/lib/librealm.so.1(+0x676de4) [0x200001f16de4]
+  [20] = /autofs/nccs-svm1_home1/rohany/nvidia/legate.core/_skbuild/linux-ppc64le-3.8/cmake-build/_deps/legion-build/lib/librealm.so.1(+0x680540) [0x200001f20540]
+  [21] = /lib64/power9/libc.so.6(makecontext+0xd8) [0x200004b87ffc]
+  [22] = /autofs/nccs-svm1_home1/rohany/nvidia/legate.core/_skbuild/linux-ppc64le-3.8/cmake-build/_deps/legion-build/lib/librealm.so.1(+0x681f48) [0x200001f21f48]
+GPUS = 24:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 13500 --cpus 1 --sysmem 200000 --eager-alloc-percentage 45 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 3 --ompthreads 3 -lg:eager_alloc_percentage 10 -lg:eager_alloc_percentage_override system_mem=50 --nodes 4 --ranks-per-node 2 --gpus 3 --cpu-bind 0-83/88-171 --mem-bind 0/8 --gpu-bind 0,1,2/3,4,5 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 -n 22045
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2495.167 ms
+Max required driver memory for N=22045 is 9718.758728MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 13483.582 ms
+Converged in 200 iterations
+Solve Time: 7733.227 ms
+Iterations / sec: 25.86242457385513
+GPUS = 24:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 13500 --cpus 1 --sysmem 200000 --eager-alloc-percentage 45 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 3 --ompthreads 3 -lg:eager_alloc_percentage 10 -lg:eager_alloc_percentage_override system_mem=50 --nodes 4 --ranks-per-node 2 --gpus 3 --cpu-bind 0-83/88-171 --mem-bind 0/8 --gpu-bind 0,1,2/3,4,5 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 -n 22045
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2501.438 ms
+Max required driver memory for N=22045 is 9718.758728MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 13405.183 ms
+Converged in 200 iterations
+Solve Time: 7843.132 ms
+Iterations / sec: 25.500017085011446
+GPUS = 24:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 13500 --cpus 1 --sysmem 200000 --eager-alloc-percentage 45 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 3 --ompthreads 3 -lg:eager_alloc_percentage 10 -lg:eager_alloc_percentage_override system_mem=50 --nodes 4 --ranks-per-node 2 --gpus 3 --cpu-bind 0-83/88-171 --mem-bind 0/8 --gpu-bind 0,1,2/3,4,5 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 -n 22045
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2431.943 ms
+Max required driver memory for N=22045 is 9718.758728MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 13215.114 ms
+Converged in 200 iterations
+Solve Time: 8096.743 ms
+Iterations / sec: 24.701290383058964
+GPUS = 24:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 13500 --cpus 1 --sysmem 200000 --eager-alloc-percentage 45 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 3 --ompthreads 3 -lg:eager_alloc_percentage 10 -lg:eager_alloc_percentage_override system_mem=50 --nodes 4 --ranks-per-node 2 --gpus 3 --cpu-bind 0-83/88-171 --mem-bind 0/8 --gpu-bind 0,1,2/3,4,5 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 -n 22045
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2448.371 ms
+Max required driver memory for N=22045 is 9718.758728MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 13367.942 ms
+Converged in 200 iterations
+Solve Time: 7953.647 ms
+Iterations / sec: 25.14569731344627
+GPUS = 24:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 13500 --cpus 1 --sysmem 200000 --eager-alloc-percentage 45 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 3 --ompthreads 3 -lg:eager_alloc_percentage 10 -lg:eager_alloc_percentage_override system_mem=50 --nodes 4 --ranks-per-node 2 --gpus 3 --cpu-bind 0-83/88-171 --mem-bind 0/8 --gpu-bind 0,1,2/3,4,5 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 -n 22045
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2483.465 ms
+Max required driver memory for N=22045 is 9718.758728MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 13635.673 ms
+Converged in 200 iterations
+Solve Time: 7945.998 ms
+Iterations / sec: 25.169903138661752
+GPUS = 24:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 13500 --cpus 1 --sysmem 200000 --eager-alloc-percentage 45 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 3 --ompthreads 3 -lg:eager_alloc_percentage 10 -lg:eager_alloc_percentage_override system_mem=50 --nodes 4 --ranks-per-node 2 --gpus 3 --cpu-bind 0-83/88-171 --mem-bind 0/8 --gpu-bind 0,1,2/3,4,5 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 -n 22045
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2512.793 ms
+Max required driver memory for N=22045 is 9718.758728MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 15572.08 ms
+Failed to converge in 200 iterations
+Solve Time: 7991.793 ms
+Iterations / sec: 25.02567321250688
+GPUS = 24:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 13500 --cpus 1 --sysmem 200000 --eager-alloc-percentage 45 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 3 --ompthreads 3 -lg:eager_alloc_percentage 10 -lg:eager_alloc_percentage_override system_mem=50 --nodes 4 --ranks-per-node 2 --gpus 3 --cpu-bind 0-83/88-171 --mem-bind 0/8 --gpu-bind 0,1,2/3,4,5 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 -n 22045
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2493.983 ms
+Max required driver memory for N=22045 is 9718.758728MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 13230.275 ms
+Converged in 200 iterations
+Solve Time: 7916.653 ms
+Iterations / sec: 25.263201507000495
+GPUS = 48:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 13500 --cpus 1 --sysmem 200000 --eager-alloc-percentage 45 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 3 --ompthreads 3 -lg:eager_alloc_percentage 10 -lg:eager_alloc_percentage_override system_mem=50 --nodes 8 --ranks-per-node 2 --gpus 3 --cpu-bind 0-83/88-171 --mem-bind 0/8 --gpu-bind 0,1,2/3,4,5 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 -n 31176
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2706.351 ms
+Max required driver memory for N=31176 is 19438.859528MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 18705.835 ms
+Converged in 200 iterations
+Solve Time: 11071.691 ms
+Iterations / sec: 18.064087951876544
+GPUS = 48:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 13500 --cpus 1 --sysmem 200000 --eager-alloc-percentage 45 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 3 --ompthreads 3 -lg:eager_alloc_percentage 10 -lg:eager_alloc_percentage_override system_mem=50 --nodes 8 --ranks-per-node 2 --gpus 3 --cpu-bind 0-83/88-171 --mem-bind 0/8 --gpu-bind 0,1,2/3,4,5 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 -n 31176
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2539.358 ms
+Max required driver memory for N=31176 is 19438.859528MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+Signal 11 received by node 3, process 2677824 (thread 20004aa7f890) - obtaining backtrace
+Signal 11 received by process 2677824 (thread 20004aa7f890) at: stack trace: 10 frames
+  [0] = linux-vdso64.so.1(__kernel_sigtramp_rt64+0) [0x2000000504d8]
+  [1] = /autofs/nccs-svm1_home1/rohany/nvidia/legate.sparse/build/lib/liblegate_sparse.so(sparse::SpGEMMCSRxCSRxCSRNNZ::omp_variant(legate::TaskContext&)+0x14c) [0x201f2232957c]
+  [2] = /autofs/nccs-svm1_home1/rohany/nvidia/legate.sparse/build/lib/liblegate_sparse.so(void legate::LegateTask<sparse::SpGEMMCSRxCSRxCSRNNZ>::legate_task_wrapper<&sparse::SpGEMMCSRxCSRxCSRNNZ::omp_variant>(void const*, unsigned long, void const*, unsigned long, Realm::Processor)+0x13c) [0x201f22232d5c]
+  [3] = /autofs/nccs-svm1_home1/rohany/nvidia/legate.core/_skbuild/linux-ppc64le-3.8/cmake-build/_deps/legion-build/lib/librealm.so.1(+0x615f50) [0x200001eb5f50]
+  [4] = /autofs/nccs-svm1_home1/rohany/nvidia/legate.core/_skbuild/linux-ppc64le-3.8/cmake-build/_deps/legion-build/lib/librealm.so.1(+0x673bd0) [0x200001f13bd0]
+  [5] = /autofs/nccs-svm1_home1/rohany/nvidia/legate.core/_skbuild/linux-ppc64le-3.8/cmake-build/_deps/legion-build/lib/librealm.so.1(+0x673d94) [0x200001f13d94]
+  [6] = /autofs/nccs-svm1_home1/rohany/nvidia/legate.core/_skbuild/linux-ppc64le-3.8/cmake-build/_deps/legion-build/lib/librealm.so.1(+0x676de4) [0x200001f16de4]
+  [7] = /autofs/nccs-svm1_home1/rohany/nvidia/legate.core/_skbuild/linux-ppc64le-3.8/cmake-build/_deps/legion-build/lib/librealm.so.1(+0x680540) [0x200001f20540]
+  [8] = /lib64/power9/libc.so.6(makecontext+0xd8) [0x200004b87ffc]
+  [9] = /autofs/nccs-svm1_home1/rohany/nvidia/legate.core/_skbuild/linux-ppc64le-3.8/cmake-build/_deps/legion-build/lib/librealm.so.1(+0x681f48) [0x200001f21f48]
+GPUS = 48:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 13500 --cpus 1 --sysmem 200000 --eager-alloc-percentage 45 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 3 --ompthreads 3 -lg:eager_alloc_percentage 10 -lg:eager_alloc_percentage_override system_mem=50 --nodes 8 --ranks-per-node 2 --gpus 3 --cpu-bind 0-83/88-171 --mem-bind 0/8 --gpu-bind 0,1,2/3,4,5 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 -n 31176
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2494.266 ms
+Max required driver memory for N=31176 is 19438.859528MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 18702.053 ms
+Converged in 200 iterations
+Solve Time: 10914.039 ms
+Iterations / sec: 18.325021561678493
+GPUS = 48:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 13500 --cpus 1 --sysmem 200000 --eager-alloc-percentage 45 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 3 --ompthreads 3 -lg:eager_alloc_percentage 10 -lg:eager_alloc_percentage_override system_mem=50 --nodes 8 --ranks-per-node 2 --gpus 3 --cpu-bind 0-83/88-171 --mem-bind 0/8 --gpu-bind 0,1,2/3,4,5 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 -n 31176
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2598.319 ms
+Max required driver memory for N=31176 is 19438.859528MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 18761.152 ms
+Converged in 200 iterations
+Solve Time: 10834.092 ms
+Iterations / sec: 18.46024567633356
+GPUS = 48:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 13500 --cpus 1 --sysmem 200000 --eager-alloc-percentage 45 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 3 --ompthreads 3 -lg:eager_alloc_percentage 10 -lg:eager_alloc_percentage_override system_mem=50 --nodes 8 --ranks-per-node 2 --gpus 3 --cpu-bind 0-83/88-171 --mem-bind 0/8 --gpu-bind 0,1,2/3,4,5 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 -n 31176
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2553.183 ms
+Max required driver memory for N=31176 is 19438.859528MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+Signal 11 received by node 8, process 1680556 (thread 20004a9df890) - obtaining backtrace
+Signal 11 received by process 1680556 (thread 20004a9df890) at: stack trace: 10 frames
+  [0] = linux-vdso64.so.1(__kernel_sigtramp_rt64+0) [0x2000000504d8]
+  [1] = /autofs/nccs-svm1_home1/rohany/nvidia/legate.sparse/build/lib/liblegate_sparse.so(sparse::SpGEMMCSRxCSRxCSRNNZ::omp_variant(legate::TaskContext&)+0x14c) [0x201f2234957c]
+  [2] = /autofs/nccs-svm1_home1/rohany/nvidia/legate.sparse/build/lib/liblegate_sparse.so(void legate::LegateTask<sparse::SpGEMMCSRxCSRxCSRNNZ>::legate_task_wrapper<&sparse::SpGEMMCSRxCSRxCSRNNZ::omp_variant>(void const*, unsigned long, void const*, unsigned long, Realm::Processor)+0x13c) [0x201f22252d5c]
+  [3] = /autofs/nccs-svm1_home1/rohany/nvidia/legate.core/_skbuild/linux-ppc64le-3.8/cmake-build/_deps/legion-build/lib/librealm.so.1(+0x615f50) [0x200001eb5f50]
+  [4] = /autofs/nccs-svm1_home1/rohany/nvidia/legate.core/_skbuild/linux-ppc64le-3.8/cmake-build/_deps/legion-build/lib/librealm.so.1(+0x673bd0) [0x200001f13bd0]
+  [5] = /autofs/nccs-svm1_home1/rohany/nvidia/legate.core/_skbuild/linux-ppc64le-3.8/cmake-build/_deps/legion-build/lib/librealm.so.1(+0x673d94) [0x200001f13d94]
+  [6] = /autofs/nccs-svm1_home1/rohany/nvidia/legate.core/_skbuild/linux-ppc64le-3.8/cmake-build/_deps/legion-build/lib/librealm.so.1(+0x676de4) [0x200001f16de4]
+  [7] = /autofs/nccs-svm1_home1/rohany/nvidia/legate.core/_skbuild/linux-ppc64le-3.8/cmake-build/_deps/legion-build/lib/librealm.so.1(+0x680540) [0x200001f20540]
+  [8] = /lib64/power9/libc.so.6(makecontext+0xd8) [0x200004b87ffc]
+  [9] = /autofs/nccs-svm1_home1/rohany/nvidia/legate.core/_skbuild/linux-ppc64le-3.8/cmake-build/_deps/legion-build/lib/librealm.so.1(+0x681f48) [0x200001f21f48]
+ERROR:  One or more process (first noticed rank 8) terminated with signal 11
+GPUS = 48:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 13500 --cpus 1 --sysmem 200000 --eager-alloc-percentage 45 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 3 --ompthreads 3 -lg:eager_alloc_percentage 10 -lg:eager_alloc_percentage_override system_mem=50 --nodes 8 --ranks-per-node 2 --gpus 3 --cpu-bind 0-83/88-171 --mem-bind 0/8 --gpu-bind 0,1,2/3,4,5 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 -n 31176
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2529.802 ms
+Max required driver memory for N=31176 is 19438.859528MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 18648.344 ms
+Converged in 200 iterations
+Solve Time: 10731.537 ms
+Iterations / sec: 18.63665940861966
+GPUS = 48:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 13500 --cpus 1 --sysmem 200000 --eager-alloc-percentage 45 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 3 --ompthreads 3 -lg:eager_alloc_percentage 10 -lg:eager_alloc_percentage_override system_mem=50 --nodes 8 --ranks-per-node 2 --gpus 3 --cpu-bind 0-83/88-171 --mem-bind 0/8 --gpu-bind 0,1,2/3,4,5 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 -n 31176
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2535.791 ms
+Max required driver memory for N=31176 is 19438.859528MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+Signal Signal 11Signal 11 received by node 11 received by node 7, process 7, process 36200763620076 (thread  (thread 200049d0f890) - obtaining backtrace
+200049f3f890) - obtaining backtrace
+ received by node 7, process 3620076 (thread 20004a9df890) - obtaining backtrace
+Signal 11 received by process 3620076 (thread 200049f3f890) at: stack trace: 6 frames
+Signal 11  [ received by process 03620076 (thread ] = 200049d0f890) at: linux-vdso64.so.1(__kernel_sigtramp_rt64+0) [0x2000000504d8]stack trace:
+6 frames
+  [  [01] = ] = linux-vdso64.so.1(__kernel_sigtramp_rt64+0) [0x2000000504d8]/autofs/nccs-svm1_home1/rohany/nvidia/legate.sparse/build/lib/liblegate_sparse.so(+0x2b3d4c) [0x201f22313d4c]
+  [2
+] = /autofs/nccs-svm1_home1/rohany/nvidia/legate.core/_skbuild/linux-ppc64le-3.8/cmake-build/_deps/legion-build/lib/librealm.so.1(+0x6c3be4) [0x200001f63be4]
+  [1] = /autofs/nccs-svm1_home1/rohany/nvidia/legate.sparse/build/lib/liblegate_sparse.so(+0x2b3d4c) [0x201f22313d4c]
+  [3] =   [2/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/_skbuild/linux-ppc64le-3.8/cmake-build/_deps/legion-build/lib/librealm.so.1(+0x67acc0) [0x200001f1acc0]] =
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/_skbuild/linux-ppc64le-3.8/cmake-build/_deps/legion-build/lib/librealm.so.1(+0x6c3be4) [0x200001f63be4]
+  [4] =   [3/lib64/power9/libpthread.so.0(+0x8ae0) [0x200004518ae0]] =
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/_skbuild/linux-ppc64le-3.8/cmake-build/_deps/legion-build/lib/librealm.so.1(+0x67acc0) [0x200001f1acc0]  [
+5  [] = 4/lib64/power9/libc.so.6(clone+0x74) [0x200004c5e7c8]
+] = /lib64/power9/libpthread.so.0(+0x8ae0) [0x200004518ae0]
+  [5] = /lib64/power9/libc.so.6(clone+0x74) [0x200004c5e7c8]
+Signal 11 received by process 3620076 (thread 20004a9df890) at: stack trace: 12 frames
+  [0] = linux-vdso64.so.1(__kernel_sigtramp_rt64+0) [0x2000000504d8]
+  [1] = /autofs/nccs-svm1_home1/rohany/nvidia/legate.sparse/build/lib/liblegate_sparse.so(+0x2b3d4c) [0x201f22313d4c]
+  [2] = /autofs/nccs-svm1_home1/rohany/nvidia/legate.core/_skbuild/linux-ppc64le-3.8/cmake-build/_deps/legion-build/lib/librealm.so.1(GOMP_parallel+0x40) [0x200001f6c5e0]
+  [3] = /autofs/nccs-svm1_home1/rohany/nvidia/legate.sparse/build/lib/liblegate_sparse.so(sparse::SpGEMMCSRxCSRxCSRNNZ::omp_variant(legate::TaskContext&)+0x298) [0x201f223196c8]
+  [4] = /autofs/nccs-svm1_home1/rohany/nvidia/legate.sparse/build/lib/liblegate_sparse.so(void legate::LegateTask<sparse::SpGEMMCSRxCSRxCSRNNZ>::legate_task_wrapper<&sparse::SpGEMMCSRxCSRxCSRNNZ::omp_variant>(void const*, unsigned long, void const*, unsigned long, Realm::Processor)+0x13c) [0x201f22222d5c]
+  [5] = /autofs/nccs-svm1_home1/rohany/nvidia/legate.core/_skbuild/linux-ppc64le-3.8/cmake-build/_deps/legion-build/lib/librealm.so.1(+0x615f50) [0x200001eb5f50]
+  [6] = /autofs/nccs-svm1_home1/rohany/nvidia/legate.core/_skbuild/linux-ppc64le-3.8/cmake-build/_deps/legion-build/lib/librealm.so.1(+0x673bd0) [0x200001f13bd0]
+  [7] = /autofs/nccs-svm1_home1/rohany/nvidia/legate.core/_skbuild/linux-ppc64le-3.8/cmake-build/_deps/legion-build/lib/librealm.so.1(+0x673d94) [0x200001f13d94]
+  [8] = /autofs/nccs-svm1_home1/rohany/nvidia/legate.core/_skbuild/linux-ppc64le-3.8/cmake-build/_deps/legion-build/lib/librealm.so.1(+0x676de4) [0x200001f16de4]
+  [9] = /autofs/nccs-svm1_home1/rohany/nvidia/legate.core/_skbuild/linux-ppc64le-3.8/cmake-build/_deps/legion-build/lib/librealm.so.1(+0x680540) [0x200001f20540]
+  [10] = /lib64/power9/libc.so.6(makecontext+0xd8) [0x200004b87ffc]
+  [11] = /autofs/nccs-svm1_home1/rohany/nvidia/legate.core/_skbuild/linux-ppc64le-3.8/cmake-build/_deps/legion-build/lib/librealm.so.1(+0x681f48) [0x200001f21f48]
+ERROR:  One or more process (first noticed rank 7) terminated with signal 11
+GPUS = 48:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 13500 --cpus 1 --sysmem 200000 --eager-alloc-percentage 45 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 3 --ompthreads 3 -lg:eager_alloc_percentage 10 -lg:eager_alloc_percentage_override system_mem=50 --nodes 8 --ranks-per-node 2 --gpus 3 --cpu-bind 0-83/88-171 --mem-bind 0/8 --gpu-bind 0,1,2/3,4,5 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 -n 31176
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2576.543 ms
+Max required driver memory for N=31176 is 19438.859528MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 18684.04 ms
+Converged in 200 iterations
+Solve Time: 10934.027 ms
+Iterations / sec: 18.291522418958724
+GPUS = 48:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 13500 --cpus 1 --sysmem 200000 --eager-alloc-percentage 45 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 3 --ompthreads 3 -lg:eager_alloc_percentage 10 -lg:eager_alloc_percentage_override system_mem=50 --nodes 8 --ranks-per-node 2 --gpus 3 --cpu-bind 0-83/88-171 --mem-bind 0/8 --gpu-bind 0,1,2/3,4,5 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 -n 31176
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2554.563 ms
+Max required driver memory for N=31176 is 19438.859528MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 18395.912 ms
+Converged in 200 iterations
+Solve Time: 10697.222 ms
+Iterations / sec: 18.69644287086872
+GPUS = 48:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 13500 --cpus 1 --sysmem 200000 --eager-alloc-percentage 45 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 3 --ompthreads 3 -lg:eager_alloc_percentage 10 -lg:eager_alloc_percentage_override system_mem=50 --nodes 8 --ranks-per-node 2 --gpus 3 --cpu-bind 0-83/88-171 --mem-bind 0/8 --gpu-bind 0,1,2/3,4,5 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 -n 31176
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2584.287 ms
+Max required driver memory for N=31176 is 19438.859528MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 18546.748 ms
+Converged in 200 iterations
+Solve Time: 10875.496 ms
+Iterations / sec: 18.38996584615543
+GPUS = 48:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 13500 --cpus 1 --sysmem 200000 --eager-alloc-percentage 45 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 3 --ompthreads 3 -lg:eager_alloc_percentage 10 -lg:eager_alloc_percentage_override system_mem=50 --nodes 8 --ranks-per-node 2 --gpus 3 --cpu-bind 0-83/88-171 --mem-bind 0/8 --gpu-bind 0,1,2/3,4,5 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 -n 31176
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2564.307 ms
+Max required driver memory for N=31176 is 19438.859528MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 18755.477 ms
+Converged in 200 iterations
+Solve Time: 11020.509 ms
+Iterations / sec: 18.147982094111985
+GPUS = 48:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 13500 --cpus 1 --sysmem 200000 --eager-alloc-percentage 45 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 3 --ompthreads 3 -lg:eager_alloc_percentage 10 -lg:eager_alloc_percentage_override system_mem=50 --nodes 8 --ranks-per-node 2 --gpus 3 --cpu-bind 0-83/88-171 --mem-bind 0/8 --gpu-bind 0,1,2/3,4,5 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 -n 31176
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2534.112 ms
+Max required driver memory for N=31176 is 19438.859528MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 19273.744 ms
+Converged in 200 iterations
+Solve Time: 10962.317 ms
+Iterations / sec: 18.24431824038659
+GPUS = 96:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 13500 --cpus 1 --sysmem 200000 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 3 --ompthreads 3 -lg:eager_alloc_percentage 10 -lg:eager_alloc_percentage_override system_mem=30 --nodes 16 --ranks-per-node 2 --gpus 3 --cpu-bind 0-83/88-171 --mem-bind 0/8 --gpu-bind 0,1,2/3,4,5 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 -n 44090
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 3229.645 ms
+Max required driver memory for N=44090 is 38878.562008MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 43752.712 ms
+Converged in 200 iterations
+Solve Time: 20438.563 ms
+Iterations / sec: 9.785423759977647
+GPUS = 96:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 13500 --cpus 1 --sysmem 200000 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 3 --ompthreads 3 -lg:eager_alloc_percentage 10 -lg:eager_alloc_percentage_override system_mem=30 --nodes 16 --ranks-per-node 2 --gpus 3 --cpu-bind 0-83/88-171 --mem-bind 0/8 --gpu-bind 0,1,2/3,4,5 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 -n 44090
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2561.733 ms
+Max required driver memory for N=44090 is 38878.562008MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 43858.211 ms
+Converged in 200 iterations
+Solve Time: 20273.439 ms
+Iterations / sec: 9.865124510942618
+GPUS = 96:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 13500 --cpus 1 --sysmem 200000 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 3 --ompthreads 3 -lg:eager_alloc_percentage 10 -lg:eager_alloc_percentage_override system_mem=30 --nodes 16 --ranks-per-node 2 --gpus 3 --cpu-bind 0-83/88-171 --mem-bind 0/8 --gpu-bind 0,1,2/3,4,5 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 -n 44090
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2537.362 ms
+Max required driver memory for N=44090 is 38878.562008MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 44012.144 ms
+Converged in 200 iterations
+Solve Time: 20319.053 ms
+Iterations / sec: 9.84297841046037
+GPUS = 96:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 13500 --cpus 1 --sysmem 200000 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 3 --ompthreads 3 -lg:eager_alloc_percentage 10 -lg:eager_alloc_percentage_override system_mem=30 --nodes 16 --ranks-per-node 2 --gpus 3 --cpu-bind 0-83/88-171 --mem-bind 0/8 --gpu-bind 0,1,2/3,4,5 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 -n 44090
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2579.958 ms
+Max required driver memory for N=44090 is 38878.562008MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 44185.226 ms
+Converged in 200 iterations
+Solve Time: 20293.567 ms
+Iterations / sec: 9.855339871989976
+GPUS = 96:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 13500 --cpus 1 --sysmem 200000 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 3 --ompthreads 3 -lg:eager_alloc_percentage 10 -lg:eager_alloc_percentage_override system_mem=30 --nodes 16 --ranks-per-node 2 --gpus 3 --cpu-bind 0-83/88-171 --mem-bind 0/8 --gpu-bind 0,1,2/3,4,5 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 -n 44090
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2584.971 ms
+Max required driver memory for N=44090 is 38878.562008MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 43873.795 ms
+Converged in 200 iterations
+Solve Time: 20312.387 ms
+Iterations / sec: 9.846208621369808
+GPUS = 96:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 13500 --cpus 1 --sysmem 200000 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 3 --ompthreads 3 -lg:eager_alloc_percentage 10 -lg:eager_alloc_percentage_override system_mem=30 --nodes 16 --ranks-per-node 2 --gpus 3 --cpu-bind 0-83/88-171 --mem-bind 0/8 --gpu-bind 0,1,2/3,4,5 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 -n 44090
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2644.556 ms
+Max required driver memory for N=44090 is 38878.562008MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 44112.616 ms
+Converged in 200 iterations
+Solve Time: 20493.031 ms
+Iterations / sec: 9.759415286103847
+GPUS = 96:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 13500 --cpus 1 --sysmem 200000 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 3 --ompthreads 3 -lg:eager_alloc_percentage 10 -lg:eager_alloc_percentage_override system_mem=30 --nodes 16 --ranks-per-node 2 --gpus 3 --cpu-bind 0-83/88-171 --mem-bind 0/8 --gpu-bind 0,1,2/3,4,5 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 -n 44090
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2568.968 ms
+Max required driver memory for N=44090 is 38878.562008MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 44774.937 ms
+Converged in 200 iterations
+Solve Time: 20475.316 ms
+Iterations / sec: 9.767859016192961
+GPUS = 96:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 13500 --cpus 1 --sysmem 200000 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 3 --ompthreads 3 -lg:eager_alloc_percentage 10 -lg:eager_alloc_percentage_override system_mem=30 --nodes 16 --ranks-per-node 2 --gpus 3 --cpu-bind 0-83/88-171 --mem-bind 0/8 --gpu-bind 0,1,2/3,4,5 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 -n 44090
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2554.082 ms
+Max required driver memory for N=44090 is 38878.562008MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 43845.71 ms
+Converged in 200 iterations
+Solve Time: 20142.008 ms
+Iterations / sec: 9.929496602324852
+GPUS = 96:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 13500 --cpus 1 --sysmem 200000 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 3 --ompthreads 3 -lg:eager_alloc_percentage 10 -lg:eager_alloc_percentage_override system_mem=30 --nodes 16 --ranks-per-node 2 --gpus 3 --cpu-bind 0-83/88-171 --mem-bind 0/8 --gpu-bind 0,1,2/3,4,5 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 -n 44090
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2590.808 ms
+Max required driver memory for N=44090 is 38878.562008MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 44166.084 ms
+Converged in 200 iterations
+Solve Time: 20240.658 ms
+Iterations / sec: 9.881101691456868
+GPUS = 96:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 13500 --cpus 1 --sysmem 200000 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 3 --ompthreads 3 -lg:eager_alloc_percentage 10 -lg:eager_alloc_percentage_override system_mem=30 --nodes 16 --ranks-per-node 2 --gpus 3 --cpu-bind 0-83/88-171 --mem-bind 0/8 --gpu-bind 0,1,2/3,4,5 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 -n 44090
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2571.404 ms
+Max required driver memory for N=44090 is 38878.562008MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 44366.149 ms
+Converged in 200 iterations
+Solve Time: 20121.937 ms
+Iterations / sec: 9.939400963237285
+GPUS = 96:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 13500 --cpus 1 --sysmem 200000 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 3 --ompthreads 3 -lg:eager_alloc_percentage 10 -lg:eager_alloc_percentage_override system_mem=30 --nodes 16 --ranks-per-node 2 --gpus 3 --cpu-bind 0-83/88-171 --mem-bind 0/8 --gpu-bind 0,1,2/3,4,5 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 -n 44090
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2547.079 ms
+Max required driver memory for N=44090 is 38878.562008MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 44231.666 ms
+Converged in 200 iterations
+Solve Time: 20400.222 ms
+Iterations / sec: 9.803814880053755
+GPUS = 96:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 13500 --cpus 1 --sysmem 200000 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 3 --ompthreads 3 -lg:eager_alloc_percentage 10 -lg:eager_alloc_percentage_override system_mem=30 --nodes 16 --ranks-per-node 2 --gpus 3 --cpu-bind 0-83/88-171 --mem-bind 0/8 --gpu-bind 0,1,2/3,4,5 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 -n 44090
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+Warning: PAMI CUDA HOOK disabled
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2564.073 ms
+Max required driver memory for N=44090 is 38878.562008MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 43800.159 ms
+Converged in 200 iterations
+Solve Time: 20241.027 ms
+Iterations / sec: 9.880921556006028
+GPUS = 192:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 13500 --cpus 1 --sysmem 220000 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 3 --ompthreads 3 -lg:eager_alloc_percentage 10 -lg:eager_alloc_percentage_override system_mem=25 --nodes 32 --ranks-per-node 2 --gpus 3 --cpu-bind 0-83/88-171 --mem-bind 0/8 --gpu-bind 0,1,2/3,4,5 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 -n 62353
+Data creation time: 3363.132 ms
+Max required driver memory for N=62353 is 77755.438088MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 156688.011 ms
+Converged in 200 iterations
+Solve Time: 138023.462 ms
+Iterations / sec: 1.4490290063873343
+GPUS = 192:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 13500 --cpus 1 --sysmem 220000 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 3 --ompthreads 3 -lg:eager_alloc_percentage 10 -lg:eager_alloc_percentage_override system_mem=25 --nodes 32 --ranks-per-node 2 --gpus 3 --cpu-bind 0-83/88-171 --mem-bind 0/8 --gpu-bind 0,1,2/3,4,5 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 -n 62353
+Data creation time: 2702.11 ms
+Max required driver memory for N=62353 is 77755.438088MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 158783.006 ms
+Converged in 200 iterations
+Solve Time: 136357.173 ms
+Iterations / sec: 1.4667361870284592
+GPUS = 192:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 13500 --cpus 1 --sysmem 220000 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 3 --ompthreads 3 -lg:eager_alloc_percentage 10 -lg:eager_alloc_percentage_override system_mem=25 --nodes 32 --ranks-per-node 2 --gpus 3 --cpu-bind 0-83/88-171 --mem-bind 0/8 --gpu-bind 0,1,2/3,4,5 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 -n 62353
+Data creation time: 2626.903 ms
+Max required driver memory for N=62353 is 77755.438088MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 156981.585 ms
+Converged in 200 iterations
+Solve Time: 136987.983 ms
+Iterations / sec: 1.459982077406016
+GPUS = 192:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 13500 --cpus 1 --sysmem 220000 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 3 --ompthreads 3 -lg:eager_alloc_percentage 10 -lg:eager_alloc_percentage_override system_mem=25 --nodes 32 --ranks-per-node 2 --gpus 3 --cpu-bind 0-83/88-171 --mem-bind 0/8 --gpu-bind 0,1,2/3,4,5 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 -n 62353
+Data creation time: 2661.471 ms
+Max required driver memory for N=62353 is 77755.438088MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 157749.262 ms
+Converged in 200 iterations
+Solve Time: 137337.177 ms
+Iterations / sec: 1.4562699217270207
+GPUS = 192:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 13500 --cpus 1 --sysmem 220000 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 3 --ompthreads 3 -lg:eager_alloc_percentage 10 -lg:eager_alloc_percentage_override system_mem=25 --nodes 32 --ranks-per-node 2 --gpus 3 --cpu-bind 0-83/88-171 --mem-bind 0/8 --gpu-bind 0,1,2/3,4,5 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 -n 62353
+Data creation time: 2645.395 ms
+Max required driver memory for N=62353 is 77755.438088MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 157680.613 ms
+Converged in 200 iterations
+Solve Time: 138000.179 ms
+Iterations / sec: 1.449273482464106
+GPUS = 192:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 13500 --cpus 1 --sysmem 220000 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 3 --ompthreads 3 -lg:eager_alloc_percentage 10 -lg:eager_alloc_percentage_override system_mem=25 --nodes 32 --ranks-per-node 2 --gpus 3 --cpu-bind 0-83/88-171 --mem-bind 0/8 --gpu-bind 0,1,2/3,4,5 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 -n 62353
+Data creation time: 2628.132 ms
+Max required driver memory for N=62353 is 77755.438088MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 158455.213 ms
+Converged in 200 iterations
+Solve Time: 137281.967 ms
+Iterations / sec: 1.4568555824961336
+GPUS = 192:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 13500 --cpus 1 --sysmem 220000 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 3 --ompthreads 3 -lg:eager_alloc_percentage 10 -lg:eager_alloc_percentage_override system_mem=25 --nodes 32 --ranks-per-node 2 --gpus 3 --cpu-bind 0-83/88-171 --mem-bind 0/8 --gpu-bind 0,1,2/3,4,5 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 -n 62353
+Data creation time: 2650.22 ms
+Max required driver memory for N=62353 is 77755.438088MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 158073.08 ms
+Converged in 200 iterations
+Solve Time: 138807.622 ms
+Iterations / sec: 1.4408430684015319
+GPUS = 192:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 13500 --cpus 1 --sysmem 220000 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 3 --ompthreads 3 -lg:eager_alloc_percentage 10 -lg:eager_alloc_percentage_override system_mem=25 --nodes 32 --ranks-per-node 2 --gpus 3 --cpu-bind 0-83/88-171 --mem-bind 0/8 --gpu-bind 0,1,2/3,4,5 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 -n 62353
+Data creation time: 2622.317 ms
+Max required driver memory for N=62353 is 77755.438088MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 158635.209 ms
+Converged in 200 iterations
+Solve Time: 137335.043 ms
+Iterations / sec: 1.4562925501832769
+GPUS = 192:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 13500 --cpus 1 --sysmem 220000 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 3 --ompthreads 3 -lg:eager_alloc_percentage 10 -lg:eager_alloc_percentage_override system_mem=25 --nodes 32 --ranks-per-node 2 --gpus 3 --cpu-bind 0-83/88-171 --mem-bind 0/8 --gpu-bind 0,1,2/3,4,5 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 -n 62353
+Data creation time: 2730.35 ms
+Max required driver memory for N=62353 is 77755.438088MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 157093.987 ms
+Converged in 200 iterations
+Solve Time: 137516.719 ms
+Iterations / sec: 1.4543686138992304
+GPUS = 192:
+legate examples/gmg.py -cunumeric:preload-cudalibs --launcher jsrun -m 200 --fbmem 13500 --cpus 1 --sysmem 220000 --utility 4 --launcher-extra="--smpiargs='-disable_gpu_hooks'" --omps 3 --ompthreads 3 -lg:eager_alloc_percentage 10 -lg:eager_alloc_percentage_override system_mem=25 --nodes 32 --ranks-per-node 2 --gpus 3 --cpu-bind 0-83/88-171 --mem-bind 0/8 --gpu-bind 0,1,2/3,4,5 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 -n 62353
+Data creation time: 2593.986 ms
+Max required driver memory for N=62353 is 77755.438088MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 156897.147 ms
+Converged in 200 iterations
+Solve Time: 137786.517 ms
+Iterations / sec: 1.4515208334934542

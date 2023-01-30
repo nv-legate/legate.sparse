@@ -18,6 +18,7 @@
 #include "sparse/array/csr/spgemm_csr_csr_csr_template.inl"
 
 #include <omp.h>
+#include <thrust/extrema.h>
 
 namespace sparse {
 
@@ -33,22 +34,39 @@ struct SpGEMMCSRxCSRxCSRNNZImplBody<VariantKind::OMP, INDEX_CODE> {
                   const AccessorRO<INDEX_TY, 1>& B_crd,
                   const AccessorRO<Rect<1>, 1>& C_pos,
                   const AccessorRO<INDEX_TY, 1>& C_crd,
-                  const uint64_t A2_dim,
-                  const Rect<1>& rect)
+                  const Rect<1>& rect,
+                  const Rect<1>& C_crd_bounds)
   {
-    INDEX_TY initCoord = static_cast<INDEX_TY>(0);
-    bool initBool      = false;
-    auto num_threads   = omp_get_max_threads();
-    auto kind          = Sparse::has_numamem ? Memory::SOCKET_MEM : Memory::SYSTEM_MEM;
-    DeferredBuffer<INDEX_TY, 1> index_list_all(
-      kind, Rect<1>{0, (A2_dim * num_threads) - 1}, &initCoord);
-    DeferredBuffer<bool, 1> already_set_all(
-      kind, Rect<1>{0, (A2_dim * num_threads) - 1}, &initBool);
+    auto num_threads = omp_get_max_threads();
+    auto kind        = Sparse::has_numamem ? Memory::SOCKET_MEM : Memory::SYSTEM_MEM;
+
+    // Calculate A2_dim by looking at the min and max coordinates in
+    // the provided partition of C.
+    auto C_crd_ptr = C_crd.ptr(C_crd_bounds.lo);
+    auto result =
+      thrust::minmax_element(thrust::omp::par, C_crd_ptr, C_crd_ptr + C_crd_bounds.volume());
+    INDEX_TY min    = *result.first;
+    INDEX_TY max    = *result.second;
+    INDEX_TY A2_dim = max - min + 1;
+
+    // Next, initialize the deferred buffers ourselves, instead of using
+    // Realm fills (which tend to be slower).
+    DeferredBuffer<INDEX_TY, 1> index_list_all(kind, Rect<1>{0, (A2_dim * num_threads) - 1});
+    DeferredBuffer<bool, 1> already_set_all(kind, Rect<1>{0, (A2_dim * num_threads) - 1});
+#pragma omp parallel for schedule(static)
+    for (INDEX_TY i = 0; i < A2_dim * num_threads; i++) {
+      index_list_all[i]  = 0;
+      already_set_all[i] = false;
+    }
+
 #pragma omp parallel for schedule(monotonic : dynamic, 128)
     for (auto i = rect.lo[0]; i < rect.hi[0] + 1; i++) {
-      auto thread_id         = omp_get_thread_num();
+      auto thread_id = omp_get_thread_num();
+      // Offset each accessed array by the min coordinate. Importantly,
+      // index_list is not offset by min, because it isn't accessed
+      // by C's coordinates.
       auto index_list        = index_list_all.ptr(thread_id * A2_dim);
-      auto already_set       = already_set_all.ptr(thread_id * A2_dim);
+      auto already_set       = already_set_all.ptr(thread_id * A2_dim) - min;
       size_t index_list_size = 0;
       for (size_t kB = B_pos[i].lo; kB < B_pos[i].hi + 1; kB++) {
         auto k = B_crd[kB];
@@ -86,26 +104,42 @@ struct SpGEMMCSRxCSRxCSRImplBody<VariantKind::OMP, INDEX_CODE, VAL_CODE> {
                   const AccessorRO<Rect<1>, 1>& C_pos,
                   const AccessorRO<INDEX_TY, 1>& C_crd,
                   const AccessorRO<VAL_TY, 1>& C_vals,
-                  const uint64_t A2_dim,
-                  const Rect<1>& rect)
+                  const Rect<1>& rect,
+                  const Rect<1>& C_crd_bounds)
   {
-    INDEX_TY initCoord = static_cast<INDEX_TY>(0);
-    bool initBool      = false;
-    VAL_TY initVal     = static_cast<VAL_TY>(0);
-    auto num_threads   = omp_get_max_threads();
-    auto kind          = Sparse::has_numamem ? Memory::SOCKET_MEM : Memory::SYSTEM_MEM;
-    DeferredBuffer<INDEX_TY, 1> index_list_all(
-      kind, Rect<1>{0, (A2_dim * num_threads) - 1}, &initCoord);
-    DeferredBuffer<bool, 1> already_set_all(
-      kind, Rect<1>{0, (A2_dim * num_threads) - 1}, &initBool);
-    DeferredBuffer<VAL_TY, 1> workspace_all(kind, Rect<1>{0, (A2_dim * num_threads) - 1}, &initVal);
+    auto num_threads = omp_get_max_threads();
+    auto kind        = Sparse::has_numamem ? Memory::SOCKET_MEM : Memory::SYSTEM_MEM;
+
+    // Calculate A2_dim by looking at the min and max coordinates in
+    // the provided partition of C.
+    auto C_crd_ptr = C_crd.ptr(C_crd_bounds.lo);
+    auto result =
+      thrust::minmax_element(thrust::omp::par, C_crd_ptr, C_crd_ptr + C_crd_bounds.volume());
+    INDEX_TY min    = *result.first;
+    INDEX_TY max    = *result.second;
+    INDEX_TY A2_dim = max - min + 1;
+
+    // Next, initialize the deferred buffers ourselves, instead of using
+    // Realm fills (which tend to be slower).
+    DeferredBuffer<INDEX_TY, 1> index_list_all(kind, Rect<1>{0, (A2_dim * num_threads) - 1});
+    DeferredBuffer<bool, 1> already_set_all(kind, Rect<1>{0, (A2_dim * num_threads) - 1});
+    DeferredBuffer<VAL_TY, 1> workspace_all(kind, Rect<1>{0, (A2_dim * num_threads) - 1});
+#pragma omp parallel for schedule(static)
+    for (INDEX_TY i = 0; i < A2_dim * num_threads; i++) {
+      index_list_all[i]  = 0;
+      already_set_all[i] = false;
+      workspace_all[i]   = 0;
+    }
+
     // For this computation, we assume that the rows are partitioned.
 #pragma omp parallel for schedule(monotonic : dynamic, 128)
     for (auto i = rect.lo[0]; i < rect.hi[0] + 1; i++) {
-      auto thread_id         = omp_get_thread_num();
+      auto thread_id = omp_get_thread_num();
+      // Back offset each of the pointers by the min element. Importantly,
+      // index_list is not offset by min, because it is not accessed by j.
       auto index_list        = index_list_all.ptr(thread_id * A2_dim);
-      auto already_set       = already_set_all.ptr(thread_id * A2_dim);
-      auto workspace         = workspace_all.ptr(thread_id * A2_dim);
+      auto already_set       = already_set_all.ptr(thread_id * A2_dim) - min;
+      auto workspace         = workspace_all.ptr(thread_id * A2_dim) - min;
       size_t index_list_size = 0;
       for (size_t kB = B_pos[i].lo; kB < B_pos[i].hi + 1; kB++) {
         auto k = B_crd[kB];

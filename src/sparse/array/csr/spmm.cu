@@ -113,36 +113,6 @@ struct SpMMCSRImpl<VariantKind::GPU> {
   }
 };
 
-template <LegateTypeCode INDEX_CODE, LegateTypeCode VAL_CODE>
-struct SpMMCSRImplBody<VariantKind::CPU, INDEX_CODE, VAL_CODE> {
-  using INDEX_TY = legate_type_of<INDEX_CODE>;
-  using VAL_TY   = legate_type_of<VAL_CODE>;
-
-  void operator()(const AccessorWO<VAL_TY, 2>& A_vals,
-                  const AccessorRO<Rect<1>, 1>& B_pos,
-                  const AccessorRO<INDEX_TY, 1>& B_crd,
-                  const AccessorRO<VAL_TY, 1>& B_vals,
-                  const AccessorRO<VAL_TY, 2>& C_vals,
-                  const Rect<2>& A_rect,
-                  const Rect<2>& C_rect)
-  {
-    // Zero out the output array.
-    for (auto i = A_rect.lo[0]; i < A_rect.hi[0] + 1; i++) {
-      for (auto j = C_rect.lo[1]; j < C_rect.hi[1] + 1; j++) {
-        A_vals[{i, j}] = static_cast<VAL_TY>(0);
-      }
-    }
-    for (auto i = A_rect.lo[0]; i < A_rect.hi[0] + 1; i++) {
-      for (size_t kB = B_pos[i].lo; kB < B_pos[i].hi + 1; kB++) {
-        auto k = B_crd[kB];
-        for (auto j = C_rect.lo[1]; j < C_rect.hi[1] + 1; j++) {
-          A_vals[{i, j}] += B_vals[kB] * C_vals[{k, j}];
-        }
-      }
-    }
-  }
-};
-
 template <typename INDEX_TY, typename VAL_TY>
 __global__ void spmm_dense_csr_kernel(const size_t nnzs,
                                       const size_t pos_offset,

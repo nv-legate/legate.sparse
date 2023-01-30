@@ -535,7 +535,6 @@ def raw_create_csr(rows, cols, vals, shape, dtype):
         ),
         ReductionOp.ADD,
     )
-    task.add_scalar_arg(shape[0], types.int64)
     task.execute()
     # TODO (rohany): On small inputs, it appears that I get a non-deterministic
     # failure, which appears either as a segfault or an incorrect output. This

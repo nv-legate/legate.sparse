@@ -1,4 +1,4 @@
-/* Copyright 2022 NVIDIA Corporation
+/* Copyright 2023 NVIDIA Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,20 +22,24 @@
 
 namespace sparse {
 
-struct SortedCoordsToCountsArgs {
-  const legate::Store& output;
-  const legate::Store& input;
+struct SpMMCSCArgs {
+  const legate::Store& A_vals;
+  const legate::Store& B_pos;
+  const legate::Store& B_crd;
+  const legate::Store& B_vals;
+  const legate::Store& C_vals;
+  const int64_t A0_dim;
 };
 
-class SortedCoordsToCounts : public SparseTask<SortedCoordsToCounts> {
+class SpMMCSC : public SparseTask<SpMMCSC> {
  public:
-  static const int TASK_ID = LEGATE_SPARSE_SORTED_COORDS_TO_COUNTS;
+  static const int TASK_ID = LEGATE_SPARSE_SPMM_CSC_DENSE;
   static void cpu_variant(legate::TaskContext& ctx);
 #ifdef LEGATE_USE_OPENMP
   static void omp_variant(legate::TaskContext& ctx);
 #endif
 #ifdef LEGATE_USE_CUDA
-  static void gpu_variant(legate::TaskContext& ctx);
+  static void gpu_variant(legate::TaskContext& context);
 #endif
 };
 

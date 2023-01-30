@@ -410,8 +410,11 @@ struct SpGEMMCSRxCSRxCSCShuffleImplBody<VariantKind::GPU, INDEX_CODE, VAL_CODE> 
       total_rows = std::max(itr->volume(), total_rows);
       if (itr->empty()) continue;
       Rect<1> lo, hi;
-      cudaMemcpy(&lo, global_pos.ptr(itr->lo), sizeof(Rect<1>), cudaMemcpyDeviceToHost);
-      cudaMemcpy(&hi, global_pos.ptr(itr->hi), sizeof(Rect<1>), cudaMemcpyDeviceToHost);
+      CHECK_CUDA(cudaMemcpyAsync(
+        &lo, global_pos.ptr(itr->lo), sizeof(Rect<1>), cudaMemcpyDeviceToHost, stream));
+      CHECK_CUDA(cudaMemcpyAsync(
+        &hi, global_pos.ptr(itr->hi), sizeof(Rect<1>), cudaMemcpyDeviceToHost, stream));
+      CHECK_CUDA(cudaStreamSynchronize(stream));
       total_nnzs += hi.hi[0] - lo.lo[0] + 1;
     }
     // Allocate our output buffers.
@@ -423,8 +426,11 @@ struct SpGEMMCSRxCSRxCSCShuffleImplBody<VariantKind::GPU, INDEX_CODE, VAL_CODE> 
     // suffers due to this, we can think about algorithms for a full-data based parallelization.
     DeferredBuffer<size_t, 1> row_offsets({0, total_rows - 1}, Memory::GPU_FB_MEM);
     DeferredBuffer<Rect<1>, 1> rects({0, rects_cpu.size() - 1}, Memory::GPU_FB_MEM);
-    cudaMemcpy(
-      rects.ptr(0), rects_cpu.data(), sizeof(Rect<1>) * rects_cpu.size(), cudaMemcpyHostToDevice);
+    CHECK_CUDA(cudaMemcpyAsync(rects.ptr(0),
+                               rects_cpu.data(),
+                               sizeof(Rect<1>) * rects_cpu.size(),
+                               cudaMemcpyHostToDevice,
+                               stream));
     auto blocks = get_num_blocks_1d(total_rows);
     calculate_copy_sizes<<<blocks, THREADS_PER_BLOCK, 0, stream>>>(
       total_rows, rects_cpu.size(), rects, row_offsets, global_pos);

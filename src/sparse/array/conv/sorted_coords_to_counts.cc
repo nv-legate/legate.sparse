@@ -25,7 +25,7 @@ using namespace legate;
 template <LegateTypeCode INDEX_CODE, typename ACC>
 struct SortedCoordsToCountsImplBody<VariantKind::CPU, INDEX_CODE, ACC> {
   using INDEX_TY = legate_type_of<INDEX_CODE>;
-  void operator()(ACC out, AccessorRO<INDEX_TY, 1> in, int64_t max_vals, const Domain& dom)
+  void operator()(ACC out, AccessorRO<INDEX_TY, 1> in, const Domain& dom)
   {
     for (PointInDomainIterator<1> itr(dom); itr(); itr++) { out[in[*itr]] <<= 1; }
   }

@@ -39,7 +39,12 @@ def stencil_grid(S, grid, dtype=None, format=None):
     indices = np.vstack(indices).T
 
     # zero boundary connections
-    for index, diag in zip(indices, data):
+    for idx in range(indices.shape[0]):
+        # We do this instead of
+        #  for index, diag in zip(indices, data):
+        # to avoid unnecessary materialization into numpy arrays.
+        index = indices[idx, :]
+        diag = data[idx, :]
         diag = diag.reshape(grid)
         for n, i in enumerate(index):
             if i > 0:
@@ -75,13 +80,35 @@ def stencil_grid(S, grid, dtype=None, format=None):
 
 
 def poisson2D(N):
-    M = 2
-    stencil = np.zeros((3,) * M, dtype=float)
-    for i in range(M):
-        stencil[(1,) * i + (0,) + (1,) * (M - i - 1)] = -1
-        stencil[(1,) * i + (2,) + (1,) * (M - i - 1)] = -1
-    stencil[(1,) * M] = 2 * M
-    return stencil_grid(stencil, (N, N))
+    diag_size = N * N - 1
+    first = np.full((N - 1), -1.0)
+    chunks = np.concatenate([np.zeros(1), first])
+    diag_a = np.concatenate(
+        [first, np.tile(chunks, (diag_size - (N - 1)) // N)]
+    )
+    diag_g = -1.0 * np.ones(N * (N - 1))
+    diag_c = 4.0 * np.ones(N * N)
+
+    # We construct a sequence of main diagonal elements,
+    diagonals = [diag_g, diag_a, diag_c, diag_a, diag_g]
+    # and a sequence of positions of the diagonal entries relative to the main
+    # diagonal.
+    offsets = [-N, -1, 0, 1, N]
+
+    # Call to the diags routine; note that diags return a representation of the
+    # array; to explicitly obtain its ndarray realisation, the call to
+    # .toarray() is needed. Note how the matrix has dimensions (nx-2)*(nx-2).
+    # d2mat = diags(diagonals, offsets, dtype=np.float64).tocsr()
+    # TODO (rohany): We want to have this conversion occur in parallel so that
+    #  we can effectively weak scale. Unfortunately, I can't figure out how to
+    #  adapt the scipy.sparse DIA->CSC method to work for DIA->CSR conversions.
+    #  I made an attempt at using the transpose of the DIA matrix -> CSC -> CSR
+    #  via a final transpose, but it turns out the direct implementation of
+    #  transpose on DIA matrices uses alot of memory and is slow due to the use
+    #  of indirection copies. Since we know that this matrix is symmetric, we
+    #  directly use the DIA->CSC conversion, and then take the transpose to get
+    #  a CSR matrix back.
+    return sparse.diags(diagonals, offsets, dtype=np.float64).tocsc().T
 
 
 def diffusion2D(N, epsilon=1.0, theta=0.0):
@@ -228,7 +255,9 @@ class WeightedJacobi(object):
         # diagonal of A. sparse.eye doesn't have this nob, but we can take
         # the output of sparse.eye and mess with it to get the matrix
         # that we want.
-        D_inv_mat = sparse.eye(A.shape[0], n=A.shape[1], dtype=A.dtype).tocsr()
+        D_inv_mat = sparse.eye(
+            A.shape[0], n=A.shape[1], dtype=A.dtype, format="csr"
+        )
         D_inv_mat.data = 1.0 / D_inv
         spectral_radius = max_eigenvalue(A @ D_inv_mat)
         omega = self._init_omega / spectral_radius

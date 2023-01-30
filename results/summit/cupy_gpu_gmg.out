@@ -1,0 +1,109 @@
+GPUS = 1:
+jsrun -n 1 -c ALL_CPUS -g 1 -b rs python examples/gmg.py -package cupy -m 250 -n 4500
+Data creation time: 9603.583984375 ms
+Max required driver memory for N=4500 is 405.000008MB
+GMG init time: 4051.712646484375 ms
+Converged in 250 iterations
+Solve Time: 6803.984375 ms
+Iterations / sec: 36.74317667726861
+ERROR:  One or more process (first noticed rank 0) terminated with signal 11
+GPUS = 1:
+jsrun -n 1 -c ALL_CPUS -g 1 -b rs python examples/gmg.py -package cupy -m 250 -n 4500
+Data creation time: 1700.401123046875 ms
+Max required driver memory for N=4500 is 405.000008MB
+GMG init time: 1362.01513671875 ms
+Converged in 250 iterations
+Solve Time: 4973.72509765625 ms
+Iterations / sec: 50.2641370585211
+ERROR:  One or more process (first noticed rank 0) terminated with signal 11
+GPUS = 1:
+jsrun -n 1 -c ALL_CPUS -g 1 -b rs python examples/gmg.py -package cupy -m 250 -n 4500
+Data creation time: 1476.8138427734375 ms
+Max required driver memory for N=4500 is 405.000008MB
+GMG init time: 1361.00927734375 ms
+Converged in 250 iterations
+Solve Time: 4977.087890625 ms
+Iterations / sec: 50.230175856630524
+ERROR:  One or more process (first noticed rank 0) terminated with signal 11
+GPUS = 1:
+jsrun -n 1 -c ALL_CPUS -g 1 -b rs python examples/gmg.py -package cupy -m 250 -n 4500
+Data creation time: 1501.1368408203125 ms
+Max required driver memory for N=4500 is 405.000008MB
+GMG init time: 1364.7115478515625 ms
+Converged in 250 iterations
+Solve Time: 4981.2470703125 ms
+Iterations / sec: 50.18823528950476
+ERROR:  One or more process (first noticed rank 0) terminated with signal 11
+GPUS = 1:
+jsrun -n 1 -c ALL_CPUS -g 1 -b rs python examples/gmg.py -package cupy -m 250 -n 4500
+Data creation time: 1490.8170166015625 ms
+Max required driver memory for N=4500 is 405.000008MB
+GMG init time: 1363.8924560546875 ms
+Converged in 250 iterations
+Solve Time: 4987.08544921875 ms
+Iterations / sec: 50.129479942871974
+ERROR:  One or more process (first noticed rank 0) terminated with signal 11
+GPUS = 1:
+jsrun -n 1 -c ALL_CPUS -g 1 -b rs python examples/gmg.py -package cupy -m 250 -n 4500
+Data creation time: 1484.379150390625 ms
+Max required driver memory for N=4500 is 405.000008MB
+GMG init time: 1362.474609375 ms
+Converged in 250 iterations
+Solve Time: 4974.7421875 ms
+Iterations / sec: 50.25386051726927
+ERROR:  One or more process (first noticed rank 0) terminated with signal 11
+GPUS = 1:
+jsrun -n 1 -c ALL_CPUS -g 1 -b rs python examples/gmg.py -package cupy -m 250 -n 4500
+Data creation time: 1477.6146240234375 ms
+Max required driver memory for N=4500 is 405.000008MB
+GMG init time: 1361.53564453125 ms
+Converged in 250 iterations
+Solve Time: 4973.82177734375 ms
+Iterations / sec: 50.26316003898143
+ERROR:  One or more process (first noticed rank 0) terminated with signal 11
+GPUS = 1:
+jsrun -n 1 -c ALL_CPUS -g 1 -b rs python examples/gmg.py -package cupy -m 250 -n 4500
+Data creation time: 1479.87353515625 ms
+Max required driver memory for N=4500 is 405.000008MB
+GMG init time: 1361.7266845703125 ms
+Converged in 250 iterations
+Solve Time: 4977.81103515625 ms
+Iterations / sec: 50.222878738134476
+free(): invalid pointer
+ERROR:  One or more process (first noticed rank 0) terminated with signal 6
+GPUS = 1:
+jsrun -n 1 -c ALL_CPUS -g 1 -b rs python examples/gmg.py -package cupy -m 250 -n 4500
+Data creation time: 1484.463134765625 ms
+Max required driver memory for N=4500 is 405.000008MB
+GMG init time: 1364.60302734375 ms
+Converged in 250 iterations
+Solve Time: 4976.25390625 ms
+Iterations / sec: 50.23859407294486
+ERROR:  One or more process (first noticed rank 0) terminated with signal 11
+GPUS = 1:
+jsrun -n 1 -c ALL_CPUS -g 1 -b rs python examples/gmg.py -package cupy -m 250 -n 4500
+Data creation time: 1478.560791015625 ms
+Max required driver memory for N=4500 is 405.000008MB
+GMG init time: 1361.1025390625 ms
+Converged in 250 iterations
+Solve Time: 4977.3466796875 ms
+Iterations / sec: 50.22756422015919
+ERROR:  One or more process (first noticed rank 0) terminated with signal 11
+GPUS = 1:
+jsrun -n 1 -c ALL_CPUS -g 1 -b rs python examples/gmg.py -package cupy -m 250 -n 4500
+Data creation time: 1486.614501953125 ms
+Max required driver memory for N=4500 is 405.000008MB
+GMG init time: 1363.2803955078125 ms
+Converged in 250 iterations
+Solve Time: 5016.19580078125 ms
+Iterations / sec: 49.8385649063108
+GPUS = 1:
+jsrun -n 1 -c ALL_CPUS -g 1 -b rs python examples/gmg.py -package cupy -m 250 -n 4500
+Data creation time: 1484.34326171875 ms
+Max required driver memory for N=4500 is 405.000008MB
+GMG init time: 1363.5106201171875 ms
+Converged in 250 iterations
+Solve Time: 4979.01953125 ms
+Iterations / sec: 50.21068875727761
+free(): invalid pointer
+ERROR:  One or more process (first noticed rank 0) terminated with signal 6

@@ -7,7 +7,7 @@ conda activate cupy
 
 EXP_ITERS=${EXP_ITERS:-1}
 ITERS=250
-SIZE=3000
+SIZE=4500
 COMMON_ARGS="-m $ITERS"
 
 weak_scale_cpu() {
