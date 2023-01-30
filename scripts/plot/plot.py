@@ -16,7 +16,9 @@ SYSTEM_KEY = "System"
 PROCS_KEY = "Sockets/GPUs"
 THROUGHPUT = "Throughput"
 LEGATE_CPU = "Legate-CPU"
+LEGATE_CPU_NO_INSTANCES = "Legate-CPU-Map-Sep"
 LEGATE_GPU = "Legate-GPU"
+LEGATE_GPU_NO_INSTANCES = "Legate-GPU-Map-Sep"
 PETSC_CPU = "PETSc-CPU"
 PETSC_GPU = "PETSc-GPU"
 SCIPY = "SciPy"
@@ -30,7 +32,7 @@ MARKER_SIZE = 10
 
 
 def is_system_gpu(system):
-    return system in [LEGATE_GPU, CUPY, PETSC_GPU]
+    return system in [LEGATE_GPU, CUPY, PETSC_GPU, LEGATE_GPU_NO_INSTANCES]
 
 
 rawPalette = seaborn.color_palette()
@@ -257,12 +259,24 @@ standard_weak_scaling_plot(
 )
 
 # GMG.
+standard_weak_scaling_plot(
+    [
+        get_system_data_path_pair(LEGATE_CPU, GMG),
+        get_system_data_path_pair(LEGATE_GPU, GMG),
+        get_system_data_path_pair(SCIPY, GMG),
+        get_system_data_path_pair(CUPY, GMG),
+    ],
+    "Geometric Multi-Grid Solver",
+    os.path.join(result_dir, "gmg.pdf"),
+)
+
+# GMG Non Library Aware Mapping.
 # standard_weak_scaling_plot([
-#     get_system_data_path_pair(LEGATE_CPU, PDE),
-#     get_system_data_path_pair(LEGATE_GPU, PDE),
-#     get_system_data_path_pair(SCIPY, PDE),
-#     get_system_data_path_pair(CUPY, PDE),
-# ], "Conjugate-Gradient Solver")
+#     get_system_data_path_pair(LEGATE_CPU, GMG),
+#     get_system_data_path_pair(LEGATE_GPU, GMG),
+#     get_system_data_path_pair(LEGATE_GPU_NO_INSTANCES, GMG),
+#     get_system_data_path_pair(LEGATE_CPU_NO_INSTANCES, GMG),
+# ], "Geometric Multi-Grid Solver")
 
 # Quantum.
 summit_quantum_weak_scaling_plot(
@@ -273,4 +287,5 @@ summit_quantum_weak_scaling_plot(
         get_system_data_path_pair(CUPY, QUANTUM),
     ],
     "Quantum Simulation",
+    os.path.join(result_dir, "quantum.pdf"),
 )
