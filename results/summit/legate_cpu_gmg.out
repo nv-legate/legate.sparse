@@ -1,132 +1,1530 @@
 CPU SOCKETS = 1:
-legate examples/gmg.py --nodes 1 --ranks-per-node 1 -n 5196 --omps 1 --ompthreads 17 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83 --mem-bind 0 --nic-bind mlx5_0,mlx5_1 --launcher jsrun -m 200
+legate examples/gmg.py --nodes 1 --ranks-per-node 1 -n 7794 --omps 1 --ompthreads 17 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83 --mem-bind 0 --nic-bind mlx5_0,mlx5_1 --launcher jsrun -m 200
 <jemalloc>: Unsupported system page size
-Data creation time: 2125.646 ms
-Max required driver memory for N=5196 is 539.968328MB
+Data creation time: 1886.014 ms
+Max required driver memory for N=7794 is 1214.928728MB
 /autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
   result = func(*args, **kwargs)
-GMG init time: 7258.797 ms
+GMG init time: 9608.797 ms
 Converged in 200 iterations
-Solve Time: 38630.455 ms
-Iterations / sec: 5.177262343920101
+Solve Time: 88433.731 ms
+Iterations / sec: 2.2615804822257246
 CPU SOCKETS = 1:
-legate examples/gmg.py --nodes 1 --ranks-per-node 1 -n 5196 --omps 1 --ompthreads 17 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83 --mem-bind 0 --nic-bind mlx5_0,mlx5_1 --launcher jsrun -m 200
+legate examples/gmg.py --nodes 1 --ranks-per-node 1 -n 7794 --omps 1 --ompthreads 17 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83 --mem-bind 0 --nic-bind mlx5_0,mlx5_1 --launcher jsrun -m 200
 <jemalloc>: Unsupported system page size
-Data creation time: 2173.603 ms
-Max required driver memory for N=5196 is 539.968328MB
+Data creation time: 1861.502 ms
+Max required driver memory for N=7794 is 1214.928728MB
 /autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
   result = func(*args, **kwargs)
-GMG init time: 7237.529 ms
+GMG init time: 9630.28 ms
 Converged in 200 iterations
-Solve Time: 38562.327 ms
-Iterations / sec: 5.1864090048300255
+Solve Time: 88446.812 ms
+Iterations / sec: 2.2612460017213505
 CPU SOCKETS = 1:
-legate examples/gmg.py --nodes 1 --ranks-per-node 1 -n 5196 --omps 1 --ompthreads 17 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83 --mem-bind 0 --nic-bind mlx5_0,mlx5_1 --launcher jsrun -m 200
+legate examples/gmg.py --nodes 1 --ranks-per-node 1 -n 7794 --omps 1 --ompthreads 17 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83 --mem-bind 0 --nic-bind mlx5_0,mlx5_1 --launcher jsrun -m 200
 <jemalloc>: Unsupported system page size
-Data creation time: 2229.496 ms
-Max required driver memory for N=5196 is 539.968328MB
+Data creation time: 1797.181 ms
+Max required driver memory for N=7794 is 1214.928728MB
 /autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
   result = func(*args, **kwargs)
-GMG init time: 7350.283 ms
+GMG init time: 9558.791 ms
 Converged in 200 iterations
-Solve Time: 38885.421 ms
-Iterations / sec: 5.143315794369308
+Solve Time: 88250.58 ms
+Iterations / sec: 2.2662740573489715
 CPU SOCKETS = 1:
-legate examples/gmg.py --nodes 1 --ranks-per-node 1 -n 5196 --omps 1 --ompthreads 17 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83 --mem-bind 0 --nic-bind mlx5_0,mlx5_1 --launcher jsrun -m 200
+legate examples/gmg.py --nodes 1 --ranks-per-node 1 -n 7794 --omps 1 --ompthreads 17 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83 --mem-bind 0 --nic-bind mlx5_0,mlx5_1 --launcher jsrun -m 200
 <jemalloc>: Unsupported system page size
-Data creation time: 2189.232 ms
-Max required driver memory for N=5196 is 539.968328MB
+Data creation time: 1796.905 ms
+Max required driver memory for N=7794 is 1214.928728MB
 /autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
   result = func(*args, **kwargs)
-GMG init time: 7376.937 ms
+GMG init time: 9561.836 ms
 Converged in 200 iterations
-Solve Time: 38871.005 ms
-Iterations / sec: 5.145223284039093
+Solve Time: 88461.024 ms
+Iterations / sec: 2.26088271372486
 CPU SOCKETS = 1:
-legate examples/gmg.py --nodes 1 --ranks-per-node 1 -n 5196 --omps 1 --ompthreads 17 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83 --mem-bind 0 --nic-bind mlx5_0,mlx5_1 --launcher jsrun -m 200
+legate examples/gmg.py --nodes 1 --ranks-per-node 1 -n 7794 --omps 1 --ompthreads 17 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83 --mem-bind 0 --nic-bind mlx5_0,mlx5_1 --launcher jsrun -m 200
 <jemalloc>: Unsupported system page size
-Data creation time: 2050.71 ms
-Max required driver memory for N=5196 is 539.968328MB
+Data creation time: 1787.035 ms
+Max required driver memory for N=7794 is 1214.928728MB
 /autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
   result = func(*args, **kwargs)
-GMG init time: 7172.354 ms
+GMG init time: 9617.979 ms
 Converged in 200 iterations
-Solve Time: 38753.657 ms
-Iterations / sec: 5.160803275933418
+Solve Time: 88530.319 ms
+Iterations / sec: 2.259113061594187
 CPU SOCKETS = 1:
-legate examples/gmg.py --nodes 1 --ranks-per-node 1 -n 5196 --omps 1 --ompthreads 17 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83 --mem-bind 0 --nic-bind mlx5_0,mlx5_1 --launcher jsrun -m 200
+legate examples/gmg.py --nodes 1 --ranks-per-node 1 -n 7794 --omps 1 --ompthreads 17 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83 --mem-bind 0 --nic-bind mlx5_0,mlx5_1 --launcher jsrun -m 200
 <jemalloc>: Unsupported system page size
-Data creation time: 2026.828 ms
-Max required driver memory for N=5196 is 539.968328MB
+Data creation time: 1825.16 ms
+Max required driver memory for N=7794 is 1214.928728MB
 /autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
   result = func(*args, **kwargs)
-GMG init time: 7068.062 ms
+GMG init time: 9519.617 ms
 Converged in 200 iterations
-Solve Time: 38602.586 ms
-Iterations / sec: 5.18100005010027
+Solve Time: 88382.326 ms
+Iterations / sec: 2.262895864496709
 CPU SOCKETS = 1:
-legate examples/gmg.py --nodes 1 --ranks-per-node 1 -n 5196 --omps 1 --ompthreads 17 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83 --mem-bind 0 --nic-bind mlx5_0,mlx5_1 --launcher jsrun -m 200
+legate examples/gmg.py --nodes 1 --ranks-per-node 1 -n 7794 --omps 1 --ompthreads 17 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83 --mem-bind 0 --nic-bind mlx5_0,mlx5_1 --launcher jsrun -m 200
 <jemalloc>: Unsupported system page size
-Data creation time: 2114.261 ms
-Max required driver memory for N=5196 is 539.968328MB
+Data creation time: 1799.053 ms
+Max required driver memory for N=7794 is 1214.928728MB
 /autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
   result = func(*args, **kwargs)
-GMG init time: 7118.299 ms
+GMG init time: 9546.814 ms
 Converged in 200 iterations
-Solve Time: 38603.838 ms
-Iterations / sec: 5.180832019862895
+Solve Time: 88283.841 ms
+Iterations / sec: 2.265420236983119
 CPU SOCKETS = 1:
-legate examples/gmg.py --nodes 1 --ranks-per-node 1 -n 5196 --omps 1 --ompthreads 17 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83 --mem-bind 0 --nic-bind mlx5_0,mlx5_1 --launcher jsrun -m 200
+legate examples/gmg.py --nodes 1 --ranks-per-node 1 -n 7794 --omps 1 --ompthreads 17 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83 --mem-bind 0 --nic-bind mlx5_0,mlx5_1 --launcher jsrun -m 200
 <jemalloc>: Unsupported system page size
-Data creation time: 2086.852 ms
-Max required driver memory for N=5196 is 539.968328MB
+Data creation time: 1780.705 ms
+Max required driver memory for N=7794 is 1214.928728MB
 /autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
   result = func(*args, **kwargs)
-GMG init time: 7296.886 ms
+GMG init time: 9569.018 ms
 Converged in 200 iterations
-Solve Time: 38745.955 ms
-Iterations / sec: 5.161829150939756
+Solve Time: 88354.384 ms
+Iterations / sec: 2.263611503420136
 CPU SOCKETS = 1:
-legate examples/gmg.py --nodes 1 --ranks-per-node 1 -n 5196 --omps 1 --ompthreads 17 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83 --mem-bind 0 --nic-bind mlx5_0,mlx5_1 --launcher jsrun -m 200
+legate examples/gmg.py --nodes 1 --ranks-per-node 1 -n 7794 --omps 1 --ompthreads 17 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83 --mem-bind 0 --nic-bind mlx5_0,mlx5_1 --launcher jsrun -m 200
 <jemalloc>: Unsupported system page size
-Data creation time: 2021.695 ms
-Max required driver memory for N=5196 is 539.968328MB
+Data creation time: 1817.005 ms
+Max required driver memory for N=7794 is 1214.928728MB
 /autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
   result = func(*args, **kwargs)
-GMG init time: 7176.036 ms
+GMG init time: 9549.328 ms
 Converged in 200 iterations
-Solve Time: 38618.895 ms
-Iterations / sec: 5.178812081495341
+Solve Time: 88106.066 ms
+Iterations / sec: 2.2699912625766308
 CPU SOCKETS = 1:
-legate examples/gmg.py --nodes 1 --ranks-per-node 1 -n 5196 --omps 1 --ompthreads 17 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83 --mem-bind 0 --nic-bind mlx5_0,mlx5_1 --launcher jsrun -m 200
+legate examples/gmg.py --nodes 1 --ranks-per-node 1 -n 7794 --omps 1 --ompthreads 17 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83 --mem-bind 0 --nic-bind mlx5_0,mlx5_1 --launcher jsrun -m 200
 <jemalloc>: Unsupported system page size
-Data creation time: 2082.986 ms
-Max required driver memory for N=5196 is 539.968328MB
+Data creation time: 1708.559 ms
+Max required driver memory for N=7794 is 1214.928728MB
 /autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
   result = func(*args, **kwargs)
-GMG init time: 7301.805 ms
+GMG init time: 9509.452 ms
 Converged in 200 iterations
-Solve Time: 38618.734 ms
-Iterations / sec: 5.178833671761483
+Solve Time: 88422.903 ms
+Iterations / sec: 2.2618574284990394
 CPU SOCKETS = 1:
-legate examples/gmg.py --nodes 1 --ranks-per-node 1 -n 5196 --omps 1 --ompthreads 17 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83 --mem-bind 0 --nic-bind mlx5_0,mlx5_1 --launcher jsrun -m 200
+legate examples/gmg.py --nodes 1 --ranks-per-node 1 -n 7794 --omps 1 --ompthreads 17 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83 --mem-bind 0 --nic-bind mlx5_0,mlx5_1 --launcher jsrun -m 200
 <jemalloc>: Unsupported system page size
-Data creation time: 2090.77 ms
-Max required driver memory for N=5196 is 539.968328MB
+Data creation time: 1867.884 ms
+Max required driver memory for N=7794 is 1214.928728MB
 /autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
   result = func(*args, **kwargs)
-GMG init time: 7296.029 ms
+GMG init time: 9715.224 ms
 Converged in 200 iterations
-Solve Time: 38785.682 ms
-Iterations / sec: 5.15654204559301
+Solve Time: 88847.972 ms
+Iterations / sec: 2.2510361857218304
 CPU SOCKETS = 1:
-legate examples/gmg.py --nodes 1 --ranks-per-node 1 -n 5196 --omps 1 --ompthreads 17 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83 --mem-bind 0 --nic-bind mlx5_0,mlx5_1 --launcher jsrun -m 200
+legate examples/gmg.py --nodes 1 --ranks-per-node 1 -n 7794 --omps 1 --ompthreads 17 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83 --mem-bind 0 --nic-bind mlx5_0,mlx5_1 --launcher jsrun -m 200
 <jemalloc>: Unsupported system page size
-Data creation time: 2050.548 ms
-Max required driver memory for N=5196 is 539.968328MB
+Data creation time: 1740.501 ms
+Max required driver memory for N=7794 is 1214.928728MB
 /autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
   result = func(*args, **kwargs)
-GMG init time: 7109.527 ms
+GMG init time: 9605.907 ms
 Converged in 200 iterations
-Solve Time: 38572.619 ms
-Iterations / sec: 5.185025159945712
+Solve Time: 88409.309 ms
+Iterations / sec: 2.262205216421271
+CPU SOCKETS = 2:
+legate examples/gmg.py --nodes 1 --ranks-per-node 2 -n 11022 --omps 1 --ompthreads 17 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -m 200
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2771.172 ms
+Max required driver memory for N=11022 is 2429.689688MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 13068.321 ms
+Converged in 200 iterations
+Solve Time: 93694.884 ms
+Iterations / sec: 2.134588266313452
+CPU SOCKETS = 2:
+legate examples/gmg.py --nodes 1 --ranks-per-node 2 -n 11022 --omps 1 --ompthreads 17 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -m 200
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2455.199 ms
+Max required driver memory for N=11022 is 2429.689688MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 12753.456 ms
+Converged in 200 iterations
+Solve Time: 93141.31 ms
+Iterations / sec: 2.1472749309624266
+CPU SOCKETS = 2:
+legate examples/gmg.py --nodes 1 --ranks-per-node 2 -n 11022 --omps 1 --ompthreads 17 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -m 200
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2385.589 ms
+Max required driver memory for N=11022 is 2429.689688MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 12658.272 ms
+Converged in 200 iterations
+Solve Time: 93159.602 ms
+Iterations / sec: 2.146853310944802
+CPU SOCKETS = 2:
+legate examples/gmg.py --nodes 1 --ranks-per-node 2 -n 11022 --omps 1 --ompthreads 17 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -m 200
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2478.875 ms
+Max required driver memory for N=11022 is 2429.689688MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 14499.054 ms
+Converged in 200 iterations
+Solve Time: 95384.959 ms
+Iterations / sec: 2.09676664011566
+CPU SOCKETS = 2:
+legate examples/gmg.py --nodes 1 --ranks-per-node 2 -n 11022 --omps 1 --ompthreads 17 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -m 200
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2495.901 ms
+Max required driver memory for N=11022 is 2429.689688MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 12716.682 ms
+Converged in 200 iterations
+Solve Time: 93200.44 ms
+Iterations / sec: 2.1459126158631867
+CPU SOCKETS = 2:
+legate examples/gmg.py --nodes 1 --ranks-per-node 2 -n 11022 --omps 1 --ompthreads 17 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -m 200
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2170.69 ms
+Max required driver memory for N=11022 is 2429.689688MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 12295.527 ms
+Converged in 200 iterations
+Solve Time: 92739.178 ms
+Iterations / sec: 2.1565858606165347
+CPU SOCKETS = 2:
+legate examples/gmg.py --nodes 1 --ranks-per-node 2 -n 11022 --omps 1 --ompthreads 17 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -m 200
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2205.226 ms
+Max required driver memory for N=11022 is 2429.689688MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 12358.669 ms
+Converged in 200 iterations
+Solve Time: 93406.086 ms
+Iterations / sec: 2.1411881020258146
+CPU SOCKETS = 2:
+legate examples/gmg.py --nodes 1 --ranks-per-node 2 -n 11022 --omps 1 --ompthreads 17 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -m 200
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2165.329 ms
+Max required driver memory for N=11022 is 2429.689688MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 12371.063 ms
+Converged in 200 iterations
+Solve Time: 93201.168 ms
+Iterations / sec: 2.14589585400904
+CPU SOCKETS = 2:
+legate examples/gmg.py --nodes 1 --ranks-per-node 2 -n 11022 --omps 1 --ompthreads 17 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -m 200
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2156.73 ms
+Max required driver memory for N=11022 is 2429.689688MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 12427.214 ms
+Converged in 200 iterations
+Solve Time: 93254.454 ms
+Iterations / sec: 2.144669679798887
+CPU SOCKETS = 2:
+legate examples/gmg.py --nodes 1 --ranks-per-node 2 -n 11022 --omps 1 --ompthreads 17 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -m 200
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2177.938 ms
+Max required driver memory for N=11022 is 2429.689688MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 12284.195 ms
+Converged in 200 iterations
+Solve Time: 92799.432 ms
+Iterations / sec: 2.1551856050153413
+CPU SOCKETS = 2:
+legate examples/gmg.py --nodes 1 --ranks-per-node 2 -n 11022 --omps 1 --ompthreads 17 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -m 200
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2148.581 ms
+Max required driver memory for N=11022 is 2429.689688MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 12234.503 ms
+Converged in 200 iterations
+Solve Time: 93143.506 ms
+Iterations / sec: 2.1472243056858953
+CPU SOCKETS = 2:
+legate examples/gmg.py --nodes 1 --ranks-per-node 2 -n 11022 --omps 1 --ompthreads 17 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -m 200
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2215.805 ms
+Max required driver memory for N=11022 is 2429.689688MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 12268.211 ms
+Converged in 200 iterations
+Solve Time: 93780.162 ms
+Iterations / sec: 2.1326472010146453
+CPU SOCKETS = 4:
+legate examples/gmg.py --nodes 2 --ranks-per-node 2 -n 15588 --omps 1 --ompthreads 17 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -m 200
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2863.864 ms
+Max required driver memory for N=15588 is 4859.714888MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 15933.122 ms
+Converged in 200 iterations
+Solve Time: 95110.101 ms
+Iterations / sec: 2.1028260710184714
+CPU SOCKETS = 4:
+legate examples/gmg.py --nodes 2 --ranks-per-node 2 -n 15588 --omps 1 --ompthreads 17 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -m 200
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2440.602 ms
+Max required driver memory for N=15588 is 4859.714888MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 17020.525 ms
+Converged in 200 iterations
+Solve Time: 94715.411 ms
+Iterations / sec: 2.111588788861403
+CPU SOCKETS = 4:
+legate examples/gmg.py --nodes 2 --ranks-per-node 2 -n 15588 --omps 1 --ompthreads 17 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -m 200
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2449.317 ms
+Max required driver memory for N=15588 is 4859.714888MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 15976.672 ms
+Converged in 200 iterations
+Solve Time: 95370.298 ms
+Iterations / sec: 2.0970889699851836
+CPU SOCKETS = 4:
+legate examples/gmg.py --nodes 2 --ranks-per-node 2 -n 15588 --omps 1 --ompthreads 17 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -m 200
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2448.508 ms
+Max required driver memory for N=15588 is 4859.714888MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 16954.909 ms
+Converged in 200 iterations
+Solve Time: 93375.793 ms
+Iterations / sec: 2.1418827468485326
+CPU SOCKETS = 4:
+legate examples/gmg.py --nodes 2 --ranks-per-node 2 -n 15588 --omps 1 --ompthreads 17 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -m 200
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2411.479 ms
+Max required driver memory for N=15588 is 4859.714888MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 16269.667 ms
+Converged in 200 iterations
+Solve Time: 93550.801 ms
+Iterations / sec: 2.1378758691761495
+CPU SOCKETS = 4:
+legate examples/gmg.py --nodes 2 --ranks-per-node 2 -n 15588 --omps 1 --ompthreads 17 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -m 200
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2443.355 ms
+Max required driver memory for N=15588 is 4859.714888MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 15809.764 ms
+Converged in 200 iterations
+Solve Time: 92889.799 ms
+Iterations / sec: 2.1530889522109957
+CPU SOCKETS = 4:
+legate examples/gmg.py --nodes 2 --ranks-per-node 2 -n 15588 --omps 1 --ompthreads 17 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -m 200
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2432.056 ms
+Max required driver memory for N=15588 is 4859.714888MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 16926.943 ms
+Converged in 200 iterations
+Solve Time: 94535.085 ms
+Iterations / sec: 2.1156166517436357
+CPU SOCKETS = 4:
+legate examples/gmg.py --nodes 2 --ranks-per-node 2 -n 15588 --omps 1 --ompthreads 17 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -m 200
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2460.513 ms
+Max required driver memory for N=15588 is 4859.714888MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 17058.922 ms
+Converged in 200 iterations
+Solve Time: 95429.588 ms
+Iterations / sec: 2.095786057464693
+CPU SOCKETS = 4:
+legate examples/gmg.py --nodes 2 --ranks-per-node 2 -n 15588 --omps 1 --ompthreads 17 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -m 200
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2277.298 ms
+Max required driver memory for N=15588 is 4859.714888MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 14275.154 ms
+Converged in 200 iterations
+Solve Time: 92838.164 ms
+Iterations / sec: 2.154286463484995
+CPU SOCKETS = 4:
+legate examples/gmg.py --nodes 2 --ranks-per-node 2 -n 15588 --omps 1 --ompthreads 17 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -m 200
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2443.219 ms
+Max required driver memory for N=15588 is 4859.714888MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 16951.018 ms
+Converged in 200 iterations
+Solve Time: 94114.466 ms
+Iterations / sec: 2.125071824771337
+CPU SOCKETS = 4:
+legate examples/gmg.py --nodes 2 --ranks-per-node 2 -n 15588 --omps 1 --ompthreads 17 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -m 200
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2422.926 ms
+Max required driver memory for N=15588 is 4859.714888MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 16285.461 ms
+Converged in 200 iterations
+Solve Time: 93830.936 ms
+Iterations / sec: 2.1314931783266022
+CPU SOCKETS = 4:
+legate examples/gmg.py --nodes 2 --ranks-per-node 2 -n 15588 --omps 1 --ompthreads 17 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -m 200
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2422.134 ms
+Max required driver memory for N=15588 is 4859.714888MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 14429.517 ms
+Converged in 200 iterations
+Solve Time: 95311.605 ms
+Iterations / sec: 2.098380359873281
+CPU SOCKETS = 8:
+legate examples/gmg.py --nodes 4 --ranks-per-node 2 -n 22045 --omps 1 --ompthreads 17 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -m 200
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2795.571 ms
+Max required driver memory for N=22045 is 9718.758728MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 17265.345 ms
+Converged in 200 iterations
+Solve Time: 93093.239 ms
+Iterations / sec: 2.1483837295638626
+CPU SOCKETS = 8:
+legate examples/gmg.py --nodes 4 --ranks-per-node 2 -n 22045 --omps 1 --ompthreads 17 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -m 200
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2430.367 ms
+Max required driver memory for N=22045 is 9718.758728MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 16851.011 ms
+Converged in 200 iterations
+Solve Time: 92416.998 ms
+Iterations / sec: 2.164104053672031
+CPU SOCKETS = 8:
+legate examples/gmg.py --nodes 4 --ranks-per-node 2 -n 22045 --omps 1 --ompthreads 17 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -m 200
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2462.303 ms
+Max required driver memory for N=22045 is 9718.758728MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 18663.031 ms
+Converged in 200 iterations
+Solve Time: 92773.329 ms
+Iterations / sec: 2.1557919949169873
+CPU SOCKETS = 8:
+legate examples/gmg.py --nodes 4 --ranks-per-node 2 -n 22045 --omps 1 --ompthreads 17 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -m 200
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2481.661 ms
+Max required driver memory for N=22045 is 9718.758728MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 18469.532 ms
+Converged in 200 iterations
+Solve Time: 93834.636 ms
+Iterations / sec: 2.131409131272167
+CPU SOCKETS = 8:
+legate examples/gmg.py --nodes 4 --ranks-per-node 2 -n 22045 --omps 1 --ompthreads 17 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -m 200
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2446.174 ms
+Max required driver memory for N=22045 is 9718.758728MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 16643.203 ms
+Converged in 200 iterations
+Solve Time: 93966.686 ms
+Iterations / sec: 2.1284138934089896
+CPU SOCKETS = 8:
+legate examples/gmg.py --nodes 4 --ranks-per-node 2 -n 22045 --omps 1 --ompthreads 17 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -m 200
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2440.063 ms
+Max required driver memory for N=22045 is 9718.758728MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 17132.926 ms
+Converged in 200 iterations
+Solve Time: 94775.301 ms
+Iterations / sec: 2.1102544427687966
+CPU SOCKETS = 8:
+legate examples/gmg.py --nodes 4 --ranks-per-node 2 -n 22045 --omps 1 --ompthreads 17 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -m 200
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2440.802 ms
+Max required driver memory for N=22045 is 9718.758728MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 18459.192 ms
+Converged in 200 iterations
+Solve Time: 93123.228 ms
+Iterations / sec: 2.1476918733959693
+CPU SOCKETS = 8:
+legate examples/gmg.py --nodes 4 --ranks-per-node 2 -n 22045 --omps 1 --ompthreads 17 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -m 200
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2470.931 ms
+Max required driver memory for N=22045 is 9718.758728MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 17267.191 ms
+Converged in 200 iterations
+Solve Time: 94569.072 ms
+Iterations / sec: 2.1148563242748115
+CPU SOCKETS = 8:
+legate examples/gmg.py --nodes 4 --ranks-per-node 2 -n 22045 --omps 1 --ompthreads 17 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -m 200
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2417.321 ms
+Max required driver memory for N=22045 is 9718.758728MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 15576.961 ms
+ERROR:  One or more process (first noticed rank 6) terminated with signal 9
+CPU SOCKETS = 8:
+legate examples/gmg.py --nodes 4 --ranks-per-node 2 -n 22045 --omps 1 --ompthreads 17 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -m 200
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2479.478 ms
+Max required driver memory for N=22045 is 9718.758728MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 16393.15 ms
+Converged in 200 iterations
+Solve Time: 94725.305 ms
+Iterations / sec: 2.1113682347077165
+CPU SOCKETS = 8:
+legate examples/gmg.py --nodes 4 --ranks-per-node 2 -n 22045 --omps 1 --ompthreads 17 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -m 200
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2488.01 ms
+Max required driver memory for N=22045 is 9718.758728MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 18492.714 ms
+Converged in 200 iterations
+Solve Time: 94737.357 ms
+Iterations / sec: 2.1110996372845823
+CPU SOCKETS = 8:
+legate examples/gmg.py --nodes 4 --ranks-per-node 2 -n 22045 --omps 1 --ompthreads 17 --cpus 1 --sysmem 150000 --utility 2 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -m 200
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2446.897 ms
+Max required driver memory for N=22045 is 9718.758728MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 19138.493 ms
+ERROR:  One or more process (first noticed rank 6) terminated with signal 9
+CPU SOCKETS = 16:
+legate examples/gmg.py --nodes 8 --ranks-per-node 2 -n 31176 --omps 1 --ompthreads 14 --cpus 1 --sysmem 200000 --utility 2 --eager-alloc-percentage 30 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -m 200
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2480.041 ms
+Max required driver memory for N=31176 is 19438.859528MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 19791.283 ms
+Converged in 200 iterations
+Solve Time: 100461.171 ms
+Iterations / sec: 1.9908189204762503
+CPU SOCKETS = 16:
+legate examples/gmg.py --nodes 8 --ranks-per-node 2 -n 31176 --omps 1 --ompthreads 14 --cpus 1 --sysmem 200000 --utility 2 --eager-alloc-percentage 30 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -m 200
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2469.753 ms
+Max required driver memory for N=31176 is 19438.859528MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 19666.77 ms
+Converged in 200 iterations
+Solve Time: 100270.944 ms
+Iterations / sec: 1.9945957624573676
+CPU SOCKETS = 16:
+legate examples/gmg.py --nodes 8 --ranks-per-node 2 -n 31176 --omps 1 --ompthreads 14 --cpus 1 --sysmem 200000 --utility 2 --eager-alloc-percentage 30 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -m 200
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2540.901 ms
+Max required driver memory for N=31176 is 19438.859528MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 19851.411 ms
+Converged in 200 iterations
+Solve Time: 100636.268 ms
+Iterations / sec: 1.9873550954810844
+CPU SOCKETS = 16:
+legate examples/gmg.py --nodes 8 --ranks-per-node 2 -n 31176 --omps 1 --ompthreads 14 --cpus 1 --sysmem 200000 --utility 2 --eager-alloc-percentage 30 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -m 200
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2483.136 ms
+Max required driver memory for N=31176 is 19438.859528MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 20417.144 ms
+Converged in 200 iterations
+Solve Time: 100424.045 ms
+Iterations / sec: 1.9915549109777446
+CPU SOCKETS = 16:
+legate examples/gmg.py --nodes 8 --ranks-per-node 2 -n 31176 --omps 1 --ompthreads 14 --cpus 1 --sysmem 200000 --utility 2 --eager-alloc-percentage 30 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -m 200
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2494.376 ms
+Max required driver memory for N=31176 is 19438.859528MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 19871.129 ms
+Converged in 200 iterations
+Solve Time: 100343.251 ms
+Iterations / sec: 1.9931584636419641
+CPU SOCKETS = 16:
+legate examples/gmg.py --nodes 8 --ranks-per-node 2 -n 31176 --omps 1 --ompthreads 14 --cpus 1 --sysmem 200000 --utility 2 --eager-alloc-percentage 30 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -m 200
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2475.357 ms
+Max required driver memory for N=31176 is 19438.859528MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 19802.509 ms
+Converged in 200 iterations
+Solve Time: 100495.394 ms
+Iterations / sec: 1.9901409610872314
+CPU SOCKETS = 16:
+legate examples/gmg.py --nodes 8 --ranks-per-node 2 -n 31176 --omps 1 --ompthreads 14 --cpus 1 --sysmem 200000 --utility 2 --eager-alloc-percentage 30 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -m 200
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2508.437 ms
+Max required driver memory for N=31176 is 19438.859528MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 19749.765 ms
+Converged in 200 iterations
+Solve Time: 100251.893 ms
+Iterations / sec: 1.994974798131742
+CPU SOCKETS = 16:
+legate examples/gmg.py --nodes 8 --ranks-per-node 2 -n 31176 --omps 1 --ompthreads 14 --cpus 1 --sysmem 200000 --utility 2 --eager-alloc-percentage 30 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -m 200
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2523.424 ms
+Max required driver memory for N=31176 is 19438.859528MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 19848.486 ms
+Converged in 200 iterations
+Solve Time: 100105.079 ms
+Iterations / sec: 1.9979006260012042
+CPU SOCKETS = 16:
+legate examples/gmg.py --nodes 8 --ranks-per-node 2 -n 31176 --omps 1 --ompthreads 14 --cpus 1 --sysmem 200000 --utility 2 --eager-alloc-percentage 30 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -m 200
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2485.639 ms
+Max required driver memory for N=31176 is 19438.859528MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 19841.893 ms
+Converged in 200 iterations
+Solve Time: 100349.947 ms
+Iterations / sec: 1.9930254671684082
+CPU SOCKETS = 16:
+legate examples/gmg.py --nodes 8 --ranks-per-node 2 -n 31176 --omps 1 --ompthreads 14 --cpus 1 --sysmem 200000 --utility 2 --eager-alloc-percentage 30 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -m 200
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2489.894 ms
+Max required driver memory for N=31176 is 19438.859528MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 19476.29 ms
+Converged in 200 iterations
+Solve Time: 100362.413 ms
+Iterations / sec: 1.9927779137793349
+CPU SOCKETS = 32:
+legate examples/gmg.py --nodes 16 --ranks-per-node 2 -n 44090 --omps 1 --ompthreads 14 --cpus 1 --sysmem 200000 --utility 2 --eager-alloc-percentage 30 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -m 200 -m 50
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 3449.479 ms
+Max required driver memory for N=44090 is 38878.562008MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 27831.455 ms
+Converged in 50 iterations
+Solve Time: 25820.379 ms
+Iterations / sec: 1.9364549219049032
+CPU SOCKETS = 32:
+legate examples/gmg.py --nodes 16 --ranks-per-node 2 -n 44090 --omps 1 --ompthreads 14 --cpus 1 --sysmem 200000 --utility 2 --eager-alloc-percentage 30 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -m 200 -m 50
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2577.649 ms
+Max required driver memory for N=44090 is 38878.562008MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 27509.502 ms
+Converged in 50 iterations
+Solve Time: 25822.221 ms
+Iterations / sec: 1.9363167870029458
+CPU SOCKETS = 32:
+legate examples/gmg.py --nodes 16 --ranks-per-node 2 -n 44090 --omps 1 --ompthreads 14 --cpus 1 --sysmem 200000 --utility 2 --eager-alloc-percentage 30 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -m 200 -m 50
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2568.345 ms
+Max required driver memory for N=44090 is 38878.562008MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 27539.259 ms
+Converged in 50 iterations
+Solve Time: 25827.74 ms
+Iterations / sec: 1.9359030251969394
+CPU SOCKETS = 32:
+legate examples/gmg.py --nodes 16 --ranks-per-node 2 -n 44090 --omps 1 --ompthreads 14 --cpus 1 --sysmem 200000 --utility 2 --eager-alloc-percentage 30 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -m 200 -m 50
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2581.558 ms
+Max required driver memory for N=44090 is 38878.562008MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 28003.138 ms
+Converged in 50 iterations
+Solve Time: 25736.34 ms
+Iterations / sec: 1.9427781883515685
+CPU SOCKETS = 32:
+legate examples/gmg.py --nodes 16 --ranks-per-node 2 -n 44090 --omps 1 --ompthreads 14 --cpus 1 --sysmem 200000 --utility 2 --eager-alloc-percentage 30 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -m 200 -m 50
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2563.048 ms
+Max required driver memory for N=44090 is 38878.562008MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 28081.77 ms
+Converged in 50 iterations
+Solve Time: 25756.188 ms
+Iterations / sec: 1.941281062244149
+CPU SOCKETS = 32:
+legate examples/gmg.py --nodes 16 --ranks-per-node 2 -n 44090 --omps 1 --ompthreads 14 --cpus 1 --sysmem 200000 --utility 2 --eager-alloc-percentage 30 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -m 200 -m 50
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2566.853 ms
+Max required driver memory for N=44090 is 38878.562008MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 28194.985 ms
+Converged in 50 iterations
+Solve Time: 25841.745 ms
+Iterations / sec: 1.9348538575858558
+CPU SOCKETS = 32:
+legate examples/gmg.py --nodes 16 --ranks-per-node 2 -n 44090 --omps 1 --ompthreads 14 --cpus 1 --sysmem 200000 --utility 2 --eager-alloc-percentage 30 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -m 200 -m 50
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2550.14 ms
+Max required driver memory for N=44090 is 38878.562008MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 27466.255 ms
+Converged in 50 iterations
+Solve Time: 25876.651 ms
+Iterations / sec: 1.9322438595318998
+CPU SOCKETS = 32:
+legate examples/gmg.py --nodes 16 --ranks-per-node 2 -n 44090 --omps 1 --ompthreads 14 --cpus 1 --sysmem 200000 --utility 2 --eager-alloc-percentage 30 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -m 200 -m 50
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2569.288 ms
+Max required driver memory for N=44090 is 38878.562008MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 28112.944 ms
+Converged in 50 iterations
+Solve Time: 25833.632 ms
+Iterations / sec: 1.9354614945354953
+CPU SOCKETS = 32:
+legate examples/gmg.py --nodes 16 --ranks-per-node 2 -n 44090 --omps 1 --ompthreads 14 --cpus 1 --sysmem 200000 --utility 2 --eager-alloc-percentage 30 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -m 200 -m 50
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2541.971 ms
+Max required driver memory for N=44090 is 38878.562008MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 28073.742 ms
+Converged in 50 iterations
+Solve Time: 25843.739 ms
+Iterations / sec: 1.9347045719661538
+CPU SOCKETS = 32:
+legate examples/gmg.py --nodes 16 --ranks-per-node 2 -n 44090 --omps 1 --ompthreads 14 --cpus 1 --sysmem 200000 --utility 2 --eager-alloc-percentage 30 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -m 200 -m 50
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2625.332 ms
+Max required driver memory for N=44090 is 38878.562008MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 28416.764 ms
+Converged in 50 iterations
+Solve Time: 25786.163 ms
+Iterations / sec: 1.9390244294973236
+CPU SOCKETS = 32:
+legate examples/gmg.py --nodes 16 --ranks-per-node 2 -n 44090 --omps 1 --ompthreads 14 --cpus 1 --sysmem 200000 --utility 2 --eager-alloc-percentage 30 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -m 200 -m 50
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2557.465 ms
+Max required driver memory for N=44090 is 38878.562008MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 27164.045 ms
+Converged in 50 iterations
+Solve Time: 25820.168 ms
+Iterations / sec: 1.9364707464335629
+CPU SOCKETS = 32:
+legate examples/gmg.py --nodes 16 --ranks-per-node 2 -n 44090 --omps 1 --ompthreads 14 --cpus 1 --sysmem 200000 --utility 2 --eager-alloc-percentage 30 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -m 200 -m 50
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+<jemalloc>: Unsupported system page size
+Data creation time: 2537.869 ms
+Max required driver memory for N=44090 is 38878.562008MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 27775.34 ms
+Converged in 50 iterations
+Solve Time: 25851.824 ms
+Iterations / sec: 1.934099504932418
+CPU SOCKETS = 64:
+legate examples/gmg.py --nodes 32 --ranks-per-node 2 -n 62353 --omps 1 --ompthreads 14 --cpus 1 --sysmem 200000 --utility 2 --eager-alloc-percentage 30 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -m 200 -m 50
+Data creation time: 3811.473 ms
+Max required driver memory for N=62353 is 77755.438088MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 51554.388 ms
+Converged in 50 iterations
+Solve Time: 26106.99 ms
+Iterations / sec: 1.9151958919814194
+CPU SOCKETS = 64:
+legate examples/gmg.py --nodes 32 --ranks-per-node 2 -n 62353 --omps 1 --ompthreads 14 --cpus 1 --sysmem 200000 --utility 2 --eager-alloc-percentage 30 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -m 200 -m 50
+Data creation time: 2717.116 ms
+Max required driver memory for N=62353 is 77755.438088MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 48790.42 ms
+Converged in 50 iterations
+Solve Time: 26109.595 ms
+Iterations / sec: 1.915004809534579
+CPU SOCKETS = 64:
+legate examples/gmg.py --nodes 32 --ranks-per-node 2 -n 62353 --omps 1 --ompthreads 14 --cpus 1 --sysmem 200000 --utility 2 --eager-alloc-percentage 30 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -m 200 -m 50
+Data creation time: 2757.554 ms
+Max required driver memory for N=62353 is 77755.438088MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 51181.361 ms
+Converged in 50 iterations
+Solve Time: 26171.43 ms
+Iterations / sec: 1.910480245061122
+CPU SOCKETS = 64:
+legate examples/gmg.py --nodes 32 --ranks-per-node 2 -n 62353 --omps 1 --ompthreads 14 --cpus 1 --sysmem 200000 --utility 2 --eager-alloc-percentage 30 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -m 200 -m 50
+Data creation time: 2657.367 ms
+Max required driver memory for N=62353 is 77755.438088MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 49657.23 ms
+Converged in 50 iterations
+Solve Time: 26130.196 ms
+Iterations / sec: 1.9134950231525243
+CPU SOCKETS = 64:
+legate examples/gmg.py --nodes 32 --ranks-per-node 2 -n 62353 --omps 1 --ompthreads 14 --cpus 1 --sysmem 200000 --utility 2 --eager-alloc-percentage 30 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -m 200 -m 50
+Data creation time: 2742.444 ms
+Max required driver memory for N=62353 is 77755.438088MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 48599.547 ms
+Converged in 50 iterations
+Solve Time: 26175.839 ms
+Iterations / sec: 1.9101584480252953
+CPU SOCKETS = 64:
+legate examples/gmg.py --nodes 32 --ranks-per-node 2 -n 62353 --omps 1 --ompthreads 14 --cpus 1 --sysmem 200000 --utility 2 --eager-alloc-percentage 30 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -m 200 -m 50
+Data creation time: 2861.725 ms
+Max required driver memory for N=62353 is 77755.438088MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 50460.406 ms
+Converged in 50 iterations
+Solve Time: 26155.719 ms
+Iterations / sec: 1.9116278164633898
+CPU SOCKETS = 64:
+legate examples/gmg.py --nodes 32 --ranks-per-node 2 -n 62353 --omps 1 --ompthreads 14 --cpus 1 --sysmem 200000 --utility 2 --eager-alloc-percentage 30 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -m 200 -m 50
+Data creation time: 2647.569 ms
+Max required driver memory for N=62353 is 77755.438088MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 50123.441 ms
+Converged in 50 iterations
+Solve Time: 26179.74 ms
+Iterations / sec: 1.909873818456562
+CPU SOCKETS = 64:
+legate examples/gmg.py --nodes 32 --ranks-per-node 2 -n 62353 --omps 1 --ompthreads 14 --cpus 1 --sysmem 200000 --utility 2 --eager-alloc-percentage 30 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -m 200 -m 50
+Data creation time: 2688.351 ms
+Max required driver memory for N=62353 is 77755.438088MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 49789.362 ms
+Converged in 50 iterations
+Solve Time: 26169.056 ms
+Iterations / sec: 1.9106535596851486
+CPU SOCKETS = 64:
+legate examples/gmg.py --nodes 32 --ranks-per-node 2 -n 62353 --omps 1 --ompthreads 14 --cpus 1 --sysmem 200000 --utility 2 --eager-alloc-percentage 30 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -m 200 -m 50
+Data creation time: 2732.148 ms
+Max required driver memory for N=62353 is 77755.438088MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 49601.132 ms
+Converged in 50 iterations
+Solve Time: 26086.967 ms
+Iterations / sec: 1.9166658968058647
+CPU SOCKETS = 64:
+legate examples/gmg.py --nodes 32 --ranks-per-node 2 -n 62353 --omps 1 --ompthreads 14 --cpus 1 --sysmem 200000 --utility 2 --eager-alloc-percentage 30 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -m 200 -m 50
+Data creation time: 2773.288 ms
+Max required driver memory for N=62353 is 77755.438088MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 50537.915 ms
+Converged in 50 iterations
+Solve Time: 26078.174 ms
+Iterations / sec: 1.9173121553679333
+CPU SOCKETS = 64:
+legate examples/gmg.py --nodes 32 --ranks-per-node 2 -n 62353 --omps 1 --ompthreads 14 --cpus 1 --sysmem 200000 --utility 2 --eager-alloc-percentage 30 --cpu-bind 0-83/88-171 --mem-bind 0/8 --nic-bind mlx5_0,mlx5_1/mlx5_2,mlx5_3 --launcher jsrun -m 200 -m 50
+Data creation time: 2683.655 ms
+Max required driver memory for N=62353 is 77755.438088MB
+/autofs/nccs-svm1_home1/rohany/nvidia/legate.core/legate/core/context.py:268: RuntimeWarning: CSR SpMV creating an implicit copy due to transformed x vector.
+  result = func(*args, **kwargs)
+GMG init time: 49719.789 ms
+Converged in 50 iterations
+Solve Time: 26095.923 ms
+Iterations / sec: 1.9160081059405334
