@@ -159,7 +159,7 @@ class GMG(object):
     [4] https://netlib.org/utk/people/JackDongarra/PAPERS/HPCG-benchmark.pdf
     """  # noqa: E501
 
-    def __init__(self, A, shape, levels, smoother, gridop):
+    def __init__(self, A, shape, levels, smoother, gridop, machine):
         self.A = A
         self.shape = shape
         self.N = numpy.product(self.shape)
@@ -171,9 +171,8 @@ class GMG(object):
         self.smoother = {"symgs": SYMGS, "jacobi": WeightedJacobi}[smoother]()
         self.operators = self.compute_operators(A)
         self.temp = None
-        _, procs = get_phase_procs(use_legate)
-        self.machine = procs
-        self.proc_kind = procs.preferred_kind
+        self.machine = machine
+        self.proc_kind = machine.preferred_kind
 
     def compute_operators(self, A):
         operators = []
@@ -394,38 +393,47 @@ def required_driver_memory(N):
 
 
 def execute(N, data, smoother, gridop, levels, maxiter, tol, verbose, timer):
+    build, solve = get_phase_procs(use_legate)
     timer.start()
-    if data == "poisson":
-        A = poisson2D(N).tocsr()
-        b = np.random.rand(N**2)
-    elif data == "diffusion":
-        A = diffusion2D(N).tocsr()
-        b = np.random.rand(N**2)
-    else:
-        raise NotImplementedError(data)
-    print(f"Data creation time: {timer.stop()} ms")
+    with build:
+        if data == "poisson":
+            A = poisson2D(N).tocsr()
+            b = np.random.rand(N**2)
+        elif data == "diffusion":
+            A = diffusion2D(N).tocsr()
+            b = np.random.rand(N**2)
+        else:
+            raise NotImplementedError(data)
+        print(f"Data creation time: {timer.stop()} ms")
 
-    assert smoother == "jacobi", "Only Jacobi smoother is currently supported."
+        assert (
+            smoother == "jacobi"
+        ), "Only Jacobi smoother is currently supported."
 
-    if verbose:
+        if verbose:
 
-        def callback(x):
-            print(f"Residual: {np.linalg.norm(b-A.matvec(x))}")
+            def callback(x):
+                print(f"Residual: {np.linalg.norm(b-A.matvec(x))}")
 
-    else:
-        callback = None
+        else:
+            callback = None
 
-    # Make a call to the random API to ensure it is warmed up
-    # before we utilize it during the build process.
-    float(np.linalg.norm(np.random.rand(b.shape[0])))
+        # Make a call to the random API to ensure it is warmed up
+        # before we utilize it during the build process.
+        float(np.linalg.norm(np.random.rand(b.shape[0])))
 
-    required_driver_memory(N)
-    timer.start()
-    mg_solver = GMG(
-        A=A, shape=(N, N), levels=levels, smoother=smoother, gridop=gridop
-    )
-    M = mg_solver.linear_operator()
-    print(f"GMG init time: {timer.stop()} ms")
+        required_driver_memory(N)
+        timer.start()
+        mg_solver = GMG(
+            A=A,
+            shape=(N, N),
+            levels=levels,
+            smoother=smoother,
+            gridop=gridop,
+            machine=solve,
+        )
+        M = mg_solver.linear_operator()
+        print(f"GMG init time: {timer.stop()} ms")
 
     # Warm up the runtime.
     float(
@@ -446,6 +454,8 @@ def execute(N, data, smoother, gridop, levels, maxiter, tol, verbose, timer):
             )
         )
     )
+    # Make another call to random here as well.
+    float(np.linalg.norm(np.random.rand(b.shape[0])))
 
     timer.start()
     x, iters = linalg.cg(
