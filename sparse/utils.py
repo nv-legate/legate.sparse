@@ -31,7 +31,7 @@ from .runtime import ctx
 # within legate sparse.
 def find_last_user_stacklevel() -> int:
     stacklevel = 1
-    for (frame, _) in traceback.walk_stack(None):
+    for frame, _ in traceback.walk_stack(None):
         if not frame.f_globals["__name__"].startswith("sparse"):
             break
         stacklevel += 1
