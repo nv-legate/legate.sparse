@@ -204,6 +204,16 @@ class coo_array(CompressedBase):
             (data, (rows, cols)), dtype=self.dtype, shape=self.shape
         )
 
+    def _with_data(self, data, copy=False):
+        rows = self.row
+        cols = self.col
+        if copy:
+            rows = cunumeric.copy(rows)
+            cols = cunumeric.copy(cols)
+        return coo_array(
+            (data, (rows, cols)), dtype=self.dtype, shape=self.shape
+        )
+
     def transpose(self, copy=False):
         if copy:
             return self.copy().transpose(copy=False)

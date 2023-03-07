@@ -336,6 +336,27 @@ def is_sparse_matrix(o):
     )
 
 
+issparse = is_sparse_matrix
+isspmatrix = is_sparse_matrix
+
+
+# Variants for each particular format type.
+def isspmatrix_csc(o):
+    return isinstance(o, csc_array)
+
+
+def isspmatrix_csr(o):
+    return isinstance(o, csr_array)
+
+
+def isspmatrix_coo(o):
+    return isinstance(o, coo_array)
+
+
+def isspmatrix_dia(o):
+    return isinstance(o, dia_array)
+
+
 def random(
     m,
     n,

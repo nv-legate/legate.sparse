@@ -333,6 +333,21 @@ class csr_array(CompressedBase, DenseSparseBase):
             ),
         )
 
+    def _with_data(self, data, copy=False):
+        pos = self.pos
+        crd = store_to_cunumeric_array(self.crd)
+        if copy:
+            pos = self.copy_pos()
+            crd = cunumeric.array(crd)
+        return csr_array.make_with_same_nnz_structure(
+            self,
+            (
+                get_store_from_cunumeric_array(data),
+                crd,
+                pos,
+            ),
+        )
+
     def power(self, n, dtype=None):
         if not numpy.isscalar(n):
             raise NotImplementedError("Input is not a scalar")
