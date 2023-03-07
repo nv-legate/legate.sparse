@@ -4,11 +4,18 @@ import argparse
 import os
 from collections import defaultdict
 
+import matplotlib
 import matplotlib.pyplot as plt
 import numpy
 import pandas
 import seaborn
 from parse import parse
+
+matplotlib.rcParams["pdf.fonttype"] = 42
+matplotlib.rcParams["ps.fonttype"] = 42
+
+# seaborn.set_theme()
+# seaborn.set_style('ticks')
 
 # Constants for machine description and labels.
 GPUS_PER_SOCKET = 3
@@ -23,6 +30,7 @@ PETSC_CPU = "PETSc-CPU"
 PETSC_GPU = "PETSc-GPU"
 SCIPY = "SciPy"
 CUPY = "CuPy"
+CUPY_LABEL = "CuPy (1 GPU)"
 DOT = "DOT"
 PDE = "PDE"
 GMG = "GMG"
@@ -32,7 +40,13 @@ MARKER_SIZE = 10
 
 
 def is_system_gpu(system):
-    return system in [LEGATE_GPU, CUPY, PETSC_GPU, LEGATE_GPU_NO_INSTANCES]
+    return system in [
+        LEGATE_GPU,
+        CUPY,
+        PETSC_GPU,
+        LEGATE_GPU_NO_INSTANCES,
+        CUPY_LABEL,
+    ]
 
 
 rawPalette = seaborn.color_palette()
@@ -43,14 +57,20 @@ palette = {
     PETSC_GPU: rawPalette[3],
     SCIPY: rawPalette[4],
     CUPY: rawPalette[5],
+    CUPY_LABEL: rawPalette[5],
+    LEGATE_CPU_NO_INSTANCES: rawPalette[6],
+    LEGATE_GPU_NO_INSTANCES: rawPalette[7],
 }
 markers = {
-    LEGATE_CPU: "v",
-    LEGATE_GPU: "^",
-    PETSC_CPU: "<",
-    PETSC_GPU: ">",
-    SCIPY: "o",
+    LEGATE_CPU: "^",
+    LEGATE_GPU: "*",
+    PETSC_CPU: "P",
+    PETSC_GPU: "X",
+    SCIPY: "D",
     CUPY: "s",
+    CUPY_LABEL: "s",
+    LEGATE_CPU_NO_INSTANCES: "d",
+    LEGATE_GPU_NO_INSTANCES: "p",
 }
 
 
@@ -91,6 +111,8 @@ def clean_raw_data(proc_to_iter_list):
 
 
 def project_system_name(proc_iter_pairs, system):
+    if system == CUPY:
+        system = CUPY_LABEL
     return [(system, p, t) for p, t in proc_iter_pairs]
 
 
@@ -135,7 +157,7 @@ def parse_standard_gpu_weakscaling_data(filename, system):
     )
 
 
-def standard_weak_scaling_plot(sys_to_file, title, outfile=None):
+def standard_weak_scaling_plot(sys_to_file, title, outfile=None, procs=None):
     systems_to_data = []
     for system, filename in sys_to_file:
         if is_system_gpu(system):
@@ -152,6 +174,8 @@ def standard_weak_scaling_plot(sys_to_file, title, outfile=None):
         filter(lambda x: is_system_gpu(x[0]), systems_to_data)
     ) + list(filter(lambda x: not is_system_gpu(x[0]), systems_to_data))
     data = pandas.concat([data for _, data in systems_to_data])
+    if procs is not None:
+        data = data[data.apply(lambda x: x[PROCS_KEY] in procs, axis=1)]
     ax = seaborn.lineplot(
         data,
         x=PROCS_KEY,
@@ -164,6 +188,10 @@ def standard_weak_scaling_plot(sys_to_file, title, outfile=None):
     )
     ax.set_yscale("log", base=10)
     ax.set_title(title)
+    ax.set_ylabel("Throughput (iterations / second)")
+    fig = plt.gcf()
+    fig.set_size_inches(6, 4)
+    ax.legend(ncol=2, title="System")
     if outfile is None:
         plt.show()
     else:
@@ -193,7 +221,11 @@ def summit_quantum_weak_scaling_plot(sys_to_file, title, outfile=None):
         markersize=MARKER_SIZE,
     )
     ax.set_yscale("log", base=10)
+    ax.set_xlabel("Sockets or GPUs")
+    ax.set_ylabel("Throughput (iterations / second)")
     ax.set_title(title)
+    fig = plt.gcf()
+    fig.set_size_inches(6, 4)
     if outfile is None:
         plt.show()
     else:
@@ -271,12 +303,17 @@ standard_weak_scaling_plot(
 )
 
 # GMG Non Library Aware Mapping.
-# standard_weak_scaling_plot([
-#     get_system_data_path_pair(LEGATE_CPU, GMG),
-#     get_system_data_path_pair(LEGATE_GPU, GMG),
-#     get_system_data_path_pair(LEGATE_GPU_NO_INSTANCES, GMG),
-#     get_system_data_path_pair(LEGATE_CPU_NO_INSTANCES, GMG),
-# ], "Geometric Multi-Grid Solver")
+standard_weak_scaling_plot(
+    [
+        get_system_data_path_pair(LEGATE_CPU, GMG),
+        get_system_data_path_pair(LEGATE_GPU, GMG),
+        get_system_data_path_pair(LEGATE_GPU_NO_INSTANCES, GMG),
+        get_system_data_path_pair(LEGATE_CPU_NO_INSTANCES, GMG),
+    ],
+    "Mapping Optimization Affect on Geometric Multi-Grid Solver",
+    os.path.join(result_dir, "gmg-instances.pdf"),
+    procs=["1/1", "1/3", "2/6", "4/12"],
+)
 
 # Quantum.
 summit_quantum_weak_scaling_plot(
