@@ -350,6 +350,21 @@ class csc_array(CompressedBase, DenseSparseBase):
             ),
         )
 
+    def _with_data(self, data, copy=False):
+        pos = self.pos
+        crd = store_to_cunumeric_array(self.crd)
+        if copy:
+            pos = self.copy_pos()
+            crd = cunumeric.array(crd)
+        return csc_array.make_with_same_nnz_structure(
+            self,
+            (
+                get_store_from_cunumeric_array(data),
+                crd,
+                pos,
+            ),
+        )
+
     def dot(self, other, out=None):
         if out is not None:
             assert isinstance(out, cunumeric.ndarray)

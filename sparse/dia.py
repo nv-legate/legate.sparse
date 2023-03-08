@@ -100,6 +100,12 @@ class dia_array(CompressedBase):
         offsets = cunumeric.array(self.offsets)
         return dia_array((data, offsets), shape=self.shape, dtype=self.dtype)
 
+    def _with_data(self, data, copy=False):
+        offsets = self.offsets
+        if copy:
+            offsets = cunumeric.array(offsets)
+        return dia_array((data, offsets), shape=self.shape, dtype=self.dtype)
+
     def astype(self, dtype, casting="unsafe", copy=True):
         if not copy and dtype == self.dtype:
             return self

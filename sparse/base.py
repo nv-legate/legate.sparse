@@ -138,6 +138,55 @@ class CompressedBase:
         copy.execute()
         return pos
 
+    # _with_data creates a new matrix with the same structure,
+    # but a different data array.
+    def _with_data(self, data, copy=False):
+        raise NotImplementedError
+
+
+# These univariate ufuncs preserve zeros.
+_ufuncs_with_fixed_point_at_zero = frozenset(
+    [
+        cunumeric.sin,
+        cunumeric.tan,
+        cunumeric.arcsin,
+        cunumeric.arctan,
+        cunumeric.sinh,
+        cunumeric.tanh,
+        cunumeric.arcsinh,
+        cunumeric.arctanh,
+        cunumeric.rint,
+        cunumeric.sign,
+        cunumeric.expm1,
+        cunumeric.log1p,
+        cunumeric.deg2rad,
+        cunumeric.rad2deg,
+        cunumeric.floor,
+        cunumeric.ceil,
+        cunumeric.trunc,
+        cunumeric.sqrt,
+    ]
+)
+
+# Add the numpy unary ufuncs for which func(0) = 0 to _data_matrix.
+for npfunc in _ufuncs_with_fixed_point_at_zero:
+    name = npfunc.__name__
+
+    def _create_method(op):
+        def method(self):
+            result = op(self.data)
+            return self._with_data(result, copy=True)
+
+        method.__doc__ = (
+            "Element-wise %s.\n\n"
+            "See `numpy.%s` for more information." % (name, name)
+        )
+        method.__name__ = name
+
+        return method
+
+    setattr(CompressedBase, name, _create_method(npfunc))
+
 
 # DenseSparseBase is a base class for sparse matrices that have a TACO
 # format of {Dense, Sparse}. For our purposes, that means CSC and CSR
