@@ -22,7 +22,6 @@
 
 namespace sparse {
 
-using namespace Legion;
 using namespace legate;
 
 template <LegateTypeCode INDEX_CODE>
@@ -51,8 +50,8 @@ struct SpGEMMCSRxCSRxCSRNNZImplBody<VariantKind::OMP, INDEX_CODE> {
 
     // Next, initialize the deferred buffers ourselves, instead of using
     // Realm fills (which tend to be slower).
-    DeferredBuffer<INDEX_TY, 1> index_list_all(kind, Rect<1>{0, (A2_dim * num_threads) - 1});
-    DeferredBuffer<bool, 1> already_set_all(kind, Rect<1>{0, (A2_dim * num_threads) - 1});
+    Buffer<INDEX_TY, 1> index_list_all(kind, Rect<1>{0, (A2_dim * num_threads) - 1});
+    Buffer<bool, 1> already_set_all(kind, Rect<1>{0, (A2_dim * num_threads) - 1});
 #pragma omp parallel for schedule(static)
     for (INDEX_TY i = 0; i < A2_dim * num_threads; i++) {
       index_list_all[i]  = 0;

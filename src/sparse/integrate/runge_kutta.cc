@@ -19,7 +19,6 @@
 
 namespace sparse {
 
-using namespace Legion;
 using namespace legate;
 
 template <LegateTypeCode K_CODE, LegateTypeCode A_CODE>

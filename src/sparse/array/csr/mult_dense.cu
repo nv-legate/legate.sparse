@@ -21,7 +21,6 @@
 
 namespace sparse {
 
-using namespace Legion;
 using namespace legate;
 
 template <typename INDEX_TY, typename VAL_TY>
@@ -70,7 +69,7 @@ struct ElemwiseMultCSRDenseArgsImplBody<VariantKind::GPU, INDEX_CODE, VAL_CODE> 
     auto stream = get_cached_stream();
 
     // Find the offsets within the pos array that each coordinate should search for.
-    DeferredBuffer<int64_t, 1> buf({0, blocks}, Memory::GPU_FB_MEM);
+    Buffer<int64_t, 1> buf({0, blocks}, Memory::GPU_FB_MEM);
     taco_binarySearchBeforeBlockLaunch(stream,
                                        B_pos,
                                        buf.ptr(0),

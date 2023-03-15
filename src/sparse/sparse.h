@@ -33,11 +33,7 @@ struct Sparse {
   {
     get_registrar().record_variant(std::forward<Args>(args)...);
   }
-  static legate::LegateTaskRegistrar& get_registrar();
-
- public:
-  static bool has_numamem;
-  static Legion::MapperID mapper_id;
+  static legate::TaskRegistrar& get_registrar();
 };
 
 template <typename T>

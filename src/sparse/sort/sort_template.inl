@@ -28,7 +28,6 @@
 
 namespace sparse {
 
-using namespace Legion;
 using namespace legate;
 
 template <typename INDEX_TY, typename VAL_TY>

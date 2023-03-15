@@ -20,7 +20,6 @@
 
 namespace sparse {
 
-using namespace Legion;
 using namespace legate;
 
 template <typename VAL_TY>
@@ -73,7 +72,7 @@ struct DenseToCSRNNZImpl<VariantKind::GPU> {
     auto rows     = B_domain.hi()[0] - B_domain.lo()[0] + 1;
     auto cols     = B_domain.hi()[1] - B_domain.lo()[1] + 1;
     // Allocate an output buffer for the offsets.
-    DeferredBuffer<int64_t, 1> A_indptr({0, rows}, Memory::GPU_FB_MEM);
+    Buffer<int64_t, 1> A_indptr({0, rows}, Memory::GPU_FB_MEM);
 
     // Construct the cuSPARSE objects from individual regions.
     auto cusparse_B = makeCuSparseDenseMat<VAL_TY>(B_vals);
@@ -98,7 +97,7 @@ struct DenseToCSRNNZImpl<VariantKind::GPU> {
     // Allocate a buffer if we need to.
     void* workspacePtr = nullptr;
     if (bufSize > 0) {
-      DeferredBuffer<char, 1> buf({0, bufSize - 1}, Memory::GPU_FB_MEM);
+      Buffer<char, 1> buf({0, bufSize - 1}, Memory::GPU_FB_MEM);
       workspacePtr = buf.ptr(0);
     }
     // Do the analysis only to compute the indptr array.

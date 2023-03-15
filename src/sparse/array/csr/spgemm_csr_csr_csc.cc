@@ -19,7 +19,6 @@
 
 namespace sparse {
 
-using namespace Legion;
 using namespace legate;
 
 template <LegateTypeCode INDEX_CODE, LegateTypeCode VAL_CODE>
@@ -40,7 +39,7 @@ struct SpGEMMCSRxCSRxCSCLocalTilesImplBody<VariantKind::CPU, INDEX_CODE, VAL_COD
   {
     // Our job right now is to perform both passes of the SpGEMM operation
     // and output instances for local CSR matrices of each result.
-    DeferredBuffer<size_t, 1> nnz({B_rect.lo[0], B_rect.hi[0]}, Memory::SYSTEM_MEM);
+    Buffer<size_t, 1> nnz({B_rect.lo[0], B_rect.hi[0]}, Memory::SYSTEM_MEM);
     for (auto i = B_rect.lo[0]; i < B_rect.hi[0] + 1; i++) {
       size_t row_nnzs = 0;
       for (auto j = C_rect.lo[0]; j < C_rect.hi[0] + 1; j++) {
@@ -149,7 +148,7 @@ struct SpGEMMCSRxCSRxCSCShuffleImplBody<VariantKind::CPU, INDEX_CODE, VAL_CODE> 
   {
     size_t total_nnzs = 0;
     std::vector<Rect<1>> rects;
-    for (RectInDomainIterator<1> rect_itr(global_pos_domain); rect_itr(); rect_itr++) {
+    for (Legion::RectInDomainIterator<1> rect_itr(global_pos_domain); rect_itr(); rect_itr++) {
       rects.push_back(*rect_itr);
       if (rect_itr->empty()) continue;
       auto lo = global_pos[rect_itr->lo];

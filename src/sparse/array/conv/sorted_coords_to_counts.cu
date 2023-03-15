@@ -26,7 +26,6 @@
 
 namespace sparse {
 
-using namespace Legion;
 using namespace legate;
 
 template <typename ACC, typename INDEX_TY>
@@ -60,8 +59,8 @@ struct SortedCoordsToCountsImplBody<VariantKind::GPU, INDEX_CODE, ACC> {
       cudaMemcpyAsync(&max, minmax.second, sizeof(INDEX_TY), cudaMemcpyDeviceToHost, stream));
     CHECK_CUDA(cudaStreamSynchronize(stream));
     INDEX_TY max_vals = max - min + 1;
-    DeferredBuffer<coord_t, 1> keys({0, max_vals - 1}, kind);
-    DeferredBuffer<uint64_t, 1> counts({0, max_vals - 1}, kind);
+    Buffer<coord_t, 1> keys({0, max_vals - 1}, kind);
+    Buffer<uint64_t, 1> counts({0, max_vals - 1}, kind);
     auto result = thrust::reduce_by_key(policy,
                                         in_ptr,
                                         in_ptr + dom.get_volume(),

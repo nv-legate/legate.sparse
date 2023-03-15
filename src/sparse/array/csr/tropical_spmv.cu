@@ -20,7 +20,6 @@
 
 namespace sparse {
 
-using namespace Legion;
 using namespace legate;
 
 template <typename INDEX_TY>

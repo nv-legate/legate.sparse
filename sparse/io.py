@@ -34,7 +34,7 @@ def mmread(source):
     nnz = ctx.create_store(nnz_ty, optimize_scalar=True, shape=Shape(1))
     assert m.kind == Future
     assert n.kind == Future
-    task = ctx.create_task(SparseOpCode.READ_MTX_TO_COO)
+    task = ctx.create_auto_task(SparseOpCode.READ_MTX_TO_COO)
     task.add_output(rows)
     task.add_output(cols)
     task.add_output(vals)

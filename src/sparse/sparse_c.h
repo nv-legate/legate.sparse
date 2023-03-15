@@ -128,7 +128,6 @@ enum LegateSparseProjectionFunctors {
 
 enum LegateSparseTunable {
   LEGATE_SPARSE_TUNABLE_NUM_PROCS = 1,
-  LEGATE_SPARSE_TUNABLE_HAS_NUMAMEM,
   LEGATE_SPARSE_TUNABLE_NUM_GPUS,
 };
 

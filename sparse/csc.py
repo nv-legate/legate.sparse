@@ -89,7 +89,7 @@ class csc_array(CompressedBase, DenseSparseBase):
             arg_store = get_store_from_cunumeric_array(arg)
             q_nnz = ctx.create_store(nnz_ty, shape=(arg.shape[1]))
             promoted_q_nnz = q_nnz.promote(0, shape[0])
-            task = ctx.create_task(SparseOpCode.DENSE_TO_CSC_NNZ)
+            task = ctx.create_auto_task(SparseOpCode.DENSE_TO_CSC_NNZ)
             task.add_output(promoted_q_nnz)
             task.add_input(arg_store)
             task.add_broadcast(promoted_q_nnz, 0)
@@ -102,7 +102,7 @@ class csc_array(CompressedBase, DenseSparseBase):
             self.crd = ctx.create_store(coord_ty, shape=(nnz))
             self.vals = ctx.create_store(arg.dtype, shape=(nnz))
             promoted_pos = self.pos.promote(0, shape[0])
-            task = ctx.create_task(SparseOpCode.DENSE_TO_CSC)
+            task = ctx.create_auto_task(SparseOpCode.DENSE_TO_CSC)
             task.add_output(promoted_pos)
             task.add_output(self.crd)
             task.add_output(self.vals)
@@ -256,7 +256,7 @@ class csc_array(CompressedBase, DenseSparseBase):
         # arrays are already set up for COO, we just need to expand the pos
         # array into coordinates.
         cols_expanded = ctx.create_store(coord_ty, shape=self.crd.shape)
-        task = ctx.create_task(SparseOpCode.EXPAND_POS_TO_COORDINATES)
+        task = ctx.create_auto_task(SparseOpCode.EXPAND_POS_TO_COORDINATES)
         task.add_input(self.pos)
         task.add_output(cols_expanded)
         task.add_image_constraint(
@@ -469,7 +469,7 @@ class csc_array(CompressedBase, DenseSparseBase):
         # non-zero based distribution of this operation with overlapping output
         # regions being reduced into also seems possible.
         promoted_pos = self.pos.promote(0, self.shape[0])
-        task = ctx.create_task(SparseOpCode.CSC_TO_DENSE)
+        task = ctx.create_auto_task(SparseOpCode.CSC_TO_DENSE)
         task.add_output(out)
         task.add_input(promoted_pos)
         task.add_input(self.crd)
@@ -524,7 +524,7 @@ def spmv(A: csc_array, x: cunumeric.ndarray, y: cunumeric.ndarray) -> None:
     x_store = get_store_from_cunumeric_array(x)
     y_store = get_store_from_cunumeric_array(y)
 
-    task = ctx.create_task(SparseOpCode.CSC_SPMV_COL_SPLIT)
+    task = ctx.create_auto_task(SparseOpCode.CSC_SPMV_COL_SPLIT)
     task.add_reduction(y_store, ReductionOp.ADD)
     task.add_input(A.pos)
     task.add_input(A.crd)
@@ -573,7 +573,7 @@ def sddmm_impl(
     result_vals = ctx.create_store(B.dtype, shape=B.vals.shape)
 
     promoted_pos = B.pos.promote(0, D_store.shape[0])
-    task = ctx.create_task(SparseOpCode.CSC_SDDMM)
+    task = ctx.create_auto_task(SparseOpCode.CSC_SDDMM)
     task.add_output(result_vals)
     task.add_input(promoted_pos)
     task.add_input(B.crd)
@@ -636,7 +636,7 @@ def spmm(A: csc_array, B: cunumeric.ndarray, C: cunumeric.ndarray) -> None:
 
     # This partitioning strategy follows from the CSR SpMM implementation.
     promoted_pos = A.pos.promote(1, B_store.shape[1])
-    task = ctx.create_task(SparseOpCode.SPMM_CSC_DENSE)
+    task = ctx.create_auto_task(SparseOpCode.SPMM_CSC_DENSE)
     task.add_reduction(C_store, ReductionOp.ADD)
     task.add_input(promoted_pos)
     task.add_input(A.crd)

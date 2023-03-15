@@ -132,7 +132,7 @@ def get_store_from_cunumeric_array(
     # the new store.
     if store.kind == Future and not allow_future:
         store_copy = ctx.create_store(store.type, shape=store.shape)
-        task = ctx.create_task(SparseOpCode.UPCAST_FUTURE_TO_REGION)
+        task = ctx.create_auto_task(SparseOpCode.UPCAST_FUTURE_TO_REGION)
         task.add_output(store_copy)
         task.add_input(store)
         task.add_broadcast(store_copy)

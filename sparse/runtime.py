@@ -16,7 +16,6 @@ import os
 
 import numpy as np
 from legate.core import Rect, get_legate_runtime, types
-from legate.rc import ArgSpec, Argument, parse_command_args
 
 from .config import (
     SparseOpCode,
@@ -26,21 +25,6 @@ from .config import (
     _supported_dtypes,
     sparse_ctx,
 )
-
-ARGS = [
-    Argument(
-        "precise-images",
-        ArgSpec(
-            action="store_true",
-            default=False,
-            dest="precise_images",
-            help="Use precise images instead of approximate min-max "
-            "boundary based images. This can potentially reduce "
-            "communication volume at the cost of increasing "
-            "startup time before application steady state.",
-        ),
-    ),
-]
 
 
 class Runtime:
@@ -77,9 +61,8 @@ class Runtime:
         if self.num_gpus > 0:
             # TODO (rohany): Also handle destroying the cuda libraries when the
             #  runtime is torn down.
-            task = self.legate_context.create_task(
+            task = self.legate_context.create_manual_task(
                 SparseOpCode.LOAD_CUDALIBS,
-                manual=True,
                 launch_domain=Rect(lo=(0,), hi=(self.num_gpus,)),
             )
             task.execute()
@@ -90,9 +73,6 @@ class Runtime:
             self.legate_runtime.get_nccl_communicator().initialize(
                 self.num_gpus
             )
-
-        # Parse legate.sparse specific command line arguments.
-        self.args = parse_command_args("legate_sparse", ARGS)
 
     def get_1d_to_2d_functor_id(self, xdim: int, ydim: int, rows: bool) -> int:
         key = (xdim, ydim, rows)
