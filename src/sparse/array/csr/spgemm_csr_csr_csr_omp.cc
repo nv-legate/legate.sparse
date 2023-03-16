@@ -37,7 +37,7 @@ struct SpGEMMCSRxCSRxCSRNNZImplBody<VariantKind::OMP, INDEX_CODE> {
                   const Rect<1>& C_crd_bounds)
   {
     auto num_threads = omp_get_max_threads();
-    auto kind        = Sparse::has_numamem ? Memory::SOCKET_MEM : Memory::SYSTEM_MEM;
+    auto kind        = Core::has_socket_mem ? Memory::SOCKET_MEM : Memory::SYSTEM_MEM;
 
     // Calculate A2_dim by looking at the min and max coordinates in
     // the provided partition of C.
@@ -107,7 +107,7 @@ struct SpGEMMCSRxCSRxCSRImplBody<VariantKind::OMP, INDEX_CODE, VAL_CODE> {
                   const Rect<1>& C_crd_bounds)
   {
     auto num_threads = omp_get_max_threads();
-    auto kind        = Sparse::has_numamem ? Memory::SOCKET_MEM : Memory::SYSTEM_MEM;
+    auto kind        = Core::has_socket_mem ? Memory::SOCKET_MEM : Memory::SYSTEM_MEM;
 
     // Calculate A2_dim by looking at the min and max coordinates in
     // the provided partition of C.
@@ -120,9 +120,9 @@ struct SpGEMMCSRxCSRxCSRImplBody<VariantKind::OMP, INDEX_CODE, VAL_CODE> {
 
     // Next, initialize the deferred buffers ourselves, instead of using
     // Realm fills (which tend to be slower).
-    DeferredBuffer<INDEX_TY, 1> index_list_all(kind, Rect<1>{0, (A2_dim * num_threads) - 1});
-    DeferredBuffer<bool, 1> already_set_all(kind, Rect<1>{0, (A2_dim * num_threads) - 1});
-    DeferredBuffer<VAL_TY, 1> workspace_all(kind, Rect<1>{0, (A2_dim * num_threads) - 1});
+    Buffer<INDEX_TY, 1> index_list_all(kind, Rect<1>{0, (A2_dim * num_threads) - 1});
+    Buffer<bool, 1> already_set_all(kind, Rect<1>{0, (A2_dim * num_threads) - 1});
+    Buffer<VAL_TY, 1> workspace_all(kind, Rect<1>{0, (A2_dim * num_threads) - 1});
 #pragma omp parallel for schedule(static)
     for (INDEX_TY i = 0; i < A2_dim * num_threads; i++) {
       index_list_all[i]  = 0;

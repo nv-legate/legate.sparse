@@ -31,7 +31,7 @@ struct SortedCoordsToCountsImplBody<VariantKind::OMP, INDEX_CODE, ACC> {
   using INDEX_TY = legate_type_of<INDEX_CODE>;
   void operator()(ACC out, AccessorRO<INDEX_TY, 1> in, const Domain& dom)
   {
-    auto kind = Sparse::has_numamem ? Memory::SOCKET_MEM : Memory::SYSTEM_MEM;
+    auto kind = Core::has_socket_mem ? Memory::SOCKET_MEM : Memory::SYSTEM_MEM;
     // Estimate the maximum space we'll need to store the unique elements in the
     // reduce-by-key operation. To get an estimate here, we take the difference
     // between the min and max coordinate in the input region. In the future,

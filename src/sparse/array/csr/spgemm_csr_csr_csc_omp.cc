@@ -42,7 +42,7 @@ struct SpGEMMCSRxCSRxCSCLocalTilesImplBody<VariantKind::OMP, INDEX_CODE, VAL_COD
   {
     // Our job right now is to perform both passes of the SpGEMM operation
     // and output instances for local CSR matrices of each result.
-    auto kind = Sparse::has_numamem ? Memory::SOCKET_MEM : Memory::SYSTEM_MEM;
+    auto kind = Core::has_socket_mem ? Memory::SOCKET_MEM : Memory::SYSTEM_MEM;
     Buffer<size_t, 1> nnz({B_rect.lo[0], B_rect.hi[0]}, kind);
 
 #pragma omp parallel for schedule(monotonic : dynamic, 128)
@@ -175,7 +175,7 @@ struct SpGEMMCSRxCSRxCSCShuffleImplBody<VariantKind::OMP, INDEX_CODE, VAL_CODE> 
     auto vals_acc = out_vals.create_output_buffer<VAL_TY, 1>(total_nnzs, true /* return_buffer */);
 
     // Calculate the number of elements that each row will write.
-    auto kind = Sparse::has_numamem ? Memory::SOCKET_MEM : Memory::SYSTEM_MEM;
+    auto kind = Core::has_socket_mem ? Memory::SOCKET_MEM : Memory::SYSTEM_MEM;
     Buffer<size_t, 1> row_offsets({0, total_rows - 1}, kind);
 #pragma omp parallel for schedule(static)
     for (size_t i = 0; i < total_rows; i++) {

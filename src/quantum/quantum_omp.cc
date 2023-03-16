@@ -22,7 +22,7 @@
 #include <thrust/execution_policy.h>
 #include <thrust/sort.h>
 
-using namespace Legion;
+using namespace legate;
 
 namespace sparse {
 
