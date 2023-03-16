@@ -77,7 +77,6 @@ from .utils import (
 @clone_scipy_arr_kind(scipy.sparse.csc_array)
 class csc_array(CompressedBase, DenseSparseBase):
     def __init__(self, arg, shape=None, dtype=None, copy=False):
-
         self.ndim = 2
         super().__init__()
 
