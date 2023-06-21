@@ -25,6 +25,7 @@ from utils.common import test_mtx_files, types
 import sparse.io as legate_io
 from sparse import csr_array, runtime
 
+
 @pytest.mark.parametrize("filename", test_mtx_files)
 def test_csr_from_dense(filename):
     arr = csr_array(legate_io.mmread(filename).todense())

@@ -101,16 +101,13 @@ constexpr decltype(auto) value_type_dispatch(legate::Type::Code value_type,
       return f.template operator()<legate::Type::Code::FLOAT32>(std::forward<Fnargs>(args)...);
     }
     case legate::Type::Code::FLOAT64: {
-      return f.template operator()<legate::Type::Code::FLOAT64>(
-        std::forward<Fnargs>(args)...);
+      return f.template operator()<legate::Type::Code::FLOAT64>(std::forward<Fnargs>(args)...);
     }
     case legate::Type::Code::COMPLEX64: {
-      return f.template operator()<legate::Type::Code::COMPLEX64>(
-        std::forward<Fnargs>(args)...);
+      return f.template operator()<legate::Type::Code::COMPLEX64>(std::forward<Fnargs>(args)...);
     }
     case legate::Type::Code::COMPLEX128: {
-      return f.template operator()<legate::Type::Code::COMPLEX128>(
-        std::forward<Fnargs>(args)...);
+      return f.template operator()<legate::Type::Code::COMPLEX128>(std::forward<Fnargs>(args)...);
     }
     default: break;
   }
@@ -128,8 +125,7 @@ constexpr decltype(auto) value_type_dispatch_no_complex(legate::Type::Code value
       return f.template operator()<legate::Type::Code::FLOAT32>(std::forward<Fnargs>(args)...);
     }
     case legate::Type::Code::FLOAT64: {
-      return f.template operator()<legate::Type::Code::FLOAT64>(
-        std::forward<Fnargs>(args)...);
+      return f.template operator()<legate::Type::Code::FLOAT64>(std::forward<Fnargs>(args)...);
     }
     default: break;
   }
