@@ -40,7 +40,7 @@ __global__ void denseToCSRNNZKernel(size_t rows,
 
 template <>
 struct DenseToCSRNNZImpl<VariantKind::GPU> {
-  template <LegateTypeCode VAL_CODE>
+  template <Type::Code VAL_CODE>
   void operator()(DenseToCSRNNZArgs& args) const
   {
     using VAL_TY = legate_type_of<VAL_CODE>;
@@ -141,7 +141,7 @@ __global__ void denseToCSRKernel(size_t rows,
 
 template <>
 struct DenseToCSRImpl<VariantKind::GPU> {
-  template <LegateTypeCode INDEX_CODE, LegateTypeCode VAL_CODE>
+  template <Type::Code INDEX_CODE, Type::Code VAL_CODE>
   void operator()(DenseToCSRArgs& args) const
   {
     using INDEX_TY = legate_type_of<INDEX_CODE>;

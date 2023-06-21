@@ -25,12 +25,12 @@ namespace sparse {
 
 using namespace legate;
 
-template <VariantKind KIND, LegateTypeCode VAL_CODE>
+template <VariantKind KIND, Type::Code VAL_CODE>
 struct DenseToCSCNNZImplBody;
 
 template <VariantKind KIND>
 struct DenseToCSCNNZImpl {
-  template <LegateTypeCode VAL_CODE>
+  template <Type::Code VAL_CODE>
   void operator()(DenseToCSCNNZArgs& args) const
   {
     using VAL_TY = legate_type_of<VAL_CODE>;
@@ -43,12 +43,12 @@ struct DenseToCSCNNZImpl {
   }
 };
 
-template <VariantKind KIND, LegateTypeCode INDEX_CODE, LegateTypeCode VAL_CODE>
+template <VariantKind KIND, Type::Code INDEX_CODE, Type::Code VAL_CODE>
 struct DenseToCSCImplBody;
 
 template <VariantKind KIND>
 struct DenseToCSCImpl {
-  template <LegateTypeCode INDEX_CODE, LegateTypeCode VAL_CODE>
+  template <Type::Code INDEX_CODE, Type::Code VAL_CODE>
   void operator()(DenseToCSCArgs& args) const
   {
     using INDEX_TY = legate_type_of<INDEX_CODE>;

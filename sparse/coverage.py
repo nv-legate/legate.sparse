@@ -51,7 +51,7 @@ class AnyCallable(Protocol):
 
 def wrap(func: AnyCallable) -> Any:
     @wraps(func)
-    @track_provenance(runtime.legate_context, nested=True)
+    @track_provenance(nested=True)
     def wrapper(*args: Any, **kwargs: Any) -> Any:
         return func(*args, **kwargs)
 

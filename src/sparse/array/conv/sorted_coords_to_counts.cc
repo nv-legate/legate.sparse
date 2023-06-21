@@ -21,7 +21,7 @@ namespace sparse {
 
 using namespace legate;
 
-template <LegateTypeCode INDEX_CODE, typename ACC>
+template <Type::Code INDEX_CODE, typename ACC>
 struct SortedCoordsToCountsImplBody<VariantKind::CPU, INDEX_CODE, ACC> {
   using INDEX_TY = legate_type_of<INDEX_CODE>;
   void operator()(ACC out, AccessorRO<INDEX_TY, 1> in, const Domain& dom)

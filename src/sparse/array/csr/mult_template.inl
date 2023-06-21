@@ -25,12 +25,12 @@ namespace sparse {
 
 using namespace legate;
 
-template <VariantKind KIND, LegateTypeCode INDEX_CODE>
+template <VariantKind KIND, Type::Code INDEX_CODE>
 struct ElemwiseMultCSRCSRNNZImplBody;
 
 template <VariantKind KIND>
 struct ElemwiseMultCSRCSRNNZImpl {
-  template <LegateTypeCode INDEX_CODE>
+  template <Type::Code INDEX_CODE>
   void operator()(ElemwiseMultCSRCSRNNZArgs& args) const
   {
     using INDEX_TY = legate_type_of<INDEX_CODE>;
@@ -47,12 +47,12 @@ struct ElemwiseMultCSRCSRNNZImpl {
   }
 };
 
-template <VariantKind KIND, LegateTypeCode INDEX_CODE, LegateTypeCode VAL_CODE>
+template <VariantKind KIND, Type::Code INDEX_CODE, Type::Code VAL_CODE>
 struct ElemwiseMultCSRCSRImplBody;
 
 template <VariantKind KIND>
 struct ElemwiseMultCSRCSRImpl {
-  template <LegateTypeCode INDEX_CODE, LegateTypeCode VAL_CODE>
+  template <Type::Code INDEX_CODE, Type::Code VAL_CODE>
   void operator()(ElemwiseMultCSRCSRArgs& args) const
   {
     using INDEX_TY = legate_type_of<INDEX_CODE>;

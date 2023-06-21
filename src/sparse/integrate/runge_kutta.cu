@@ -40,7 +40,7 @@ __global__ void rk_kernel(const size_t elems,
   dy[i] = acc * h;
 }
 
-template <LegateTypeCode K_CODE, LegateTypeCode A_CODE>
+template <Type::Code K_CODE, Type::Code A_CODE>
 struct RKCalcDyImplBody<VariantKind::GPU, K_CODE, A_CODE> {
   using K_TY = legate_type_of<K_CODE>;
   using A_TY = legate_type_of<A_CODE>;

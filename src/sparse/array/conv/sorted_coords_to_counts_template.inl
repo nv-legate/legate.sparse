@@ -24,12 +24,12 @@ namespace sparse {
 
 using namespace legate;
 
-template <VariantKind KIND, LegateTypeCode INDEX_CODE, typename ACC>
+template <VariantKind KIND, Type::Code INDEX_CODE, typename ACC>
 struct SortedCoordsToCountsImplBody;
 
 template <VariantKind KIND>
 struct SortedCoordsToCountsImpl {
-  template <LegateTypeCode INDEX_CODE>
+  template <Type::Code INDEX_CODE>
   void operator()(SortedCoordsToCountsArgs& args) const
   {
     using INDEX_TY = legate_type_of<INDEX_CODE>;

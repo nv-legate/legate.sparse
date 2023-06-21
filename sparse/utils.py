@@ -38,57 +38,9 @@ def find_last_user_stacklevel() -> int:
     return stacklevel
 
 
-# WrappedStore is a helper class that wraps a store into the
-# __legate_data_interface__.
-class WrappedStore:
-    def __init__(self, store: Store):
-        self.store = store
-
-        # Set up the __legate_data_interface__. For some reason
-        # @property isn't working...
-        arrow_type = self.store.type.type
-        if isinstance(arrow_type, numpy.dtype):
-            if arrow_type == numpy.complex64:
-                arrow_type = types.Complex64Dtype()
-            elif arrow_type == numpy.complex128:
-                arrow_type = types.Complex128Dtype()
-            else:
-                arrow_type = pyarrow.from_numpy_dtype(arrow_type)
-
-        # We don't have nullable data for the moment
-        # until we support masked arrays
-        array = Array(arrow_type, [None, self.store])
-        data = dict()
-        field = pyarrow.field("cuNumeric Array", arrow_type, nullable=False)
-        data[field] = array
-        self.__legate_data_interface__ = dict()
-        self.__legate_data_interface__["data"] = data
-        self.__legate_data_interface__["version"] = 1
-
-    # @property
-    # def __legate_data_interface__(self)
-    #     if self._legate_data is None:
-    #         # All of our thunks implement the Legate Store interface
-    #         # so we just need to convert our type and stick it in
-    #         # a Legate Array
-    #         arrow_type = pyarrow.from_numpy_dtype(self.store.dtype)
-    #         # We don't have nullable data for the moment
-    #         # until we support masked arrays
-    #         array = Array(arrow_type, [None, self.store])
-    #         self._legate_data = dict()
-    #         self._legate_data["version"] = 1
-    #         data = dict()
-    #         field = pyarrow.field(
-    #             "cuNumeric Array", arrow_type, nullable=False
-    #         )
-    #         data[field] = array
-    #         self._legate_data["data"] = data
-    #     return self._legate_data
-
-
 # store_to_cunumeric_array converts a store to a cuNumeric array.
 def store_to_cunumeric_array(store: Store):
-    return cunumeric.array(WrappedStore(store))
+    return cunumeric.asarray(store)
 
 
 # get_store_from_cunumeric_array extracts a store from a cuNumeric array.
@@ -119,12 +71,10 @@ def get_store_from_cunumeric_array(
     if copy:
         # If requested to make a copy, do so.
         arr = cunumeric.array(arr)
-    target = arr._thunk
-    if isinstance(target, cunumeric.eager.EagerArray):
-        target = target.to_deferred_array()
-    assert isinstance(target, cunumeric.deferred.DeferredArray)
-    store = target.base
-    assert isinstance(store, Store)
+
+    data = arr.__legate_data_interface__["data"]
+    array = data[next(iter(data))]
+    (_, store) = array.stores()
 
     # Our implementation can't handle future backed stores when we use this, as
     # we expect to be able to partition things up. If we have a future backed

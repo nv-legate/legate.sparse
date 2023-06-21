@@ -34,7 +34,7 @@ class CompressedBase:
         cs_store = get_store_from_cunumeric_array(cs)
         cs_shifted_store = get_store_from_cunumeric_array(cs_shifted)
         # Zip the scan result into a rect1 region for the pos.
-        pos = ctx.create_store(
+        pos = runtime.create_store(
             rect1, shape=(q_nnz.shape[0]), optimize_scalar=False
         )
         task = ctx.create_auto_task(SparseOpCode.ZIP_TO_RECT1)
@@ -131,7 +131,7 @@ class CompressedBase:
     def copy_pos(self):
         # Issue a copy from the old pos to the new pos. We can't do this
         # with cunumeric because cunumeric doesn't support the Rect<1> type.
-        pos = ctx.create_store(rect1, shape=self.pos.shape)
+        pos = runtime.create_store(rect1, shape=self.pos.shape)
         copy = ctx.create_copy()
         copy.add_input(self.pos)
         copy.add_output(pos)
@@ -298,8 +298,8 @@ class DenseSparseBase:
 
 # unpack_rect1_store unpacks a rect1 store into two int64 stores.
 def unpack_rect1_store(pos):
-    out1 = ctx.create_store(int64, shape=pos.shape)
-    out2 = ctx.create_store(int64, shape=pos.shape)
+    out1 = runtime.create_store(int64, shape=pos.shape)
+    out2 = runtime.create_store(int64, shape=pos.shape)
     task = ctx.create_auto_task(SparseOpCode.UNZIP_RECT1)
     task.add_output(out1)
     task.add_output(out2)
@@ -313,7 +313,7 @@ def unpack_rect1_store(pos):
 # pack_to_rect1_store packs two int64 stores into a rect1 store.
 def pack_to_rect1_store(lo, hi, output=None):
     if output is None:
-        output = ctx.create_store(rect1, shape=(lo.shape[0]))
+        output = runtime.create_store(rect1, shape=(lo.shape[0]))
     task = ctx.create_auto_task(SparseOpCode.ZIP_TO_RECT1)
     task.add_output(output)
     task.add_input(lo)

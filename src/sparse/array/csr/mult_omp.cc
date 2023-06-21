@@ -21,7 +21,7 @@ namespace sparse {
 
 using namespace legate;
 
-template <LegateTypeCode INDEX_CODE>
+template <Type::Code INDEX_CODE>
 struct ElemwiseMultCSRCSRNNZImplBody<VariantKind::OMP, INDEX_CODE> {
   using INDEX_TY = legate_type_of<INDEX_CODE>;
   void operator()(const AccessorWO<nnz_ty, 1>& nnz,
@@ -51,7 +51,7 @@ struct ElemwiseMultCSRCSRNNZImplBody<VariantKind::OMP, INDEX_CODE> {
   }
 };
 
-template <LegateTypeCode INDEX_CODE, LegateTypeCode VAL_CODE>
+template <Type::Code INDEX_CODE, Type::Code VAL_CODE>
 struct ElemwiseMultCSRCSRImplBody<VariantKind::OMP, INDEX_CODE, VAL_CODE> {
   using INDEX_TY = legate_type_of<INDEX_CODE>;
   using VAL_TY   = legate_type_of<VAL_CODE>;

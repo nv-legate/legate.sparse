@@ -22,7 +22,7 @@ namespace sparse {
 
 template <>
 struct AddCSRCSRNNZImpl<VariantKind::GPU> {
-  template <LegateTypeCode INDEX_CODE>
+  template <Type::Code INDEX_CODE>
   void operator()(AddCSRCSRNNZArgs& args) const
   {
     using INDEX_TY = legate_type_of<INDEX_CODE>;
@@ -67,7 +67,7 @@ struct AddCSRCSRNNZImpl<VariantKind::GPU> {
     // to do any casting. Otherwise, we need to create some temporaries.
     const int32_t* B_crd_int = nullptr;
     const int32_t* C_crd_int = nullptr;
-    if constexpr (INDEX_CODE == LegateTypeCode::INT32_LT) {
+    if constexpr (INDEX_CODE == Type::Code::INT32) {
       B_crd_int = B_crd.ptr(B_crd_domain.lo());
       C_crd_int = C_crd.ptr(C_crd_domain.lo());
     } else {
@@ -164,27 +164,27 @@ struct AddCSRCSRNNZImpl<VariantKind::GPU> {
 
 // The old cuSPARSE isn't happy with the complex types that
 // we use, so add a utility to help us with this casting.
-template <LegateTypeCode CODE>
+template <Type::Code CODE>
 struct OldCuSparseTypeOf {
   using type = legate_type_of<CODE>;
 };
 
 template <>
-struct OldCuSparseTypeOf<LegateTypeCode::COMPLEX64_LT> {
+struct OldCuSparseTypeOf<Type::Code::COMPLEX64> {
   using type = cuComplex;
 };
 
 template <>
-struct OldCuSparseTypeOf<LegateTypeCode::COMPLEX128_LT> {
+struct OldCuSparseTypeOf<Type::Code::COMPLEX128> {
   using type = cuDoubleComplex;
 };
 
-template <LegateTypeCode CODE>
+template <Type::Code CODE>
 using old_cusparse_type_of = typename OldCuSparseTypeOf<CODE>::type;
 
 template <>
 struct AddCSRCSRImpl<VariantKind::GPU> {
-  template <LegateTypeCode INDEX_CODE, LegateTypeCode VAL_CODE>
+  template <Type::Code INDEX_CODE, Type::Code VAL_CODE>
   void operator()(AddCSRCSRArgs& args) const
   {
     using INDEX_TY = legate_type_of<INDEX_CODE>;
@@ -241,7 +241,7 @@ struct AddCSRCSRImpl<VariantKind::GPU> {
     int32_t* A_crd_int       = nullptr;
     const int32_t* B_crd_int = nullptr;
     const int32_t* C_crd_int = nullptr;
-    if constexpr (INDEX_CODE == LegateTypeCode::INT32_LT) {
+    if constexpr (INDEX_CODE == Type::Code::INT32) {
       A_crd_int = A_crd.ptr(A_crd_domain.lo());
       B_crd_int = B_crd.ptr(B_crd_domain.lo());
       C_crd_int = C_crd.ptr(C_crd_domain.lo());
@@ -280,11 +280,11 @@ struct AddCSRCSRImpl<VariantKind::GPU> {
 
     auto funcs = []() -> auto
     {
-      if constexpr (VAL_CODE == LegateTypeCode::FLOAT_LT) {
+      if constexpr (VAL_CODE == Type::Code::FLOAT32) {
         return std::make_pair(cusparseScsrgeam2_bufferSizeExt, cusparseScsrgeam2);
-      } else if constexpr (VAL_CODE == LegateTypeCode::DOUBLE_LT) {
+      } else if constexpr (VAL_CODE == Type::Code::FLOAT64) {
         return std::make_pair(cusparseDcsrgeam2_bufferSizeExt, cusparseDcsrgeam2);
-      } else if constexpr (VAL_CODE == LegateTypeCode::COMPLEX64_LT) {
+      } else if constexpr (VAL_CODE == Type::Code::COMPLEX64) {
         return std::make_pair(cusparseCcsrgeam2_bufferSizeExt, cusparseCcsrgeam2);
       } else {
         return std::make_pair(cusparseZcsrgeam2_bufferSizeExt, cusparseZcsrgeam2);
@@ -353,7 +353,7 @@ struct AddCSRCSRImpl<VariantKind::GPU> {
     // data structures. Note that the global pos array has already been computed
     // and will not be changed by the call to cusparse*csrgeam2, so we only
     // need to cast the coordinates back to the desired type.
-    if constexpr (INDEX_CODE != LegateTypeCode::INT32_LT) {
+    if constexpr (INDEX_CODE != Type::Code::INT32) {
       auto elems  = A_crd_domain.get_volume();
       auto blocks = get_num_blocks_1d(elems);
       cast<INDEX_TY, int32_t>

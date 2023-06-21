@@ -48,7 +48,7 @@ __global__ void elementwise_mult_csr_dense_kernel(size_t nnzs,
   A_vals[nnz_idx] = B_vals[nnz_idx] * C_vals[{i, j}];
 }
 
-template <LegateTypeCode INDEX_CODE, LegateTypeCode VAL_CODE>
+template <Type::Code INDEX_CODE, Type::Code VAL_CODE>
 struct ElemwiseMultCSRDenseArgsImplBody<VariantKind::GPU, INDEX_CODE, VAL_CODE> {
   using INDEX_TY = legate_type_of<INDEX_CODE>;
   using VAL_TY   = legate_type_of<VAL_CODE>;

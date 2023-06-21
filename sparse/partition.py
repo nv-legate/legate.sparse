@@ -97,24 +97,24 @@ class CompressedImagePartition(ImagePartition):
                 SparseOpCode.FAST_IMAGE_RANGE,
                 error_on_interference=False,
                 tag=ctx.core_library.LEGATE_CORE_MANUAL_PARALLEL_LAUNCH_TAG,
-                provenance=sparse_runtime.legate_context.provenance,
+                provenance=sparse_runtime.legate_runtime.provenance,
             )
             launcher.add_input(
                 self._store,
                 source_part.get_requirement(launch_shape.ndim, None),
                 tag=1,
             )  # LEGATE_CORE_KEY_STORE_TAG
-            bounds_store = ctx.create_store(
+            bounds_store = runtime.create_store(
                 domain_ty, shape=(1,), optimize_scalar=True
             )
             launcher.add_output(bounds_store, Broadcast(None, 0), tag=0)
-            domains = launcher.execute(Rect(hi=launch_shape))
+            domains = launcher.execute(Rect(hi=launch_shape)).future_map
             # We'll return a partition by domain using the resulting FutureMap.
             result = DomainPartition(
                 Shape(ispace=region.index_space), self.color_shape, domains
             ).construct(region)
             runtime.partition_manager.record_index_partition(
-                region.index_space, self, result.index_partition
+                self, result.index_partition
             )
             return result
         else:
@@ -172,18 +172,18 @@ class MinMaxImagePartition(ImagePartition):
                 SparseOpCode.BOUNDS_FROM_PARTITIONED_COORDINATES,
                 error_on_interference=False,
                 tag=ctx.core_library.LEGATE_CORE_MANUAL_PARALLEL_LAUNCH_TAG,
-                provenance=sparse_runtime.legate_context.provenance,
+                provenance=sparse_runtime.legate_runtime.provenance,
             )
             launcher.add_input(
                 self._store,
                 source_part.get_requirement(launch_shape.ndim, None),
                 tag=1,
             )  # LEGATE_CORE_KEY_STORE_TAG
-            bounds_store = ctx.create_store(
+            bounds_store = runtime.create_store(
                 domain_ty, shape=(1,), optimize_scalar=True
             )
             launcher.add_output(bounds_store, Broadcast(None, 0), tag=0)
-            domains = launcher.execute(Rect(hi=launch_shape))
+            domains = launcher.execute(Rect(hi=launch_shape)).future_map
             # We'll return a partition by domain using the resulting FutureMap.
             part = DomainPartition(
                 Shape(ispace=region.index_space), self.color_shape, domains
@@ -197,7 +197,7 @@ class MinMaxImagePartition(ImagePartition):
                 )
             result = part.construct(region)
             runtime.partition_manager.record_index_partition(
-                region.index_space, self, result.index_partition
+                self, result.index_partition
             )
             return result
         else:
@@ -273,6 +273,6 @@ class DensePreimage(PreimagePartition):
             ).construct(region)
             index_partition = result.index_partition
             runtime.partition_manager.record_index_partition(
-                region.index_space, self, index_partition
+                self, index_partition
             )
         return region.get_child(index_partition)

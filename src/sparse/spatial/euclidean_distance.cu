@@ -54,7 +54,7 @@ __global__ void elementwise_sqrt(size_t volume,
   out[point]     = sqrt(out[point]);
 }
 
-template <LegateTypeCode VAL_CODE>
+template <Type::Code VAL_CODE>
 struct EuclideanCDistImplBody<VariantKind::GPU, VAL_CODE> {
   using VAL_TY = legate_type_of<VAL_CODE>;
 

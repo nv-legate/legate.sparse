@@ -87,7 +87,7 @@ class csc_array(CompressedBase, DenseSparseBase):
             # Similarly to the CSR from dense case, we'll do a column based
             # distribution.
             arg_store = get_store_from_cunumeric_array(arg)
-            q_nnz = ctx.create_store(nnz_ty, shape=(arg.shape[1]))
+            q_nnz = runtime.create_store(nnz_ty, shape=(arg.shape[1]))
             promoted_q_nnz = q_nnz.promote(0, shape[0])
             task = ctx.create_auto_task(SparseOpCode.DENSE_TO_CSC_NNZ)
             task.add_output(promoted_q_nnz)
@@ -99,8 +99,8 @@ class csc_array(CompressedBase, DenseSparseBase):
             self.pos, nnz = self.nnz_to_pos(q_nnz)
             # Block and convert the nnz future into an int.
             nnz = int(nnz)
-            self.crd = ctx.create_store(coord_ty, shape=(nnz))
-            self.vals = ctx.create_store(arg.dtype, shape=(nnz))
+            self.crd = runtime.create_store(coord_ty, shape=(nnz))
+            self.vals = runtime.create_store(arg.dtype, shape=(nnz))
             promoted_pos = self.pos.promote(0, shape[0])
             task = ctx.create_auto_task(SparseOpCode.DENSE_TO_CSC)
             task.add_output(promoted_pos)
@@ -215,8 +215,8 @@ class csc_array(CompressedBase, DenseSparseBase):
         pos, _ = CompressedBase.nnz_to_pos_cls(
             get_store_from_cunumeric_array(q)
         )
-        crd = ctx.create_store(coord_ty, (0,), optimize_scalar=False)
-        vals = ctx.create_store(dtype, (0,), optimize_scalar=False)
+        crd = runtime.create_store(coord_ty, (0,), optimize_scalar=False)
+        vals = runtime.create_store(dtype, (0,), optimize_scalar=False)
         return cls((vals, crd, pos), shape=shape, dtype=dtype)
 
     def astype(self, dtype, casting="unsafe", copy=True):
@@ -255,7 +255,7 @@ class csc_array(CompressedBase, DenseSparseBase):
         # The conversion to COO is pretty straightforward. The crd and values
         # arrays are already set up for COO, we just need to expand the pos
         # array into coordinates.
-        cols_expanded = ctx.create_store(coord_ty, shape=self.crd.shape)
+        cols_expanded = runtime.create_store(coord_ty, shape=self.crd.shape)
         task = ctx.create_auto_task(SparseOpCode.EXPAND_POS_TO_COORDINATES)
         task.add_input(self.pos)
         task.add_output(cols_expanded)
@@ -402,7 +402,7 @@ class csc_array(CompressedBase, DenseSparseBase):
                     # assignment later.
                     out = out.squeeze(1)
                     result = store_to_cunumeric_array(
-                        ctx.create_store(A.dtype, shape=(self.shape[0],))
+                        runtime.create_store(A.dtype, shape=(self.shape[0],))
                     )
                 else:
                     assert out.shape == (self.shape[0],)
@@ -427,7 +427,7 @@ class csc_array(CompressedBase, DenseSparseBase):
             A, B = cast_to_common_type(self, other)
             if out is None:
                 C = store_to_cunumeric_array(
-                    ctx.create_store(
+                    runtime.create_store(
                         A.dtype, shape=(self.shape[0], other.shape[1])
                     )
                 )
@@ -464,7 +464,7 @@ class csc_array(CompressedBase, DenseSparseBase):
             out = cunumeric.array(out)
             out = get_store_from_cunumeric_array(out)
         elif out is None:
-            out = ctx.create_store(self.dtype, shape=self.shape)
+            out = runtime.create_store(self.dtype, shape=self.shape)
         # TODO (rohany): We'll do a col-based distribution for now, but a
         # non-zero based distribution of this operation with overlapping output
         # regions being reduced into also seems possible.
@@ -570,7 +570,7 @@ def sddmm_impl(
     # requires reducing into the output.
     C_store = get_store_from_cunumeric_array(C)
     D_store = get_store_from_cunumeric_array(D)
-    result_vals = ctx.create_store(B.dtype, shape=B.vals.shape)
+    result_vals = runtime.create_store(B.dtype, shape=B.vals.shape)
 
     promoted_pos = B.pos.promote(0, D_store.shape[0])
     task = ctx.create_auto_task(SparseOpCode.CSC_SDDMM)

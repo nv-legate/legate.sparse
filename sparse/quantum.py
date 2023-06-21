@@ -73,10 +73,10 @@ class LegateHamiltonianDriver:
             # Use the independence sets of size k and k - 1
             # to build the hamiltonian coordinates. Create unbound
             # stores for the upper and lower halves of the matrix.
-            rows_lower = ctx.create_store(coord_ty, ndim=1)
-            cols_lower = ctx.create_store(coord_ty, ndim=1)
-            rows_upper = ctx.create_store(coord_ty, ndim=1)
-            cols_upper = ctx.create_store(coord_ty, ndim=1)
+            rows_lower = runtime.create_store(coord_ty, ndim=1)
+            cols_lower = runtime.create_store(coord_ty, ndim=1)
+            rows_upper = runtime.create_store(coord_ty, ndim=1)
+            cols_upper = runtime.create_store(coord_ty, ndim=1)
 
             # Here we have to play some tricks with partitioning to make
             # sure that we don't blow out the memory of the machine by
@@ -434,7 +434,7 @@ def get_set_ty(n):
 
 
 def sets_to_sizes(sets, graph):
-    result = ctx.create_store(types.uint64, shape=sets.shape)
+    result = runtime.create_store(types.uint64, shape=sets.shape)
     task = ctx.create_auto_task(SparseOpCode.SETS_TO_SIZES)
     task.add_input(sets)
     task.add_output(result)
@@ -463,9 +463,9 @@ def sort_by_key(rows, cols):
     vals_arr = np.ones((rows.shape[0]), dtype=np.float64)
     vals = get_store_from_cunumeric_array(vals_arr)
 
-    rows_res = ctx.create_store(rows.type, ndim=1)
-    cols_res = ctx.create_store(cols.type, ndim=1)
-    vals_res = ctx.create_store(vals.type, ndim=1)
+    rows_res = runtime.create_store(rows.type, ndim=1)
+    cols_res = runtime.create_store(cols.type, ndim=1)
+    vals_res = runtime.create_store(vals.type, ndim=1)
     task = ctx.create_auto_task(SparseOpCode.SORT_BY_KEY)
     # Add all of the unbounded outputs.
     task.add_output(rows_res)
@@ -517,7 +517,7 @@ def raw_create_csr(rows, cols, vals, shape, dtype):
     launcher.add_input(
         rows_store, rows_part.get_requirement(1, 0), tag=1
     )  # LEGATE_CORE_KEY_STORE_TAG
-    bounds_store = ctx.create_store(
+    bounds_store = runtime.create_store(
         domain_ty, shape=(1,), optimize_scalar=True
     )
     launcher.add_output(bounds_store, Broadcast(None, 0), tag=0)
@@ -560,8 +560,8 @@ def enumerate_independent_sets(
     comp = nx.complement(graph)
     comp_adj_mat = np.array(nx.to_numpy_array(comp))
     comp_adj_mat_store = get_store_from_cunumeric_array(comp_adj_mat)
-    output_sets = ctx.create_store(get_set_ty(n), ndim=1)
-    output_nbrs = ctx.create_store(get_set_ty(n), ndim=1)
+    output_sets = runtime.create_store(get_set_ty(n), ndim=1)
+    output_nbrs = runtime.create_store(get_set_ty(n), ndim=1)
 
     if k == 1:
         # If k == 1, we don't need a prior level.

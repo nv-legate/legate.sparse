@@ -21,7 +21,7 @@ namespace sparse {
 
 using namespace legate;
 
-template <LegateTypeCode VAL_CODE, bool IS_ALPHA, bool NEGATE>
+template <Type::Code VAL_CODE, bool IS_ALPHA, bool NEGATE>
 struct AXPBYImplBody<VariantKind::CPU, VAL_CODE, IS_ALPHA, NEGATE> {
   using VAL_TY = legate_type_of<VAL_CODE>;
 

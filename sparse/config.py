@@ -15,9 +15,8 @@
 import os
 from enum import IntEnum, unique
 
-import numpy as np
 import pyarrow as pa
-from legate.core import Library, ResourceConfig, ffi, get_legate_runtime, types
+from legate.core import Library, ffi, get_legate_runtime, types
 
 
 class LegateSparseLib(Library):
@@ -52,20 +51,6 @@ class LegateSparseLib(Library):
         assert self.runtime is None
         assert self.shared_object is not None
         self.runtime = runtime
-
-    def get_resource_configuration(self):
-        assert self.shared_object is not None
-        # TODO (rohany): Make these line up with the configuration in the
-        #  registration callback.
-        # TODO (rohany): How can I make these match up with the enums in
-        # sparse_c.h??
-        config = ResourceConfig()
-        config.max_tasks = 100
-        config.max_mappers = 1
-        config.max_reduction_ops = 0
-        config.max_projections = 1000
-        config.max_shardings = 0
-        return config
 
     def destroy(self):
         if self.runtime is not None:
@@ -163,40 +148,6 @@ class SparseTunable(IntEnum):
     NUM_GPUS = _sparse.LEGATE_SPARSE_TUNABLE_NUM_GPUS
 
 
-@unique
-class SparseTypeCode(IntEnum):
-    SPARSE_TYPE_DOMAIN = _sparse.LEGATE_SPARSE_TYPE_DOMAIN
-    SPARSE_TYPE_RECT1 = _sparse.LEGATE_SPARSE_TYPE_RECT1
-
-
 # Register some types for us to use.
-rect1 = pa.struct([("lo", types.int64), ("hi", types.int64)])
-sparse_ctx.type_system.add_type(rect1, 16, SparseTypeCode.SPARSE_TYPE_RECT1)
-domain_ty = "legion_domain_t"
-sparse_ctx.type_system.add_type(
-    domain_ty, ffi.sizeof(domain_ty), SparseTypeCode.SPARSE_TYPE_DOMAIN
-)
-# Similarly to cunumeric, we'll register aliases for all of the
-# numpy types into our type system so that we don't need to worry
-# about implicitly converting types between numpy types and legate
-# core store types. We set up the supported types here, and add them
-# to the type system in the runtime initialization.
-_supported_dtypes = {
-    np.bool_: types.bool_,
-    np.int8: types.int8,
-    np.int16: types.int16,
-    np.int32: types.int32,
-    int: types.int64,
-    np.int64: types.int64,
-    np.uint8: types.uint8,
-    np.uint16: types.uint16,
-    np.uint32: types.uint32,
-    np.uint: types.uint64,
-    np.uint64: types.uint64,
-    np.float16: types.float16,
-    np.float32: types.float32,
-    float: types.float64,
-    np.float64: types.float64,
-    np.complex64: types.complex64,
-    np.complex128: types.complex128,
-}
+rect1 = types.struct_type([types.int64, types.int64])
+domain_ty = types.array_type(types.uint8, ffi.sizeof("legion_domain_t"))

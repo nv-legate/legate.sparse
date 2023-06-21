@@ -24,12 +24,12 @@ namespace sparse {
 
 using namespace legate;
 
-template <VariantKind KIND, LegateTypeCode INDEX_CODE, LegateTypeCode VAL_CODE>
+template <VariantKind KIND, Type::Code INDEX_CODE, Type::Code VAL_CODE>
 struct CSCSDDMMImplBody;
 
 template <VariantKind KIND>
 struct CSCSDDMMImpl {
-  template <LegateTypeCode INDEX_CODE, LegateTypeCode VAL_CODE>
+  template <Type::Code INDEX_CODE, Type::Code VAL_CODE>
   void operator()(CSCSDDMMArgs& args) const
   {
     using INDEX_TY = legate_type_of<INDEX_CODE>;

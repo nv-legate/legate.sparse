@@ -36,7 +36,7 @@ __global__ void offset_coordinates_to_global(size_t elems, coord_t offset, INDEX
 
 template <>
 struct SpGEMMCSRxCSRxCSCLocalTilesImpl<VariantKind::GPU> {
-  template <LegateTypeCode INDEX_CODE, LegateTypeCode VAL_CODE>
+  template <Type::Code INDEX_CODE, Type::Code VAL_CODE>
   void operator()(SpGEMMCSRxCSRxCSCLocalTilesArgs& args) const
   {
     using INDEX_TY = legate_type_of<INDEX_CODE>;
@@ -83,7 +83,7 @@ struct SpGEMMCSRxCSRxCSCLocalTilesImpl<VariantKind::GPU> {
     // Optionally cast the coordinates if they are already not already 32-bit.
     int32_t* B_crd_int = nullptr;
     int32_t* C_crd_int = nullptr;
-    if constexpr (INDEX_CODE == LegateTypeCode::INT32_LT) {
+    if constexpr (INDEX_CODE == Type::Code::INT32) {
       B_crd_int = const_cast<int32_t*>(B_crd.read_accessor<INDEX_TY, 1>().ptr(B_crd.domain().lo()));
       C_crd_int = const_cast<int32_t*>(C_crd.read_accessor<INDEX_TY, 1>().ptr(C_crd.domain().lo()));
     } else {
@@ -260,7 +260,7 @@ struct SpGEMMCSRxCSRxCSCLocalTilesImpl<VariantKind::GPU> {
     // Handle the creation of the A_crd buffer depending on whether the result
     // type is the type of data we are supposed to create.
     Buffer<int32_t, 1> A_crd_int;
-    if constexpr (INDEX_CODE == LegateTypeCode::INT32_LT) {
+    if constexpr (INDEX_CODE == Type::Code::INT32) {
       A_crd_int = A_crd.create_output_buffer<INDEX_TY, 1>(A_nnz, true /* return_buffer */);
     } else {
       A_crd_int = Buffer<int32_t, 1>({0, A_nnz - 1}, Memory::GPU_FB_MEM);
@@ -291,7 +291,7 @@ struct SpGEMMCSRxCSRxCSCLocalTilesImpl<VariantKind::GPU> {
     // cuSPARSE is going to compute a resulting matrix where all the coordinates
     // are zero-based, but we need the coordinates to be global addressable, so we
     // offset them by the partition of the column space that we are in.
-    if constexpr (INDEX_CODE != LegateTypeCode::INT32_LT) {
+    if constexpr (INDEX_CODE != Type::Code::INT32) {
       auto blocks = get_num_blocks_1d(A_nnz);
       auto buf    = A_crd.create_output_buffer<INDEX_TY, 1>(A_nnz, true /* return_buffer */);
       cast<INDEX_TY, int32_t>
@@ -384,7 +384,7 @@ __global__ void scatter_rows(size_t total_rows,
   pos_acc[idx] = {lo, hi};
 }
 
-template <LegateTypeCode INDEX_CODE, LegateTypeCode VAL_CODE>
+template <Type::Code INDEX_CODE, Type::Code VAL_CODE>
 struct SpGEMMCSRxCSRxCSCShuffleImplBody<VariantKind::GPU, INDEX_CODE, VAL_CODE> {
   using INDEX_TY = legate_type_of<INDEX_CODE>;
   using VAL_TY   = legate_type_of<VAL_CODE>;

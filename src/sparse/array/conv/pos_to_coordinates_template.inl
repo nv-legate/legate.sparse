@@ -50,7 +50,7 @@ struct ExpandPosToCoordinatesImpl {
   {
   }
 
-  template <LegateTypeCode INDEX_CODE>
+  template <Type::Code INDEX_CODE>
   void operator()(ExpandPosToCoordinatesArgs& args) const
   {
     using INDEX_TY     = legate_type_of<INDEX_CODE>;

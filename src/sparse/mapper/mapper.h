@@ -20,7 +20,7 @@
 
 namespace sparse {
 
-class LegateSparseMapper : public legate::mapping::LegateMapper {
+class LegateSparseMapper : public legate::mapping::Mapper {
  public:
   LegateSparseMapper();
   virtual ~LegateSparseMapper(void) {}

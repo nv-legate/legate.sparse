@@ -21,7 +21,7 @@ namespace sparse {
 
 using namespace legate;
 
-template <LegateTypeCode VAL_CODE>
+template <Type::Code VAL_CODE>
 struct EuclideanCDistImplBody<VariantKind::CPU, VAL_CODE> {
   using VAL_TY = legate_type_of<VAL_CODE>;
 

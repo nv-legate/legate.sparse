@@ -31,7 +31,7 @@ __global__ void cast_and_offset(size_t elems, DST* dst, const SRC* src, int64_t 
 }
 
 struct SpGEMMCSRxCSRxCSRGPUImpl {
-  template <LegateTypeCode INDEX_CODE, LegateTypeCode VAL_CODE>
+  template <Type::Code INDEX_CODE, Type::Code VAL_CODE>
   void operator()(SpGEMMCSRxCSRxCSRGPUArgs& args) const
   {
     using INDEX_TY = legate_type_of<INDEX_CODE>;
@@ -227,7 +227,7 @@ struct SpGEMMCSRxCSRxCSRGPUImpl {
     // Handle the creation of the A_crd buffer depending on whether the result
     // type is the type of data we are supposed to create.
     Buffer<int32_t, 1> A_crd_int;
-    if constexpr (INDEX_CODE == LegateTypeCode::INT32_LT) {
+    if constexpr (INDEX_CODE == Type::Code::INT32) {
       A_crd_int = A_crd.create_output_buffer<INDEX_TY, 1>(A_nnz, true /* return_buffer */);
     } else {
       A_crd_int = Buffer<int32_t, 1>({0, A_nnz - 1}, Memory::GPU_FB_MEM);
@@ -255,7 +255,7 @@ struct SpGEMMCSRxCSRxCSRGPUImpl {
     }
     // Cast the A coordinates back into 64 bits, if that is the desired
     // data type.
-    if constexpr (INDEX_CODE != LegateTypeCode::INT32_LT) {
+    if constexpr (INDEX_CODE != Type::Code::INT32) {
       auto blocks = get_num_blocks_1d(A_nnz);
       auto buf    = A_crd.create_output_buffer<INDEX_TY, 1>(A_nnz, true /* return_buffer */);
       cast<INDEX_TY, int32_t>

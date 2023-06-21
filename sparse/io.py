@@ -26,12 +26,12 @@ def mmread(source):
     # TODO (rohany): We'll assume for now that all of the nodes in the system
     # can access the file passed in, so we don't need to worry about where this
     # task gets mapped to.
-    rows = ctx.create_store(coord_ty, ndim=1)
-    cols = ctx.create_store(coord_ty, ndim=1)
-    vals = ctx.create_store(float64, ndim=1)
-    m = ctx.create_store(coord_ty, optimize_scalar=True, shape=Shape(1))
-    n = ctx.create_store(coord_ty, optimize_scalar=True, shape=Shape(1))
-    nnz = ctx.create_store(nnz_ty, optimize_scalar=True, shape=Shape(1))
+    rows = runtime.create_store(coord_ty, ndim=1)
+    cols = runtime.create_store(coord_ty, ndim=1)
+    vals = runtime.create_store(float64, ndim=1)
+    m = runtime.create_store(coord_ty, optimize_scalar=True, shape=(1,))
+    n = runtime.create_store(coord_ty, optimize_scalar=True, shape=(1,))
+    nnz = runtime.create_store(nnz_ty, optimize_scalar=True, shape=(1,))
     assert m.kind == Future
     assert n.kind == Future
     task = ctx.create_auto_task(SparseOpCode.READ_MTX_TO_COO)

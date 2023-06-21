@@ -11,20 +11,44 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from __future__ import annotations
 
 import os
+from typing import TYPE_CHECKING
 
 import numpy as np
-from legate.core import Rect, get_legate_runtime, types
+from legate.core import Rect, Store, get_legate_runtime, types
 
 from .config import (
     SparseOpCode,
     SparseProjectionFunctor,
     SparseTunable,
     _sparse,
-    _supported_dtypes,
     sparse_ctx,
 )
+
+if TYPE_CHECKING:
+    from typing import Optional, Union
+    import numpy.typing as npt
+    from legate.core import Shape
+
+
+TO_CORE_DTYPES = {
+    np.dtype(np.bool_): types.bool_,
+    np.dtype(np.int8): types.int8,
+    np.dtype(np.int16): types.int16,
+    np.dtype(np.int32): types.int32,
+    np.dtype(np.int64): types.int64,
+    np.dtype(np.uint8): types.uint8,
+    np.dtype(np.uint16): types.uint16,
+    np.dtype(np.uint32): types.uint32,
+    np.dtype(np.uint64): types.uint64,
+    np.dtype(np.float16): types.float16,
+    np.dtype(np.float32): types.float32,
+    np.dtype(np.float64): types.float64,
+    np.dtype(np.complex64): types.complex64,
+    np.dtype(np.complex128): types.complex128,
+}
 
 
 class Runtime:
@@ -50,12 +74,6 @@ class Runtime:
         )
         self.dynamic_projection_functor_id = 1
         self.proj_fn_1d_to_2d_cache = {}
-
-        # Register type aliases for all of the common numpy types.
-        for np_type, core_type in _supported_dtypes.items():
-            self.legate_context.type_system.make_alias(
-                np.dtype(np_type), core_type
-            )
 
         # Load all the necessary CUDA libraries if we have GPUs.
         if self.num_gpus > 0:
@@ -91,6 +109,17 @@ class Runtime:
         return sparse_ctx.get_projection_id(
             result + SparseProjectionFunctor.LAST_STATIC_PROJ_FN
         )
+
+    def create_store(
+        self,
+        ty: Union[npt.DTypeLike, types.Dtype],
+        shape: Optional[tuple[int, ...], Shape] = None,
+        optimize_scalar: bool = False,
+        ndim: Optional[int] = None,
+    ) -> Store:
+        core_ty = TO_CORE_DTYPES[ty] if isinstance(ty, np.dtype) else ty
+        return self.legate_context.create_store(core_ty, shape=shape,
+                optimize_scalar=optimize_scalar, ndim=ndim)
 
 
 ctx = sparse_ctx

@@ -51,7 +51,7 @@ __global__ void elementwise_mult_csr_csr_nnz_kernel(const size_t rows,
   nnz[i] = num_nnz;
 }
 
-template <LegateTypeCode INDEX_CODE>
+template <Type::Code INDEX_CODE>
 struct ElemwiseMultCSRCSRNNZImplBody<VariantKind::GPU, INDEX_CODE> {
   using INDEX_TY = legate_type_of<INDEX_CODE>;
   void operator()(const AccessorWO<nnz_ty, 1>& nnz,
@@ -105,7 +105,7 @@ __global__ void elementwise_mult_csr_csr_kernel(const size_t rows,
   }
 }
 
-template <LegateTypeCode INDEX_CODE, LegateTypeCode VAL_CODE>
+template <Type::Code INDEX_CODE, Type::Code VAL_CODE>
 struct ElemwiseMultCSRCSRImplBody<VariantKind::GPU, INDEX_CODE, VAL_CODE> {
   using INDEX_TY = legate_type_of<INDEX_CODE>;
   using VAL_TY   = legate_type_of<VAL_CODE>;

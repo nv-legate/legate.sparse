@@ -24,12 +24,12 @@ namespace sparse {
 
 using namespace legate;
 
-template <VariantKind KIND, LegateTypeCode K_CODE, LegateTypeCode A_CODE>
+template <VariantKind KIND, Type::Code K_CODE, Type::Code A_CODE>
 struct RKCalcDyImplBody;
 
 template <VariantKind KIND>
 struct RKCalcDyImpl {
-  template <LegateTypeCode K_CODE, LegateTypeCode A_CODE>
+  template <Type::Code K_CODE, Type::Code A_CODE>
   void operator()(RKCalcDyArgs& args) const
   {
     using K_TY = legate_type_of<K_CODE>;
@@ -60,7 +60,7 @@ static void rk_calc_dy_template(TaskContext& context)
   //  we'll just use the existing implementation and just instantiate for complex
   //  and double.
   RKCalcDyImpl<KIND> impl;
-  impl.template operator()<LegateTypeCode::COMPLEX128_LT, LegateTypeCode::DOUBLE_LT>(args);
+  impl.template operator()<Type::Code::COMPLEX128, Type::Code::FLOAT64>(args);
 }
 
 }  // namespace sparse

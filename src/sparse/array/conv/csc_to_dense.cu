@@ -44,7 +44,7 @@ __global__ void CSCtoDenseKernel(size_t cols,
 
 template <>
 struct CSCToDenseImpl<VariantKind::GPU> {
-  template <LegateTypeCode INDEX_CODE, LegateTypeCode VAL_CODE>
+  template <Type::Code INDEX_CODE, Type::Code VAL_CODE>
   void operator()(CSCToDenseArgs& args) const
   {
     using INDEX_TY = legate_type_of<INDEX_CODE>;

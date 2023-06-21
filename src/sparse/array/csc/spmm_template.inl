@@ -24,12 +24,12 @@ namespace sparse {
 
 using namespace legate;
 
-template <VariantKind KIND, LegateTypeCode INDEX_CODE, LegateTypeCode VAL_CODE, typename ACC>
+template <VariantKind KIND, Type::Code INDEX_CODE, Type::Code VAL_CODE, typename ACC>
 struct SpMMCSCImplBody;
 
 template <VariantKind KIND>
 struct SpMMCSCImpl {
-  template <LegateTypeCode INDEX_CODE, LegateTypeCode VAL_CODE>
+  template <Type::Code INDEX_CODE, Type::Code VAL_CODE>
   void operator()(SpMMCSCArgs& args) const
   {
     using INDEX_TY = legate_type_of<INDEX_CODE>;

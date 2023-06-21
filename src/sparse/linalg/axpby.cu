@@ -42,7 +42,7 @@ __global__ void axpby_kernel(size_t elems,
   }
 }
 
-template <LegateTypeCode VAL_CODE, bool IS_ALPHA, bool NEGATE>
+template <Type::Code VAL_CODE, bool IS_ALPHA, bool NEGATE>
 struct AXPBYImplBody<VariantKind::GPU, VAL_CODE, IS_ALPHA, NEGATE> {
   using VAL_TY = legate_type_of<VAL_CODE>;
 

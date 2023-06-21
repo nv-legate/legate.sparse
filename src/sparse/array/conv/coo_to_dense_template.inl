@@ -28,7 +28,7 @@ using namespace legate;
 // right now, don't worry about templating over the
 // variant kind.
 struct COOToDenseImpl {
-  template <LegateTypeCode INDEX_CODE, LegateTypeCode VAL_CODE>
+  template <Type::Code INDEX_CODE, Type::Code VAL_CODE>
   void operator()(COOToDenseArgs& args) const
   {
     using INDEX_TY = legate_type_of<INDEX_CODE>;

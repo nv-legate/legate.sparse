@@ -44,7 +44,7 @@ __global__ void CSRtoDenseKernel(size_t rows,
 
 template <>
 struct CSRToDenseImpl<VariantKind::GPU> {
-  template <LegateTypeCode INDEX_CODE, LegateTypeCode VAL_CODE>
+  template <Type::Code INDEX_CODE, Type::Code VAL_CODE>
   void operator()(CSRToDenseArgs& args) const
   {
     using INDEX_TY = legate_type_of<INDEX_CODE>;

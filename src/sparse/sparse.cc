@@ -36,7 +36,6 @@ TaskRegistrar& Sparse::get_registrar()
 void registration_callback()
 {
   ResourceConfig config;
-  config.max_mappers = 1;
   // TODO (rohany): I want to use the enums here, but I'm not sure the best way
   //  to keep this in line with the Python import since there seems to be a
   //  cyclic dependency.
@@ -45,14 +44,12 @@ void registration_callback()
   config.max_tasks = 100;
   // TODO (rohany): We're dynamically generating projections... How does cunumeric handle this?
   config.max_projections = 1000;
-  LibraryContext ctx(library_name, config);
+  auto ctx = Runtime::get_runtime()->create_library(library_name, config, std::make_unique<LegateSparseMapper>());
 
   Sparse::get_registrar().register_all_tasks(ctx);
 
-  ctx.register_mapper(std::make_unique<LegateSparseMapper>());
-
   auto runtime = Legion::Runtime::get_runtime();
-  auto proj_id = ctx.get_projection_id(LEGATE_SPARSE_PROJ_FN_1D_TO_2D);
+  auto proj_id = ctx->get_projection_id(LEGATE_SPARSE_PROJ_FN_1D_TO_2D);
   auto functor = new Promote1Dto2DFunctor(runtime);
   runtime->register_projection_functor(proj_id, functor, true /*silence warnings*/);
 }

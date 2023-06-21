@@ -246,9 +246,9 @@ class coo_array(CompressedBase):
         # The result of this operation is that the columns and values arrays
         # suffice as crd and vals arrays for a csr array. We just need to
         # compress the rows array into a valid pos array.
-        rows_store = ctx.create_store(self._i.type, ndim=1)
-        cols_store = ctx.create_store(self._j.type, ndim=1)
-        vals_store = ctx.create_store(self._vals.type, ndim=1)
+        rows_store = runtime.create_store(self._i.type, ndim=1)
+        cols_store = runtime.create_store(self._j.type, ndim=1)
+        vals_store = runtime.create_store(self._vals.type, ndim=1)
         # Now sort the regions.
         if force_serial:
             task = ctx.create_manual_task(
@@ -301,16 +301,16 @@ class coo_array(CompressedBase):
             SparseOpCode.BOUNDS_FROM_PARTITIONED_COORDINATES,
             error_on_interference=False,
             tag=ctx.core_library.LEGATE_CORE_MANUAL_PARALLEL_LAUNCH_TAG,
-            provenance=runtime.legate_context.provenance,
+            provenance=runtime.legate_runtime.provenance,
         )
         launcher.add_input(
             rows_store, rows_part.get_requirement(1, 0), tag=1
         )  # LEGATE_CORE_KEY_STORE_TAG
-        bounds_store = ctx.create_store(
+        bounds_store = runtime.create_store(
             domain_ty, shape=(1,), optimize_scalar=True
         )
         launcher.add_output(bounds_store, Broadcast(None, 0), tag=0)
-        result = launcher.execute(Rect(hi=(num_procs,)))
+        result = launcher.execute(Rect(hi=(num_procs,))).future_map
 
         q_nnz = get_store_from_cunumeric_array(
             cunumeric.zeros((self.shape[0],), dtype=nnz_ty)
@@ -359,9 +359,9 @@ class coo_array(CompressedBase):
 
         # The strategy for CSC conversion is the same as COO conversion, we'll
         # just sort by the columns and then the rows.
-        rows_store = ctx.create_store(self._i.type, ndim=1)
-        cols_store = ctx.create_store(self._j.type, ndim=1)
-        vals_store = ctx.create_store(self._vals.type, ndim=1)
+        rows_store = runtime.create_store(self._i.type, ndim=1)
+        cols_store = runtime.create_store(self._j.type, ndim=1)
+        vals_store = runtime.create_store(self._vals.type, ndim=1)
         # Now sort the regions.
         if force_serial:
             task = ctx.create_manual_task(
@@ -414,16 +414,16 @@ class coo_array(CompressedBase):
             SparseOpCode.BOUNDS_FROM_PARTITIONED_COORDINATES,
             error_on_interference=False,
             tag=ctx.core_library.LEGATE_CORE_MANUAL_PARALLEL_LAUNCH_TAG,
-            provenance=runtime.legate_context.provenance,
+            provenance=runtime.legate_runtime.provenance,
         )
         launcher.add_input(
             cols_store, cols_part.get_requirement(1, 0), tag=1
         )  # LEGATE_CORE_KEY_STORE_TAG
-        bounds_store = ctx.create_store(
+        bounds_store = runtime.create_store(
             domain_ty, shape=(1,), optimize_scalar=True
         )
         launcher.add_output(bounds_store, Broadcast(None, 0), tag=0)
-        result = launcher.execute(Rect(hi=(num_procs,)))
+        result = launcher.execute(Rect(hi=(num_procs,))).future_map
 
         q_nnz = get_store_from_cunumeric_array(
             cunumeric.zeros((self.shape[1],), dtype=nnz_ty)
