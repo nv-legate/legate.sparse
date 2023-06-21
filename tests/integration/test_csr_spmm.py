@@ -18,12 +18,11 @@ import cunumeric as np
 import numpy
 import pytest
 import scipy.io as sci_io
-import scipy.sparse as scpy
 from legate.core.solver import Partitioner
 from utils.common import test_mtx_files, types
 
 import sparse.io as legate_io
-from sparse import csr_array, runtime
+from sparse import runtime
 
 
 @pytest.mark.parametrize("filename", test_mtx_files)

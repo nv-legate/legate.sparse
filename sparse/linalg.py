@@ -75,7 +75,7 @@ import cunumeric as np
 from legate.core import track_provenance, types
 
 from .config import SparseOpCode
-from .runtime import ctx, runtime
+from .runtime import ctx
 from .utils import get_store_from_cunumeric_array
 
 

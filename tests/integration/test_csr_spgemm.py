@@ -12,18 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import os
 
 import cunumeric as np
-import numpy
 import pytest
 import scipy.io as sci_io
-import scipy.sparse as scpy
-from legate.core.solver import Partitioner
 from utils.common import test_mtx_files, types
 
 import sparse.io as legate_io
-from sparse import csr_array, runtime
 
 
 @pytest.mark.parametrize("filename", test_mtx_files)

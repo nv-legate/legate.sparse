@@ -15,7 +15,6 @@
 import os
 from enum import IntEnum, unique
 
-import pyarrow as pa
 from legate.core import Library, ffi, get_legate_runtime, types
 
 
