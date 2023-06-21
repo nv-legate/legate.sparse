@@ -29,6 +29,7 @@ from .config import (
 
 if TYPE_CHECKING:
     from typing import Optional, Union
+
     import numpy.typing as npt
     from legate.core import Shape
 
@@ -118,8 +119,9 @@ class Runtime:
         ndim: Optional[int] = None,
     ) -> Store:
         core_ty = TO_CORE_DTYPES[ty] if isinstance(ty, np.dtype) else ty
-        return self.legate_context.create_store(core_ty, shape=shape,
-                optimize_scalar=optimize_scalar, ndim=ndim)
+        return self.legate_context.create_store(
+            core_ty, shape=shape, optimize_scalar=optimize_scalar, ndim=ndim
+        )
 
 
 ctx = sparse_ctx

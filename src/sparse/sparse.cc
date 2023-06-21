@@ -44,7 +44,8 @@ void registration_callback()
   config.max_tasks = 100;
   // TODO (rohany): We're dynamically generating projections... How does cunumeric handle this?
   config.max_projections = 1000;
-  auto ctx = Runtime::get_runtime()->create_library(library_name, config, std::make_unique<LegateSparseMapper>());
+  auto ctx               = Runtime::get_runtime()->create_library(
+    library_name, config, std::make_unique<LegateSparseMapper>());
 
   Sparse::get_registrar().register_all_tasks(ctx);
 

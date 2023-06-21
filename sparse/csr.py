@@ -94,6 +94,7 @@ from .utils import (
     store_to_cunumeric_array,
 )
 
+
 @clone_scipy_arr_kind(scipy.sparse.csr_array)
 class csr_array(CompressedBase, DenseSparseBase):
     def __init__(self, arg, shape=None, dtype=None, copy=False):

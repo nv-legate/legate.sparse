@@ -14,11 +14,10 @@
 
 import cunumeric as np
 import pytest
-import scipy
+from utils.sample import sample, sample_dense_vector
 
 import sparse.linalg as linalg
-from sparse import csr_array, eye
-from utils.sample import sample, sample_dense_vector
+from sparse import csr_array
 
 
 def test_bicg_solve():

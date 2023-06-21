@@ -38,5 +38,3 @@ def sample(N: int, D: int, density: float, seed: int):
 
 def sample_dense_vector(N: int, density: float, seed: int):
     return numpy.array(sample(N, 1, density, seed).todense()).squeeze()
-
-
