@@ -306,18 +306,30 @@ class coo_array(CompressedBase):
         q_nnz = get_store_from_cunumeric_array(
             cunumeric.zeros((self.shape[0],), dtype=nnz_ty)
         )
+
+        # This seems to cause leaks?
+        # task = ctx.create_manual_task(
+        #     SparseOpCode.SORTED_COORDS_TO_COUNTS,
+        #     launch_domain=Rect(hi=(num_procs,)),
+        # )
+        # task.add_input(rows_part)
+        # task.add_reduction(
+        #     q_nnz.partition(
+        #         DomainPartition(q_nnz.shape, Shape(num_procs), result)
+        #     ),
+        #     ReductionOp.ADD,
+        # )
+        # task.execute()
+
+        # This doesn't...
         task = ctx.create_manual_task(
             SparseOpCode.SORTED_COORDS_TO_COUNTS,
-            launch_domain=Rect(hi=(num_procs,)),
+            launch_domain=Rect(hi=(1,)),
         )
-        task.add_input(rows_part)
-        task.add_reduction(
-            q_nnz.partition(
-                DomainPartition(q_nnz.shape, Shape(num_procs), result)
-            ),
-            ReductionOp.ADD,
-        )
+        task.add_input(rows_store)
+        task.add_reduction(q_nnz, ReductionOp.ADD)
         task.execute()
+
         # TODO (rohany): On small inputs, it appears that I get a
         #  non-deterministic failure, which appears either as a segfault or an
         #  incorrect output. This appears to show up only an OpenMP processors,
@@ -333,6 +345,9 @@ class coo_array(CompressedBase):
         #     generated.
 
         pos, _ = self.nnz_to_pos(q_nnz)
+
+        # store_to_cunumeric_array(q_nnz).fill(0)
+
         return sparse.csr_array(
             (vals_store, cols_store, pos), shape=self.shape, dtype=self.dtype
         )
