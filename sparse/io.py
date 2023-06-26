@@ -13,7 +13,6 @@
 # limitations under the License.
 
 from legate.core import Future, track_provenance, types
-from legate.core.shape import Shape
 
 from .config import SparseOpCode
 from .coo import coo_array

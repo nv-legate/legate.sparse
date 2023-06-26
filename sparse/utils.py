@@ -18,8 +18,7 @@ from typing import Any
 
 import cunumeric
 import numpy
-import pyarrow
-from legate.core import Array, Future, Store, types
+from legate.core import Future, Store, types
 
 import sparse
 

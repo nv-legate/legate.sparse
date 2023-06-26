@@ -21,8 +21,6 @@ from typing import Any, Container, Mapping, Optional, cast
 from legate.core import track_provenance
 from typing_extensions import Protocol
 
-from .runtime import runtime
-
 MOD_INTERNAL = {"__dir__", "__getattr__"}
 
 
