@@ -24,18 +24,18 @@ namespace sparse {
 
 using namespace legate;
 
-template <VariantKind KIND>
+template <VariantKind KIND, typename VAL>
 struct ZipToRect1ImplBody;
 
-template <VariantKind KIND>
+template <VariantKind KIND, typename VAL>
 struct ZipToRect1Impl {
   void operator()(ZipToRect1Args& args) const
   {
     auto output = args.out.write_accessor<Rect<1>, 1>();
-    auto lo     = args.lo.read_accessor<uint64_t, 1>();
-    auto hi     = args.hi.read_accessor<uint64_t, 1>();
+    auto lo     = args.lo.read_accessor<VAL, 1>();
+    auto hi     = args.hi.read_accessor<VAL, 1>();
     if (args.out.domain().empty()) return;
-    ZipToRect1ImplBody<KIND>()(output, lo, hi, args.out.shape<1>());
+    ZipToRect1ImplBody<KIND, VAL>()(output, lo, hi, args.out.shape<1>());
   }
 };
 
@@ -44,7 +44,12 @@ static void zip_to_rect_1_template(TaskContext& context)
 {
   auto& inputs = context.inputs();
   ZipToRect1Args args{context.outputs()[0], inputs[0], inputs[1]};
-  ZipToRect1Impl<KIND>{}(args);
+  if (inputs[0].type().code == legate::Type::Code::INT64)
+    ZipToRect1Impl<KIND, int64_t>{}(args);
+  else {
+    assert(inputs[0].type().code == legate::Type::Code::UINT64);
+    ZipToRect1Impl<KIND, uint64_t>{}(args);
+  }
 }
 
 }  // namespace sparse

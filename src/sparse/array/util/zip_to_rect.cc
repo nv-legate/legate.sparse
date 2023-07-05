@@ -21,11 +21,11 @@ namespace sparse {
 
 using namespace legate;
 
-template <>
-struct ZipToRect1ImplBody<VariantKind::CPU> {
+template <typename VAL>
+struct ZipToRect1ImplBody<VariantKind::CPU, VAL> {
   void operator()(const AccessorWO<Rect<1>, 1>& output,
-                  const AccessorRO<uint64_t, 1>& lo,
-                  const AccessorRO<uint64_t, 1>& hi,
+                  const AccessorRO<VAL, 1>& lo,
+                  const AccessorRO<VAL, 1>& hi,
                   const Rect<1>& rect)
   {
     for (coord_t i = rect.lo[0]; i < rect.hi[0] + 1; i++) { output[i] = {lo[i], hi[i] - 1}; }

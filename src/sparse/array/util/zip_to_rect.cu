@@ -22,11 +22,12 @@ namespace sparse {
 
 using namespace legate;
 
+template <typename VAL>
 __global__ void zip_rect1_kernel(size_t elems,
                                  coord_t offset,
                                  const AccessorWO<Rect<1>, 1> out,
-                                 const AccessorRO<uint64_t, 1> lo,
-                                 const AccessorRO<uint64_t, 1> hi)
+                                 const AccessorRO<VAL, 1> lo,
+                                 const AccessorRO<VAL, 1> hi)
 {
   const auto tid = global_tid_1d();
   if (tid >= elems) return;
@@ -34,11 +35,11 @@ __global__ void zip_rect1_kernel(size_t elems,
   out[idx]       = {lo[idx], hi[idx] - 1};
 }
 
-template <>
-struct ZipToRect1ImplBody<VariantKind::GPU> {
+template <typename VAL>
+struct ZipToRect1ImplBody<VariantKind::GPU, VAL> {
   void operator()(const AccessorWO<Rect<1>, 1>& output,
-                  const AccessorRO<uint64_t, 1>& lo,
-                  const AccessorRO<uint64_t, 1>& hi,
+                  const AccessorRO<VAL, 1>& lo,
+                  const AccessorRO<VAL, 1>& hi,
                   const Rect<1>& rect)
   {
     auto stream = get_cached_stream();
