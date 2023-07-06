@@ -14,7 +14,7 @@
 
 import cunumeric as np
 import pytest
-from utils.sample import sample, sample_dense_vector
+from utils.sample import sample_dense, sample_dense_vector
 
 import sparse.linalg as linalg
 from sparse import csr_array, eye
@@ -23,7 +23,7 @@ from sparse import csr_array, eye
 def test_cg_solve():
     N, D = 1000, 1000
     seed = 471014
-    A = sample(N, D, 0.1, seed).todense()
+    A = sample_dense(N, D, 0.1, seed)
     A = 0.5 * (A + A.T)
     A = A + N * np.eye(N)
     # Assert that A is indeed positive semi-definite.
@@ -39,7 +39,7 @@ def test_cg_solve():
 def test_cg_solve_with_callback():
     N, D = 100, 100
     seed = 471014
-    A = sample(N, D, 0.1, seed).todense()
+    A = sample_dense(N, D, 0.1, seed)
     A = 0.5 * (A + A.T)
     A = A + N * np.eye(N)
     # Assert that A is indeed positive semi-definite.
@@ -63,7 +63,7 @@ def test_cg_solve_with_callback():
 def test_cg_solve_with_identity_preconditioner():
     N, D = 1000, 1000
     seed = 471014
-    A = sample(N, D, 0.1, seed).todense()
+    A = sample_dense(N, D, 0.1, seed)
     A = 0.5 * (A + A.T)
     A = A + N * np.eye(N)
     # Assert that A is indeed positive semi-definite.
@@ -79,7 +79,7 @@ def test_cg_solve_with_identity_preconditioner():
 def test_cg_solve_with_linear_operator():
     N, D = 100, 100
     seed = 471014
-    A = sample(N, D, 0.1, seed).todense()
+    A = sample_dense(N, D, 0.1, seed)
     A = 0.5 * (A + A.T)
     A = A + N * np.eye(N)
     # Assert that A is indeed positive semi-definite.

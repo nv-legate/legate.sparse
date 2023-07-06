@@ -127,7 +127,7 @@ def find_common_type(*args):
             scalar_types.append(array.dtype)
         else:
             array_types.append(array.dtype)
-    return numpy.find_common_type(array_types, scalar_types)
+    return numpy.result_type(*array_types, *scalar_types)
 
 
 # cast_to_common_type casts all arguments to the same common dtype.
