@@ -16,7 +16,7 @@
 
 #pragma once
 
-#include "core/mapping/base_mapper.h"
+#include "core/mapping/mapping.h"
 
 namespace sparse {
 
