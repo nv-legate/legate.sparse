@@ -251,13 +251,12 @@ class coo_array(CompressedBase):
         vals_store = ctx.create_store(self._vals.type, ndim=1)
         # Now sort the regions.
         if force_serial:
-            task = ctx.create_task(
+            task = ctx.create_manual_task(
                 SparseOpCode.SORT_BY_KEY,
-                manual=True,
                 launch_domain=Rect(hi=(1,)),
             )
         else:
-            task = ctx.create_task(SparseOpCode.SORT_BY_KEY)
+            task = ctx.create_auto_task(SparseOpCode.SORT_BY_KEY)
         # Add all of the unbounded outputs.
         task.add_output(rows_store)
         task.add_output(cols_store)
@@ -365,13 +364,12 @@ class coo_array(CompressedBase):
         vals_store = ctx.create_store(self._vals.type, ndim=1)
         # Now sort the regions.
         if force_serial:
-            task = ctx.create_task(
+            task = ctx.create_manual_task(
                 SparseOpCode.SORT_BY_KEY,
-                manual=True,
                 launch_domain=Rect(hi=(1,)),
             )
         else:
-            task = ctx.create_task(SparseOpCode.SORT_BY_KEY)
+            task = ctx.create_auto_task(SparseOpCode.SORT_BY_KEY)
         # Add all of the unbounded outputs.
         task.add_output(cols_store)
         task.add_output(rows_store)
@@ -451,7 +449,7 @@ class coo_array(CompressedBase):
     def todense(self):
         result = cunumeric.zeros(self.shape, dtype=self.dtype)
         result_store = get_store_from_cunumeric_array(result)
-        task = ctx.create_task(SparseOpCode.COO_TO_DENSE)
+        task = ctx.create_auto_task(SparseOpCode.COO_TO_DENSE)
         task.add_output(result_store)
         task.add_input(self._i)
         task.add_input(self._j)

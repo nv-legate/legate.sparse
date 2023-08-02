@@ -115,7 +115,7 @@ class LegateHamiltonianDriver:
 
             # Compute the lower.
             if k == 1:
-                task = ctx.create_task(SparseOpCode.CREATE_HAMILTONIANS)
+                task = ctx.create_auto_task(SparseOpCode.CREATE_HAMILTONIANS)
                 task.add_scalar_arg(graph.number_of_nodes(), types.int32)
                 task.add_scalar_arg(k, types.int32)
                 task.add_scalar_arg(offset, types.uint64)
@@ -154,7 +154,7 @@ class LegateHamiltonianDriver:
 
             # Compute the upper.
             if k == 1:
-                task = ctx.create_task(SparseOpCode.CREATE_HAMILTONIANS)
+                task = ctx.create_auto_task(SparseOpCode.CREATE_HAMILTONIANS)
                 task.add_scalar_arg(graph.number_of_nodes(), types.int32)
                 task.add_scalar_arg(k, types.int32)
                 task.add_scalar_arg(offset, types.uint64)
@@ -435,7 +435,7 @@ def get_set_ty(n):
 
 def sets_to_sizes(sets, graph):
     result = ctx.create_store(types.uint64, shape=sets.shape)
-    task = ctx.create_task(SparseOpCode.SETS_TO_SIZES)
+    task = ctx.create_auto_task(SparseOpCode.SETS_TO_SIZES)
     task.add_input(sets)
     task.add_output(result)
     task.add_alignment(sets, result)
@@ -466,7 +466,7 @@ def sort_by_key(rows, cols):
     rows_res = ctx.create_store(rows.type, ndim=1)
     cols_res = ctx.create_store(cols.type, ndim=1)
     vals_res = ctx.create_store(vals.type, ndim=1)
-    task = ctx.create_task(SparseOpCode.SORT_BY_KEY)
+    task = ctx.create_auto_task(SparseOpCode.SORT_BY_KEY)
     # Add all of the unbounded outputs.
     task.add_output(rows_res)
     task.add_output(cols_res)
@@ -565,7 +565,7 @@ def enumerate_independent_sets(
 
     if k == 1:
         # If k == 1, we don't need a prior level.
-        task = ctx.create_task(SparseOpCode.ENUMERATE_INDEPENDENT_SETS)
+        task = ctx.create_auto_task(SparseOpCode.ENUMERATE_INDEPENDENT_SETS)
         task.add_input(comp_adj_mat_store)
         task.add_output(output_sets)
         task.add_output(output_nbrs)
@@ -574,7 +574,7 @@ def enumerate_independent_sets(
         task.add_scalar_arg(k, types.int32)
         task.execute()
     else:
-        task = ctx.create_task(SparseOpCode.ENUMERATE_INDEPENDENT_SETS)
+        task = ctx.create_auto_task(SparseOpCode.ENUMERATE_INDEPENDENT_SETS)
         task.add_input(comp_adj_mat_store)
         task.add_input(prevk_sets)
         task.add_input(prevk_queues)

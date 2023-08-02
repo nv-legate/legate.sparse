@@ -37,7 +37,7 @@ class CompressedBase:
         pos = ctx.create_store(
             rect1, shape=(q_nnz.shape[0]), optimize_scalar=False
         )
-        task = ctx.create_task(SparseOpCode.ZIP_TO_RECT1)
+        task = ctx.create_auto_task(SparseOpCode.ZIP_TO_RECT1)
         task.add_output(pos)
         task.add_input(cs_shifted_store)
         task.add_input(cs_store)
@@ -300,7 +300,7 @@ class DenseSparseBase:
 def unpack_rect1_store(pos):
     out1 = ctx.create_store(int64, shape=pos.shape)
     out2 = ctx.create_store(int64, shape=pos.shape)
-    task = ctx.create_task(SparseOpCode.UNZIP_RECT1)
+    task = ctx.create_auto_task(SparseOpCode.UNZIP_RECT1)
     task.add_output(out1)
     task.add_output(out2)
     task.add_input(pos)
@@ -314,7 +314,7 @@ def unpack_rect1_store(pos):
 def pack_to_rect1_store(lo, hi, output=None):
     if output is None:
         output = ctx.create_store(rect1, shape=(lo.shape[0]))
-    task = ctx.create_task(SparseOpCode.ZIP_TO_RECT1)
+    task = ctx.create_auto_task(SparseOpCode.ZIP_TO_RECT1)
     task.add_output(output)
     task.add_input(lo)
     task.add_input(hi)

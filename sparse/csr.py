@@ -113,7 +113,7 @@ class csr_array(CompressedBase, DenseSparseBase):
             # non-zeros per row and then fills them in.
             arg_store = get_store_from_cunumeric_array(arg)
             q_nnz = ctx.create_store(nnz_ty, shape=(arg.shape[0]))
-            task = ctx.create_task(SparseOpCode.DENSE_TO_CSR_NNZ)
+            task = ctx.create_auto_task(SparseOpCode.DENSE_TO_CSR_NNZ)
             promoted_q_nnz = q_nnz.promote(1, shape[1])
             task.add_output(promoted_q_nnz)
             task.add_input(arg_store)
@@ -127,7 +127,7 @@ class csr_array(CompressedBase, DenseSparseBase):
             nnz = int(nnz)
             self.crd = ctx.create_store(coord_ty, shape=(nnz))
             self.vals = ctx.create_store(arg.dtype, shape=(nnz))
-            task = ctx.create_task(SparseOpCode.DENSE_TO_CSR)
+            task = ctx.create_auto_task(SparseOpCode.DENSE_TO_CSR)
             promoted_pos = self.pos.promote(1, shape[1])
             task.add_output(promoted_pos)
             task.add_output(self.crd)
@@ -384,7 +384,7 @@ class csr_array(CompressedBase, DenseSparseBase):
 
         # An auto-parallelized version of the kernel.
         promoted_pos = self.pos.promote(1, dim_size=output.shape[1])
-        task = ctx.create_task(
+        task = ctx.create_auto_task(
             SparseOpCode.CSR_SPMV_ROW_SPLIT_TROPICAL_SEMIRING
         )
         task.add_output(output)
@@ -601,7 +601,7 @@ class csr_array(CompressedBase, DenseSparseBase):
         # arrays are already set up for COO, we just need to expand the pos
         # array into coordinates.
         rows_expanded = ctx.create_store(coord_ty, shape=self.crd.shape)
-        task = ctx.create_task(SparseOpCode.EXPAND_POS_TO_COORDINATES)
+        task = ctx.create_auto_task(SparseOpCode.EXPAND_POS_TO_COORDINATES)
         task.add_input(self.pos)
         task.add_output(rows_expanded)
         task.add_image_constraint(
@@ -637,7 +637,7 @@ class csr_array(CompressedBase, DenseSparseBase):
         # just support k == 0.
         if k != 0:
             raise NotImplementedError
-        task = ctx.create_task(SparseOpCode.CSR_DIAGONAL)
+        task = ctx.create_auto_task(SparseOpCode.CSR_DIAGONAL)
         task.add_output(output)
         self._add_to_task(task)
         task.add_alignment(output, self.pos)
@@ -667,7 +667,7 @@ class csr_array(CompressedBase, DenseSparseBase):
         # non-zero based distribution of this operation with overlapping output
         # regions being reduced into also seems possible.
         promoted_pos = self.pos.promote(1, self.shape[1])
-        task = ctx.create_task(SparseOpCode.CSR_TO_DENSE)
+        task = ctx.create_auto_task(SparseOpCode.CSR_TO_DENSE)
         task.add_output(out)
         task.add_input(promoted_pos)
         task.add_input(self.crd)
@@ -927,7 +927,7 @@ def spmv(
         task.execute()
     else:
         # An auto-parallelized version of the kernel.
-        task = ctx.create_task(SparseOpCode.CSR_SPMV_ROW_SPLIT)
+        task = ctx.create_auto_task(SparseOpCode.CSR_SPMV_ROW_SPLIT)
         task.add_output(y_store)
         task.add_input(A.pos)
         task.add_input(A.crd)
@@ -973,7 +973,7 @@ def add(B: csr_array, C: csr_array) -> csr_array:
     # Create the assemble query result array.
     shape = B.shape
     q_nnz = ctx.create_store(nnz_ty, shape=(shape[0]))
-    task = ctx.create_task(SparseOpCode.ADD_CSR_CSR_NNZ)
+    task = ctx.create_auto_task(SparseOpCode.ADD_CSR_CSR_NNZ)
     task.add_output(q_nnz)
     task.add_input(B.pos)
     task.add_input(B.crd)
@@ -997,7 +997,7 @@ def add(B: csr_array, C: csr_array) -> csr_array:
     crd = ctx.create_store(coord_ty, shape=(nnz,))
     vals = ctx.create_store(B.dtype, shape=(nnz,))
 
-    task = ctx.create_task(SparseOpCode.ADD_CSR_CSR)
+    task = ctx.create_auto_task(SparseOpCode.ADD_CSR_CSR)
     task.add_output(pos)
     task.add_output(crd)
     task.add_output(vals)
@@ -1032,7 +1032,7 @@ def add(B: csr_array, C: csr_array) -> csr_array:
 # mult computes A = B + C and returns A when C is sparse.
 def mult(B: csr_array, C: csr_array) -> csr_array:
     q_nnz = ctx.create_store(nnz_ty, shape=(B.shape[0]))
-    task = ctx.create_task(SparseOpCode.ELEM_MULT_CSR_CSR_NNZ)
+    task = ctx.create_auto_task(SparseOpCode.ELEM_MULT_CSR_CSR_NNZ)
     task.add_output(q_nnz)
     task.add_input(B.pos)
     task.add_input(B.crd)
@@ -1061,7 +1061,7 @@ def mult(B: csr_array, C: csr_array) -> csr_array:
     crd = ctx.create_store(coord_ty, shape=(nnz))
     vals = ctx.create_store(B.dtype, shape=(nnz))
 
-    task = ctx.create_task(SparseOpCode.ELEM_MULT_CSR_CSR)
+    task = ctx.create_auto_task(SparseOpCode.ELEM_MULT_CSR_CSR)
     task.add_output(pos)
     task.add_output(crd)
     task.add_output(vals)
@@ -1114,7 +1114,7 @@ def mult_dense(B: csr_array, C: cunumeric.ndarray) -> csr_array:
 
     result_vals = ctx.create_store(B.dtype, shape=B.vals.shape)
     promoted_pos = B.pos.promote(1, B.shape[1])
-    task = ctx.create_task(SparseOpCode.ELEM_MULT_CSR_DENSE)
+    task = ctx.create_auto_task(SparseOpCode.ELEM_MULT_CSR_DENSE)
     task.add_output(result_vals)
     task.add_input(promoted_pos)
     task.add_input(B.crd)
@@ -1162,7 +1162,7 @@ def spmm(A: csr_array, B: cunumeric.ndarray, C: cunumeric.ndarray) -> None:
     # first dimension onto self.pos, and project the second dimension
     # onto other.
     promoted_pos = A.pos.promote(1, C_store.shape[1])
-    task = ctx.create_task(SparseOpCode.SPMM_CSR_DENSE)
+    task = ctx.create_auto_task(SparseOpCode.SPMM_CSR_DENSE)
     task.add_output(C_store)
     task.add_input(promoted_pos)
     task.add_input(A.crd)
@@ -1213,7 +1213,7 @@ def rspmm(A: cunumeric.ndarray, B: csr_array, C: cunumeric.ndarray) -> None:
     #  distribution, but I'll just do a 1-D distribution right now,
     #  along the k-dimension of the computation.
     promoted_pos = B.pos.promote(0, A_store.shape[0])
-    task = ctx.create_task(SparseOpCode.SPMM_DENSE_CSR)
+    task = ctx.create_auto_task(SparseOpCode.SPMM_DENSE_CSR)
     task.add_reduction(C_store, ReductionOp.ADD)
     task.add_input(A_store)
     task.add_input(promoted_pos)
@@ -1259,7 +1259,7 @@ def sddmm_impl(
     C_store = get_store_from_cunumeric_array(C)
     D_store = get_store_from_cunumeric_array(D)
     result_vals = ctx.create_store(B.dtype, shape=B.vals.shape)
-    task = ctx.create_task(SparseOpCode.CSR_SDDMM)
+    task = ctx.create_auto_task(SparseOpCode.CSR_SDDMM)
     task.add_output(result_vals)
     promoted_pos = B.pos.promote(1, C_store.shape[1])
     task.add_input(promoted_pos)
@@ -1390,7 +1390,7 @@ def spgemm_csr_csr_csr(B: csr_array, C: csr_array) -> csr_array:
     else:
         # Create the query result.
         q_nnz = ctx.create_store(nnz_ty, shape=B.shape[0])
-        task = ctx.create_task(SparseOpCode.SPGEMM_CSR_CSR_CSR_NNZ)
+        task = ctx.create_auto_task(SparseOpCode.SPGEMM_CSR_CSR_CSR_NNZ)
         task.add_output(q_nnz)
         task.add_input(B.pos)
         task.add_input(B.crd)
@@ -1443,7 +1443,7 @@ def spgemm_csr_csr_csr(B: csr_array, C: csr_array) -> csr_array:
         crd = ctx.create_store(coord_ty, shape=(nnz))
         vals = ctx.create_store(B.dtype, shape=(nnz))
 
-        task = ctx.create_task(SparseOpCode.SPGEMM_CSR_CSR_CSR)
+        task = ctx.create_auto_task(SparseOpCode.SPGEMM_CSR_CSR_CSR)
         task.add_output(pos)
         task.add_output(crd)
         task.add_output(vals)

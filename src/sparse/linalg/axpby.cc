@@ -19,7 +19,6 @@
 
 namespace sparse {
 
-using namespace Legion;
 using namespace legate;
 
 template <LegateTypeCode VAL_CODE, bool IS_ALPHA, bool NEGATE>

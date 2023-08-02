@@ -479,7 +479,7 @@ def make_linear_operator(A):
 def cg_axpby(y, x, a, b, isalpha=True, negate=False):
     y_store = get_store_from_cunumeric_array(y)
     x_store = get_store_from_cunumeric_array(x)
-    task = ctx.create_task(SparseOpCode.AXPBY)
+    task = ctx.create_auto_task(SparseOpCode.AXPBY)
     task.add_output(y_store)
     task.add_input(x_store)
     a_store = get_store_from_cunumeric_array(a, allow_future=True)

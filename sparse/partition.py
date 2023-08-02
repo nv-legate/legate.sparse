@@ -37,6 +37,7 @@ from legate.core.shape import Shape
 
 from .config import SparseOpCode, domain_ty
 from .runtime import ctx, runtime as sparse_runtime
+from .settings import settings
 
 
 # CompressedImagePartition is a special implementation of
@@ -148,7 +149,7 @@ class MinMaxImagePartition(ImagePartition):
     ) -> Optional[LegionPartition]:
         # If we've been requested to compute precise images,
         # then fall back to the standard ImagePartition.
-        if sparse_runtime.args.precise_images:
+        if settings.precise_images():
             return super().construct(
                 region,
                 complete=complete,

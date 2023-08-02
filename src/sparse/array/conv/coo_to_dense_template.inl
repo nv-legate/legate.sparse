@@ -22,7 +22,6 @@
 
 namespace sparse {
 
-using namespace Legion;
 using namespace legate;
 
 // Since we only support this on single-threaded CPUs

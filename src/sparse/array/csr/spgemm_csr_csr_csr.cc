@@ -21,7 +21,6 @@
 
 namespace sparse {
 
-using namespace Legion;
 using namespace legate;
 
 template <LegateTypeCode INDEX_CODE>
@@ -47,8 +46,8 @@ struct SpGEMMCSRxCSRxCSRNNZImplBody<VariantKind::CPU, INDEX_CODE> {
 
     // Next, initialize the deferred buffers ourselves, instead of using
     // Realm fills (which tend to be slower).
-    DeferredBuffer<INDEX_TY, 1> index_list_buf(Memory::SYSTEM_MEM, Rect<1>{0, A2_dim - 1});
-    DeferredBuffer<bool, 1> already_set_buf(Memory::SYSTEM_MEM, Rect<1>{0, A2_dim - 1});
+    Buffer<INDEX_TY, 1> index_list_buf(legate::Memory::SYSTEM_MEM, Rect<1>{0, A2_dim - 1});
+    Buffer<bool, 1> already_set_buf(legate::Memory::SYSTEM_MEM, Rect<1>{0, A2_dim - 1});
     for (INDEX_TY i = 0; i < A2_dim; i++) {
       index_list_buf[i]  = 0;
       already_set_buf[i] = false;
@@ -111,9 +110,9 @@ struct SpGEMMCSRxCSRxCSRImplBody<VariantKind::CPU, INDEX_CODE, VAL_CODE> {
 
     // Next, initialize the deferred buffers ourselves, instead of using
     // Realm fills (which tend to be slower).
-    DeferredBuffer<INDEX_TY, 1> index_list_buf(Memory::SYSTEM_MEM, Rect<1>{0, A2_dim - 1});
-    DeferredBuffer<bool, 1> already_set_buf(Memory::SYSTEM_MEM, Rect<1>{0, A2_dim - 1});
-    DeferredBuffer<VAL_TY, 1> workspace_buf(Memory::SYSTEM_MEM, Rect<1>{0, A2_dim - 1});
+    Buffer<INDEX_TY, 1> index_list_buf(legate::Memory::SYSTEM_MEM, Rect<1>{0, A2_dim - 1});
+    Buffer<bool, 1> already_set_buf(legate::Memory::SYSTEM_MEM, Rect<1>{0, A2_dim - 1});
+    Buffer<VAL_TY, 1> workspace_buf(legate::Memory::SYSTEM_MEM, Rect<1>{0, A2_dim - 1});
     for (INDEX_TY i = 0; i < A2_dim; i++) {
       index_list_buf[i]  = 0;
       already_set_buf[i] = false;

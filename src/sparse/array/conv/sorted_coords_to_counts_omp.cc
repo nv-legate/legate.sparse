@@ -24,7 +24,6 @@
 
 namespace sparse {
 
-using namespace Legion;
 using namespace legate;
 
 template <LegateTypeCode INDEX_CODE, typename ACC>
@@ -32,7 +31,7 @@ struct SortedCoordsToCountsImplBody<VariantKind::OMP, INDEX_CODE, ACC> {
   using INDEX_TY = legate_type_of<INDEX_CODE>;
   void operator()(ACC out, AccessorRO<INDEX_TY, 1> in, const Domain& dom)
   {
-    auto kind = Sparse::has_numamem ? Memory::SOCKET_MEM : Memory::SYSTEM_MEM;
+    auto kind = Core::has_socket_mem ? Memory::SOCKET_MEM : Memory::SYSTEM_MEM;
     // Estimate the maximum space we'll need to store the unique elements in the
     // reduce-by-key operation. To get an estimate here, we take the difference
     // between the min and max coordinate in the input region. In the future,
@@ -43,8 +42,8 @@ struct SortedCoordsToCountsImplBody<VariantKind::OMP, INDEX_CODE, ACC> {
     INDEX_TY min      = *minmax.first;
     INDEX_TY max      = *minmax.second;
     INDEX_TY max_vals = max - min + 1;
-    DeferredBuffer<INDEX_TY, 1> keys({0, max_vals - 1}, kind);
-    DeferredBuffer<uint64_t, 1> counts({0, max_vals - 1}, kind);
+    Buffer<INDEX_TY, 1> keys({0, max_vals - 1}, kind);
+    Buffer<uint64_t, 1> counts({0, max_vals - 1}, kind);
     auto result = thrust::reduce_by_key(thrust::omp::par,
                                         in_ptr,
                                         in_ptr + dom.get_volume(),

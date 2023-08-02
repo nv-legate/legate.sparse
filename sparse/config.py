@@ -160,7 +160,6 @@ class SparseProjectionFunctor(IntEnum):
 @unique
 class SparseTunable(IntEnum):
     NUM_PROCS = _sparse.LEGATE_SPARSE_TUNABLE_NUM_PROCS
-    HAS_NUMAMEM = _sparse.LEGATE_SPARSE_TUNABLE_HAS_NUMAMEM
     NUM_GPUS = _sparse.LEGATE_SPARSE_TUNABLE_NUM_GPUS
 
 

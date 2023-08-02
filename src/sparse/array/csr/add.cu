@@ -53,8 +53,8 @@ struct AddCSRCSRNNZImpl<VariantKind::GPU> {
     auto rows = B_pos_domain.get_volume();
 
     // Cast the pos arrays into CSR indptr arrays.
-    DeferredBuffer<int32_t, 1> B_indptr({0, rows}, Memory::GPU_FB_MEM);
-    DeferredBuffer<int32_t, 1> C_indptr({0, rows}, Memory::GPU_FB_MEM);
+    Buffer<int32_t, 1> B_indptr({0, rows}, Memory::GPU_FB_MEM);
+    Buffer<int32_t, 1> C_indptr({0, rows}, Memory::GPU_FB_MEM);
     {
       auto blocks = get_num_blocks_1d(rows);
       convertGlobalPosToLocalIndPtr<<<blocks, THREADS_PER_BLOCK, 0, stream>>>(
@@ -71,10 +71,8 @@ struct AddCSRCSRNNZImpl<VariantKind::GPU> {
       B_crd_int = B_crd.ptr(B_crd_domain.lo());
       C_crd_int = C_crd.ptr(C_crd_domain.lo());
     } else {
-      DeferredBuffer<int32_t, 1> B_crd_int_buf({0, B_crd_domain.get_volume() - 1},
-                                               Memory::GPU_FB_MEM);
-      DeferredBuffer<int32_t, 1> C_crd_int_buf({0, C_crd_domain.get_volume() - 1},
-                                               Memory::GPU_FB_MEM);
+      Buffer<int32_t, 1> B_crd_int_buf({0, B_crd_domain.get_volume() - 1}, Memory::GPU_FB_MEM);
+      Buffer<int32_t, 1> C_crd_int_buf({0, C_crd_domain.get_volume() - 1}, Memory::GPU_FB_MEM);
       {
         auto elems  = B_crd_domain.get_volume();
         auto blocks = get_num_blocks_1d(elems);
@@ -106,7 +104,7 @@ struct AddCSRCSRNNZImpl<VariantKind::GPU> {
     // Figure out the necessary buffer size.
     double alpha   = 1.0;
     size_t bufSize = 0;
-    DeferredBuffer<int32_t, 1> nnz_int({0, rows}, Memory::GPU_FB_MEM);
+    Buffer<int32_t, 1> nnz_int({0, rows}, Memory::GPU_FB_MEM);
     // Since this is just the NNZ calculation, we don't actually
     // need to dispatch on the value type.
     CHECK_CUSPARSE(cusparseDcsrgeam2_bufferSizeExt(handle,
@@ -132,7 +130,7 @@ struct AddCSRCSRNNZImpl<VariantKind::GPU> {
     // Allocate a buffer if we need to.
     void* workspacePtr = nullptr;
     if (bufSize > 0) {
-      DeferredBuffer<char, 1> buf({0, bufSize - 1}, Memory::GPU_FB_MEM);
+      Buffer<char, 1> buf({0, bufSize - 1}, Memory::GPU_FB_MEM);
       workspacePtr = buf.ptr(0);
     }
     int32_t tot_nnz = 0;
@@ -225,9 +223,9 @@ struct AddCSRCSRImpl<VariantKind::GPU> {
     auto rows = B_pos_domain.get_volume();
 
     // Convert all of the pos arrays into CSR indptr arrays.
-    DeferredBuffer<int32_t, 1> A_indptr({0, rows}, Memory::GPU_FB_MEM);
-    DeferredBuffer<int32_t, 1> B_indptr({0, rows}, Memory::GPU_FB_MEM);
-    DeferredBuffer<int32_t, 1> C_indptr({0, rows}, Memory::GPU_FB_MEM);
+    Buffer<int32_t, 1> A_indptr({0, rows}, Memory::GPU_FB_MEM);
+    Buffer<int32_t, 1> B_indptr({0, rows}, Memory::GPU_FB_MEM);
+    Buffer<int32_t, 1> C_indptr({0, rows}, Memory::GPU_FB_MEM);
     {
       auto blocks = get_num_blocks_1d(rows);
       convertGlobalPosToLocalIndPtr<<<blocks, THREADS_PER_BLOCK, 0, stream>>>(
@@ -248,12 +246,9 @@ struct AddCSRCSRImpl<VariantKind::GPU> {
       B_crd_int = B_crd.ptr(B_crd_domain.lo());
       C_crd_int = C_crd.ptr(C_crd_domain.lo());
     } else {
-      DeferredBuffer<int32_t, 1> A_crd_int_buf({0, A_crd_domain.get_volume() - 1},
-                                               Memory::GPU_FB_MEM);
-      DeferredBuffer<int32_t, 1> B_crd_int_buf({0, B_crd_domain.get_volume() - 1},
-                                               Memory::GPU_FB_MEM);
-      DeferredBuffer<int32_t, 1> C_crd_int_buf({0, C_crd_domain.get_volume() - 1},
-                                               Memory::GPU_FB_MEM);
+      Buffer<int32_t, 1> A_crd_int_buf({0, A_crd_domain.get_volume() - 1}, Memory::GPU_FB_MEM);
+      Buffer<int32_t, 1> B_crd_int_buf({0, B_crd_domain.get_volume() - 1}, Memory::GPU_FB_MEM);
+      Buffer<int32_t, 1> C_crd_int_buf({0, C_crd_domain.get_volume() - 1}, Memory::GPU_FB_MEM);
       {
         auto elems  = B_crd_domain.get_volume();
         auto blocks = get_num_blocks_1d(elems);
@@ -326,7 +321,7 @@ struct AddCSRCSRImpl<VariantKind::GPU> {
     // Allocate a buffer if we need to.
     void* workspacePtr = nullptr;
     if (bufSize > 0) {
-      DeferredBuffer<char, 1> buf({0, bufSize - 1}, Memory::GPU_FB_MEM);
+      Buffer<char, 1> buf({0, bufSize - 1}, Memory::GPU_FB_MEM);
       workspacePtr = buf.ptr(0);
     }
     CHECK_CUSPARSE(

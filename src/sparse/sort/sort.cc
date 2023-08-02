@@ -22,7 +22,6 @@
 
 namespace sparse {
 
-using namespace Legion;
 using namespace legate;
 
 /* static */ void SortByKey::cpu_variant(legate::TaskContext& ctx)

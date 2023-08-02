@@ -20,7 +20,6 @@
 
 namespace sparse {
 
-using namespace Legion;
 using namespace legate;
 
 template <typename DST, typename SRC>
@@ -85,8 +84,8 @@ struct SpGEMMCSRxCSRxCSRGPUImpl {
     }
 
     // Convert the pos arrays into local indptr arrays.
-    DeferredBuffer<int32_t, 1> B_indptr({0, B_rows}, Memory::GPU_FB_MEM);
-    DeferredBuffer<int32_t, 1> C_indptr({0, C_rows}, Memory::GPU_FB_MEM);
+    Buffer<int32_t, 1> B_indptr({0, B_rows}, Memory::GPU_FB_MEM);
+    Buffer<int32_t, 1> C_indptr({0, C_rows}, Memory::GPU_FB_MEM);
     {
       auto blocks = get_num_blocks_1d(B_rows);
       convertGlobalPosToLocalIndPtr<<<blocks, THREADS_PER_BLOCK, 0, stream>>>(
@@ -98,11 +97,11 @@ struct SpGEMMCSRxCSRxCSRGPUImpl {
         C_rows, C_pos.read_accessor<Rect<1>, 1>().ptr(C_pos.domain().lo()), C_indptr.ptr(0));
     }
 
-    DeferredBuffer<int32_t, 1> B_crd_int({0, B_crd.domain().get_volume() - 1}, Memory::GPU_FB_MEM);
+    Buffer<int32_t, 1> B_crd_int({0, B_crd.domain().get_volume() - 1}, Memory::GPU_FB_MEM);
     // Importantly, don't use the volume for C, as the image optimization
     // is being applied. Compute an upper bound on the volume directly.
     auto C_nnz = C_crd.domain().hi()[0] - C_crd.domain().lo()[0] + 1;
-    DeferredBuffer<int32_t, 1> C_crd_int({0, C_nnz - 1}, Memory::GPU_FB_MEM);
+    Buffer<int32_t, 1> C_crd_int({0, C_nnz - 1}, Memory::GPU_FB_MEM);
     {
       auto dom    = B_crd.domain();
       auto elems  = dom.get_volume();
@@ -174,7 +173,7 @@ struct SpGEMMCSRxCSRxCSRGPUImpl {
                                                  nullptr));
     void* buffer1 = nullptr;
     if (bufferSize1 > 0) {
-      DeferredBuffer<char, 1> buf({0, bufferSize1 - 1}, Memory::GPU_FB_MEM);
+      Buffer<char, 1> buf({0, bufferSize1 - 1}, Memory::GPU_FB_MEM);
       buffer1 = buf.ptr(0);
     }
     CHECK_CUSPARSE(cusparseSpGEMM_workEstimation(handle,
@@ -205,7 +204,7 @@ struct SpGEMMCSRxCSRxCSRGPUImpl {
                                           nullptr));
     void* buffer2 = nullptr;
     if (bufferSize2 > 0) {
-      DeferredBuffer<char, 1> buf({0, bufferSize2 - 1}, Memory::GPU_FB_MEM);
+      Buffer<char, 1> buf({0, bufferSize2 - 1}, Memory::GPU_FB_MEM);
       buffer2 = buf.ptr(0);
     }
     CHECK_CUSPARSE(cusparseSpGEMM_compute(handle,
@@ -224,14 +223,14 @@ struct SpGEMMCSRxCSRxCSRGPUImpl {
     // Allocate buffers for the 32-bit version of the A matrix.
     int64_t A_rows, A_cols, A_nnz;
     CHECK_CUSPARSE(cusparseSpMatGetSize(cusparse_A, &A_rows, &A_cols, &A_nnz));
-    DeferredBuffer<int32_t, 1> A_indptr({0, A_rows}, Memory::GPU_FB_MEM);
+    Buffer<int32_t, 1> A_indptr({0, A_rows}, Memory::GPU_FB_MEM);
     // Handle the creation of the A_crd buffer depending on whether the result
     // type is the type of data we are supposed to create.
-    DeferredBuffer<int32_t, 1> A_crd_int;
+    Buffer<int32_t, 1> A_crd_int;
     if constexpr (INDEX_CODE == LegateTypeCode::INT32_LT) {
       A_crd_int = A_crd.create_output_buffer<INDEX_TY, 1>(A_nnz, true /* return_buffer */);
     } else {
-      A_crd_int = DeferredBuffer<int32_t, 1>({0, A_nnz - 1}, Memory::GPU_FB_MEM);
+      A_crd_int = Buffer<int32_t, 1>({0, A_nnz - 1}, Memory::GPU_FB_MEM);
     }
     auto A_vals_acc = A_vals.create_output_buffer<VAL_TY, 1>(A_nnz, true /* return_buffer */);
     CHECK_CUSPARSE(
