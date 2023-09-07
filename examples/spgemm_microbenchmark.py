@@ -25,6 +25,7 @@ B = A.copy()
 
 def f():
     C = A @ B
+    return C
 
 
 # Run one to warm up the system.
