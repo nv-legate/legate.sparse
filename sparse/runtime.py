@@ -18,6 +18,7 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 from legate.core import Rect, Store, get_legate_runtime, types
+from legate.core.machine import ProcessorKind
 
 from .config import (
     SparseOpCode,
@@ -57,17 +58,11 @@ class Runtime:
         self.legate_context = legate_context
         self.legate_runtime = get_legate_runtime()
 
-        self.num_procs = int(
-            self.legate_context.get_tunable(
-                SparseTunable.NUM_PROCS,
-                types.int32,
-            )
-        )
         if "LEGATE_SPARSE_NUM_PROCS" in os.environ:
             self.num_procs = int(os.environ["LEGATE_SPARSE_NUM_PROCS"])
             print(f"Overriding LEGATE_SPARSE_NUM_PROCS to {self.num_procs}")
 
-        self.num_gpus = int(
+        num_gpus = int(
             self.legate_context.get_tunable(
                 SparseTunable.NUM_GPUS,
                 types.int32,
@@ -77,21 +72,28 @@ class Runtime:
         self.proj_fn_1d_to_2d_cache = {}
 
         # Load all the necessary CUDA libraries if we have GPUs.
-        if self.num_gpus > 0:
+        if num_gpus > 0:
             # TODO (rohany): Also handle destroying the cuda libraries when the
             #  runtime is torn down.
             task = self.legate_context.create_manual_task(
                 SparseOpCode.LOAD_CUDALIBS,
-                launch_domain=Rect(lo=(0,), hi=(self.num_gpus,)),
+                launch_domain=Rect(lo=(0,), hi=(num_gpus,)),
             )
             task.execute()
             self.legate_runtime.issue_execution_fence(block=True)
         # Also initialize NCCL eagerly since we will most likely use it when
         # converting objects from COO.
-        if self.num_gpus > 1:
-            self.legate_runtime.get_nccl_communicator().initialize(
-                self.num_gpus
-            )
+        if num_gpus > 1:
+            self.legate_runtime.get_nccl_communicator().initialize(num_gpus)
+
+    @property
+    def num_procs(self):
+        machine = self.legate_runtime.machine
+        return machine.count(machine.preferred_kind)
+
+    @property
+    def num_gpus(self):
+        return self.legate_runtime.machine.count(ProcessorKind.GPU)
 
     def get_1d_to_2d_functor_id(self, xdim: int, ydim: int, rows: bool) -> int:
         key = (xdim, ydim, rows)
