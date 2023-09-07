@@ -66,6 +66,57 @@ class NumPyTimer(Timer):
         return (end_time - self._start_time) / 1000.0
 
 
+# DummyScope is a class that is a no-op context
+# manager so that we can run both CuPy and SciPy
+# programs with resource scoping.
+class DummyScope:
+    def __init__(self):
+        ...
+
+    def __enter__(self):
+        ...
+
+    def __exit__(self, _, __, ___):
+        ...
+
+    def __getitem__(self, item):
+        return self
+
+    def count(self, _):
+        return 1
+
+    @property
+    def preferred_kind(self):
+        return None
+
+
+def get_phase_procs(use_legate: bool):
+    if use_legate:
+        from legate.core import get_machine
+        from legate.core.machine import ProcessorKind
+
+        all_devices = get_machine()
+        num_gpus = all_devices.count(ProcessorKind.GPU)
+        num_omps = all_devices.count(ProcessorKind.OMP)
+
+        # Prefer CPUs for the "build" phase of applications.
+        if num_omps > 0:
+            build_procs = all_devices.only(ProcessorKind.OMP)
+        else:
+            build_procs = all_devices.only(ProcessorKind.CPU)
+
+        # Prefer GPUs for the "solve" phase of applications.
+        if num_gpus > 0:
+            solve_procs = all_devices.only(ProcessorKind.GPU)
+        elif num_omps > 0:
+            solve_procs = all_devices.only(ProcessorKind.OMP)
+        else:
+            solve_procs = all_devices.only(ProcessorKind.CPU)
+        return build_procs, solve_procs
+    else:
+        return DummyScope(), DummyScope()
+
+
 def parse_common_args():
     parser = argparse.ArgumentParser()
     parser.add_argument(

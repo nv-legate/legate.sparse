@@ -15,7 +15,7 @@
 import argparse
 
 import numpy
-from benchmark import parse_common_args
+from benchmark import get_phase_procs, parse_common_args
 
 
 def stencil_grid(S, grid, dtype=None, format=None):
@@ -159,7 +159,7 @@ class GMG(object):
     [4] https://netlib.org/utk/people/JackDongarra/PAPERS/HPCG-benchmark.pdf
     """  # noqa: E501
 
-    def __init__(self, A, shape, levels, smoother, gridop):
+    def __init__(self, A, shape, levels, smoother, gridop, machine):
         self.A = A
         self.shape = shape
         self.N = numpy.product(self.shape)
@@ -171,6 +171,8 @@ class GMG(object):
         self.smoother = {"symgs": SYMGS, "jacobi": WeightedJacobi}[smoother]()
         self.operators = self.compute_operators(A)
         self.temp = None
+        self.machine = machine
+        self.proc_kind = machine.preferred_kind
 
     def compute_operators(self, A):
         operators = []
@@ -187,9 +189,11 @@ class GMG(object):
         return operators
 
     def cycle(self, r):
-        return self._cycle(self.A, r, 0)
+        # Kick off the cycle with the top-level machine.
+        with self.machine:
+            return self._cycle(self.A, r, 0, self.machine)
 
-    def _cycle(self, A, r, level):
+    def _cycle(self, A, r, level, machine):
         if level == self.levels - 1:
             return self.smoother.coarse(A, r, None, level=level)
         x = None
@@ -198,10 +202,21 @@ class GMG(object):
         x = self.smoother.pre(A, r, x, level=level)
         # Compute the residual.
         fine_r = r - A.dot(x)
+
         # Restrict the residual.
-        coarse_r = R.dot(fine_r)
-        # Compute coarse solution.
-        coarse_x = self._cycle(coarse_A, coarse_r, level + 1)
+        if use_legate:
+            coarse_r = R.dot(fine_r, spmv_domain_part=True)
+        else:
+            coarse_r = R.dot(fine_r)
+
+        # Compute coarse solution using a subset of the machine.
+        ratio = (fine_r.shape[0] // coarse_r.shape[0]) // 2
+        num_procs = max(machine.count(self.proc_kind) // ratio, 1)
+        with machine[:num_procs]:
+            coarse_x = self._cycle(
+                coarse_A, coarse_r, level + 1, machine[:num_procs]
+            )
+
         fine_x = P @ coarse_x
         x_corrected = x + fine_x
         # Do one post-smoothing iteration.
@@ -380,46 +395,77 @@ def required_driver_memory(N):
 
 
 def execute(N, data, smoother, gridop, levels, maxiter, tol, verbose, timer):
+    build, solve = get_phase_procs(use_legate)
     timer.start()
-    if data == "poisson":
-        A = poisson2D(N).tocsr()
-        b = np.random.rand(N**2)
-    elif data == "diffusion":
-        A = diffusion2D(N).tocsr()
-        b = np.random.rand(N**2)
-    else:
-        raise NotImplementedError(data)
-    print(f"Data creation time: {timer.stop()} ms")
+    with build:
+        if data == "poisson":
+            A = poisson2D(N).tocsr()
+            b = np.random.rand(N**2)
+        elif data == "diffusion":
+            A = diffusion2D(N).tocsr()
+            b = np.random.rand(N**2)
+        else:
+            raise NotImplementedError(data)
+        print(f"Data creation time: {timer.stop()} ms")
 
-    assert smoother == "jacobi", "Only Jacobi smoother is currently supported."
+        assert (
+            smoother == "jacobi"
+        ), "Only Jacobi smoother is currently supported."
 
-    if verbose:
+        if verbose:
 
-        def callback(x):
-            print(f"Residual: {np.linalg.norm(b-A.matvec(x))}")
+            def callback(x):
+                print(f"Residual: {np.linalg.norm(b-A.matvec(x))}")
 
-    else:
-        callback = None
+        else:
+            callback = None
 
-    required_driver_memory(N)
-    timer.start()
-    mg_solver = GMG(
-        A=A, shape=(N, N), levels=levels, smoother=smoother, gridop=gridop
-    )
-    M = mg_solver.linear_operator()
-    print(f"GMG init time: {timer.stop()} ms")
+        required_driver_memory(N)
+        timer.start()
+        mg_solver = GMG(
+            A=A,
+            shape=(N, N),
+            levels=levels,
+            smoother=smoother,
+            gridop=gridop,
+            machine=solve,
+        )
+        M = mg_solver.linear_operator()
+        print(f"GMG init time: {timer.stop()} ms")
 
-    timer.start()
-    x, iters = linalg.cg(
-        A, b, tol=tol, maxiter=maxiter, M=M, callback=callback
-    )
-    total = timer.stop()
-    if tol <= np.linalg.norm(x):
-        print("Converged in %d iterations" % iters)
-    else:
-        print("Failed to converge in %d iterations" % iters)
-    print(f"Solve Time: {total} ms")
-    print(f"Iterations / sec: {iters / (total / 1000.0)}")
+    with solve:
+        # Warm up the runtime.
+        float(
+            np.linalg.norm(
+                A.dot(
+                    np.zeros(
+                        A.shape[1],
+                    )
+                )
+            )
+        )
+        float(
+            np.linalg.norm(
+                M.matvec(
+                    np.zeros(
+                        M.shape[1],
+                    )
+                )
+            )
+        )
+        # Make another call to random here as well.
+        float(np.linalg.norm(np.random.rand(b.shape[0])))
+        timer.start()
+        x, iters = linalg.cg(
+            A, b, tol=tol, maxiter=maxiter, M=M, callback=callback
+        )
+        total = timer.stop()
+        if tol <= np.linalg.norm(x):
+            print("Converged in %d iterations" % iters)
+        else:
+            print("Failed to converge in %d iterations" % iters)
+        print(f"Solve Time: {total} ms")
+        print(f"Iterations / sec: {iters / (total / 1000.0)}")
 
 
 if __name__ == "__main__":
