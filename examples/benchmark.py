@@ -120,7 +120,7 @@ def get_phase_procs(use_legate: bool):
 def parse_common_args():
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "-package",
+        "--package",
         type=str,
         default="legate",
         choices=["legate", "cupy", "scipy"],
