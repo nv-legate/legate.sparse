@@ -33,11 +33,19 @@ if(POLICY CMP0135)
   set(CMAKE_POLICY_DEFAULT_CMP0135 NEW)
 endif()
 
+if(POLICY CMP0132)
+  # Avoid an inconsistency, where cmake would only set the CC/CXX env vars on
+  # the first run, but not subsequent ones. This would come up when building
+  # TBLIS.
+  cmake_policy(SET CMP0132 NEW)
+  set(CMAKE_POLICY_DEFAULT_CMP0132 NEW)
+endif()
+
 ##############################################################################
 # - Download and initialize RAPIDS CMake helpers -----------------------------
 
 if(NOT EXISTS ${CMAKE_BINARY_DIR}/RAPIDS.cmake)
-  file(DOWNLOAD https://raw.githubusercontent.com/rapidsai/rapids-cmake/branch-23.04/RAPIDS.cmake
+  file(DOWNLOAD https://raw.githubusercontent.com/rapidsai/rapids-cmake/branch-23.08/RAPIDS.cmake
        ${CMAKE_BINARY_DIR}/RAPIDS.cmake)
 endif()
 include(${CMAKE_BINARY_DIR}/RAPIDS.cmake)
@@ -83,20 +91,20 @@ if(CMAKE_GENERATOR STREQUAL "Ninja")
     if(SKBUILD)
       set(_suf "_python")
     endif()
+    add_custom_target("touch_legate_sparse${_suf}_ninja_build" ALL
+      COMMAND ${CMAKE_COMMAND} -E touch_nocreate "${CMAKE_CURRENT_BINARY_DIR}/build.ninja"
+      COMMENT "touch build.ninja so ninja doesn't re-run CMake on rebuild"
+      VERBATIM
+    )
     foreach(_dep IN ITEMS legate_sparse legate_sparse_python
                           legion_core legion_core_python
                           Legion LegionRuntime
                           Realm RealmRuntime
                           Regent)
       if(TARGET ${_dep})
-        list(APPEND _depends ${_dep})
+        add_dependencies("touch_legate_sparse${_suf}_ninja_build" ${_dep})
       endif()
     endforeach()
-    add_custom_target("touch_legate_sparse${_suf}_ninja_build" ALL
-      COMMAND ${CMAKE_COMMAND} -E touch_nocreate "${CMAKE_CURRENT_BINARY_DIR}/build.ninja"
-      COMMENT "touch build.ninja so ninja doesn't re-run CMake on rebuild"
-      VERBATIM DEPENDS ${_depends}
-    )
   endfunction()
   add_touch_legate_sparse_ninja_build_target()
 endif()
