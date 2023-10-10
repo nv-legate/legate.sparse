@@ -24,6 +24,14 @@ namespace sparse {
 using namespace Legion;
 using namespace legate;
 
+template <typename DST, typename SRC>
+__global__ void cast_and_offset(size_t elems, DST* dst, const SRC* src, int64_t offset)
+{
+  const auto idx = global_tid_1d();
+  if (idx >= elems) return;
+  dst[idx] = static_cast<DST>(src[idx] - offset);
+}
+
 template <>
 struct SpMMCSRImpl<VariantKind::GPU> {
   template <LegateTypeCode INDEX_CODE, LegateTypeCode VAL_CODE>
@@ -52,25 +60,79 @@ struct SpMMCSRImpl<VariantKind::GPU> {
 
     // Construct the CUSPARSE objects from individual regions.
     auto cusparse_A = makeCuSparseDenseMat<VAL_TY>(A_vals);
-    // Because we are doing the same optimization as in SpMV to minimize
-    // the communication instead of replicating the C matrix, we have to
-    // offset the pointer into C down to the "base" of the region (which
-    // may be invalid). We can rely on cuSPARSE not accessing this invalid
-    // region because it is not referenced by any coordinates of B.
+
+    cusparseSpMatDescr_t cusparse_B;
+    cusparseDnMatDescr_t cusparse_C;
+    // TODO (rohany): Comment.
+    // Based on whether the input store is transposed or not,
+    // we need to handle the SpMM differently. At a high level,
+    // for a row-major matrix we can do the image optimization.
+    // For column-major matrix, we have to just offset the crd
+    // array of the input sparse matrix down by the minimum value.
     auto C_domain   = args.C_vals.domain();
     auto C_vals_acc = args.C_vals.read_accessor<VAL_TY, 2>();
-    auto ld         = C_vals_acc.accessor.strides[0] / sizeof(VAL_TY);
     auto C_vals_ptr = C_vals_acc.ptr(C_domain.lo());
-    C_vals_ptr      = C_vals_ptr - size_t(ld * C_domain.lo()[0]);
-    cusparseDnMatDescr_t cusparse_C;
-    CHECK_CUSPARSE(cusparseCreateDnMat(&cusparse_C,
-                                       B1_dim,
-                                       C_domain.hi()[1] - C_domain.lo()[1] + 1, /* columns */
-                                       ld,
-                                       (void*)C_vals_ptr,
-                                       cusparseDataType<VAL_TY>(),
-                                       CUSPARSE_ORDER_ROW));
-    auto cusparse_B = makeCuSparseCSR<INDEX_TY, VAL_TY>(B_pos, B_crd, B_vals, B1_dim);
+    auto x_stride   = C_vals_acc.accessor.strides[0] / sizeof(VAL_TY);
+    auto y_stride   = C_vals_acc.accessor.strides[1] / sizeof(VAL_TY);
+    cusparseSpMMAlg_t alg;
+    if (x_stride >= y_stride) {
+      // Because we are doing the same optimization as in SpMV to minimize
+      // the communication instead of replicating the C matrix, we have to
+      // offset the pointer into C down to the "base" of the region (which
+      // may be invalid). We can rely on cuSPARSE not accessing this invalid
+      // region because it is not referenced by any coordinates of B.
+      auto ld    = x_stride;
+      C_vals_ptr = C_vals_ptr - size_t(ld * C_domain.lo()[0]);
+      CHECK_CUSPARSE(cusparseCreateDnMat(&cusparse_C,
+                                         B1_dim,
+                                         C_domain.hi()[1] - C_domain.lo()[1] + 1, /* columns */
+                                         ld,
+                                         (void*)C_vals_ptr,
+                                         cusparseDataType<VAL_TY>(),
+                                         CUSPARSE_ORDER_ROW));
+      cusparse_B = makeCuSparseCSR<INDEX_TY, VAL_TY>(B_pos, B_crd, B_vals, B1_dim);
+      alg        = CUSPARSE_SPMM_CSR_ALG2;
+    } else {
+      std::cout << "Handling a transpose case." << std::endl;
+      auto B_rows = B_pos.domain().get_volume();
+      DeferredBuffer<INDEX_TY, 1> B_indptr({0, B_rows}, Memory::GPU_FB_MEM);
+      {
+        auto blocks = get_num_blocks_1d(B_rows);
+        convertGlobalPosToLocalIndPtr<<<blocks, THREADS_PER_BLOCK, 0, stream>>>(
+          B_rows, B_pos.read_accessor<Rect<1>, 1>().ptr(B_pos.domain().lo()), B_indptr.ptr(0));
+      }
+      DeferredBuffer<INDEX_TY, 1> B_crd_int({0, B_crd.domain().get_volume() - 1},
+                                            Memory::GPU_FB_MEM);
+      auto B_min_coord = C_vals.domain().lo()[0];
+      auto B_max_coord = C_vals.domain().hi()[0];
+      auto C_rows      = B_max_coord - B_min_coord + 1;
+      {
+        auto dom    = B_crd.domain();
+        auto elems  = dom.get_volume();
+        auto blocks = get_num_blocks_1d(elems);
+        cast_and_offset<INDEX_TY, INDEX_TY><<<blocks, THREADS_PER_BLOCK, 0, stream>>>(
+          elems, B_crd_int.ptr(0), B_crd.read_accessor<INDEX_TY, 1>().ptr(dom.lo()), B_min_coord);
+      }
+      CHECK_CUSPARSE(cusparseCreateCsr(&cusparse_B,
+                                       B_rows,
+                                       C_rows /* cols */,
+                                       B_crd.domain().get_volume() /* nnz */,
+                                       B_indptr.ptr(0),
+                                       B_crd_int.ptr(0),
+                                       getPtrFromStore<VAL_TY, 1>(B_vals),
+                                       cusparseIndexType<INDEX_TY>(),
+                                       cusparseIndexType<INDEX_TY>(),
+                                       CUSPARSE_INDEX_BASE_ZERO,
+                                       cusparseDataType<VAL_TY>()));
+      CHECK_CUSPARSE(cusparseCreateDnMat(&cusparse_C,
+                                         C_rows,
+                                         C_domain.hi()[1] - C_domain.lo()[1] + 1, /* columns */
+                                         y_stride,
+                                         (void*)C_vals_ptr,
+                                         cusparseDataType<VAL_TY>(),
+                                         CUSPARSE_ORDER_COL));
+      alg = CUSPARSE_SPMM_CSR_ALG1;
+    }
 
     // Call CUSPARSE.
     VAL_TY alpha   = static_cast<VAL_TY>(1);
@@ -85,7 +147,7 @@ struct SpMMCSRImpl<VariantKind::GPU> {
                                            &beta,
                                            cusparse_A,
                                            cusparseDataType<VAL_TY>(),
-                                           CUSPARSE_SPMM_CSR_ALG2,
+                                           alg,
                                            &bufSize));
     // Allocate a buffer if we need to.
     void* workspacePtr = nullptr;
