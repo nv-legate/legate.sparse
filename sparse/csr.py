@@ -1361,14 +1361,25 @@ def spgemm_csr_csr_csr(B: csr_array, C: csr_array) -> csr_array:
         )
         other_pos_part = C.pos.partition(crd_image)
         task.add_input(other_pos_part)
-        other_pos_image = CompressedImagePartition(
-            C.pos,
-            other_pos_part.partition,
-            ctx.mapper_id,
-            range=True,
-            disjoint=False,
-            complete=False,
-        )
+        # TODO (rohany): Does this have to change?
+        if runtime.args.precise_images:
+            other_pos_image = ImagePartition(
+                C.pos,
+                other_pos_part.partition,
+                ctx.mapper_id,
+                range=True,
+                disjoint=False,
+                complete=False,
+            )
+        else:
+            other_pos_image = CompressedImagePartition(
+                C.pos,
+                other_pos_part.partition,
+                ctx.mapper_id,
+                range=True,
+                disjoint=False,
+                complete=False,
+            )
         task.add_input(C.crd.partition(other_pos_image))
         task.add_input(C.vals.partition(other_pos_image))
         task.add_scalar_arg(C.shape[1], types.uint64)
