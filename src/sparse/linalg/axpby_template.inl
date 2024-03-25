@@ -22,15 +22,14 @@
 
 namespace sparse {
 
-using namespace Legion;
 using namespace legate;
 
-template <VariantKind KIND, LegateTypeCode VAL_CODE, bool IS_ALPHA, bool NEGATE>
+template <VariantKind KIND, Type::Code VAL_CODE, bool IS_ALPHA, bool NEGATE>
 struct AXPBYImplBody;
 
 template <VariantKind KIND>
 struct AXPBYImpl {
-  template <LegateTypeCode VAL_CODE>
+  template <Type::Code VAL_CODE>
   void operator()(AXPBYArgs& args) const
   {
     using VAL_TY = legate_type_of<VAL_CODE>;

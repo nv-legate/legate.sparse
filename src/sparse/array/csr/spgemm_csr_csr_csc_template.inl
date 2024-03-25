@@ -22,15 +22,14 @@
 
 namespace sparse {
 
-using namespace Legion;
 using namespace legate;
 
-template <VariantKind KIND, LegateTypeCode INDEX_CODE, LegateTypeCode VAL_CODE>
+template <VariantKind KIND, Type::Code INDEX_CODE, Type::Code VAL_CODE>
 struct SpGEMMCSRxCSRxCSCLocalTilesImplBody;
 
 template <VariantKind KIND>
 struct SpGEMMCSRxCSRxCSCLocalTilesImpl {
-  template <LegateTypeCode INDEX_CODE, LegateTypeCode VAL_CODE>
+  template <Type::Code INDEX_CODE, Type::Code VAL_CODE>
   void operator()(SpGEMMCSRxCSRxCSCLocalTilesArgs& args) const
   {
     using INDEX_TY = legate_type_of<INDEX_CODE>;
@@ -68,12 +67,12 @@ struct SpGEMMCSRxCSRxCSCCommComputeImpl {
   }
 };
 
-template <VariantKind KIND, LegateTypeCode INDEX_CODE, LegateTypeCode VAL_CODE>
+template <VariantKind KIND, Type::Code INDEX_CODE, Type::Code VAL_CODE>
 struct SpGEMMCSRxCSRxCSCShuffleImplBody;
 
 template <VariantKind KIND>
 struct SpGEMMCSRxCSRxCSCShuffleImpl {
-  template <LegateTypeCode INDEX_CODE, LegateTypeCode VAL_CODE>
+  template <Type::Code INDEX_CODE, Type::Code VAL_CODE>
   void operator()(SpGEMMCSRxCSRxCSCShuffleArgs& args) const
   {
     using INDEX_TY = legate_type_of<INDEX_CODE>;

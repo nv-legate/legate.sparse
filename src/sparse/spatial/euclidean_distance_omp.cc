@@ -19,10 +19,9 @@
 
 namespace sparse {
 
-using namespace Legion;
 using namespace legate;
 
-template <LegateTypeCode VAL_CODE>
+template <Type::Code VAL_CODE>
 struct EuclideanCDistImplBody<VariantKind::OMP, VAL_CODE> {
   using VAL_TY = legate_type_of<VAL_CODE>;
 

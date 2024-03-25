@@ -22,7 +22,7 @@
 #include <thrust/execution_policy.h>
 #include <thrust/sort.h>
 
-using namespace Legion;
+using namespace legate;
 
 namespace sparse {
 
@@ -177,15 +177,15 @@ void CreateHamiltonians::omp_variant_impl(legate::TaskContext& ctx)
     auto preds_domain         = preds.domain();
 
     // Create a buffer of indices.
-    auto kind = Sparse::has_numamem ? Memory::SOCKET_MEM : Memory::SYSTEM_MEM;
-    DeferredBuffer<coord_ty, 1> indices(kind, preds_domain);
+    auto kind = legate::Core::has_socket_mem ? Memory::SOCKET_MEM : Memory::SYSTEM_MEM;
+    Buffer<coord_ty, 1> indices(kind, preds_domain);
 #pragma omp parallel for schedule(static)
     for (auto i = preds_domain.lo()[0]; i < preds_domain.hi()[0] + 1; i++) {
       indices[i] = preds_idx_offset + i;
     }
 
     // Create an extra buffer of predecessors to sort.
-    DeferredBuffer<set_ty, 1> preds_copy(kind, preds_domain);
+    Buffer<set_ty, 1> preds_copy(kind, preds_domain);
 #pragma omp parallel for schedule(static)
     for (auto i = preds_domain.lo()[0]; i < preds_domain.hi()[0] + 1; i++) {
       preds_copy[i] = preds_acc[i];

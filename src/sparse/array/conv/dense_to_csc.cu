@@ -20,7 +20,6 @@
 
 namespace sparse {
 
-using namespace Legion;
 using namespace legate;
 
 template <typename VAL_TY>
@@ -41,7 +40,7 @@ __global__ void denseToCSCNNZKernel(size_t cols,
 
 template <>
 struct DenseToCSCNNZImpl<VariantKind::GPU> {
-  template <LegateTypeCode VAL_CODE>
+  template <Type::Code VAL_CODE>
   void operator()(DenseToCSCNNZArgs& args) const
   {
     using VAL_TY = legate_type_of<VAL_CODE>;
@@ -72,7 +71,7 @@ struct DenseToCSCNNZImpl<VariantKind::GPU> {
     auto rows     = B_domain.hi()[0] - B_domain.lo()[0] + 1;
     auto cols     = B_domain.hi()[1] - B_domain.lo()[1] + 1;
     // Allocate an output buffer for the offsets.
-    DeferredBuffer<int64_t, 1> A_indptr({0, cols}, Memory::GPU_FB_MEM);
+    Buffer<int64_t, 1> A_indptr({0, cols}, Memory::GPU_FB_MEM);
 
     // Construct the cuSPARSE objects from individual regions.
     auto cusparse_B = makeCuSparseDenseMat<VAL_TY>(B_vals);
@@ -97,7 +96,7 @@ struct DenseToCSCNNZImpl<VariantKind::GPU> {
     // Allocate a buffer if we need to.
     void* workspacePtr = nullptr;
     if (bufSize > 0) {
-      DeferredBuffer<char, 1> buf({0, bufSize - 1}, Memory::GPU_FB_MEM);
+      Buffer<char, 1> buf({0, bufSize - 1}, Memory::GPU_FB_MEM);
       workspacePtr = buf.ptr(0);
     }
     // Do the analysis only to compute the indptr array.
@@ -141,7 +140,7 @@ __global__ void denseToCSCKernel(size_t cols,
 
 template <>
 struct DenseToCSCImpl<VariantKind::GPU> {
-  template <LegateTypeCode INDEX_CODE, LegateTypeCode VAL_CODE>
+  template <Type::Code INDEX_CODE, Type::Code VAL_CODE>
   void operator()(DenseToCSCArgs& args) const
   {
     using INDEX_TY = legate_type_of<INDEX_CODE>;
@@ -190,7 +189,7 @@ struct DenseToCSCImpl<VariantKind::GPU> {
     // // Allocate a buffer if we need to.
     // void* workspacePtr = nullptr;
     // if (bufSize > 0) {
-    //   DeferredBuffer<char, 1> buf({0, bufSize - 1}, Memory::GPU_FB_MEM);
+    //   Buffer<char, 1> buf({0, bufSize - 1}, Memory::GPU_FB_MEM);
     //   workspacePtr = buf.ptr(0);
     // }
     // // Do the analysis only to compute the indptr array.

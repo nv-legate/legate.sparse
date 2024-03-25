@@ -19,7 +19,6 @@
 
 namespace sparse {
 
-using namespace Legion;
 using namespace legate;
 
 void COOToDense::cpu_variant(TaskContext& ctx)

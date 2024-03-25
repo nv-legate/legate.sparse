@@ -23,7 +23,7 @@ namespace sparse {
 
 template <>
 struct CSRSpMVRowSplitImpl<VariantKind::GPU> {
-  template <LegateTypeCode INDEX_CODE, LegateTypeCode VAL_CODE>
+  template <Type::Code INDEX_CODE, Type::Code VAL_CODE>
   void operator()(CSRSpMVRowSplitArgs& args) const
   {
     using INDEX_TY = legate_type_of<INDEX_CODE>;
@@ -96,7 +96,7 @@ struct CSRSpMVRowSplitImpl<VariantKind::GPU> {
     // Allocate a buffer if we need to.
     void* workspacePtr = nullptr;
     if (bufSize > 0) {
-      DeferredBuffer<char, 1> buf({0, bufSize - 1}, Memory::GPU_FB_MEM);
+      Buffer<char, 1> buf({0, bufSize - 1}, Memory::GPU_FB_MEM);
       workspacePtr = buf.ptr(0);
     }
     // Finally do the SpMV.
@@ -155,7 +155,7 @@ __global__ void spmv_col_split_kernel(
 // Trying to use cuSPARSE in this column split case is definitely tricky.
 // To make things a bit simpler for us, start with a simple CUDA kernel
 // for now, and we can move to a cuSPARSE kernel if necessary.
-template <LegateTypeCode INDEX_CODE, LegateTypeCode VAL_CODE, typename ACC>
+template <Type::Code INDEX_CODE, Type::Code VAL_CODE, typename ACC>
 struct CSRSpMVColSplitImplBody<VariantKind::GPU, INDEX_CODE, VAL_CODE, ACC> {
   using INDEX_TY = legate_type_of<INDEX_CODE>;
   using VAL_TY   = legate_type_of<VAL_CODE>;

@@ -24,7 +24,6 @@
 
 namespace sparse {
 
-using namespace Legion;
 using namespace legate;
 
 template <typename INDEX_TY>
@@ -37,7 +36,7 @@ __global__ void offset_coordinates_to_global(size_t elems, coord_t offset, INDEX
 
 template <>
 struct SpGEMMCSRxCSRxCSCLocalTilesImpl<VariantKind::GPU> {
-  template <LegateTypeCode INDEX_CODE, LegateTypeCode VAL_CODE>
+  template <Type::Code INDEX_CODE, Type::Code VAL_CODE>
   void operator()(SpGEMMCSRxCSRxCSCLocalTilesArgs& args) const
   {
     using INDEX_TY = legate_type_of<INDEX_CODE>;
@@ -68,8 +67,8 @@ struct SpGEMMCSRxCSRxCSCLocalTilesImpl<VariantKind::GPU> {
     auto C_cols = C_pos.domain().get_volume();
 
     // Cast the pos stores to indptr arrays.
-    DeferredBuffer<int32_t, 1> B_indptr({0, B_rows}, Memory::GPU_FB_MEM);
-    DeferredBuffer<int32_t, 1> C_indptr({0, C_cols}, Memory::GPU_FB_MEM);
+    Buffer<int32_t, 1> B_indptr({0, B_rows}, Memory::GPU_FB_MEM);
+    Buffer<int32_t, 1> C_indptr({0, C_cols}, Memory::GPU_FB_MEM);
     {
       auto blocks = get_num_blocks_1d(B_rows);
       convertGlobalPosToLocalIndPtr<<<blocks, THREADS_PER_BLOCK, 0, stream>>>(
@@ -84,14 +83,12 @@ struct SpGEMMCSRxCSRxCSCLocalTilesImpl<VariantKind::GPU> {
     // Optionally cast the coordinates if they are already not already 32-bit.
     int32_t* B_crd_int = nullptr;
     int32_t* C_crd_int = nullptr;
-    if constexpr (INDEX_CODE == LegateTypeCode::INT32_LT) {
+    if constexpr (INDEX_CODE == Type::Code::INT32) {
       B_crd_int = const_cast<int32_t*>(B_crd.read_accessor<INDEX_TY, 1>().ptr(B_crd.domain().lo()));
       C_crd_int = const_cast<int32_t*>(C_crd.read_accessor<INDEX_TY, 1>().ptr(C_crd.domain().lo()));
     } else {
-      DeferredBuffer<int32_t, 1> B_crd_int_buf({0, B_crd.domain().get_volume() - 1},
-                                               Memory::GPU_FB_MEM);
-      DeferredBuffer<int32_t, 1> C_crd_int_buf({0, C_crd.domain().get_volume() - 1},
-                                               Memory::GPU_FB_MEM);
+      Buffer<int32_t, 1> B_crd_int_buf({0, B_crd.domain().get_volume() - 1}, Memory::GPU_FB_MEM);
+      Buffer<int32_t, 1> C_crd_int_buf({0, C_crd.domain().get_volume() - 1}, Memory::GPU_FB_MEM);
       {
         auto dom    = B_crd.domain();
         auto elems  = dom.get_volume();
@@ -113,9 +110,9 @@ struct SpGEMMCSRxCSRxCSCLocalTilesImpl<VariantKind::GPU> {
     // Now, we can start the conversion of C from CSC to CSR. The method is called
     // CSR2CSC, so we can use it in the reverse way also by doing CSC2CSR.
     // First, allocate buffers for the resulting C CSR data.
-    DeferredBuffer<int32_t, 1> C_CSR_indptr({0, C_rows}, Memory::GPU_FB_MEM);
-    DeferredBuffer<int32_t, 1> C_CSR_crd({0, C_crd.domain().get_volume() - 1}, Memory::GPU_FB_MEM);
-    DeferredBuffer<VAL_TY, 1> C_CSR_vals({0, C_crd.domain().get_volume() - 1}, Memory::GPU_FB_MEM);
+    Buffer<int32_t, 1> C_CSR_indptr({0, C_rows}, Memory::GPU_FB_MEM);
+    Buffer<int32_t, 1> C_CSR_crd({0, C_crd.domain().get_volume() - 1}, Memory::GPU_FB_MEM);
+    Buffer<VAL_TY, 1> C_CSR_vals({0, C_crd.domain().get_volume() - 1}, Memory::GPU_FB_MEM);
     size_t convBufSize = 0;
     CHECK_CUSPARSE(cusparseCsr2cscEx2_bufferSize(handle,
                                                  // Because we're treating the CSC matrix as a CSR
@@ -134,7 +131,7 @@ struct SpGEMMCSRxCSRxCSCLocalTilesImpl<VariantKind::GPU> {
                                                  CUSPARSE_INDEX_BASE_ZERO,
                                                  CUSPARSE_CSR2CSC_ALG1,
                                                  &convBufSize));
-    DeferredBuffer<char*, 1> convBuffer({0, convBufSize - 1}, Memory::GPU_FB_MEM);
+    Buffer<char*, 1> convBuffer({0, convBufSize - 1}, Memory::GPU_FB_MEM);
     CHECK_CUSPARSE(cusparseCsr2cscEx2(handle,
                                       // Look above for reasoning about the size reversal.
                                       C_cols,
@@ -209,7 +206,7 @@ struct SpGEMMCSRxCSRxCSCLocalTilesImpl<VariantKind::GPU> {
                                                  nullptr));
     void* buffer1 = nullptr;
     if (bufferSize1 > 0) {
-      DeferredBuffer<char, 1> buf({0, bufferSize1 - 1}, Memory::GPU_FB_MEM);
+      Buffer<char, 1> buf({0, bufferSize1 - 1}, Memory::GPU_FB_MEM);
       buffer1 = buf.ptr(0);
     }
     CHECK_CUSPARSE(cusparseSpGEMM_workEstimation(handle,
@@ -240,7 +237,7 @@ struct SpGEMMCSRxCSRxCSCLocalTilesImpl<VariantKind::GPU> {
                                           nullptr));
     void* buffer2 = nullptr;
     if (bufferSize2 > 0) {
-      DeferredBuffer<char, 1> buf({0, bufferSize2 - 1}, Memory::GPU_FB_MEM);
+      Buffer<char, 1> buf({0, bufferSize2 - 1}, Memory::GPU_FB_MEM);
       buffer2 = buf.ptr(0);
     }
     CHECK_CUSPARSE(cusparseSpGEMM_compute(handle,
@@ -259,14 +256,14 @@ struct SpGEMMCSRxCSRxCSCLocalTilesImpl<VariantKind::GPU> {
     // Allocate buffers for the 32-bit version of the A matrix.
     int64_t A_rows, A_cols, A_nnz;
     CHECK_CUSPARSE(cusparseSpMatGetSize(cusparse_A, &A_rows, &A_cols, &A_nnz));
-    DeferredBuffer<int32_t, 1> A_indptr({0, A_rows}, Memory::GPU_FB_MEM);
+    Buffer<int32_t, 1> A_indptr({0, A_rows}, Memory::GPU_FB_MEM);
     // Handle the creation of the A_crd buffer depending on whether the result
     // type is the type of data we are supposed to create.
-    DeferredBuffer<int32_t, 1> A_crd_int;
-    if constexpr (INDEX_CODE == LegateTypeCode::INT32_LT) {
+    Buffer<int32_t, 1> A_crd_int;
+    if constexpr (INDEX_CODE == Type::Code::INT32) {
       A_crd_int = A_crd.create_output_buffer<INDEX_TY, 1>(A_nnz, true /* return_buffer */);
     } else {
-      A_crd_int = DeferredBuffer<int32_t, 1>({0, A_nnz - 1}, Memory::GPU_FB_MEM);
+      A_crd_int = Buffer<int32_t, 1>({0, A_nnz - 1}, Memory::GPU_FB_MEM);
     }
     auto A_vals_acc = A_vals.create_output_buffer<VAL_TY, 1>(A_nnz, true /* return_buffer */);
     CHECK_CUSPARSE(
@@ -294,7 +291,7 @@ struct SpGEMMCSRxCSRxCSCLocalTilesImpl<VariantKind::GPU> {
     // cuSPARSE is going to compute a resulting matrix where all the coordinates
     // are zero-based, but we need the coordinates to be global addressable, so we
     // offset them by the partition of the column space that we are in.
-    if constexpr (INDEX_CODE != LegateTypeCode::INT32_LT) {
+    if constexpr (INDEX_CODE != Type::Code::INT32) {
       auto blocks = get_num_blocks_1d(A_nnz);
       auto buf    = A_crd.create_output_buffer<INDEX_TY, 1>(A_nnz, true /* return_buffer */);
       cast<INDEX_TY, int32_t>
@@ -339,8 +336,8 @@ struct SpGEMMCSRxCSRxCSCCommComputeImplBody<VariantKind::GPU> {
 
 __global__ void calculate_copy_sizes(size_t total_rows,
                                      size_t num_rects,
-                                     DeferredBuffer<Rect<1>, 1> rects,
-                                     DeferredBuffer<size_t, 1> row_offsets,
+                                     Buffer<Rect<1>, 1> rects,
+                                     Buffer<size_t, 1> row_offsets,
                                      const AccessorRO<Rect<1>, 1> global_pos_acc)
 {
   const auto idx = global_tid_1d();
@@ -357,14 +354,14 @@ __global__ void calculate_copy_sizes(size_t total_rows,
 template <typename INDEX_TY, typename VAL_TY>
 __global__ void scatter_rows(size_t total_rows,
                              size_t num_rects,
-                             DeferredBuffer<Rect<1>, 1> rects,
-                             DeferredBuffer<size_t, 1> row_offsets,
+                             Buffer<Rect<1>, 1> rects,
+                             Buffer<size_t, 1> row_offsets,
                              const AccessorRO<Rect<1>, 1> global_pos_acc,
                              const AccessorRO<INDEX_TY, 1> global_crd_acc,
                              const AccessorRO<VAL_TY, 1> global_vals_acc,
-                             DeferredBuffer<Rect<1>, 1> pos_acc,
-                             DeferredBuffer<INDEX_TY, 1> crd_acc,
-                             DeferredBuffer<VAL_TY, 1> vals_acc)
+                             Buffer<Rect<1>, 1> pos_acc,
+                             Buffer<INDEX_TY, 1> crd_acc,
+                             Buffer<VAL_TY, 1> vals_acc)
 {
   const auto idx = global_tid_1d();
   if (idx >= total_rows) return;
@@ -387,7 +384,7 @@ __global__ void scatter_rows(size_t total_rows,
   pos_acc[idx] = {lo, hi};
 }
 
-template <LegateTypeCode INDEX_CODE, LegateTypeCode VAL_CODE>
+template <Type::Code INDEX_CODE, Type::Code VAL_CODE>
 struct SpGEMMCSRxCSRxCSCShuffleImplBody<VariantKind::GPU, INDEX_CODE, VAL_CODE> {
   using INDEX_TY = legate_type_of<INDEX_CODE>;
   using VAL_TY   = legate_type_of<VAL_CODE>;
@@ -405,7 +402,7 @@ struct SpGEMMCSRxCSRxCSCShuffleImplBody<VariantKind::GPU, INDEX_CODE, VAL_CODE> 
     std::vector<Rect<1>> rects_cpu;
     size_t total_nnzs = 0;
     size_t total_rows = 0;
-    for (RectInDomainIterator<1> itr(global_pos_domain); itr(); itr++) {
+    for (Legion::RectInDomainIterator<1> itr(global_pos_domain); itr(); itr++) {
       rects_cpu.push_back(*itr);
       total_rows = std::max(itr->volume(), total_rows);
       if (itr->empty()) continue;
@@ -424,8 +421,8 @@ struct SpGEMMCSRxCSRxCSCShuffleImplBody<VariantKind::GPU, INDEX_CODE, VAL_CODE> 
 
     // We'll start with a simple row-based parallelization for our copies. If/when performance
     // suffers due to this, we can think about algorithms for a full-data based parallelization.
-    DeferredBuffer<size_t, 1> row_offsets({0, total_rows - 1}, Memory::GPU_FB_MEM);
-    DeferredBuffer<Rect<1>, 1> rects({0, rects_cpu.size() - 1}, Memory::GPU_FB_MEM);
+    Buffer<size_t, 1> row_offsets({0, total_rows - 1}, Memory::GPU_FB_MEM);
+    Buffer<Rect<1>, 1> rects({0, rects_cpu.size() - 1}, Memory::GPU_FB_MEM);
     CHECK_CUDA(cudaMemcpyAsync(rects.ptr(0),
                                rects_cpu.data(),
                                sizeof(Rect<1>) * rects_cpu.size(),

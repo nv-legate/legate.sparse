@@ -19,14 +19,13 @@
 
 namespace sparse {
 
-using namespace Legion;
 using namespace legate;
 
-template <>
-struct ZipToRect1ImplBody<VariantKind::OMP> {
+template <typename VAL>
+struct ZipToRect1ImplBody<VariantKind::OMP, VAL> {
   void operator()(const AccessorWO<Rect<1>, 1>& output,
-                  const AccessorRO<uint64_t, 1>& lo,
-                  const AccessorRO<uint64_t, 1>& hi,
+                  const AccessorRO<VAL, 1>& lo,
+                  const AccessorRO<VAL, 1>& hi,
                   const Rect<1>& rect)
   {
 #pragma omp parallel for schedule(static)

@@ -21,8 +21,6 @@ from typing import Any, Container, Mapping, Optional, cast
 from legate.core import track_provenance
 from typing_extensions import Protocol
 
-from .runtime import runtime
-
 MOD_INTERNAL = {"__dir__", "__getattr__"}
 
 
@@ -45,13 +43,12 @@ def should_wrap(obj: object) -> bool:
 
 
 class AnyCallable(Protocol):
-    def __call__(self, *args: Any, **kwargs: Any) -> Any:
-        ...
+    def __call__(self, *args: Any, **kwargs: Any) -> Any: ...
 
 
 def wrap(func: AnyCallable) -> Any:
     @wraps(func)
-    @track_provenance(runtime.legate_context, nested=True)
+    @track_provenance(nested=True)
     def wrapper(*args: Any, **kwargs: Any) -> Any:
         return func(*args, **kwargs)
 

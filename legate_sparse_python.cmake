@@ -43,6 +43,14 @@ if(NOT legate_sparse_found_FOUND)
   set(SKBUILD ON)
 endif()
 
+add_custom_target("generate_install_info_py" ALL
+  COMMAND ${CMAKE_COMMAND}
+          -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
+          -P "${CMAKE_CURRENT_SOURCE_DIR}/cmake/generate_install_info_py.cmake"
+  COMMENT "Generate install_info.py"
+  VERBATIM
+)
+
 execute_process(
   COMMAND ${CMAKE_C_COMPILER}
     -E -DLEGATE_USE_PYTHON_CFFI

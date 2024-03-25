@@ -26,7 +26,6 @@
 
 namespace sparse {
 
-using namespace Legion;
 using namespace legate;
 
 template <typename ACC, typename INDEX_TY>
@@ -37,7 +36,7 @@ __global__ void scatter_reduce(size_t elems, ACC out, INDEX_TY* keys, uint64_t* 
   out[keys[idx]] <<= counts[idx];
 }
 
-template <LegateTypeCode INDEX_CODE, typename ACC>
+template <Type::Code INDEX_CODE, typename ACC>
 struct SortedCoordsToCountsImplBody<VariantKind::GPU, INDEX_CODE, ACC> {
   using INDEX_TY = legate_type_of<INDEX_CODE>;
   void operator()(ACC out, AccessorRO<INDEX_TY, 1> in, const Domain& dom)
@@ -60,8 +59,8 @@ struct SortedCoordsToCountsImplBody<VariantKind::GPU, INDEX_CODE, ACC> {
       cudaMemcpyAsync(&max, minmax.second, sizeof(INDEX_TY), cudaMemcpyDeviceToHost, stream));
     CHECK_CUDA(cudaStreamSynchronize(stream));
     INDEX_TY max_vals = max - min + 1;
-    DeferredBuffer<coord_t, 1> keys({0, max_vals - 1}, kind);
-    DeferredBuffer<uint64_t, 1> counts({0, max_vals - 1}, kind);
+    Buffer<coord_t, 1> keys({0, max_vals - 1}, kind);
+    Buffer<uint64_t, 1> counts({0, max_vals - 1}, kind);
     auto result = thrust::reduce_by_key(policy,
                                         in_ptr,
                                         in_ptr + dom.get_volume(),

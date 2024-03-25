@@ -21,7 +21,6 @@
 
 namespace sparse {
 
-using namespace Legion;
 using namespace legate;
 
 template <typename INDEX_TY, typename VAL_TY>
@@ -49,7 +48,7 @@ __global__ void elementwise_mult_csr_dense_kernel(size_t nnzs,
   A_vals[nnz_idx] = B_vals[nnz_idx] * C_vals[{i, j}];
 }
 
-template <LegateTypeCode INDEX_CODE, LegateTypeCode VAL_CODE>
+template <Type::Code INDEX_CODE, Type::Code VAL_CODE>
 struct ElemwiseMultCSRDenseArgsImplBody<VariantKind::GPU, INDEX_CODE, VAL_CODE> {
   using INDEX_TY = legate_type_of<INDEX_CODE>;
   using VAL_TY   = legate_type_of<VAL_CODE>;
@@ -70,7 +69,7 @@ struct ElemwiseMultCSRDenseArgsImplBody<VariantKind::GPU, INDEX_CODE, VAL_CODE> 
     auto stream = get_cached_stream();
 
     // Find the offsets within the pos array that each coordinate should search for.
-    DeferredBuffer<int64_t, 1> buf({0, blocks}, Memory::GPU_FB_MEM);
+    Buffer<int64_t, 1> buf({0, blocks}, Memory::GPU_FB_MEM);
     taco_binarySearchBeforeBlockLaunch(stream,
                                        B_pos,
                                        buf.ptr(0),

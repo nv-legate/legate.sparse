@@ -128,13 +128,7 @@ enum LegateSparseProjectionFunctors {
 
 enum LegateSparseTunable {
   LEGATE_SPARSE_TUNABLE_NUM_PROCS = 1,
-  LEGATE_SPARSE_TUNABLE_HAS_NUMAMEM,
   LEGATE_SPARSE_TUNABLE_NUM_GPUS,
-};
-
-enum LegateSparseTypes {
-  LEGATE_SPARSE_TYPE_DOMAIN = MAX_TYPE_NUMBER + 1,
-  LEGATE_SPARSE_TYPE_RECT1,
 };
 
 #ifdef __cplusplus

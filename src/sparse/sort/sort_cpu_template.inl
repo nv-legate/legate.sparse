@@ -21,7 +21,6 @@
 
 namespace sparse {
 
-using namespace Legion;
 using namespace legate;
 
 template <VariantKind KIND, typename INDEX_TY, typename VAL_TY, typename Policy, typename Comm>

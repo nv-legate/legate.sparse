@@ -29,7 +29,7 @@ from .utils import (
 
 # TODO (rohany): This function is not technically part of scipy.sparse, but I
 # need it for another application...
-@track_provenance(runtime.legate_context, nested=True)
+@track_provenance(nested=True)
 def cdist(XA, XB, metric="euclidean", *, out=None, **kwargs):
     if metric != "euclidean":
         raise NotImplementedError

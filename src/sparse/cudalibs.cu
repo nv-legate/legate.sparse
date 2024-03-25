@@ -22,8 +22,6 @@
 
 namespace sparse {
 
-using namespace Legion;
-
 CUDALibraries::CUDALibraries() : finalized_(false), cusparse_(nullptr) {}
 
 CUDALibraries::~CUDALibraries() { finalize(); }
@@ -47,9 +45,9 @@ cusparseHandle_t CUDALibraries::get_cusparse()
   return this->cusparse_;
 }
 
-static CUDALibraries& get_cuda_libraries(Processor proc)
+static CUDALibraries& get_cuda_libraries(legate::Processor proc)
 {
-  if (proc.kind() != Processor::TOC_PROC) {
+  if (proc.kind() != legate::Processor::TOC_PROC) {
     fprintf(stderr, "Illegal request for CUDA libraries for non-GPU processor");
     LEGATE_ABORT;
   }
@@ -66,7 +64,7 @@ legate::cuda::StreamView get_cached_stream()
 
 cusparseHandle_t get_cusparse()
 {
-  const auto proc = Processor::get_executing_processor();
+  const auto proc = legate::Processor::get_executing_processor();
   auto& lib       = get_cuda_libraries(proc);
   return lib.get_cusparse();
 }
@@ -78,7 +76,7 @@ class LoadCUDALibsTask : public SparseTask<LoadCUDALibsTask> {
  public:
   static void gpu_variant(legate::TaskContext& context)
   {
-    const auto proc = Processor::get_executing_processor();
+    const auto proc = legate::Processor::get_executing_processor();
     auto& lib       = get_cuda_libraries(proc);
     lib.get_cusparse();
   }
@@ -91,7 +89,7 @@ class UnloadCUDALibsTask : public SparseTask<UnloadCUDALibsTask> {
  public:
   static void gpu_variant(legate::TaskContext& context)
   {
-    const auto proc = Processor::get_executing_processor();
+    const auto proc = legate::Processor::get_executing_processor();
     auto& lib       = get_cuda_libraries(proc);
     lib.finalize();
   }

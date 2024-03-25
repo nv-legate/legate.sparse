@@ -25,12 +25,9 @@ using namespace legate::mapping;
 
 namespace sparse {
 
-LegateSparseMapper::LegateSparseMapper(Legion::Runtime* rt,
-                                       Legion::Machine m,
-                                       const LibraryContext& ctx)
-  : BaseMapper(rt, m, ctx)
-{
-}
+LegateSparseMapper::LegateSparseMapper() {}
+
+void LegateSparseMapper::set_machine(const MachineQueryInterface* m) { machine = m; }
 
 TaskTarget LegateSparseMapper::task_target(const Task& task, const std::vector<TaskTarget>& options)
 {
@@ -69,23 +66,16 @@ Scalar LegateSparseMapper::tunable_value(legate::TunableID tunable_id)
   switch (tunable_id) {
     case LEGATE_SPARSE_TUNABLE_NUM_PROCS: {
       int32_t num_procs = 0;
-      if (!local_gpus.empty())
-        num_procs = local_gpus.size() * total_nodes;
-      else if (!local_omps.empty())
-        num_procs = local_omps.size() * total_nodes;
+      if (!machine->gpus().empty())
+        num_procs = machine->gpus().size() * machine->total_nodes();
+      else if (!machine->omps().empty())
+        num_procs = machine->omps().size() * machine->total_nodes();
       else
-        num_procs = local_cpus.size() * total_nodes;
+        num_procs = machine->cpus().size() * machine->total_nodes();
       return Scalar(num_procs);
     }
-    case LEGATE_SPARSE_TUNABLE_HAS_NUMAMEM: {
-      Legion::Machine::MemoryQuery query(machine);
-      query.local_address_space();
-      query.only_kind(Legion::Memory::SOCKET_MEM);
-      int32_t has_numamem = query.count() > 0;
-      return Scalar(has_numamem);
-    }
     case LEGATE_SPARSE_TUNABLE_NUM_GPUS: {
-      int32_t num_gpus = local_gpus.size() * total_nodes;
+      int32_t num_gpus = machine->gpus().size() * machine->total_nodes();
       return Scalar(num_gpus);
     }
     default: break;

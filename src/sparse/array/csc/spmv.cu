@@ -23,7 +23,7 @@ namespace sparse {
 
 template <>
 struct CSCSpMVColSplitImpl<VariantKind::GPU> {
-  template <LegateTypeCode INDEX_CODE, LegateTypeCode VAL_CODE>
+  template <Type::Code INDEX_CODE, Type::Code VAL_CODE>
   void operator()(CSCSpMVColSplitArgs& args) const
   {
     using INDEX_TY = legate_type_of<INDEX_CODE>;
@@ -87,7 +87,7 @@ struct CSCSpMVColSplitImpl<VariantKind::GPU> {
     // Allocate a buffer if we need to.
     void* workspacePtr = nullptr;
     if (bufSize > 0) {
-      DeferredBuffer<char, 1> buf({0, bufSize - 1}, Memory::GPU_FB_MEM);
+      Buffer<char, 1> buf({0, bufSize - 1}, Memory::GPU_FB_MEM);
       workspacePtr = buf.ptr(0);
     }
     // Finally do the SpMV.

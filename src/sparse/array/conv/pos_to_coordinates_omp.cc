@@ -19,13 +19,12 @@
 
 namespace sparse {
 
-using namespace Legion;
 using namespace legate;
 
 /*static*/ void ExpandPosToCoordinates::omp_variant(TaskContext& context)
 {
   pos_to_coordinates_template(
-    context, thrust::omp::par, Sparse::has_numamem ? Memory::SOCKET_MEM : Memory::SYSTEM_MEM);
+    context, thrust::omp::par, Core::has_socket_mem ? Memory::SOCKET_MEM : Memory::SYSTEM_MEM);
 }
 
 }  // namespace sparse

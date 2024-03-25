@@ -21,7 +21,6 @@
 
 namespace sparse {
 
-using namespace Legion;
 using namespace legate;
 
 /*static*/ void ExpandPosToCoordinates::gpu_variant(TaskContext& context)

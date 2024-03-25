@@ -19,7 +19,6 @@
 
 namespace sparse {
 
-using namespace Legion;
 using namespace legate;
 
 /*static*/ void FastImageRange::omp_variant(TaskContext& context)

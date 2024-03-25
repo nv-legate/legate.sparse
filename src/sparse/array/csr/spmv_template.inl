@@ -22,15 +22,14 @@
 
 namespace sparse {
 
-using namespace Legion;
 using namespace legate;
 
-template <VariantKind KIND, LegateTypeCode INDEX_CODE, LegateTypeCode VAL_CODE>
+template <VariantKind KIND, Type::Code INDEX_CODE, Type::Code VAL_CODE>
 struct CSRSpMVRowSplitImplBody;
 
 template <VariantKind KIND>
 struct CSRSpMVRowSplitImpl {
-  template <LegateTypeCode INDEX_CODE, LegateTypeCode VAL_CODE>
+  template <Type::Code INDEX_CODE, Type::Code VAL_CODE>
   void operator()(CSRSpMVRowSplitArgs& args) const
   {
     using INDEX_TY = legate_type_of<INDEX_CODE>;
@@ -50,12 +49,12 @@ struct CSRSpMVRowSplitImpl {
   }
 };
 
-template <VariantKind KIND, LegateTypeCode INDEX_CODE, LegateTypeCode VAL_CODE, typename ACC>
+template <VariantKind KIND, Type::Code INDEX_CODE, Type::Code VAL_CODE, typename ACC>
 struct CSRSpMVColSplitImplBody;
 
 template <VariantKind KIND>
 struct CSRSpMVColSplitImpl {
-  template <LegateTypeCode INDEX_CODE, LegateTypeCode VAL_CODE>
+  template <Type::Code INDEX_CODE, Type::Code VAL_CODE>
   void operator()(CSRSpMVColSplitArgs& args) const
   {
     using INDEX_TY = legate_type_of<INDEX_CODE>;

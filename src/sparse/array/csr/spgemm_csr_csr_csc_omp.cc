@@ -22,10 +22,9 @@
 
 namespace sparse {
 
-using namespace Legion;
 using namespace legate;
 
-template <LegateTypeCode INDEX_CODE, LegateTypeCode VAL_CODE>
+template <Type::Code INDEX_CODE, Type::Code VAL_CODE>
 struct SpGEMMCSRxCSRxCSCLocalTilesImplBody<VariantKind::OMP, INDEX_CODE, VAL_CODE> {
   using INDEX_TY = legate_type_of<INDEX_CODE>;
   using VAL_TY   = legate_type_of<VAL_CODE>;
@@ -43,8 +42,8 @@ struct SpGEMMCSRxCSRxCSCLocalTilesImplBody<VariantKind::OMP, INDEX_CODE, VAL_COD
   {
     // Our job right now is to perform both passes of the SpGEMM operation
     // and output instances for local CSR matrices of each result.
-    auto kind = Sparse::has_numamem ? Memory::SOCKET_MEM : Memory::SYSTEM_MEM;
-    DeferredBuffer<size_t, 1> nnz({B_rect.lo[0], B_rect.hi[0]}, kind);
+    auto kind = Core::has_socket_mem ? Memory::SOCKET_MEM : Memory::SYSTEM_MEM;
+    Buffer<size_t, 1> nnz({B_rect.lo[0], B_rect.hi[0]}, kind);
 
 #pragma omp parallel for schedule(monotonic : dynamic, 128)
     for (auto i = B_rect.lo[0]; i < B_rect.hi[0] + 1; i++) {
@@ -146,7 +145,7 @@ struct SpGEMMCSRxCSRxCSCCommComputeImplBody<VariantKind::OMP> {
   }
 };
 
-template <LegateTypeCode INDEX_CODE, LegateTypeCode VAL_CODE>
+template <Type::Code INDEX_CODE, Type::Code VAL_CODE>
 struct SpGEMMCSRxCSRxCSCShuffleImplBody<VariantKind::OMP, INDEX_CODE, VAL_CODE> {
   using INDEX_TY = legate_type_of<INDEX_CODE>;
   using VAL_TY   = legate_type_of<VAL_CODE>;
@@ -161,7 +160,7 @@ struct SpGEMMCSRxCSRxCSCShuffleImplBody<VariantKind::OMP, INDEX_CODE, VAL_CODE> 
   {
     size_t total_nnzs = 0;
     std::vector<Rect<1>> rects;
-    for (RectInDomainIterator<1> rect_itr(global_pos_domain); rect_itr(); rect_itr++) {
+    for (Legion::RectInDomainIterator<1> rect_itr(global_pos_domain); rect_itr(); rect_itr++) {
       rects.push_back(*rect_itr);
       if (rect_itr->empty()) continue;
       auto lo = global_pos[rect_itr->lo];
@@ -176,8 +175,8 @@ struct SpGEMMCSRxCSRxCSCShuffleImplBody<VariantKind::OMP, INDEX_CODE, VAL_CODE> 
     auto vals_acc = out_vals.create_output_buffer<VAL_TY, 1>(total_nnzs, true /* return_buffer */);
 
     // Calculate the number of elements that each row will write.
-    auto kind = Sparse::has_numamem ? Memory::SOCKET_MEM : Memory::SYSTEM_MEM;
-    DeferredBuffer<size_t, 1> row_offsets({0, total_rows - 1}, kind);
+    auto kind = Core::has_socket_mem ? Memory::SOCKET_MEM : Memory::SYSTEM_MEM;
+    Buffer<size_t, 1> row_offsets({0, total_rows - 1}, kind);
 #pragma omp parallel for schedule(static)
     for (size_t i = 0; i < total_rows; i++) {
       size_t elems = 0;

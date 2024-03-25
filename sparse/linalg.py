@@ -72,10 +72,10 @@ import warnings
 from math import sqrt
 
 import cunumeric as np
-from legate.core import track_provenance
+from legate.core import track_provenance, types
 
 from .config import SparseOpCode
-from .runtime import ctx, runtime
+from .runtime import ctx
 from .utils import get_store_from_cunumeric_array
 
 
@@ -475,11 +475,11 @@ def make_linear_operator(A):
 # should be negated. This allows for avoiding unnecessary
 # future operations to compute new futures, and avoids
 # allocating unnecessary futures.
-@track_provenance(runtime.legate_context, nested=True)
+@track_provenance(nested=True)
 def cg_axpby(y, x, a, b, isalpha=True, negate=False):
     y_store = get_store_from_cunumeric_array(y)
     x_store = get_store_from_cunumeric_array(x)
-    task = ctx.create_task(SparseOpCode.AXPBY)
+    task = ctx.create_auto_task(SparseOpCode.AXPBY)
     task.add_output(y_store)
     task.add_input(x_store)
     a_store = get_store_from_cunumeric_array(a, allow_future=True)
@@ -488,8 +488,8 @@ def cg_axpby(y, x, a, b, isalpha=True, negate=False):
     task.add_input(b_store)
     task.add_broadcast(a_store)
     task.add_broadcast(b_store)
-    task.add_scalar_arg(isalpha, bool)
-    task.add_scalar_arg(negate, bool)
+    task.add_scalar_arg(isalpha, types.bool_)
+    task.add_scalar_arg(negate, types.bool_)
     task.add_input(y_store)
     task.add_alignment(y_store, x_store)
     task.execute()
