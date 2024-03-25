@@ -278,8 +278,7 @@ struct AddCSRCSRImpl<VariantKind::GPU> {
     CHECK_CUSPARSE(cusparseSetMatIndexBase(C, index_base));
     CHECK_CUSPARSE(cusparseSetMatType(C, CUSPARSE_MATRIX_TYPE_GENERAL));
 
-    auto funcs = []() -> auto
-    {
+    auto funcs = []() -> auto {
       if constexpr (VAL_CODE == Type::Code::FLOAT32) {
         return std::make_pair(cusparseScsrgeam2_bufferSizeExt, cusparseScsrgeam2);
       } else if constexpr (VAL_CODE == Type::Code::FLOAT64) {
@@ -289,8 +288,7 @@ struct AddCSRCSRImpl<VariantKind::GPU> {
       } else {
         return std::make_pair(cusparseZcsrgeam2_bufferSizeExt, cusparseZcsrgeam2);
       }
-    }
-    ();
+    }();
 
     using cusparse_val_ty = old_cusparse_type_of<VAL_CODE>;
 
