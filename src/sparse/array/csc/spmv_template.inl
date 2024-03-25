@@ -35,8 +35,7 @@ struct CSCSpMVColSplitImpl {
     using INDEX_TY = legate_type_of<INDEX_CODE>;
     using VAL_TY   = legate_type_of<VAL_CODE>;
 
-    auto y = [&args]() -> auto
-    {
+    auto y = [&args]() -> auto {
       if constexpr (KIND == VariantKind::CPU) {
         return args.y.reduce_accessor<SumReduction<VAL_TY>, true /* exclusive */, 1>();
       } else {
@@ -50,8 +49,7 @@ struct CSCSpMVColSplitImpl {
         // back into CSR up front.
         return args.y.reduce_accessor<SumReduction<VAL_TY>, false /* exclusive */, 1>();
       }
-    }
-    ();
+    }();
     auto A_pos  = args.A_pos.read_accessor<Rect<1>, 1>();
     auto A_crd  = args.A_crd.read_accessor<INDEX_TY, 1>();
     auto A_vals = args.A_vals.read_accessor<VAL_TY, 1>();

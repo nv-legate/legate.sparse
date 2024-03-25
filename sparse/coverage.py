@@ -43,8 +43,7 @@ def should_wrap(obj: object) -> bool:
 
 
 class AnyCallable(Protocol):
-    def __call__(self, *args: Any, **kwargs: Any) -> Any:
-        ...
+    def __call__(self, *args: Any, **kwargs: Any) -> Any: ...
 
 
 def wrap(func: AnyCallable) -> Any:
