@@ -4,8 +4,7 @@ from typing_extensions import Protocol
 
 
 class Timer(Protocol):
-    def start(self):
-        ...
+    def start(self): ...
 
     def stop(self):
         """
@@ -70,14 +69,11 @@ class NumPyTimer(Timer):
 # manager so that we can run both CuPy and SciPy
 # programs with resource scoping.
 class DummyScope:
-    def __init__(self):
-        ...
+    def __init__(self): ...
 
-    def __enter__(self):
-        ...
+    def __enter__(self): ...
 
-    def __exit__(self, _, __, ___):
-        ...
+    def __exit__(self, _, __, ___): ...
 
     def __getitem__(self, item):
         return self
