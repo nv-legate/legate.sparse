@@ -75,9 +75,9 @@ with build:
     # Compute the rhs. Note that we non-dimensionalize the coordinates
     # x and y with the size of the domain in their respective dire-
     # ctions.
-    b = np.sin(np.pi * X) * np.cos(np.pi * Y) + np.sin(5.0 * np.pi * X) * np.cos(
-        5.0 * np.pi * Y
-    )
+    b = np.sin(np.pi * X) * np.cos(np.pi * Y) + np.sin(
+        5.0 * np.pi * X
+    ) * np.cos(5.0 * np.pi * Y)
 
     # b is currently a 2D array. We need to convert it to a column-major
     # ordered 1D array. This is done with the flatten numpy function.
@@ -97,7 +97,6 @@ with build:
 
     # Allocate array for the (full) solution, including boundary values
     p = np.empty((nx, ny))
-
 
     def d2_mat_dirichlet_2d(nx, ny, dx, dy):
         """
@@ -164,7 +163,6 @@ with build:
 
         # Return the final array
         return d2mat
-
 
     def p_exact_2d(X, Y):
         """Computes the exact solution of the Poisson equation in the domain

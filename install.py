@@ -53,9 +53,11 @@ class BooleanFlag(argparse.Action):
 
         option_strings = flatten(
             [
-                [opt, "--no-" + opt[2:], "--no" + opt[2:]]
-                if opt.startswith("--")
-                else [opt]
+                (
+                    [opt, "--no-" + opt[2:], "--no" + opt[2:]]
+                    if opt.startswith("--")
+                    else [opt]
+                )
                 for opt in option_strings
             ]
         )
@@ -305,7 +307,6 @@ def install_legate_sparse(
     "Debug" if debug else "RelWithDebInfo" if debug_release else "Release"
 )}
 -DBUILD_SHARED_LIBS=ON
--DBUILD_MARCH={str(march)}
 -DCMAKE_CUDA_ARCHITECTURES={str(arch)}
 -DLegion_MAX_DIM={str(maxdim)}
 -DLegion_MAX_FIELDS={str(maxfields)}
@@ -318,6 +319,8 @@ def install_legate_sparse(
 -DLegion_USE_HDF5={("ON" if hdf else "OFF")}
 """.splitlines()
 
+    if march:
+        cmake_flags += [f"-DBUILD_MARCH={march}"]
     if cuda_dir:
         cmake_flags += ["-DCUDAToolkit_ROOT=%s" % cuda_dir]
     if nccl_dir:
@@ -515,7 +518,7 @@ def driver():
         "--march",
         dest="march",
         required=False,
-        default="native",
+        default=("haswell" if platform.machine() == "x86_64" else None),
         help="Specify the target CPU architecture.",
     )
     parser.add_argument(
