@@ -28,7 +28,6 @@
 
 namespace sparse {
 
-using namespace Legion;
 using namespace legate;
 
 template <typename INDEX_TY, typename VAL_TY>
@@ -207,7 +206,7 @@ struct SampleSorter;
 
 template <VariantKind KIND, typename Policy, typename Comm>
 struct SortByKeyImpl {
-  template <LegateTypeCode INDEX_CODE, LegateTypeCode VAL_CODE>
+  template <Type::Code INDEX_CODE, Type::Code VAL_CODE>
   void operator()(SortByKeyArgs& args) const
   {
     using INDEX_TY = legate_type_of<INDEX_CODE>;
@@ -270,17 +269,17 @@ struct SortByKeyImpl {
     if (is_single) {
       // In a single task, we just need to return the allocations
       // that we made.
-      key1_out.return_data(local.indices1, {local.size});
-      key2_out.return_data(local.indices2, {local.size});
-      values_out.return_data(local.values, {local.size});
+      key1_out.bind_data(local.indices1, {local.size});
+      key2_out.bind_data(local.indices2, {local.size});
+      values_out.bind_data(local.values, {local.size});
     } else {
       // Otherwise, initiate the distributed samplesort.
       auto comm   = ctx.communicators()[0].get<Comm>();
       auto result = SampleSorter<KIND, INDEX_TY, VAL_TY, Policy, Comm>{}(
         exec, local, ctx.get_task_index()[0], ctx.get_launch_domain().get_volume(), mem, &comm);
-      key1_out.return_data(result.indices1, {result.size});
-      key2_out.return_data(result.indices2, {result.size});
-      values_out.return_data(result.values, {result.size});
+      key1_out.bind_data(result.indices1, {result.size});
+      key2_out.bind_data(result.indices2, {result.size});
+      values_out.bind_data(result.values, {result.size});
     }
   }
   // The thrust execution policy for this code.

@@ -27,17 +27,7 @@ enum class VariantKind : int {
 };
 
 struct Sparse {
- public:
-  template <typename... Args>
-  static void record_variant(Args&&... args)
-  {
-    get_registrar().record_variant(std::forward<Args>(args)...);
-  }
-  static legate::LegateTaskRegistrar& get_registrar();
-
- public:
-  static bool has_numamem;
-  static Legion::MapperID mapper_id;
+  static legate::TaskRegistrar& get_registrar();
 };
 
 template <typename T>

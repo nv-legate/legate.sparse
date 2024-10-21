@@ -18,7 +18,6 @@
 
 namespace sparse {
 
-using namespace Legion;
 using namespace legate;
 
 template <typename T>
@@ -31,23 +30,23 @@ void upcast_impl(legate::TaskContext& ctx)
     case 0: {
       // Futures can be 0-dimensional. legate doesn't appear to complain
       // if we make a 1-D accessor of a 0-D "store".
-      dst = ctx.outputs()[0].write_accessor<T, 1>().ptr(0);
-      src = ctx.inputs()[0].read_accessor<T, 1>().ptr(0);
+      dst = ctx.outputs()[0].write_accessor<T, 1, false>().ptr(0);
+      src = ctx.inputs()[0].read_accessor<T, 1, false>().ptr(0);
       break;
     }
     case 1: {
-      dst = ctx.outputs()[0].write_accessor<T, 1>().ptr(0);
-      src = ctx.inputs()[0].read_accessor<T, 1>().ptr(0);
+      dst = ctx.outputs()[0].write_accessor<T, 1, false>().ptr(0);
+      src = ctx.inputs()[0].read_accessor<T, 1, false>().ptr(0);
       break;
     }
     case 2: {
-      dst = ctx.outputs()[0].write_accessor<T, 2>().ptr({0, 0});
-      src = ctx.inputs()[0].read_accessor<T, 2>().ptr({0, 0});
+      dst = ctx.outputs()[0].write_accessor<T, 2, false>().ptr({0, 0});
+      src = ctx.inputs()[0].read_accessor<T, 2, false>().ptr({0, 0});
       break;
     }
     case 3: {
-      dst = ctx.outputs()[0].write_accessor<T, 3>().ptr({0, 0, 0});
-      src = ctx.inputs()[0].read_accessor<T, 3>().ptr({0, 0, 0});
+      dst = ctx.outputs()[0].write_accessor<T, 3, false>().ptr({0, 0, 0});
+      src = ctx.inputs()[0].read_accessor<T, 3, false>().ptr({0, 0, 0});
       break;
     }
   }

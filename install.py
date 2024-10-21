@@ -53,9 +53,11 @@ class BooleanFlag(argparse.Action):
 
         option_strings = flatten(
             [
-                [opt, "--no-" + opt[2:], "--no" + opt[2:]]
-                if opt.startswith("--")
-                else [opt]
+                (
+                    [opt, "--no-" + opt[2:], "--no" + opt[2:]]
+                    if opt.startswith("--")
+                    else [opt]
+                )
                 for opt in option_strings
             ]
         )
@@ -287,14 +289,15 @@ def install_legate_sparse(
             pip_install_cmd += ["--no-deps", "--no-build-isolation"]
         pip_install_cmd += ["--upgrade"]
 
+    if unknown is not None:
+        pip_install_cmd += unknown
+
     pip_install_cmd += ["."]
     if verbose:
         pip_install_cmd += ["-vv"]
 
-    cmake_flags = []
-
-    if cmake_generator:
-        cmake_flags += [f"-G{cmake_generator}"]
+    # Also use preexisting CMAKE_ARGS from conda if set
+    cmake_flags = cmd_env.get("CMAKE_ARGS", "").split(" ")
 
     if debug or verbose:
         cmake_flags += ["--log-level=%s" % ("DEBUG" if debug else "VERBOSE")]
@@ -304,7 +307,6 @@ def install_legate_sparse(
     "Debug" if debug else "RelWithDebInfo" if debug_release else "Release"
 )}
 -DBUILD_SHARED_LIBS=ON
--DBUILD_MARCH={str(march)}
 -DCMAKE_CUDA_ARCHITECTURES={str(arch)}
 -DLegion_MAX_DIM={str(maxdim)}
 -DLegion_MAX_FIELDS={str(maxfields)}
@@ -317,6 +319,8 @@ def install_legate_sparse(
 -DLegion_USE_HDF5={("ON" if hdf else "OFF")}
 """.splitlines()
 
+    if march:
+        cmake_flags += [f"-DBUILD_MARCH={march}"]
     if cuda_dir:
         cmake_flags += ["-DCUDAToolkit_ROOT=%s" % cuda_dir]
     if nccl_dir:
@@ -339,10 +343,18 @@ def install_legate_sparse(
         ]
 
     cmake_flags += extra_flags
+    build_flags = [f"-j{str(thread_count)}"]
+    if verbose:
+        if cmake_generator == "Unix Makefiles":
+            build_flags += ["VERBOSE=1"]
+        else:
+            build_flags += ["--verbose"]
+
     cmd_env.update(
         {
-            "SKBUILD_BUILD_OPTIONS": f"-j{str(thread_count)}",
-            "SKBUILD_CONFIGURE_OPTIONS": "\n".join(cmake_flags),
+            "CMAKE_ARGS": " ".join(cmake_flags),
+            "CMAKE_GENERATOR": cmake_generator,
+            "SKBUILD_BUILD_OPTIONS": " ".join(build_flags),
         }
     )
 
@@ -467,8 +479,11 @@ def driver():
         "--cmake-generator",
         dest="cmake_generator",
         required=False,
-        default="Ninja",
-        choices=["Ninja", "Unix Makefiles"],
+        default=os.environ.get(
+            "CMAKE_GENERATOR",
+            "Unix Makefiles" if shutil.which("ninja") is None else "Ninja",
+        ),
+        choices=["Ninja", "Unix Makefiles", None],
         help="The CMake makefiles generator",
     )
     parser.add_argument(
@@ -503,7 +518,7 @@ def driver():
         "--march",
         dest="march",
         required=False,
-        default="native",
+        default=("haswell" if platform.machine() == "x86_64" else None),
         help="Specify the target CPU architecture.",
     )
     parser.add_argument(

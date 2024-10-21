@@ -31,12 +31,14 @@ from legate.core.partition import (
     DomainPartition,
     ImagePartition,
     PreimagePartition,
+    _mapper_argument,
 )
 from legate.core.runtime import runtime
 from legate.core.shape import Shape
 
 from .config import SparseOpCode, domain_ty
 from .runtime import ctx, runtime as sparse_runtime
+from .settings import settings
 
 
 # CompressedImagePartition is a special implementation of
@@ -96,24 +98,24 @@ class CompressedImagePartition(ImagePartition):
                 SparseOpCode.FAST_IMAGE_RANGE,
                 error_on_interference=False,
                 tag=ctx.core_library.LEGATE_CORE_MANUAL_PARALLEL_LAUNCH_TAG,
-                provenance=sparse_runtime.legate_context.provenance,
+                provenance=sparse_runtime.legate_runtime.provenance,
             )
             launcher.add_input(
                 self._store,
                 source_part.get_requirement(launch_shape.ndim, None),
                 tag=1,
             )  # LEGATE_CORE_KEY_STORE_TAG
-            bounds_store = ctx.create_store(
+            bounds_store = runtime.create_store(
                 domain_ty, shape=(1,), optimize_scalar=True
             )
             launcher.add_output(bounds_store, Broadcast(None, 0), tag=0)
-            domains = launcher.execute(Rect(hi=launch_shape))
+            domains = launcher.execute(Rect(hi=launch_shape)).future_map
             # We'll return a partition by domain using the resulting FutureMap.
             result = DomainPartition(
                 Shape(ispace=region.index_space), self.color_shape, domains
             ).construct(region)
             runtime.partition_manager.record_index_partition(
-                region.index_space, self, result.index_partition
+                self, result.index_partition
             )
             return result
         else:
@@ -148,7 +150,7 @@ class MinMaxImagePartition(ImagePartition):
     ) -> Optional[LegionPartition]:
         # If we've been requested to compute precise images,
         # then fall back to the standard ImagePartition.
-        if sparse_runtime.args.precise_images:
+        if settings.precise_images():
             return super().construct(
                 region,
                 complete=complete,
@@ -171,18 +173,18 @@ class MinMaxImagePartition(ImagePartition):
                 SparseOpCode.BOUNDS_FROM_PARTITIONED_COORDINATES,
                 error_on_interference=False,
                 tag=ctx.core_library.LEGATE_CORE_MANUAL_PARALLEL_LAUNCH_TAG,
-                provenance=sparse_runtime.legate_context.provenance,
+                provenance=sparse_runtime.legate_runtime.provenance,
             )
             launcher.add_input(
                 self._store,
                 source_part.get_requirement(launch_shape.ndim, None),
                 tag=1,
             )  # LEGATE_CORE_KEY_STORE_TAG
-            bounds_store = ctx.create_store(
+            bounds_store = runtime.create_store(
                 domain_ty, shape=(1,), optimize_scalar=True
             )
             launcher.add_output(bounds_store, Broadcast(None, 0), tag=0)
-            domains = launcher.execute(Rect(hi=launch_shape))
+            domains = launcher.execute(Rect(hi=launch_shape)).future_map
             # We'll return a partition by domain using the resulting FutureMap.
             part = DomainPartition(
                 Shape(ispace=region.index_space), self.color_shape, domains
@@ -196,7 +198,7 @@ class MinMaxImagePartition(ImagePartition):
                 )
             result = part.construct(region)
             runtime.partition_manager.record_index_partition(
-                region.index_space, self, result.index_partition
+                self, result.index_partition
             )
             return result
         else:
@@ -234,6 +236,7 @@ class DensePreimage(PreimagePartition):
             source_region,
             source_field,
             mapper=self._mapper,
+            mapper_arg=_mapper_argument(),
         )
         index_partition = runtime.partition_manager.find_index_partition(
             region.index_space, self
@@ -272,6 +275,6 @@ class DensePreimage(PreimagePartition):
             ).construct(region)
             index_partition = result.index_partition
             runtime.partition_manager.record_index_partition(
-                region.index_space, self, index_partition
+                self, index_partition
             )
         return region.get_child(index_partition)

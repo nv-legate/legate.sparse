@@ -21,7 +21,6 @@
 
 namespace sparse {
 
-using namespace Legion;
 using namespace legate;
 
 template <typename INDEX_TY, typename VAL_TY>
@@ -53,7 +52,7 @@ __global__ void sddmm_csr_kernel(size_t nnzs,
   A_vals[nnz_idx] = sum * B_vals[nnz_idx];
 }
 
-template <LegateTypeCode INDEX_CODE, LegateTypeCode VAL_CODE>
+template <Type::Code INDEX_CODE, Type::Code VAL_CODE>
 struct CSRSDDMMImplBody<VariantKind::GPU, INDEX_CODE, VAL_CODE> {
   using INDEX_TY = legate_type_of<INDEX_CODE>;
   using VAL_TY   = legate_type_of<VAL_CODE>;
@@ -76,7 +75,7 @@ struct CSRSDDMMImplBody<VariantKind::GPU, INDEX_CODE, VAL_CODE> {
     // TODO (rohany): We can also attempt to chunk up the non-zeros by some
     //  amount so that each thread handles more than one nonzero.
     auto blocks = get_num_blocks_1d(nnzs);
-    DeferredBuffer<int64_t, 1> buf({0, blocks}, Memory::GPU_FB_MEM);
+    Buffer<int64_t, 1> buf({0, blocks}, Memory::GPU_FB_MEM);
     taco_binarySearchBeforeBlockLaunch(stream,
                                        B_pos,
                                        buf.ptr(0),

@@ -87,9 +87,9 @@ class csc_array(CompressedBase, DenseSparseBase):
             # Similarly to the CSR from dense case, we'll do a column based
             # distribution.
             arg_store = get_store_from_cunumeric_array(arg)
-            q_nnz = ctx.create_store(nnz_ty, shape=(arg.shape[1]))
+            q_nnz = runtime.create_store(nnz_ty, shape=(arg.shape[1]))
             promoted_q_nnz = q_nnz.promote(0, shape[0])
-            task = ctx.create_task(SparseOpCode.DENSE_TO_CSC_NNZ)
+            task = ctx.create_auto_task(SparseOpCode.DENSE_TO_CSC_NNZ)
             task.add_output(promoted_q_nnz)
             task.add_input(arg_store)
             task.add_broadcast(promoted_q_nnz, 0)
@@ -99,10 +99,10 @@ class csc_array(CompressedBase, DenseSparseBase):
             self.pos, nnz = self.nnz_to_pos(q_nnz)
             # Block and convert the nnz future into an int.
             nnz = int(nnz)
-            self.crd = ctx.create_store(coord_ty, shape=(nnz))
-            self.vals = ctx.create_store(arg.dtype, shape=(nnz))
+            self.crd = runtime.create_store(coord_ty, shape=(nnz))
+            self.vals = runtime.create_store(arg.dtype, shape=(nnz))
             promoted_pos = self.pos.promote(0, shape[0])
-            task = ctx.create_task(SparseOpCode.DENSE_TO_CSC)
+            task = ctx.create_auto_task(SparseOpCode.DENSE_TO_CSC)
             task.add_output(promoted_pos)
             task.add_output(self.crd)
             task.add_output(self.vals)
@@ -215,8 +215,8 @@ class csc_array(CompressedBase, DenseSparseBase):
         pos, _ = CompressedBase.nnz_to_pos_cls(
             get_store_from_cunumeric_array(q)
         )
-        crd = ctx.create_store(coord_ty, (0,), optimize_scalar=False)
-        vals = ctx.create_store(dtype, (0,), optimize_scalar=False)
+        crd = runtime.create_store(coord_ty, (0,), optimize_scalar=False)
+        vals = runtime.create_store(dtype, (0,), optimize_scalar=False)
         return cls((vals, crd, pos), shape=shape, dtype=dtype)
 
     def astype(self, dtype, casting="unsafe", copy=True):
@@ -255,8 +255,8 @@ class csc_array(CompressedBase, DenseSparseBase):
         # The conversion to COO is pretty straightforward. The crd and values
         # arrays are already set up for COO, we just need to expand the pos
         # array into coordinates.
-        cols_expanded = ctx.create_store(coord_ty, shape=self.crd.shape)
-        task = ctx.create_task(SparseOpCode.EXPAND_POS_TO_COORDINATES)
+        cols_expanded = runtime.create_store(coord_ty, shape=self.crd.shape)
+        task = ctx.create_auto_task(SparseOpCode.EXPAND_POS_TO_COORDINATES)
         task.add_input(self.pos)
         task.add_output(cols_expanded)
         task.add_image_constraint(
@@ -402,7 +402,7 @@ class csc_array(CompressedBase, DenseSparseBase):
                     # assignment later.
                     out = out.squeeze(1)
                     result = store_to_cunumeric_array(
-                        ctx.create_store(A.dtype, shape=(self.shape[0],))
+                        runtime.create_store(A.dtype, shape=(self.shape[0],))
                     )
                 else:
                     assert out.shape == (self.shape[0],)
@@ -427,7 +427,7 @@ class csc_array(CompressedBase, DenseSparseBase):
             A, B = cast_to_common_type(self, other)
             if out is None:
                 C = store_to_cunumeric_array(
-                    ctx.create_store(
+                    runtime.create_store(
                         A.dtype, shape=(self.shape[0], other.shape[1])
                     )
                 )
@@ -464,12 +464,12 @@ class csc_array(CompressedBase, DenseSparseBase):
             out = cunumeric.array(out)
             out = get_store_from_cunumeric_array(out)
         elif out is None:
-            out = ctx.create_store(self.dtype, shape=self.shape)
+            out = runtime.create_store(self.dtype, shape=self.shape)
         # TODO (rohany): We'll do a col-based distribution for now, but a
         # non-zero based distribution of this operation with overlapping output
         # regions being reduced into also seems possible.
         promoted_pos = self.pos.promote(0, self.shape[0])
-        task = ctx.create_task(SparseOpCode.CSC_TO_DENSE)
+        task = ctx.create_auto_task(SparseOpCode.CSC_TO_DENSE)
         task.add_output(out)
         task.add_input(promoted_pos)
         task.add_input(self.crd)
@@ -524,7 +524,7 @@ def spmv(A: csc_array, x: cunumeric.ndarray, y: cunumeric.ndarray) -> None:
     x_store = get_store_from_cunumeric_array(x)
     y_store = get_store_from_cunumeric_array(y)
 
-    task = ctx.create_task(SparseOpCode.CSC_SPMV_COL_SPLIT)
+    task = ctx.create_auto_task(SparseOpCode.CSC_SPMV_COL_SPLIT)
     task.add_reduction(y_store, ReductionOp.ADD)
     task.add_input(A.pos)
     task.add_input(A.crd)
@@ -570,10 +570,10 @@ def sddmm_impl(
     # requires reducing into the output.
     C_store = get_store_from_cunumeric_array(C)
     D_store = get_store_from_cunumeric_array(D)
-    result_vals = ctx.create_store(B.dtype, shape=B.vals.shape)
+    result_vals = runtime.create_store(B.dtype, shape=B.vals.shape)
 
     promoted_pos = B.pos.promote(0, D_store.shape[0])
-    task = ctx.create_task(SparseOpCode.CSC_SDDMM)
+    task = ctx.create_auto_task(SparseOpCode.CSC_SDDMM)
     task.add_output(result_vals)
     task.add_input(promoted_pos)
     task.add_input(B.crd)
@@ -636,7 +636,7 @@ def spmm(A: csc_array, B: cunumeric.ndarray, C: cunumeric.ndarray) -> None:
 
     # This partitioning strategy follows from the CSR SpMM implementation.
     promoted_pos = A.pos.promote(1, B_store.shape[1])
-    task = ctx.create_task(SparseOpCode.SPMM_CSC_DENSE)
+    task = ctx.create_auto_task(SparseOpCode.SPMM_CSC_DENSE)
     task.add_reduction(C_store, ReductionOp.ADD)
     task.add_input(promoted_pos)
     task.add_input(A.crd)

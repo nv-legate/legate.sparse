@@ -19,10 +19,9 @@
 
 namespace sparse {
 
-using namespace Legion;
 using namespace legate;
 
-template <LegateTypeCode K_CODE, LegateTypeCode A_CODE>
+template <Type::Code K_CODE, Type::Code A_CODE>
 struct RKCalcDyImplBody<VariantKind::OMP, K_CODE, A_CODE> {
   using K_TY = legate_type_of<K_CODE>;
   using A_TY = legate_type_of<A_CODE>;

@@ -20,7 +20,6 @@
 
 namespace sparse {
 
-using namespace Legion;
 using namespace legate;
 
 __global__ void unzip_rect1_kernel(size_t elems,

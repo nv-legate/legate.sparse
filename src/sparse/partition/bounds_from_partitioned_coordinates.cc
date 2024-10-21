@@ -21,10 +21,9 @@
 
 namespace sparse {
 
-using namespace Legion;
 using namespace legate;
 
-template <LegateTypeCode INDEX_CODE>
+template <Type::Code INDEX_CODE>
 struct BoundsFromPartitionedCoordinatesImplBody<VariantKind::CPU, INDEX_CODE> {
   using INDEX_TY = legate_type_of<INDEX_CODE>;
   void operator()(const AccessorWO<Domain, 1> output,

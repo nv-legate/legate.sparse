@@ -22,15 +22,14 @@
 
 namespace sparse {
 
-using namespace Legion;
 using namespace legate;
 
-template <VariantKind KIND, LegateTypeCode INDEX_CODE>
+template <VariantKind KIND, Type::Code INDEX_CODE>
 struct BoundsFromPartitionedCoordinatesImplBody;
 
 template <VariantKind KIND>
 struct BoundsFromPartitionedCoordinatesImpl {
-  template <LegateTypeCode INDEX_CODE>
+  template <Type::Code INDEX_CODE>
   void operator()(BoundsFromPartitionedCoordinatesArgs& args) const
   {
     using INDEX_TY = legate_type_of<INDEX_CODE>;

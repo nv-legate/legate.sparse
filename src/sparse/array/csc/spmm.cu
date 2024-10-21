@@ -20,7 +20,6 @@
 
 namespace sparse {
 
-using namespace Legion;
 using namespace legate;
 
 template <typename INDEX_TY, typename VAL_TY>
@@ -50,7 +49,7 @@ __global__ void spmm_csc_kernel(const size_t nnzs,
   }
 }
 
-template <LegateTypeCode INDEX_CODE, LegateTypeCode VAL_CODE, typename ACC>
+template <Type::Code INDEX_CODE, Type::Code VAL_CODE, typename ACC>
 struct SpMMCSCImplBody<VariantKind::GPU, INDEX_CODE, VAL_CODE, ACC> {
   using INDEX_TY = legate_type_of<INDEX_CODE>;
   using VAL_TY   = legate_type_of<VAL_CODE>;
@@ -68,7 +67,7 @@ struct SpMMCSCImplBody<VariantKind::GPU, INDEX_CODE, VAL_CODE, ACC> {
     auto stream = get_cached_stream();
     auto nnzs   = nnz_rect.volume();
     auto blocks = get_num_blocks_1d(nnzs);
-    DeferredBuffer<int64_t, 1> buf({0, blocks}, Memory::GPU_FB_MEM);
+    Buffer<int64_t, 1> buf({0, blocks}, Memory::GPU_FB_MEM);
     taco_binarySearchBeforeBlockLaunch(stream,
                                        B_pos,
                                        buf.ptr(0),

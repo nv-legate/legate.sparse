@@ -22,15 +22,14 @@
 
 namespace sparse {
 
-using namespace Legion;
 using namespace legate;
 
-template <VariantKind KIND, LegateTypeCode INDEX_CODE, LegateTypeCode VAL_CODE, typename ACC>
+template <VariantKind KIND, Type::Code INDEX_CODE, Type::Code VAL_CODE, typename ACC>
 struct SpMMCSCImplBody;
 
 template <VariantKind KIND>
 struct SpMMCSCImpl {
-  template <LegateTypeCode INDEX_CODE, LegateTypeCode VAL_CODE>
+  template <Type::Code INDEX_CODE, Type::Code VAL_CODE>
   void operator()(SpMMCSCArgs& args) const
   {
     using INDEX_TY = legate_type_of<INDEX_CODE>;
@@ -38,15 +37,13 @@ struct SpMMCSCImpl {
 
     // If we're running with OMP's, then we need to use an non-exclusive
     // accessor instead of an exclusive one.
-    auto A_vals = [&args]() -> auto
-    {
+    auto A_vals = [&args]() -> auto {
       if constexpr (KIND == VariantKind::CPU) {
         return args.A_vals.reduce_accessor<SumReduction<VAL_TY>, true, 2>();
       } else {
         return args.A_vals.reduce_accessor<SumReduction<VAL_TY>, false, 2>();
       }
-    }
-    ();
+    }();
     auto B_pos  = args.B_pos.read_accessor<Rect<1>, 1>();
     auto B_crd  = args.B_crd.read_accessor<INDEX_TY, 1>();
     auto B_vals = args.B_vals.read_accessor<VAL_TY, 1>();

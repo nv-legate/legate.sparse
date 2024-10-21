@@ -22,12 +22,11 @@
 
 namespace sparse {
 
-using namespace Legion;
 using namespace legate;
 
 /* static */ void SortByKey::omp_variant(legate::TaskContext& ctx)
 {
-  auto kind = Sparse::has_numamem ? Memory::SOCKET_MEM : Memory::SYSTEM_MEM;
+  auto kind = Core::has_socket_mem ? Memory::SOCKET_MEM : Memory::SYSTEM_MEM;
   auto exec = thrust::omp::par;
   sort_by_key_template<VariantKind::OMP, decltype(exec), legate::comm::coll::CollComm>(
     ctx, exec, kind);

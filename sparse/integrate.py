@@ -481,7 +481,7 @@ def direct_rk_step(K, a, s, h):
     dy_arr = np.empty((K_store.shape[1],), dtype=K.dtype)
     dy_store = get_store_from_cunumeric_array(dy_arr)
     dy_promoted = dy_store.promote(0, K_store.shape[0])
-    task = ctx.create_task(SparseOpCode.RK_CALC_DY)
+    task = ctx.create_auto_task(SparseOpCode.RK_CALC_DY)
     task.add_input(K_store)
     task.add_input(a_store)
     task.add_output(dy_promoted)

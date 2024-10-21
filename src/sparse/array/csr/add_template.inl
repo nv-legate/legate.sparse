@@ -23,18 +23,17 @@
 
 namespace sparse {
 
-using namespace Legion;
 using namespace legate;
 
-template <VariantKind KIND, LegateTypeCode INDEX_CODE>
+template <VariantKind KIND, Type::Code INDEX_CODE>
 struct AddCSRCSRNNZImplBody;
 
-template <VariantKind KIND, LegateTypeCode INDEX_CODE, LegateTypeCode VAL_CODE>
+template <VariantKind KIND, Type::Code INDEX_CODE, Type::Code VAL_CODE>
 struct AddCSRCSRImplBody;
 
 template <VariantKind KIND>
 struct AddCSRCSRNNZImpl {
-  template <LegateTypeCode INDEX_CODE>
+  template <Type::Code INDEX_CODE>
   void operator()(AddCSRCSRNNZArgs& args) const
   {
     using INDEX_TY = legate_type_of<INDEX_CODE>;
@@ -53,7 +52,7 @@ struct AddCSRCSRNNZImpl {
 
 template <VariantKind KIND>
 struct AddCSRCSRImpl {
-  template <LegateTypeCode INDEX_CODE, LegateTypeCode VAL_CODE>
+  template <Type::Code INDEX_CODE, Type::Code VAL_CODE>
   void operator()(AddCSRCSRArgs& args) const
   {
     using INDEX_TY = legate_type_of<INDEX_CODE>;

@@ -21,12 +21,11 @@
 
 namespace sparse {
 
-using namespace Legion;
 using namespace legate;
 
 template <>
 struct SpMMCSRImpl<VariantKind::GPU> {
-  template <LegateTypeCode INDEX_CODE, LegateTypeCode VAL_CODE>
+  template <Type::Code INDEX_CODE, Type::Code VAL_CODE>
   void operator()(SpMMCSRArgs& args) const
   {
     using INDEX_TY = legate_type_of<INDEX_CODE>;
@@ -90,7 +89,7 @@ struct SpMMCSRImpl<VariantKind::GPU> {
     // Allocate a buffer if we need to.
     void* workspacePtr = nullptr;
     if (bufSize > 0) {
-      DeferredBuffer<char, 1> buf({0, bufSize - 1}, Memory::GPU_FB_MEM);
+      Buffer<char, 1> buf({0, bufSize - 1}, Memory::GPU_FB_MEM);
       workspacePtr = buf.ptr(0);
     }
     // Do the SpMM.
@@ -138,7 +137,7 @@ __global__ void spmm_dense_csr_kernel(const size_t nnzs,
   for (int64_t i = 0; i < idim; i++) { A_vals[{i, j}] <<= B_vals[{i, k}] * C_vals[nnz_idx]; }
 }
 
-template <LegateTypeCode INDEX_CODE, LegateTypeCode VAL_CODE, typename ACC>
+template <Type::Code INDEX_CODE, Type::Code VAL_CODE, typename ACC>
 struct SpMMDenseCSRImplBody<VariantKind::GPU, INDEX_CODE, VAL_CODE, ACC> {
   using INDEX_TY = legate_type_of<INDEX_CODE>;
   using VAL_TY   = legate_type_of<VAL_CODE>;
@@ -155,7 +154,7 @@ struct SpMMDenseCSRImplBody<VariantKind::GPU, INDEX_CODE, VAL_CODE, ACC> {
     auto stream = get_cached_stream();
     auto nnzs   = nnz_rect.volume();
     auto blocks = get_num_blocks_1d(nnzs);
-    DeferredBuffer<int64_t, 1> buf({0, blocks}, Memory::GPU_FB_MEM);
+    Buffer<int64_t, 1> buf({0, blocks}, Memory::GPU_FB_MEM);
     taco_binarySearchBeforeBlockLaunch(stream,
                                        C_pos,
                                        buf.ptr(0),

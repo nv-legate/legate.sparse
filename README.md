@@ -17,12 +17,12 @@ and interesting applications are on the way -- stay tuned!
 # Building
 
 To use Legate Sparse, you must build
-[Legate](https://github.com/nv-legate/legate.core) and
+[legate.core](https://github.com/magnatelee/legate.core) and
 [cuNumeric](https://github.com/nv-legate/cunumeric) from source.  In
 particular, the following
-[branch](https://github.com/rohany/legate.core/tree/legate-sparse) of Legate
+[branch](https://github.com/magnatelee/legate.core/tree/legate-sparse-branch-23.09/) of legate.core
 and the following
-[branch](https://github.com/rohany/cunumeric/tree/legate-sparse) of cuNumeric
+[branch](https://github.com/nv-legate/cunumeric/tree/branch-23.09) of cuNumeric
 must be used as many necessary changes have not yet made their way into the
 main branches of Legate and cuNumeric.
 
@@ -30,11 +30,10 @@ main branches of Legate and cuNumeric.
 
 First, clone [quickstart](https://github.com/rohany/quickstart) and 
 checkout the `legate-sparse` branch. This repository contains several scripts to cover
-common machines and use cases. Then, clone [legate.core](https://github.com/nv-legate/legate.core)
-and [cuNumeric](https://github.com/nv-legate/cunumeric), and check out the `legate-sparse`
-branch of each, provided by the following forks: [legate.core](https://github.com/rohany/legate.core/tree/legate-sparse),
-[cuNumeric](https://github.com/rohany/cunumeric/tree/legate-sparse). Then, clone Legate Sparse. We recommend
-the following directory organization:
+common machines and use cases. Then clone the following fork of [legate.core](https://github.com/magnatelee/legate.core/),
+and the official repository of [cuNumeric](https://github.com/nv-legate/cunumeric). For legate.core,
+check out the `legate-sparse-branch-23.09`, and the `branch-23.09` branch of cuNumeric. Then, clone Legate Sparse. 
+We recommend the following directory organization:
 ```
 legate/
   quickstart/
